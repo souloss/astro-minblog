@@ -1,0 +1,154 @@
+---
+import { randomUUID } from "node:crypto";
+
+/**
+ * Mermaid diagram component - 尺寸优化版
+ */
+interface Props {
+  code: string;
+}
+
+const { code } = Astro.props;
+const uniqueId = `mermaid-${randomUUID()}`;
+---
+
+<div class="mermaid-wrapper my-6" data-mermaid-id={uniqueId}>
+  <div class="mermaid-output overflow-x-auto" id={`${uniqueId}-output`}></div>
+  <script
+    type="application/json"
+    class="mermaid-code"
+    set:html={JSON.stringify(code)}
+  />
+</div>
+
+<script>
+  import mermaid from "mermaid";
+
+  const isDark =
+    document.documentElement.classList.contains("dark") ||
+    document.documentElement.dataset.theme === "dark" ||
+    (window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  const baseConfig = {
+    fontSize: "14px",
+    fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+  };
+
+  const darkConfig = {
+    theme: "base",
+    themeVariables: {
+      ...baseConfig,
+      primaryColor: "#1e293b",
+      primaryTextColor: "#f8fafc",
+      primaryBorderColor: "#6366f1",
+      lineColor: "#94a3b8",
+      background: "transparent",
+      actorBorder: "#6366f1",
+      actorBkg: "#1e293b",
+      actorTextColor: "#f8fafc",
+      actorLineColor: "#94a3b8",
+      signalColor: "#94a3b8",
+      signalTextColor: "#f8fafc",
+      sequenceNumberColor: "#f8fafc",
+    },
+  };
+
+  const lightConfig = {
+    theme: "base",
+    themeVariables: {
+      ...baseConfig,
+      primaryColor: "#e0e7ff",
+      primaryTextColor: "#1e293b",
+      primaryBorderColor: "#4f46e5",
+      lineColor: "#475569",
+      background: "transparent",
+      actorBorder: "#4f46e5",
+      actorBkg: "#e0e7ff",
+      actorTextColor: "#1e293b",
+      actorLineColor: "#475569",
+      signalColor: "#475569",
+      signalTextColor: "#1e293b",
+      sequenceNumberColor: "#1e293b",
+    },
+  };
+
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "loose",
+    ...(isDark ? darkConfig : lightConfig),
+  });
+
+  async function renderAllDiagrams() {
+    const wrappers = document.querySelectorAll(".mermaid-wrapper");
+
+    for (const wrapper of wrappers) {
+      const id = wrapper.getAttribute("data-mermaid-id");
+      const codeScript = wrapper.querySelector("script.mermaid-code");
+      const output = document.getElementById(`${id}-output`);
+
+      if (output && codeScript) {
+        const code = JSON.parse(codeScript.textContent || '""');
+
+        if (code && !output.innerHTML.trim()) {
+          try {
+            const { svg } = await mermaid.render(`${id}-svg`, code);
+            output.innerHTML = svg;
+          } catch (error) {
+            console.error("Mermaid render error:", error);
+            output.innerHTML = `<p class="mermaid-error">图表渲染错误: ${error.message}</p>`;
+          }
+        }
+      }
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", renderAllDiagrams);
+  } else {
+    renderAllDiagrams();
+  }
+
+  document.addEventListener("astro:page-load", renderAllDiagrams);
+</script>
+
+<style>
+  .mermaid-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: transparent;
+    width: 100%;
+  }
+
+  .mermaid-output {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* 关键：限制 SVG 最大宽度 */
+  .mermaid-output :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* 文字大小 */
+  .mermaid-output :global(text) {
+    font-size: 14px !important;
+  }
+
+  .mermaid-error {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  :global(html[data-theme="dark"]) .mermaid-error,
+  :global(html.dark) .mermaid-error {
+    color: #f87171;
+  }
+</style>
+  

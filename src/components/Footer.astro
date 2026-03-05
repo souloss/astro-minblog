@@ -1,8 +1,15 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import Socials from "./Socials.astro";
+import { SITE } from "@/config";
 
 const currentYear = new Date().getFullYear();
+
+// Calculate running days
+const startDate = new Date(SITE.startDate);
+const today = new Date();
+const runningDays = Math.floor(
+  (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+);
 
 type Props = {
   noMarginTop?: boolean;
@@ -12,21 +19,59 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
 ---
 
 <footer
-  class:list={["app-layout", { "mt-auto": !noMarginTop }, className]}
+  class:list={["app-layout max-w-5xl", { "mt-auto": !noMarginTop }, className]}
   {...attrs}
 >
   <div
     class:list={[
       "py-6 sm:py-4",
       "border-t border-border",
-      "flex flex-col items-center justify-between sm:flex-row-reverse",
+      "flex flex-col items-center justify-center",
     ]}
   >
-    <Socials />
-    <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row">
-      <span>Copyright &#169; {currentYear}</span>
-      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-      <span>All rights reserved.</span>
+    <div
+      class="flex flex-col items-center justify-center text-sm whitespace-nowrap text-neutral-600 sm:flex-row dark:text-neutral-400"
+    >
+      <!-- Column 1: Avatar + Hi, {author} -->
+      <div class="px-4">
+        <a
+          href="/"
+          class="flex items-center gap-2 transition-colors hover:text-accent"
+        >
+          <img
+            src="/favicon.ico"
+            alt={`${SITE.author}'s avatar`}
+            class="h-5 w-5 rounded-full"
+          />
+          <span>Hi, {SITE.author}</span>
+        </a>
+      </div>
+
+      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+
+      <!-- Column 2: Running days -->
+      <div class="px-4">
+        <span>已运行 {runningDays} 天</span>
+      </div>
+
+      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+
+      <!-- Column 3: Copyright -->
+      <div class="px-4">
+        <span>© {currentYear} {SITE.author}，版权所有，禁止转载，转发需注明出处</span>
+      </div>
+
+      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+
+      <!-- Column 4: Sitemap -->
+      <div class="px-4">
+        <a
+          href="/sitemap-index.xml"
+          class="transition-colors hover:text-accent"
+        >
+          Sitemap
+        </a>
+      </div>
     </div>
   </div>
 </footer>

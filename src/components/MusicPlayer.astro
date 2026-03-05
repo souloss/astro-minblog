@@ -1,0 +1,147 @@
+---
+/**
+ * APlayer 音乐播放器组件
+ * 使用 MetingJS 支持网易云、QQ 音乐、酷狗等平台
+ *
+ * 使用方式：
+ * <MusicPlayer id="歌曲/歌单ID" type="song" server="netease" />
+ *
+ * 参数：
+ * - id: 歌曲/歌单/专辑 ID（必填）
+ * - server: 平台 - netease/tencent/kugou（默认 netease）
+ * - type: 类型 - song/playlist/album/search/artist（默认 song）
+ * - autoplay: 自动播放（默认 false）
+ * - theme: 播放器主题色（默认 #b7daff）
+ */
+
+interface Props {
+  id: string;
+  server?: "netease" | "tencent" | "kugou";
+  type?: "song" | "playlist" | "album" | "search" | "artist";
+  autoplay?: boolean;
+  theme?: string;
+}
+
+const {
+  id,
+  server = "netease",
+  type = "song",
+  autoplay = false,
+  theme = "#b7daff",
+} = Astro.props;
+---
+
+<div class="music-player-wrapper my-6">
+  <meting-js
+    id={id}
+    server={server}
+    type={type}
+    auto={autoplay ? "true" : "false"}
+    theme={theme}
+    fixed="false"
+    mini="false"
+    list-folded="true"
+    order="list"
+    preload="auto"
+    mutex="true"
+  ></meting-js>
+</div>
+
+<script>
+  // 动态加载 APlayer 和 MetingJS
+  function loadResources() {
+    // 检查是否已加载
+    if (document.querySelector('link[href*="APlayer.min.css"]')) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      // 加载 APlayer CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css';
+      document.head.appendChild(link);
+
+      // 加载 APlayer JS
+      const aplayerScript = document.createElement('script');
+      aplayerScript.src = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js';
+      aplayerScript.onload = () => {
+        // 加载 MetingJS
+        const metingScript = document.createElement('script');
+        metingScript.src = 'https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js';
+        metingScript.onload = resolve;
+        document.head.appendChild(metingScript);
+      };
+      document.head.appendChild(aplayerScript);
+    });
+  }
+
+  // 初始化
+  loadResources();
+
+  // View Transitions 支持
+  document.addEventListener('astro:page-load', loadResources);
+</script>
+
+<style is:global>
+  .music-player-wrapper {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+
+  /* APlayer 样式优化 */
+  .aplayer {
+    margin: 0 !important;
+    font-family: inherit !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .aplayer .aplayer-lrc::before,
+  .aplayer .aplayer-lrc::after {
+    background: transparent !important;
+  }
+
+  /* 暗色主题适配 */
+  html[data-theme="dark"] .aplayer {
+    color: #e0e0e0;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-body {
+    background-color: #212737;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-info {
+    background-color: #212737;
+    border-color: #333;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-pic {
+    background-color: #343f60;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-list {
+    background-color: #212737;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-list li {
+    border-color: #333;
+    color: #ccc;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-list li:hover {
+    background: #333;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-list li.aplayer-list-light {
+    background: #343f60;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-miniswitcher {
+    background: #343f60;
+  }
+
+  html[data-theme="dark"] .aplayer .aplayer-controller {
+    background-color: #212737;
+  }
+</style>

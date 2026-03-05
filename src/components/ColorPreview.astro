@@ -1,0 +1,25 @@
+---
+/**
+ * Color preview component
+ * Usage: <ColorPreview colors={["#FF6B6B", "#4ECDC4"]} />
+ */
+
+interface Props {
+  colors: string[];
+}
+
+const { colors } = Astro.props;
+---
+
+<div class="color-preview flex flex-wrap gap-3 my-4">
+  {colors.map((color) => (
+    <div class="flex items-center gap-2">
+      <span
+        class="color-swatch w-6 h-6 rounded-md border border-border shadow-sm"
+        style={`background-color: ${color}`}
+        title={color}
+      />
+      <code class="text-sm text-neutral-600 dark:text-neutral-400">{color}</code>
+    </div>
+  ))}
+</div>

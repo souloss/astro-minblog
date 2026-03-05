@@ -1,0 +1,28 @@
+---
+/**
+ * GitHub-style Alert component for MDX
+ */
+interface Props {
+  type: "note" | "tip" | "important" | "warning" | "caution";
+  title?: string;
+}
+
+const { type, title } = Astro.props;
+
+const defaultTitles: Record<string, string> = {
+  note: "Note",
+  tip: "Tip",
+  important: "Important",
+  warning: "Warning",
+  caution: "Caution",
+};
+
+const displayTitle = title || defaultTitles[type] || "Note";
+---
+
+<div class:list={["markdown-alert", `markdown-alert-${type}`]}>
+  <p class="markdown-alert-title">
+    {displayTitle}
+  </p>
+  <slot />
+</div>
