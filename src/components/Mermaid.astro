@@ -2,8 +2,7 @@
 import { randomUUID } from "node:crypto";
 
 /**
- * Mermaid diagram component - 优化版
- * 支持亮色/暗色主题
+ * Mermaid diagram component - 统一字体颜色版
  */
 interface Props {
   code: string;
@@ -31,56 +30,83 @@ const uniqueId = `mermaid-${randomUUID()}`;
     (window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-  const baseConfig = {
-    fontSize: "14px",
-    fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
-  };
-
+  // 统一使用相同的文字颜色，确保一致性
   const darkConfig = {
     theme: "base",
     themeVariables: {
-      ...baseConfig,
+      // 通用设置
+      fontSize: "14px",
+      fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+      
+      // 流程图 - 节点样式（关键！）
       primaryColor: "#1e293b",
-      primaryTextColor: "#f8fafc",
+      primaryTextColor: "#f8fafc",      // 节点文字
       primaryBorderColor: "#6366f1",
       lineColor: "#94a3b8",
       background: "transparent",
+      
+      // 流程图 - 额外变量
+      nodeBkg: "#1e293b",
+      nodeBorder: "#6366f1",
+      nodeTextColor: "#f8fafc",         // 节点文字（确保）
+      clusterBkg: "#1e293b",
+      clusterBorder: "#6366f1",
+      edgeLabelBackground: "#1e293b",
+      
+      // 时序图 - 参与者样式
       actorBorder: "#6366f1",
       actorBkg: "#1e293b",
-      actorTextColor: "#f8fafc",
+      actorTextColor: "#f8fafc",        // 参与者文字
       actorLineColor: "#94a3b8",
+      
+      // 时序图 - 消息样式
       signalColor: "#94a3b8",
-      signalTextColor: "#f8fafc",
-      sequenceNumberColor: "#f8fafc",
+      signalTextColor: "#f8fafc",       // 消息文字
+      sequenceNumberColor: "#f8fafc",    // 序号
+      
+      // 标签背景
+      noteBkg: "#1e293b",
+      noteBorder: "#6366f1",
+      noteTextColor: "#f8fafc",
     },
   };
 
   const lightConfig = {
     theme: "base",
     themeVariables: {
-      ...baseConfig,
-      // 亮色模式 - 更明亮的配色
+      fontSize: "14px",
+      fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+      
+      // 流程图 - 节点样式
       primaryColor: "#eff6ff",
-      primaryTextColor: "#1f2937",
+      primaryTextColor: "#1f2937",       // 深色文字
       primaryBorderColor: "#3b82f6",
       lineColor: "#374151",
       background: "#ffffff",
+      
+      // 流程图 - 额外变量
+      nodeBkg: "#eff6ff",
+      nodeBorder: "#3b82f6",
+      nodeTextColor: "#1f2937",          // 深色文字
+      clusterBkg: "#eff6ff",
+      clusterBorder: "#3b82f6",
+      edgeLabelBackground: "#ffffff",
+      
+      // 时序图 - 参与者样式
       actorBorder: "#3b82f6",
       actorBkg: "#f0f9ff",
-      actorTextColor: "#1f2937",
+      actorTextColor: "#1f2937",          // 深色文字
       actorLineColor: "#374151",
+      
+      // 时序图 - 消息样式
       signalColor: "#374151",
-      signalTextColor: "#1f2937",
+      signalTextColor: "#1f2937",        // 深色文字
       sequenceNumberColor: "#1f2937",
-      // 流程图节点
-      nodeBkg: "#f0f9ff",
-      nodeBorder: "#3b82f6",
-      nodeTextColor: "#1f2937",
-      // 边缘标签
-      edgeLabelBackground: "#ffffff",
-      // 集群背景
-      clusterBkg: "#f0f9ff",
-      clusterBorder: "#3b82f6",
+      
+      // 标签
+      noteBkg: "#f0f9ff",
+      noteBorder: "#3b82f6",
+      noteTextColor: "#1f2937",
     },
   };
 
@@ -124,7 +150,6 @@ const uniqueId = `mermaid-${randomUUID()}`;
 </script>
 
 <style>
-  /* 亮色模式样式 */
   .mermaid-wrapper {
     display: flex;
     justify-content: center;
@@ -142,13 +167,11 @@ const uniqueId = `mermaid-${randomUUID()}`;
     justify-content: center;
   }
 
-  /* 限制 SVG 最大宽度 */
   .mermaid-output :global(svg) {
     max-width: 100%;
     height: auto;
   }
 
-  /* 文字大小 */
   .mermaid-output :global(text) {
     font-size: 14px !important;
   }
@@ -159,7 +182,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
     padding: 1rem;
   }
 
-  /* 暗色模式样式 */
+  /* 暗色模式 */
   :global(html[data-theme="dark"]) .mermaid-wrapper,
   :global(html.dark) .mermaid-wrapper {
     background: rgba(30, 41, 59, 0.5);
