@@ -19,7 +19,7 @@ type Props = {
 const { headings } = Astro.props;
 
 // Transform flat headings to nested structure for easier rendering
-const nestedHeadings = [];
+const nestedHeadings: any[] = [];
 let currentH2: any = null;
 
 headings.forEach(h => {
@@ -160,13 +160,13 @@ headings.forEach(h => {
         if (!toggle || !content) return;
 
         // Toggle expand/collapse
-        const handleToggle = (e) => {
+        const handleToggle = (e: Event) => {
           e.preventDefault();
           e.stopPropagation();
           const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
           toggle.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
           content.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
-          content.style.gridTemplateRows = isExpanded ? '0fr' : '1fr';
+          (content as HTMLElement).style.gridTemplateRows = isExpanded ? '0fr' : '1fr';
         };
         
         toggle.addEventListener('click', handleToggle);
@@ -181,7 +181,7 @@ headings.forEach(h => {
         const headingElements = new Map();
 
         links.forEach(link => {
-          const slug = link.dataset.tocSlug;
+          const slug = (link as HTMLElement).dataset.tocSlug;
           if (slug) {
             const heading = document.getElementById(slug);
             if (heading) {
@@ -204,9 +204,9 @@ headings.forEach(h => {
           observer.observe(element);
         });
 
-        function updateActiveLink(activeSlug) {
+        function updateActiveLink(activeSlug: string) {
           links.forEach(link => {
-            const isActive = link.dataset.tocSlug === activeSlug;
+            const isActive = (link as HTMLElement).dataset.tocSlug === activeSlug;
             link.classList.toggle('active', isActive);
           });
         }

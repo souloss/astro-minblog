@@ -22,7 +22,7 @@ type Props = {
 const { headings } = Astro.props;
 
 // Transform flat headings to nested structure
-const nestedHeadings = [];
+const nestedHeadings: any[] = [];
 let currentH2: any = null;
 
 headings.forEach(h => {
@@ -194,16 +194,17 @@ headings.forEach(h => {
         }
       });
       
+
       // Re-apply active to parent of currently active link
-      const activeLink = tocContainer.querySelector(`.toc-link[data-toc-slug="${activeSlug}"]`);
-      if (activeLink) {
-        const parentItem = activeLink.closest('.toc-item');
-        if (parentItem) {
-          parentItem.classList.add('active');
+      if (activeSlug && tocContainer) {
+        const activeLink = tocContainer.querySelector(`.toc-link[data-toc-slug="${activeSlug}"]`);
+        if (activeLink) {
+          const parentItem = activeLink.closest('.toc-item');
+          if (parentItem) {
+            parentItem.classList.add('active');
+          }
         }
       }
-
-      // 3. Update Indicator Progress
       if (indicator) {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
