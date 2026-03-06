@@ -9,34 +9,18 @@
  * - Hover state: Full text
  * - Auto-expand active section
  */
-type Heading = {
-  depth: number;
-  slug: string;
-  text: string;
-};
+import {
+  type TocHeading,
+  buildNestedHeadings,
+} from "@/utils/toc";
 
 type Props = {
-  headings: Heading[];
+  headings: TocHeading[];
 };
 
 const { headings } = Astro.props;
 
-// Transform flat headings to nested structure
-interface NestedHeading extends Heading {
-  children: Heading[];
-}
-
-const nestedHeadings: NestedHeading[] = [];
-let currentH2: NestedHeading | null = null;
-
-headings.forEach(h => {
-  if (h.depth === 2) {
-    currentH2 = { ...h, children: [] };
-    nestedHeadings.push(currentH2);
-  } else if (h.depth === 3 && currentH2) {
-    currentH2.children.push(h);
-  }
-});
+const nestedHeadings = buildNestedHeadings(headings);
 ---
 
 <aside
@@ -71,7 +55,7 @@ headings.forEach(h => {
             
             {heading.children.length > 0 && (
               <ul class="toc-sublist mt-3 hidden flex-col gap-2 items-start border-l border-border/0 pl-1">
-                {heading.children.map((subHeading: Heading) => (
+                {heading.children.map((subHeading: TocHeading) => (
                   <li data-slug={subHeading.slug} class="flex justify-start">
                     <a
                       href={`#${subHeading.slug}`}
