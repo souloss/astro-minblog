@@ -1,151 +1,72 @@
+#!/usr/bin/env npx tsx
 /**
- * AI Article Summarizer
- * Generates summaries for blog posts using OpenAI-compatible API.
- *
- * Usage: npx tsx tools/summarize.ts [--file <path>] [--all]
- *
- * Environment variables:
- *   AI_API_KEY   - API key for the AI service
- *   AI_BASE_URL  - Base URL for OpenAI-compatible API (default: https://api.openai.com/v1)
- *   AI_MODEL     - Model to use (default: gpt-4o-mini)
+ * AI 辅助写作 - 文章摘要生成
+ * 用法: pnpm run tools:summarize <文章路径>
+ * 需要设置 OPENAI_API_KEY 或 ANTHROPIC_API_KEY 环境变量
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from "fs";
-import { join, extname } from "path";
+const args = process.argv.slice(2);
+const filePath = args[0];
 
-const BLOG_DIR = "src/data/blog";
-
-interface SummarizeOptions {
-  file?: string;
-  all?: boolean;
+if (!filePath) {
+  console.error("用法: pnpm run tools:summarize <文章路径>");
+  process.exit(1);
 }
 
-function parseArgs(): SummarizeOptions {
-  const args = process.argv.slice(2);
-  const opts: SummarizeOptions = {};
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--file" && args[i + 1]) {
-      opts.file = args[++i];
-    } else if (args[i] === "--all") {
-      opts.all = true;
-    }
-  }
-
-  return opts;
-}
-
-function extractFrontmatter(content: string): {
-  frontmatter: string;
-  body: string;
-} {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { frontmatter: "", body: content };
-  return { frontmatter: match[1], body: match[2] };
-}
-
-function getMarkdownFiles(dir: string): string[] {
-  const files: string[] = [];
-
-  function walk(d: string) {
-    const entries = readdirSync(d);
-    for (const entry of entries) {
-      const fullPath = join(d, entry);
-      const stat = statSync(fullPath);
-      if (stat.isDirectory() && !entry.startsWith("_")) {
-        walk(fullPath);
-      } else if ([".md", ".mdx"].includes(extname(entry))) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  walk(dir);
-  return files;
-}
-
-async function summarize(content: string): Promise<string> {
-  const apiKey = process.env.AI_API_KEY;
-  const baseUrl = process.env.AI_BASE_URL || "https://api.openai.com/v1";
-  const model = process.env.AI_MODEL || "gpt-4o-mini";
-
+async function generateSummary(content: string): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    throw new Error(
-      "AI_API_KEY environment variable is required. Set it before running."
-    );
+    console.warn("未设置 OPENAI_API_KEY 或 ANTHROPIC_API_KEY，返回前 200 字作为占位摘要");
+    return content.slice(0, 200).replace(/#{1,6}\s/g, "").trim() + "...";
   }
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a technical blog summarizer. Generate a concise 1-2 sentence summary of the given article in the same language as the content. Focus on the key technical points.",
-        },
-        {
-          role: "user",
-          content: `Summarize this article:\n\n${content.slice(0, 4000)}`,
-        },
-      ],
-      max_tokens: 200,
-    }),
-  });
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "你是一个技术博客编辑，擅长撰写简洁的摘要。用中文回复。",
+          },
+          {
+            role: "user",
+            content: `请为以下文章生成 100-150 字的摘要：\n\n${content.slice(0, 4000)}`,
+          },
+        ],
+        max_tokens: 200,
+      }),
+    });
 
-  const data = (await response.json()) as {
-    choices: Array<{ message: { content: string } }>;
-  };
-  return data.choices[0]?.message?.content?.trim() || "";
-}
+    if (!response.ok) {
+      throw new Error(`API 错误: ${response.status}`);
+    }
 
-async function processFile(filePath: string) {
-  const content = readFileSync(filePath, "utf-8");
-  const { frontmatter, body } = extractFrontmatter(content);
-
-  if (!body.trim()) {
-    console.log(`  Skipping (empty body): ${filePath}`);
-    return;
-  }
-
-  console.log(`  Processing: ${filePath}`);
-  const summary = await summarize(body);
-
-  if (summary && !frontmatter.includes("description:")) {
-    const newContent = `---\n${frontmatter}\ndescription: "${summary.replace(/"/g, '\\"')}"\n---\n${body}`;
-    writeFileSync(filePath, newContent, "utf-8");
-    console.log(`  Updated with summary: ${summary.slice(0, 80)}...`);
-  } else {
-    console.log(`  Summary: ${summary}`);
+    const data = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+    return data.choices?.[0]?.message?.content?.trim() || "";
+  } catch (err) {
+    console.error("摘要生成失败:", err);
+    return content.slice(0, 200).replace(/#{1,6}\s/g, "").trim() + "...";
   }
 }
 
 async function main() {
-  const opts = parseArgs();
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
 
-  if (opts.file) {
-    await processFile(opts.file);
-  } else if (opts.all) {
-    const files = getMarkdownFiles(BLOG_DIR);
-    console.log(`Found ${files.length} markdown files`);
-    for (const file of files) {
-      await processFile(file);
-    }
-  } else {
-    console.log("Usage: npx tsx tools/summarize.ts [--file <path>] [--all]");
-    console.log("\nOptions:");
-    console.log("  --file <path>  Process a single file");
-    console.log("  --all          Process all blog posts");
-    console.log("\nEnvironment:");
-    console.log("  AI_API_KEY     Required. API key for AI service");
-    console.log("  AI_BASE_URL    API base URL (default: OpenAI)");
-    console.log("  AI_MODEL       Model name (default: gpt-4o-mini)");
-  }
+  const fullPath = path.resolve(process.cwd(), filePath);
+  const content = await fs.readFile(fullPath, "utf-8");
+
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  const body = frontmatterMatch ? content.slice(frontmatterMatch[0].length) : content;
+
+  const summary = await generateSummary(body);
+  console.log("生成的摘要:\n", summary);
 }
 
 main().catch(console.error);

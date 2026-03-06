@@ -10,10 +10,18 @@ type Props = {
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 
-const { title, description, ...props } = data;
+const { title, description, category, ...props } = data;
 ---
 
 <li class="my-6">
+  {category && (
+    <a
+      href={`/categories/${encodeURIComponent(category)}/`}
+      class="text-xs font-medium text-accent hover:underline mb-1 inline-block"
+    >
+      {category}
+    </a>
+  )}
   <a
     href={getPath(id, filePath)}
     class:list={[

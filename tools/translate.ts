@@ -1,136 +1,73 @@
+#!/usr/bin/env npx tsx
 /**
- * AI Article Translator
- * Translates blog posts between languages using OpenAI-compatible API.
- *
- * Usage: npx tsx tools/translate.ts --file <path> --to <lang>
- *
- * Environment variables:
- *   AI_API_KEY   - API key for the AI service
- *   AI_BASE_URL  - Base URL for OpenAI-compatible API (default: https://api.openai.com/v1)
- *   AI_MODEL     - Model to use (default: gpt-4o-mini)
+ * 多语言翻译工具 - 将文章翻译为目标语言
+ * 用法: pnpm run tools:translate <源文件> [目标语言]
+ * 示例: pnpm run tools:translate src/data/blog/zh/post.md en
+ * 需要设置 OPENAI_API_KEY 环境变量
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
-import { join, basename, dirname } from "path";
+const args = process.argv.slice(2);
+const filePath = args[0];
+const targetLang = args[1] || "en";
 
-const LANG_NAMES: Record<string, string> = {
-  zh: "Chinese (Simplified)",
-  en: "English",
-  ja: "Japanese",
-  ko: "Korean",
-};
-
-interface TranslateOptions {
-  file?: string;
-  to?: string;
+if (!filePath) {
+  console.error("用法: pnpm run tools:translate <源文件> [目标语言]");
+  process.exit(1);
 }
 
-function parseArgs(): TranslateOptions {
-  const args = process.argv.slice(2);
-  const opts: TranslateOptions = {};
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--file" && args[i + 1]) {
-      opts.file = args[++i];
-    } else if (args[i] === "--to" && args[i + 1]) {
-      opts.to = args[++i];
-    }
-  }
-
-  return opts;
-}
-
-function extractFrontmatter(content: string): {
-  frontmatter: string;
-  body: string;
-} {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { frontmatter: "", body: content };
-  return { frontmatter: match[1], body: match[2] };
-}
-
-async function translate(
-  content: string,
-  targetLang: string
-): Promise<string> {
-  const apiKey = process.env.AI_API_KEY;
-  const baseUrl = process.env.AI_BASE_URL || "https://api.openai.com/v1";
-  const model = process.env.AI_MODEL || "gpt-4o-mini";
-
+async function translate(content: string, target: string): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    throw new Error("AI_API_KEY environment variable is required.");
+    console.error("请设置 OPENAI_API_KEY 环境变量");
+    process.exit(1);
   }
 
-  const langName = LANG_NAMES[targetLang] || targetLang;
-
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model,
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: `You are a professional technical translator. Translate the given Markdown content to ${langName}. Preserve all Markdown formatting, code blocks, frontmatter YAML, links, and HTML tags exactly. Only translate natural language text. Do not translate code, URLs, or technical identifiers.`,
+          content: `你是一个专业的技术文档翻译。将内容翻译为${target === "en" ? "英文" : target === "zh" ? "中文" : target}，保持 Markdown 格式和 frontmatter 结构。只输出翻译结果。`,
         },
         {
           role: "user",
           content,
         },
       ],
-      max_tokens: 8000,
+      max_tokens: 4000,
     }),
   });
 
-  const data = (await response.json()) as {
-    choices: Array<{ message: { content: string } }>;
-  };
-  return data.choices[0]?.message?.content?.trim() || "";
+  if (!response.ok) {
+    throw new Error(`API 错误: ${response.status} ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+  return data.choices?.[0]?.message?.content?.trim() || "";
 }
 
 async function main() {
-  const opts = parseArgs();
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
 
-  if (!opts.file || !opts.to) {
-    console.log("Usage: npx tsx tools/translate.ts --file <path> --to <lang>");
-    console.log("\nOptions:");
-    console.log("  --file <path>  Source markdown file");
-    console.log("  --to <lang>    Target language (zh, en, ja, ko)");
-    console.log("\nExample:");
-    console.log(
-      "  npx tsx tools/translate.ts --file src/data/blog/my-post.md --to en"
-    );
-    return;
-  }
+  const fullPath = path.resolve(process.cwd(), filePath);
+  const content = await fs.readFile(fullPath, "utf-8");
 
-  const content = readFileSync(opts.file, "utf-8");
-  const { frontmatter, body } = extractFrontmatter(content);
+  const translated = await translate(content, targetLang);
 
-  console.log(`Translating ${opts.file} to ${opts.to}...`);
+  const outDir = path.dirname(fullPath).replace(/\/zh\/?$/, "/en").replace(/\/en\/?$/, "/zh");
+  const outPath = path.join(outDir, path.basename(fullPath));
 
-  const translatedBody = await translate(body, opts.to);
+  await fs.mkdir(outDir, { recursive: true });
+  await fs.writeFile(outPath, translated, "utf-8");
 
-  const updatedFrontmatter = frontmatter
-    .replace(/lang:\s*\w+/, `lang: ${opts.to}`)
-    .replace(/lang: \w+/, `lang: ${opts.to}`);
-
-  const finalFrontmatter = updatedFrontmatter.includes("lang:")
-    ? updatedFrontmatter
-    : `${updatedFrontmatter}\nlang: ${opts.to}`;
-
-  const outputDir = join(dirname(opts.file), "..", opts.to);
-  mkdirSync(outputDir, { recursive: true });
-  const outputPath = join(outputDir, basename(opts.file));
-
-  writeFileSync(
-    outputPath,
-    `---\n${finalFrontmatter}\n---\n${translatedBody}`,
-    "utf-8"
-  );
-  console.log(`Translated file saved to: ${outputPath}`);
+  console.log(`已翻译并保存到: ${outPath}`);
 }
 
 main().catch(console.error);

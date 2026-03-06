@@ -8,17 +8,10 @@ import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import { SITE } from "@/config";
+import { isPathActive } from "@/utils/pathUtils";
 
 const { pathname } = Astro.url;
-
-const currentPath =
-  pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
-
-const isActive = (path: string) => {
-  const currentPathArray = currentPath.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
-  return currentPath === path || currentPathArray[0] === pathArray[0];
-};
+const isActive = (path: string) => isPathActive(path, pathname);
 
 interface NavItem {
   href: string;
@@ -47,7 +40,7 @@ const navItems: NavItem[] = [
 </a>
 
 <header class="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
-  <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+  <div class="flex h-14 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
     <a
       href="/"
       class="text-lg font-semibold tracking-tight text-foreground transition-colors hover:text-accent sm:text-xl"

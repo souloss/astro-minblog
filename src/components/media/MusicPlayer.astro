@@ -31,7 +31,14 @@ const {
 } = Astro.props;
 ---
 
-<div class="music-player-wrapper my-6">
+<div class="music-player-wrapper my-6 min-h-[140px]">
+  <div class="music-player-loading flex items-center justify-center gap-2 py-8 text-muted-foreground" data-loading>
+    <svg class="size-6 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    </svg>
+    <span class="text-sm">加载播放器...</span>
+  </div>
   <meting-js
     id={id}
     server={server}
@@ -48,38 +55,37 @@ const {
 </div>
 
 <script>
-  // 动态加载 APlayer 和 MetingJS
   function loadResources() {
-    // 检查是否已加载
     if (document.querySelector('link[href*="APlayer.min.css"]')) {
       return Promise.resolve();
     }
 
     return new Promise((resolve) => {
-      // 加载 APlayer CSS
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css';
       document.head.appendChild(link);
 
-      // 加载 APlayer JS
       const aplayerScript = document.createElement('script');
       aplayerScript.src = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js';
       aplayerScript.onload = () => {
-        // 加载 MetingJS
         const metingScript = document.createElement('script');
         metingScript.src = 'https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js';
-        metingScript.onload = resolve;
+        metingScript.onload = () => {
+          const hideLoading = () => {
+            document.querySelectorAll('.music-player-wrapper [data-loading]').forEach(el => el.classList.add('hidden'));
+          };
+          setTimeout(hideLoading, 500);
+          if (document.querySelector('.aplayer')) hideLoading();
+          resolve();
+        };
         document.head.appendChild(metingScript);
       };
       document.head.appendChild(aplayerScript);
     });
   }
 
-  // 初始化
   loadResources();
-
-  // View Transitions 支持
   document.addEventListener('astro:page-load', loadResources);
 </script>
 

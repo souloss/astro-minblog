@@ -10,7 +10,10 @@
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "tools:summarize": "tsx tools/summarize.ts",
+    "tools:generate-related": "tsx tools/generate-related.ts",
+    "tools:translate": "tsx tools/translate.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
@@ -50,6 +53,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "stylus": "^0.64.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
   }

@@ -1,0 +1,31 @@
+---
+import { getCollection } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/nav/Header.astro";
+import Footer from "@/components/nav/Footer.astro";
+import getUniqueCategories from "@/utils/getUniqueCategories";
+import { SITE } from "@/config";
+
+const posts = await getCollection("blog");
+const categories = getUniqueCategories(posts);
+---
+
+<Layout title={`Categories | ${SITE.title}`}>
+  <Header />
+  <Main pageTitle="Categories" pageDesc="All the categories used in posts.">
+    <ul class="flex flex-wrap gap-4">
+      {categories.map(({ category }) => (
+        <li>
+          <a
+            href={`/categories/${encodeURIComponent(category)}/`}
+            class="flex items-center gap-1 rounded-md border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+          >
+            {category}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Main>
+  <Footer />
+</Layout>

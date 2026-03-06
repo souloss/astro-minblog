@@ -16,21 +16,22 @@ const {
 ---
 
 <div class="bilibili-embed-wrapper my-6">
-  <div class="relative w-full" style="padding-bottom: 56.25%;">
-    <div class="bilibili-placeholder absolute inset-0 flex items-center justify-center rounded-lg border border-border bg-muted/30">
-      <svg class="size-10 animate-pulse text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+  <div class="relative w-full overflow-hidden rounded-lg border border-border bg-muted/20" style="aspect-ratio: 16/9;">
+    <div class="bilibili-placeholder absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity duration-300" data-placeholder>
+      <svg class="size-12 text-muted-foreground animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <polygon points="5 3 19 12 5 21 5 3" />
       </svg>
+      <span class="text-sm text-muted-foreground">加载中...</span>
     </div>
     <iframe
       src={`https://player.bilibili.com/player.html?bvid=${bvid}&page=${page}&high_quality=1&danmaku=0&autoplay=0`}
-      class="bilibili-iframe absolute top-0 left-0 w-full h-full rounded-lg border border-border"
-      allowfullscreen="true"
+      class="bilibili-iframe absolute inset-0 h-full w-full rounded-lg border-0"
+      allowfullscreen
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       loading="lazy"
-      onload="this.previousElementSibling.style.display='none'"
-    >
-    </iframe>
+      title={`Bilibili 视频 ${bvid}`}
+      onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"
+    />
   </div>
 </div>
 
