@@ -60,7 +60,7 @@ const {
       return Promise.resolve();
     }
 
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css';
@@ -77,7 +77,7 @@ const {
           };
           setTimeout(hideLoading, 500);
           if (document.querySelector('.aplayer')) hideLoading();
-          resolve();
+          resolve(void 0);
         };
         document.head.appendChild(metingScript);
       };

@@ -2,6 +2,11 @@
 import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import { SITE } from "@/config";
+---
+import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 ---
 
 <div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3" id="floating-actions">
@@ -19,13 +24,13 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
   {SITE.lightAndDarkMode && (
     <button
       id="theme-btn"
-      class="fab-btn group relative size-11 rounded-full border border-border bg-background/90 shadow-md backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg active:scale-95"
+      class="fab-btn group relative size-11 rounded-full border border-border bg-background/90 shadow-md backdrop-blur-sm hover:shadow-lg"
       title="Toggle theme"
       aria-label="auto"
       aria-live="polite"
     >
-      <IconMoon class="absolute top-1/2 left-1/2 size-5 -translate-x-1/2 -translate-y-1/2 scale-100 rotate-0 text-muted-foreground transition-all group-hover:text-foreground dark:scale-0 dark:-rotate-90" />
-      <IconSunHigh class="absolute top-1/2 left-1/2 size-5 -translate-x-1/2 -translate-y-1/2 scale-0 rotate-90 text-muted-foreground transition-all group-hover:text-foreground dark:scale-100 dark:rotate-0" />
+      <IconMoon class="icon-moon absolute top-1/2 left-1/2 size-5 -translate-x-1/2 -translate-y-1/2 text-muted-foreground group-hover:text-foreground" />
+      <IconSunHigh class="icon-sun absolute top-1/2 left-1/2 size-5 -translate-x-1/2 -translate-y-1/2 text-muted-foreground group-hover:text-foreground" />
     </button>
   )}
 
@@ -47,7 +52,7 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
     if (readingModeBtn) {
       readingModeBtn.addEventListener("click", () => {
         document.body.classList.toggle("reading-mode");
-        readingModeBtn.setAttribute("aria-pressed", document.body.classList.contains("reading-mode"));
+        readingModeBtn.setAttribute("aria-pressed", String(document.body.classList.contains("reading-mode")));
       });
       if (!document.querySelector("main#main-content")) readingModeBtn.classList.add("hidden");
     }

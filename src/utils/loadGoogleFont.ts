@@ -15,6 +15,7 @@ async function loadLocalFont(
 }
 
 async function loadGoogleFonts(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _text: string
 ): Promise<
   Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>

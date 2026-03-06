@@ -1,4 +1,5 @@
 // Constants
+
 const THEME = "theme";
 const LIGHT = "light";
 const DARK = "dark";
@@ -52,6 +53,71 @@ function reflectPreference(): void {
   }
 }
 
+// Check if View Transitions API is supported
+function supportsViewTransitions(): boolean {
+  return "startViewTransition" in document;
+}
+
+// Toggle theme with optional View Transition animation
+function toggleThemeWithTransition(event?: MouseEvent): void {
+  const newTheme = themeValue === LIGHT ? DARK : LIGHT;
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  // Get click position for circular animation
+  const x = event?.clientX ?? window.innerWidth / 2;
+  const y = event?.clientY ?? window.innerHeight / 2;
+
+  // Update theme value
+  themeValue = newTheme;
+  window.theme?.setTheme(themeValue);
+
+  // Skip animations if user prefers reduced motion
+  if (prefersReducedMotion) {
+    setPreference();
+    return;
+  }
+
+  // Check if View Transitions API is supported
+  if (supportsViewTransitions()) {
+    // Set CSS variables for animation origin
+    document.documentElement.style.setProperty("--theme-x", `${x}px`);
+    document.documentElement.style.setProperty("--theme-y", `${y}px`);
+
+    // Add transition class
+    const html = document.documentElement;
+    html.classList.add("theme-transition");
+
+    if (newTheme === DARK) {
+      html.classList.add("dark-transition");
+    } else {
+      html.classList.remove("dark-transition");
+    }
+
+    // Start View Transition with optimized timing
+    const transition = document.startViewTransition?.(() => {
+      setPreference();
+    });
+
+    // Clean up classes after animation completes
+    transition?.finished.then(() => {
+      html.classList.remove("theme-transition", "dark-transition");
+    });
+  } else {
+    // Fallback for browsers without View Transitions API
+    document.documentElement.classList.add("no-view-transitions");
+    setPreference();
+
+    // Remove class after transition completes (optimized timing)
+    setTimeout(() => {
+      document.documentElement.classList.remove("no-view-transitions");
+    }, 400);
+  }
+}
+
 // Update the global theme API
 if (window.theme) {
   window.theme.setPreference = setPreference;
@@ -76,10 +142,8 @@ function setThemeFeature(): void {
   reflectPreference();
 
   // now this script can find and listen for clicks on the control
-  document.querySelector("#theme-btn")?.addEventListener("click", () => {
-    themeValue = themeValue === LIGHT ? DARK : LIGHT;
-    window.theme?.setTheme(themeValue);
-    setPreference();
+  document.querySelector("#theme-btn")?.addEventListener("click", e => {
+    toggleThemeWithTransition(e as MouseEvent);
   });
 }
 
