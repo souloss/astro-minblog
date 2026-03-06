@@ -32,5 +32,13 @@ export const SITE = {
     lang: "zh-CN",
     pageview: true, // Enable page view count
     reaction: true, // Enable reaction
+    // Advanced configuration options
+    login: "enable", // "enable" | "disable" | "force"
+    wordLimit: [0, 1000], // Comment word limit [min, max]
+    imageUploader: false, // Disable image upload for security
+    requiredMeta: ["nick", "mail"], // Required fields
+    copyright: true, // Show copyright notice
+    recaptchaV3Key: "", // reCAPTCHA v3 key (optional)
+    turnstileKey: "", // Cloudflare Turnstile key (optional)
   },
 } as const;

@@ -7,33 +7,120 @@ const enabled = SITE.waline?.enabled;
 
 {
   enabled && (
-    <div class="mt-8">
+    <div class="mt-12 comments-section">
+      {/* Comment Section Header */}
+      <div class="mb-6 flex items-center justify-between border-b border-border pb-4">
+        <h3 class="text-xl font-semibold text-foreground flex items-center gap-2">
+          <svg class="size-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>评论区</span>
+        </h3>
+        <span class="text-sm text-muted-foreground">文明评论，共建和谐社区</span>
+      </div>
+      
+      {/* Waline Container */}
       <div id="waline" class="not-prose"></div>
+      
+      {/* Loading indicator */}
+      <div id="waline-loading" class="flex items-center justify-center py-8">
+        <div class="animate-spin size-8 border-2 border-accent border-t-transparent rounded-full"></div>
+      </div>
+      
+      {/* Fallback for disabled JS */}
+      <noscript>
+        <div class="rounded-lg bg-muted/50 p-4 text-center text-muted-foreground">
+          请启用 JavaScript 以查看评论功能。
+        </div>
+      </noscript>
       
       <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
       
-      <script is:inline type="module" define:vars={{ serverURL: SITE.waline.serverURL, emoji: SITE.waline.emoji, lang: SITE.waline.lang, reaction: SITE.waline.reaction, pageview: SITE.waline.pageview }}>
+      <script is:inline type="module" define:vars={{ 
+        serverURL: SITE.waline.serverURL, 
+        emoji: SITE.waline.emoji, 
+        lang: SITE.waline.lang, 
+        reaction: SITE.waline.reaction, 
+        pageview: SITE.waline.pageview,
+        login: SITE.waline.login,
+        wordLimit: SITE.waline.wordLimit,
+        imageUploader: SITE.waline.imageUploader,
+        requiredMeta: SITE.waline.requiredMeta,
+        copyright: SITE.waline.copyright
+      }}>
         import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+        
+        let walineInstance = null;
         
         function loadWaline() {
           const container = document.getElementById('waline');
+          const loading = document.getElementById('waline-loading');
+          
           if (container && serverURL) {
             try {
-              init({
+              // Clean up previous instance
+              if (walineInstance) {
+                walineInstance.destroy();
+              }
+              
+              walineInstance = init({
                 el: '#waline',
                 serverURL: serverURL,
                 emoji: emoji,
                 lang: lang,
                 reaction: reaction,
                 pageview: pageview,
+                login: login,
+                wordLimit: wordLimit,
+                imageUploader: imageUploader,
+                requiredMeta: requiredMeta,
+                copyright: copyright,
                 dark: 'html[data-theme="dark"]',
                 path: window.location.pathname.replace(/\/$/, ''), // Ensure path consistency
                 locale: {
-                    placeholder: '欢迎评论，支持 Markdown，匿名评论请务必遵守社区规范。',
+                  placeholder: '欢迎评论，支持 Markdown 语法。\n请遵守社区规范，友善发言。',
+                  sofa: '快来抢沙发吧~',
+                  submit: '发布评论',
+                  reply: '回复',
+                  cancelReply: '取消回复',
+                  comment: '评论',
+                  refresh: '刷新',
+                  more: '加载更多...',
+                  preview: '预览',
+                  emoji: '表情',
+                  uploadImage: '上传图片',
+                  seconds: '秒前',
+                  minutes: '分钟前',
+                  hours: '小时前',
+                  days: '天前',
+                  now: '刚刚',
+                  uploading: '上传中',
+                  login: '登录',
+                  logout: '退出',
+                  admin: '博主',
+                  sticky: '置顶',
+                  word: '字',
+                  wordHint: '评论字数应在 $0 到 $1 字之间！\n当前字数：$2',
+                  anonymous: '匿名',
+                  level0: '潜水',
+                  level1: '冒泡',
+                  level2: '吐槽',
+                  level3: '活跃',
+                  level4: '话痨',
+                  level5: '传说',
                 },
               });
+              
+              // Hide loading indicator after successful load
+              if (loading) {
+                loading.style.display = 'none';
+              }
             } catch (e) {
-              void e;
+              // eslint-disable-next-line no-console
+              console.error('Failed to load Waline:', e);
+              if (loading) {
+                loading.innerHTML = '<div class="text-center text-muted-foreground">评论加载失败，请刷新重试</div>';
+              }
             }
           }
         }
@@ -46,22 +133,134 @@ const enabled = SITE.waline?.enabled;
       </script>
       
       <style is:global>
-        /* Custom Waline Styles to match AstroPaper theme */
+        /* Enhanced Waline Styles to match AstroPaper theme */
+        .comments-section {
+          animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
         :root {
-          --waline-theme-color: rgba(var(--color-accent), 1) !important;
-          --waline-active-color: rgba(var(--color-accent), 0.8) !important;
+          --waline-theme-color: var(--accent) !important;
+          --waline-active-color: var(--accent) !important;
+          --waline-font-size: 0.9375rem !important;
+          --waline-border-radius: 0.5rem !important;
         }
         
         html[data-theme="dark"] {
-           /* Dark mode adjustments if needed */
-           --waline-bgcolor: #1e1e2e;
-           --waline-bgcolor-light: #27273a;
-           --waline-border-color: #333;
+          --waline-bgcolor: var(--background) !important;
+          --waline-bgcolor-light: var(--muted) !important;
+          --waline-bgcolor-hover: rgba(255, 255, 255, 0.05) !important;
+          --waline-border-color: var(--border) !important;
+          --waline-font-color: var(--foreground) !important;
+          --waline-disable-bgcolor: rgba(128, 128, 128, 0.2) !important;
+          --waline-disable-color: var(--muted-foreground) !important;
+          --waline-bq-color: var(--muted-foreground) !important;
+        }
+        
+        html:not([data-theme="dark"]) {
+          --waline-bgcolor: var(--background) !important;
+          --waline-bgcolor-light: var(--muted) !important;
+          --waline-bgcolor-hover: rgba(0, 0, 0, 0.03) !important;
+          --waline-border-color: var(--border) !important;
+          --waline-font-color: var(--foreground) !important;
         }
 
         /* Fix padding/margin issues */
         #waline {
-            padding-top: 1rem;
+          padding-top: 0.5rem;
+        }
+        
+        /* Enhanced input styles */
+        #waline .wl-editor {
+          min-height: 120px !important;
+          border-radius: 0.5rem !important;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+        
+        #waline .wl-editor:focus {
+          border-color: var(--accent) !important;
+          box-shadow: 0 0 0 3px rgba(var(--color-accent), 0.1) !important;
+        }
+        
+        /* Button styles */
+        #waline .wl-btn {
+          transition: all 0.2s ease !important;
+          border-radius: 0.375rem !important;
+        }
+        
+        #waline .wl-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        #waline .wl-primary-btn {
+          font-weight: 500 !important;
+        }
+        
+        /* Comment card styles */
+        #waline .wl-card {
+          border-radius: 0.5rem !important;
+          transition: box-shadow 0.2s ease !important;
+        }
+        
+        #waline .wl-card:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Avatar styles */
+        #waline .wl-avatar {
+          border-radius: 50% !important;
+        }
+        
+        /* Reaction styles */
+        #waline .wl-reaction-img {
+          transition: transform 0.2s ease !important;
+        }
+        
+        #waline .wl-reaction-img:hover {
+          transform: scale(1.1);
+        }
+        
+        /* Quote styles */
+        #waline .wl-quote {
+          border-left-color: var(--accent) !important;
+        }
+        
+        /* Meta info styles */
+        #waline .wl-meta {
+          color: var(--muted-foreground) !important;
+        }
+        
+        /* Emoji picker */
+        #waline .wl-emoji-popup {
+          border-radius: 0.5rem !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        /* Reply form */
+        #waline .wl-reply-wrapper {
+          border-radius: 0.5rem !important;
+        }
+        
+        /* Pagination */
+        #waline .wl-page-button {
+          border-radius: 0.25rem !important;
+          transition: background-color 0.2s ease !important;
+        }
+        
+        /* Loading animation */
+        #waline-loading {
+          transition: opacity 0.3s ease;
         }
       </style>
     </div>
