@@ -22,8 +22,12 @@ type Props = {
 const { headings } = Astro.props;
 
 // Transform flat headings to nested structure
-const nestedHeadings: any[] = [];
-let currentH2: any = null;
+interface NestedHeading extends Heading {
+  children: Heading[];
+}
+
+const nestedHeadings: NestedHeading[] = [];
+let currentH2: NestedHeading | null = null;
 
 headings.forEach(h => {
   if (h.depth === 2) {
@@ -67,7 +71,7 @@ headings.forEach(h => {
             
             {heading.children.length > 0 && (
               <ul class="toc-sublist mt-3 hidden flex-col gap-2 items-start border-l border-border/0 pl-1">
-                {heading.children.map((subHeading: any) => (
+                {heading.children.map((subHeading: Heading) => (
                   <li data-slug={subHeading.slug} class="flex justify-start">
                     <a
                       href={`#${subHeading.slug}`}

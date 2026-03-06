@@ -19,8 +19,12 @@ type Props = {
 const { headings } = Astro.props;
 
 // Transform flat headings to nested structure for easier rendering
-const nestedHeadings: any[] = [];
-let currentH2: any = null;
+interface NestedHeading extends Heading {
+  children: Heading[];
+}
+
+const nestedHeadings: NestedHeading[] = [];
+let currentH2: NestedHeading | null = null;
 
 headings.forEach(h => {
   if (h.depth === 2) {
@@ -108,7 +112,7 @@ headings.forEach(h => {
             
             {heading.children.length > 0 && (
               <ul class="hidden pl-4 space-y-1 mt-1 border-l border-border/50 ml-2">
-                {heading.children.map((subHeading: any) => (
+                {heading.children.map((subHeading: Heading) => (
                   <li>
                     <a
                       href={`#${subHeading.slug}`}

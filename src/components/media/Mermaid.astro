@@ -133,7 +133,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
             const { svg } = await mermaid.render(`${id}-svg`, code);
             output.innerHTML = svg;
           } catch (error) {
-            console.error("Mermaid render error:", error);
+            void error;
             output.innerHTML = `<p class="mermaid-error">图表渲染错误: ${error instanceof Error ? error.message : '未知错误'}</p>`;
           }
         }

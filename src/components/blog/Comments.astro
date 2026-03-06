@@ -33,7 +33,7 @@ const enabled = SITE.waline?.enabled;
                 },
               });
             } catch (e) {
-              console.error('Waline init failed:', e);
+              void e;
             }
           }
         }

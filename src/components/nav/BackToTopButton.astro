@@ -171,10 +171,9 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 </style>
 
 <script is:raw is:inline>
-  function backToTop() {
-    // 直接使用原生滚动，避免OverlayScrollbars冲突
+  window.backToTop = function() {
     window.scroll({ top: 0, behavior: "smooth" });
-  }
+  };
 
   // 响应式返回顶部按钮管理器
   if (typeof window.BackToTopManager === "undefined") {
