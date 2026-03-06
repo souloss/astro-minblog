@@ -3,6 +3,7 @@ import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
+import FloatingActions from "@/components/nav/FloatingActions.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -178,8 +179,8 @@ const structuredData = {
   </head>
   <body>
     <slot />
+    <FloatingActions />
 
-    <!-- Load full theme logic -->
     <script src="../scripts/theme.ts"></script>
   </body>
 </html>

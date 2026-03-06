@@ -8,7 +8,6 @@ import Datetime from "@/components/ui/Datetime.astro";
 import EditPost from "@/components/blog/EditPost.astro";
 import ShareLinks from "@/components/blog/ShareLinks.astro";
 import BackButton from "@/components/nav/BackButton.astro";
-import BackToTopButton from "@/components/nav/BackToTopButton.astro";
 import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
@@ -191,8 +190,6 @@ const nextPost =
     <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
       {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
     </ul>
-
-    <BackToTopButton />
 
     <ShareLinks />
 

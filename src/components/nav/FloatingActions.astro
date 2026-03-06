@@ -1,0 +1,58 @@
+---
+import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import { SITE } from "@/config";
+---
+
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3" id="floating-actions">
+  {SITE.lightAndDarkMode && (
+    <button
+      id="theme-btn"
+      class="fab-btn group relative size-11 rounded-full border border-border bg-background/90 shadow-md backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg active:scale-95"
+      title="Toggle theme"
+      aria-label="auto"
+      aria-live="polite"
+    >
+      <IconMoon class="absolute top-1/2 left-1/2 size-5 -translate-x-1/2 -translate-y-1/2 scale-100 rotate-0 text-muted-foreground transition-all group-hover:text-foreground dark:scale-0 dark:-rotate-90" />
+      <IconSunHigh class="absolute top-1/2 left-1/2 size-5 -translate-x-1/2 -translate-y-1/2 scale-0 rotate-90 text-muted-foreground transition-all group-hover:text-foreground dark:scale-100 dark:rotate-0" />
+    </button>
+  )}
+
+  <button
+    id="back-to-top-btn"
+    class="fab-btn size-11 rounded-full border border-border bg-background/90 opacity-0 shadow-md backdrop-blur-sm transition-all hover:scale-105 hover:shadow-lg active:scale-95 pointer-events-none"
+    aria-label="Back to Top"
+    title="Back to Top"
+  >
+    <IconArrowNarrowUp class="mx-auto size-5 text-muted-foreground transition-colors group-hover:text-foreground" />
+  </button>
+</div>
+
+<script>
+  function initFloatingActions() {
+    const backToTopBtn = document.getElementById("back-to-top-btn");
+    if (!backToTopBtn) return;
+
+    const updateVisibility = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      if (scrollTop > 300) {
+        backToTopBtn.classList.remove("opacity-0", "pointer-events-none");
+        backToTopBtn.classList.add("opacity-100");
+      } else {
+        backToTopBtn.classList.add("opacity-0", "pointer-events-none");
+        backToTopBtn.classList.remove("opacity-100");
+      }
+    };
+
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    updateVisibility();
+  }
+
+  initFloatingActions();
+  document.addEventListener("astro:after-swap", initFloatingActions);
+</script>
