@@ -29,55 +29,120 @@ const months = [
   "November",
   "December",
 ];
+
+// Calculate stats
+const totalPosts = posts.length;
+const years = getPostsByGroupCondition(posts, post =>
+  post.data.pubDatetime.getFullYear()
+);
+const yearCount = Object.keys(years).length;
 ---
 
 <Layout title={`Archives | ${SITE.title}`}>
   <Header />
   <Main pageTitle="Archives" pageDesc="All the articles I've archived.">
-    {
-      Object.entries(
-        getPostsByGroupCondition(posts, post =>
-          post.data.pubDatetime.getFullYear()
+    <!-- Stats -->
+    <div class="mb-8 flex flex-wrap gap-6 text-sm text-muted-foreground">
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-foreground">{totalPosts}</span>
+        <span>posts</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-foreground">{yearCount}</span>
+        <span>years</span>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative">
+      {/* Timeline vertical line */}
+      <div class="absolute left-0 top-0 bottom-0 w-px bg-border md:left-1/2 md:-ml-px"></div>
+
+      {
+        Object.entries(
+          getPostsByGroupCondition(posts, post =>
+            post.data.pubDatetime.getFullYear()
+          )
         )
-      )
-        .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
-        .map(([year, yearGroup]) => (
-          <div>
-            <span class="text-2xl font-bold">{year}</span>
-            <sup class="text-sm">{yearGroup.length}</sup>
-            {Object.entries(
-              getPostsByGroupCondition(
-                yearGroup,
-                post => post.data.pubDatetime.getMonth() + 1
-              )
-            )
-              .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
-              .map(([month, monthGroup]) => (
-                <div class="flex flex-col sm:flex-row">
-                  <div class="mt-6 min-w-36 text-lg sm:my-6">
-                    <span class="font-bold">{months[Number(month) - 1]}</span>
-                    <sup class="text-xs">{monthGroup.length}</sup>
-                  </div>
-                  <ul>
-                    {monthGroup
-                      .sort(
-                        (a, b) =>
-                          Math.floor(
-                            new Date(b.data.pubDatetime).getTime() / 1000
-                          ) -
-                          Math.floor(
-                            new Date(a.data.pubDatetime).getTime() / 1000
-                          )
-                      )
-                      .map(data => (
-                        <Card {...data} />
-                      ))}
-                  </ul>
+          .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+          .map(([year, yearGroup]) => (
+            <div class="relative">
+              {/* Year marker */}
+              <div class="mb-8 flex items-center md:justify-center">
+                <div class="relative z-10 flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-bold text-background shadow-lg">
+                  <span>{year}</span>
+                  <span class="rounded-full bg-background/20 px-2 py-0.5 text-xs">
+                    {yearGroup.length}
+                  </span>
                 </div>
-              ))}
-          </div>
-        ))
-    }
+              </div>
+
+              {/* Months */}
+              <div class="ml-6 border-l-2 border-border pl-6 md:ml-0 md:border-l-0 md:pl-0">
+                {Object.entries(
+                  getPostsByGroupCondition(
+                    yearGroup,
+                    post => post.data.pubDatetime.getMonth() + 1
+                  )
+                )
+                  .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
+                  .map(([month, monthGroup]) => (
+                    <div class="relative mb-8">
+                      {/* Month marker */}
+                      <div class="mb-4 flex items-center gap-2">
+                        <div class="absolute left-0 w-3 h-3 rounded-full bg-accent/50 -translate-x-1.5 md:relative md:left-0 md:translate-x-0"></div>
+                        <h3 class="ml-4 text-lg font-semibold text-foreground md:ml-0">
+                          {months[Number(month) - 1]}
+                          <span class="ml-2 text-sm font-normal text-muted-foreground">
+                            ({monthGroup.length} posts)
+                          </span>
+                        </h3>
+                      </div>
+
+                      {/* Posts */}
+                      <ul class="ml-6 space-y-4 md:ml-4">
+                        {monthGroup
+                          .sort(
+                            (a, b) =>
+                              Math.floor(
+                                new Date(b.data.pubDatetime).getTime() / 1000
+                              ) -
+                              Math.floor(
+                                new Date(a.data.pubDatetime).getTime() / 1000
+                              )
+                          )
+                          .map(data => (
+                            <li class="relative pl-4 before:absolute before:left-0 before:top-2.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-muted-foreground/50">
+                              <Card {...data} />
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))
+      }
+    </div>
   </Main>
   <Footer />
 </Layout>
+
+<style>
+  /* Timeline animation */
+  .timeline-item {
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
