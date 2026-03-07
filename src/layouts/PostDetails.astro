@@ -16,6 +16,7 @@ import { SITE } from "@/config";
 import FloatingTOC from "@/components/blog/FloatingTOC.astro";
 import InlineTOC from "@/components/blog/InlineTOC.astro";
 import Comments from "@/components/blog/Comments.astro";
+import PostActions from "@/components/blog/PostActions.astro";
 
 type Props = {
   post: CollectionEntry<"blog">;
@@ -207,6 +208,12 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
     </ul>
 
     <ShareLinks />
+
+    <PostActions />
+
+    <PostActions />
+
+    <hr class="my-6 border-dashed" />
 
     <hr class="my-6 border-dashed" />
 

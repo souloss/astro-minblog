@@ -1,0 +1,249 @@
+---
+// PostActions - Like and Bookmark functionality
+// Uses localStorage for persistence on static sites
+---
+
+<div class="post-actions mt-6 flex flex-wrap items-center justify-center gap-4" data-pagefind-ignore>
+  {/* Like Button */}
+  <button
+    id="like-btn"
+    class="action-btn group flex items-center gap-2 rounded-full border border-border bg-background/50 px-4 py-2 text-sm text-muted-foreground transition-all hover:border-accent hover:text-accent"
+    aria-label="Like this post"
+    aria-pressed="false"
+  >
+    <svg class="size-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+    <span class="like-text">喜欢</span>
+    <span id="like-count" class="rounded-full bg-muted px-2 text-xs">0</span>
+  </button>
+  
+  {/* Bookmark Button */}
+  <button
+    id="bookmark-btn"
+    class="action-btn group flex items-center gap-2 rounded-full border border-border bg-background/50 px-4 py-2 text-sm text-muted-foreground transition-all hover:border-accent hover:text-accent"
+    aria-label="Bookmark this post"
+    aria-pressed="false"
+  >
+    <svg class="size-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <span class="bookmark-text">收藏</span>
+  </button>
+</div>
+
+<script is:inline>
+  const LIKES_KEY = 'blog_likes';
+  const BOOKMARKS_KEY = 'blog_bookmarks';
+  
+  function getPostId() {
+    return window.location.pathname.replace(/\/$/, '');
+  }
+  
+  function getLikes() {
+    try {
+      const stored = localStorage.getItem(LIKES_KEY);
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  }
+  
+  function getBookmarks() {
+    try {
+      const stored = localStorage.getItem(BOOKMARKS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
+  
+  function saveLikes(likes) {
+    localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
+  }
+  
+  function saveBookmarks(bookmarks) {
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+  }
+  
+  function isLiked(postId) {
+    const likedPosts = localStorage.getItem('blog_liked_posts');
+    if (likedPosts) {
+      try {
+        const posts = JSON.parse(likedPosts);
+        return posts.includes(postId);
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  }
+  
+  function setLiked(postId, liked) {
+    let posts = [];
+
+    const stored = localStorage.getItem('blog_liked_posts');
+    if (stored) {
+      try {
+        posts = JSON.parse(stored);
+      } catch {
+        posts = [];
+      }
+    }
+    if (liked && !posts.includes(postId)) {
+      posts.push(postId);
+    } else if (!liked) {
+      posts = posts.filter(id => id !== postId);
+    }
+    localStorage.setItem('blog_liked_posts', JSON.stringify(posts));
+  }
+  
+  function isBookmarked(postId) {
+    return getBookmarks().includes(postId);
+  }
+  
+  function initPostActions() {
+    const likeBtn = document.getElementById('like-btn');
+    const bookmarkBtn = document.getElementById('bookmark-btn');
+    const likeCount = document.getElementById('like-count');
+    const likeText = likeBtn?.querySelector('.like-text');
+    const bookmarkText = bookmarkBtn?.querySelector('.bookmark-text');
+    
+    if (!likeBtn || !bookmarkBtn || !likeCount) return;
+    
+    const postId = getPostId();
+    
+    // Initialize like state
+    const likes = getLikes();
+    const currentLikes = likes[postId] || 0;
+    likeCount.textContent = String(currentLikes);
+    
+    const userLiked = isLiked(postId);
+    if (userLiked) {
+      likeBtn.classList.add('liked', 'border-accent', 'text-accent', 'bg-accent/10');
+      likeBtn.setAttribute('aria-pressed', 'true');
+      if (likeText) likeText.textContent = '已喜欢';
+      // Fill heart
+      const heart = likeBtn.querySelector('svg path');
+      if (heart) {
+        heart.setAttribute('fill', 'currentColor');
+      }
+    }
+    
+    // Initialize bookmark state
+    if (isBookmarked(postId)) {
+      bookmarkBtn.classList.add('bookmarked', 'border-accent', 'text-accent', 'bg-accent/10');
+      bookmarkBtn.setAttribute('aria-pressed', 'true');
+      if (bookmarkText) bookmarkText.textContent = '已收藏';
+      // Fill bookmark
+      const bookmark = bookmarkBtn.querySelector('svg path');
+      if (bookmark) {
+        bookmark.setAttribute('fill', 'currentColor');
+      }
+    }
+    
+    // Like button click handler
+    likeBtn.addEventListener('click', () => {
+      const likes = getLikes();
+      const userLiked = isLiked(postId);
+      
+      if (userLiked) {
+        // Unlike
+        likes[postId] = Math.max(0, (likes[postId] || 1) - 1);
+        setLiked(postId, false);
+        likeBtn.classList.remove('liked', 'border-accent', 'text-accent', 'bg-accent/10');
+        likeBtn.setAttribute('aria-pressed', 'false');
+        if (likeText) likeText.textContent = '喜欢';
+        // Unfill heart
+        const heart = likeBtn.querySelector('svg path');
+        if (heart) {
+          heart.setAttribute('fill', 'none');
+        }
+      } else {
+        // Like
+        likes[postId] = (likes[postId] || 0) + 1;
+        setLiked(postId, true);
+        likeBtn.classList.add('liked', 'border-accent', 'text-accent', 'bg-accent/10');
+        likeBtn.setAttribute('aria-pressed', 'true');
+        if (likeText) likeText.textContent = '已喜欢';
+        // Fill heart
+        const heart = likeBtn.querySelector('svg path');
+        if (heart) {
+          heart.setAttribute('fill', 'currentColor');
+        }
+        // Add animation
+        likeBtn.classList.add('animate-pulse');
+        setTimeout(() => likeBtn.classList.remove('animate-pulse'), 300);
+      }
+      
+      saveLikes(likes);
+      likeCount.textContent = String(likes[postId] || 0);
+    });
+    
+    // Bookmark button click handler
+    bookmarkBtn.addEventListener('click', () => {
+      const bookmarks = getBookmarks();
+      const isCurrentlyBookmarked = bookmarks.includes(postId);
+      
+      if (isCurrentlyBookmarked) {
+        // Remove bookmark
+        const newBookmarks = bookmarks.filter(id => id !== postId);
+        saveBookmarks(newBookmarks);
+        bookmarkBtn.classList.remove('bookmarked', 'border-accent', 'text-accent', 'bg-accent/10');
+        bookmarkBtn.setAttribute('aria-pressed', 'false');
+        if (bookmarkText) bookmarkText.textContent = '收藏';
+        // Unfill bookmark
+        const bookmark = bookmarkBtn.querySelector('svg path');
+        if (bookmark) {
+          bookmark.setAttribute('fill', 'none');
+        }
+      } else {
+        // Add bookmark
+        bookmarks.push(postId);
+        saveBookmarks(bookmarks);
+        bookmarkBtn.classList.add('bookmarked', 'border-accent', 'text-accent', 'bg-accent/10');
+        bookmarkBtn.setAttribute('aria-pressed', 'true');
+        if (bookmarkText) bookmarkText.textContent = '已收藏';
+        // Fill bookmark
+        const bookmark = bookmarkBtn.querySelector('svg path');
+        if (bookmark) {
+          bookmark.setAttribute('fill', 'currentColor');
+        }
+        // Add animation
+        bookmarkBtn.classList.add('animate-pulse');
+        setTimeout(() => bookmarkBtn.classList.remove('animate-pulse'), 300);
+      }
+    });
+  }
+  
+  // Initialize on page load
+  initPostActions();
+  
+  // Re-initialize after page transitions
+  document.addEventListener('astro:page-load', initPostActions);
+</script>
+
+<style is:global>
+  .post-actions .action-btn {
+    transition: all 0.2s ease;
+  }
+  
+  .post-actions .action-btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  .post-actions .action-btn:active {
+    transform: translateY(0);
+  }
+  
+  .post-actions .action-btn.liked svg,
+  .post-actions .action-btn.bookmarked svg {
+    animation: heartbeat 0.3s ease;
+  }
+  
+  @keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+</style>
