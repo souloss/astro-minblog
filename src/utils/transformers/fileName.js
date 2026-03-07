@@ -34,7 +34,7 @@ export const transformerFileName = ({
     // Add additional margin to code block
     this.addClassToHast(
       node,
-      `mt-8 ${style === "v1" ? "rounded-tl-none" : "rounded-t-lg"}`
+      `mt-8 has-file-name ${style === "v1" ? "rounded-tl-none" : "rounded-t-lg"}`
     );
 
     // Style the pre element with border-top for embedding filename
@@ -46,14 +46,7 @@ export const transformerFileName = ({
       type: "element",
       tagName: "span",
       properties: {
-        class: [
-          "absolute left-3 -top-2.5 px-2 py-0.5 text-xs font-mono text-foreground/80 select-none",
-          "bg-background border border-border/60 rounded-md",
-          "shadow-sm",
-          hideDot
-            ? ""
-            : "pl-5 before:inline-block before:size-1.5 before:bg-green-500 before:rounded-full before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 before:shadow-[0_0_4px_rgba(34,197,94,0.5)]",
-        ],
+        class: ["code-file-badge", hideDot ? "is-dot-hidden" : ""],
       },
       children: [
         {

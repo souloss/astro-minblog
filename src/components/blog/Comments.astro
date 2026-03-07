@@ -7,16 +7,16 @@ const enabled = SITE.waline?.enabled;
 
 {
   enabled && (
-    <div class="mt-12 comments-section">
+    <div class="comments-section panel-card mt-8 px-5 py-5 sm:px-6">
       {/* Comment Section Header */}
-      <div class="mb-6 flex items-center justify-between border-b border-border pb-4">
-        <h3 class="text-xl font-semibold text-foreground flex items-center gap-2">
+      <div class="mb-6 flex flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <h3 class="flex items-center gap-2 font-display text-2xl leading-tight tracking-[-0.02em] text-foreground">
           <svg class="size-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           <span>评论区</span>
         </h3>
-        <span class="text-sm text-muted-foreground">文明评论，共建和谐社区</span>
+        <span class="text-sm text-foreground-soft">文明评论，共建和谐社区</span>
       </div>
       
       {/* Waline Container */}

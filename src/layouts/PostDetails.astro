@@ -5,7 +5,6 @@ import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import Tag from "@/components/ui/Tag.astro";
 import Datetime from "@/components/ui/Datetime.astro";
-import EditPost from "@/components/blog/EditPost.astro";
 import ShareLinks from "@/components/blog/ShareLinks.astro";
 import BackButton from "@/components/nav/BackButton.astro";
 import { getLocalizedPostPath, getPostSlug } from "@/utils/getPath";
@@ -42,7 +41,6 @@ const {
   tags,
   category,
   series,
-  hideEditPost,
 } = post.data;
 
 const { Content, headings } = await render(post);
@@ -242,10 +240,8 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
         aria-hidden="true"
         class:list={[
           "max-sm:hidden",
-          { hidden: !SITE.editPost.enabled || hideEditPost },
-        ]}>|</span
+        ]}> </span
       >
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
     <InlineTOC headings={headings} />
     <article
@@ -258,7 +254,6 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
 
     <hr class="my-8 border-dashed" />
 
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
 
     <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
       {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" lang={lang} />)}

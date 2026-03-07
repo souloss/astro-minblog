@@ -62,13 +62,13 @@ const nestedHeadings = buildNestedHeadings(headings);
                       class="toc-link block relative group/link flex items-center transition-all duration-300 min-h-[16px]"
                       data-toc-slug={subHeading.slug}
                     >
-                       {/* Sub-item Bar: shorter width */}
-                       <span class="toc-bar block h-1 rounded-sm bg-muted transition-all duration-300 group-hover/link:bg-accent group-data-[active=true]/link:bg-accent group-hover/container:w-0 group-hover/container:opacity-0 w-[38px]"></span>
+                      {/* Sub-item Bar: shorter width */}
+                      <span class="toc-bar block h-1 rounded-sm bg-muted transition-all duration-300 group-hover/link:bg-accent group-data-[active=true]/link:bg-accent group-hover/container:w-0 group-hover/container:opacity-0 w-[38px]"></span>
 
-                       {/* Sub-item Text */}
-                       <span class="toc-text absolute left-0 opacity-0 -translate-x-2 transition-all duration-300 group-hover/container:opacity-100 group-hover/container:translate-x-0 group-hover/link:text-accent group-data-[active=true]/link:text-accent group-data-[active=true]/link:font-medium whitespace-nowrap text-xs text-muted-foreground pointer-events-none group-hover/container:pointer-events-auto">
+                      {/* Sub-item Text */}
+                      <span class="toc-text absolute left-0 opacity-0 -translate-x-2 transition-all duration-300 group-hover/container:opacity-100 group-hover/container:translate-x-0 group-hover/link:text-accent group-data-[active=true]/link:text-accent group-data-[active=true]/link:font-medium whitespace-nowrap text-xs text-muted-foreground pointer-events-none group-hover/container:pointer-events-auto">
                         {subHeading.text}
-                       </span>
+                      </span>
                     </a>
                   </li>
                 ))}

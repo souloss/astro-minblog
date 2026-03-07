@@ -5,19 +5,35 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
+  --background: #f7f3eb;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-strong: rgba(255, 252, 247, 0.95);
+  --card: #efe8dc;
+  --foreground: #152334;
+  --foreground-soft: #5d6b80;
+  --muted: #e3ddd2;
+  --border: rgba(21, 35, 52, 0.12);
+  --accent: #0f766e;
+  --accent-soft: rgba(15, 118, 110, 0.14);
+  --shadow-elevated: rgba(15, 23, 42, 0.18);
+  --hero-orb-a: rgba(15, 118, 110, 0.22);
+  --hero-orb-b: rgba(245, 158, 11, 0.18);
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
+  --background: #0f172a;
+  --surface: rgba(15, 23, 42, 0.76);
+  --surface-strong: rgba(15, 23, 42, 0.92);
+  --card: #1e293b;
+  --foreground: #e7edf7;
+  --foreground-soft: #98a7be;
+  --muted: #223046;
+  --border: rgba(148, 163, 184, 0.18);
+  --accent: #5eead4;
+  --accent-soft: rgba(94, 234, 212, 0.16);
+  --shadow-elevated: rgba(2, 6, 23, 0.6);
+  --hero-orb-a: rgba(94, 234, 212, 0.18);
+  --hero-orb-b: rgba(251, 191, 36, 0.12);
 }
 
 @theme inline {
@@ -265,7 +281,6 @@ html[data-theme="dark"] .katex .mopen,
 html[data-theme="dark"] .katex .mclose,
 html[data-theme="dark"] .katex .mpunct,
 html[data-theme="dark"] .katex .minner,
-html[data-theme="dark"] .katex .mathit,
 html[data-theme="dark"] .katex .mathnormal {
   color: #f0f6fc;
 }
@@ -281,7 +296,6 @@ html[data-theme="dark"] .katex .sqrt-sign,
 html[data-theme="dark"] .katex .msupsub,
 html[data-theme="dark"] .katex .delimsizing,
 html[data-theme="dark"] .katex .nulldelimiter,
-html[data-theme="dark"] .katex .arraycolsep,
 html[data-theme="dark"] .katex .col-align-c,
 html[data-theme="dark"] .katex .col-align-l,
 html[data-theme="dark"] .katex .col-align-r {

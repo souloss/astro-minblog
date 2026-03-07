@@ -25,7 +25,7 @@ export default defineConfig({
     }),
     mdx({
       shikiConfig: {
-        themes: { light: "min-light", dark: "night-owl" },
+        themes: { light: "github-light", dark: "night-owl" },
         defaultColor: false,
         wrap: false,
         transformers: [
@@ -48,7 +48,7 @@ export default defineConfig({
     rehypePlugins: [rehypeKatex],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
-      themes: { light: "min-light", dark: "night-owl" },
+      themes: { light: "github-light", dark: "night-owl" },
       defaultColor: false,
       wrap: false,
       transformers: [
