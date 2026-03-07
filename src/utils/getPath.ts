@@ -34,3 +34,18 @@ export function getPath(
 
   return [basePath, ...pathSegments, slug].join("/");
 }
+
+/** Slug for URL (filename without path, for use with [lang] routing) */
+export function getPostSlug(id: string): string {
+  const parts = id.split("/");
+  return parts.length > 0 ? parts[parts.length - 1] : id;
+}
+
+/** Localized post path: /{lang}/posts/{slug} */
+export function getLocalizedPostPath(
+  lang: string,
+  id: string,
+  _filePath?: string
+): string {
+  return `/${lang}/posts/${getPostSlug(id)}`;
+}

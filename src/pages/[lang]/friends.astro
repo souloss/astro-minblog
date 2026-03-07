@@ -1,15 +1,27 @@
 ---
+import type { GetStaticPaths } from "astro";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import Main from "@/layouts/Main.astro";
 import { FRIENDS } from "@/data/friends";
 import { SITE } from "@/config";
+import { t } from "@/utils/i18n";
+
+export const getStaticPaths = (async () => {
+  return [{ params: { lang: "zh" } }, { params: { lang: "en" } }];
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
 ---
 
-<Layout title={`友链 | ${SITE.title}`}>
-  <Header />
-  <Main pageTitle="友链" pageDesc="友情链接，欢迎交换">
+<Layout lang={lang} title={`${t("friends.title", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("friends.title", lang)}
+    pageDesc={t("friends.desc", lang)}
+    data-lang={lang}
+  >
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {FRIENDS.map((friend) => (
         <a
@@ -39,5 +51,5 @@ import { SITE } from "@/config";
       ))}
     </div>
   </Main>
-  <Footer />
+  <Footer lang={lang} />
 </Layout>

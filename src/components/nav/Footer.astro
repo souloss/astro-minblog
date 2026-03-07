@@ -1,6 +1,7 @@
 ---
 import type { HTMLAttributes } from "astro/types";
 import { SITE } from "@/config";
+import { t } from "@/utils/i18n";
 
 const currentYear = new Date().getFullYear();
 
@@ -13,9 +14,14 @@ const runningDays = Math.floor(
 
 type Props = {
   noMarginTop?: boolean;
+  lang?: string;
 } & HTMLAttributes<"footer">;
 
-const { noMarginTop = false, class: className, ...attrs } = Astro.props;
+const { noMarginTop = false, lang = "zh", class: className, ...attrs } = Astro.props;
+
+const copyrightText = t("footer.copyright", lang)
+  .replace("{year}", String(currentYear))
+  .replace("{author}", SITE.author);
 ---
 
 <footer
@@ -35,7 +41,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
       <!-- Column 1: Avatar + Hi, {author} -->
       <div class="px-4">
         <a
-          href="/"
+          href={`/${lang}/`}
           class="flex items-center gap-2 transition-colors hover:text-accent"
         >
           <img
@@ -43,7 +49,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
             alt={`${SITE.author}'s avatar`}
             class="h-5 w-5 rounded-full"
           />
-          <span>Hi, {SITE.author}</span>
+          <span>{t("footer.hi", lang)}, {SITE.author}</span>
         </a>
       </div>
 
@@ -51,14 +57,14 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
 
       <!-- Column 2: Running days -->
       <div class="px-4">
-        <span>已运行 {runningDays} 天</span>
+        <span>{t("footer.running", lang)} {runningDays} {t("footer.days", lang)}</span>
       </div>
 
       <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
 
       <!-- Column 3: Copyright -->
       <div class="px-4">
-        <span>© {currentYear} {SITE.author}，版权所有，禁止转载，转发需注明出处</span>
+        <span>{copyrightText}</span>
       </div>
 
       <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
@@ -69,7 +75,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
           href="/sitemap-index.xml"
           class="transition-colors hover:text-accent"
         >
-          Sitemap
+          {t("footer.sitemap", lang)}
         </a>
       </div>
 

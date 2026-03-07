@@ -1,0 +1,126 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/nav/Header.astro";
+import Footer from "@/components/nav/Footer.astro";
+import Socials from "@/components/social/Socials.astro";
+import LinkButton from "@/components/ui/LinkButton.astro";
+import Card from "@/components/ui/Card.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import getPostsByLang from "@/utils/getPostsByLang";
+import IconRss from "@/assets/icons/IconRss.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
+import { t } from "@/utils/i18n";
+
+export const getStaticPaths = (async () => {
+  return [{ params: { lang: "zh" } }, { params: { lang: "en" } }];
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+
+const posts = await getCollection("blog");
+const langPosts = getPostsByLang(posts, lang);
+const sortedPosts = getSortedPosts(langPosts);
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+---
+
+<Layout lang={lang}>
+  <Header lang={lang} />
+  <main id="main-content" data-layout="index" class="app-layout" data-lang={lang}>
+    <section id="hero" class:list={["pt-8 pb-6", "border-b border-border"]}>
+      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
+        {t("hero.greeting", lang)}
+      </h1>
+      <a
+        target="_blank"
+        href="/rss.xml"
+        class="inline-block"
+        aria-label="rss feed"
+        title="RSS Feed"
+      >
+        <IconRss
+          width={20}
+          height={20}
+          class="scale-125 stroke-accent stroke-3 rtl:-rotate-90"
+        />
+        <span class="sr-only">RSS Feed</span>
+      </a>
+
+      <p>
+        {t("hero.desc", lang)}
+      </p>
+      <p class="mt-2">
+        {t("hero.readMore", lang)}
+        <LinkButton
+          class="underline decoration-dashed underline-offset-4 hover:text-accent"
+          href="https://github.com/satnaing/astro-paper#readme"
+        >
+          README
+        </LinkButton>
+      </p>
+      {
+        SOCIALS.length > 0 && (
+          <div class="mt-4 flex max-sm:flex-col sm:items-center">
+            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">{t("hero.socialLinks", lang)}</div>
+            <Socials />
+          </div>
+        )
+      }
+    </section>
+
+    {
+      featuredPosts.length > 0 && (
+        <section
+          id="featured"
+          class:list={[
+            "pt-12 pb-6",
+            { "border-b border-border": recentPosts.length > 0 },
+          ]}
+        >
+          <h2 class="text-2xl font-semibold tracking-wide">{t("post.featured", lang)}</h2>
+          <ul>
+            {featuredPosts.map((post) => (
+              <Card variant="h3" lang={lang} {...post} />
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      recentPosts.length > 0 && (
+        <section id="recent-posts" class="pt-12 pb-6">
+          <h2 class="text-2xl font-semibold tracking-wide">{t("post.recentPosts", lang)}</h2>
+          <ul>
+            {recentPosts.map(
+              (post, index) =>
+                index < SITE.postPerIndex && <Card variant="h3" lang={lang} {...post} />
+            )}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="my-8 text-center">
+      <LinkButton href={`/${lang}/posts/`}>
+        {t("post.allPosts", lang)}
+        <IconArrowRight class="inline-block rtl:-rotate-180" />
+      </LinkButton>
+    </div>
+  </main>
+  <Footer lang={lang} />
+</Layout>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const main = document.querySelector("#main-content") as HTMLElement;
+    const lang = main?.dataset?.lang ?? "zh";
+    if (main) {
+      sessionStorage.setItem("backUrl", `/${lang}/`);
+    }
+  });
+</script>

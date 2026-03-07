@@ -5,14 +5,16 @@ type Props = {
   tag: string;
   tagName: string;
   size?: "sm" | "lg";
+  lang?: string;
 };
 
-const { tag, tagName, size = "lg" } = Astro.props;
+const { tag, tagName, size = "lg", lang } = Astro.props;
+const tagHref = lang ? `/${lang}/tags/${tag}/` : `/tags/${tag}/`;
 ---
 
 <li>
   <a
-    href={`/tags/${tag}/`}
+    href={tagHref}
     transition:name={tag}
     class:list={[
       "flex items-center gap-0.5",

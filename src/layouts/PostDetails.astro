@@ -8,7 +8,8 @@ import Datetime from "@/components/ui/Datetime.astro";
 import EditPost from "@/components/blog/EditPost.astro";
 import ShareLinks from "@/components/blog/ShareLinks.astro";
 import BackButton from "@/components/nav/BackButton.astro";
-import { getPath } from "@/utils/getPath";
+import { getLocalizedPostPath, getPostSlug } from "@/utils/getPath";
+import { t } from "@/utils/i18n";
 import { slugifyStr } from "@/utils/slugify";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
@@ -17,13 +18,16 @@ import FloatingTOC from "@/components/blog/FloatingTOC.astro";
 import InlineTOC from "@/components/blog/InlineTOC.astro";
 import Comments from "@/components/blog/Comments.astro";
 import PostActions from "@/components/blog/PostActions.astro";
+import RelatedPosts from "@/components/blog/RelatedPosts.astro";
+import { getRelatedPosts } from "@/utils/getRelatedPosts";
 
 type Props = {
   post: CollectionEntry<"blog">;
   posts: CollectionEntry<"blog">[];
+  lang?: string;
 };
 
-const { post, posts } = Astro.props;
+const { post, posts, lang = "zh" } = Astro.props;
 
 const {
   title,
@@ -53,7 +57,7 @@ if (typeof initOgImage === "string") {
 
 // Use dynamic OG image if enabled and no remote|local ogImage
 if (!ogImageUrl && SITE.dynamicOgImage) {
-  ogImageUrl = `${getPath(post.id, post.filePath)}/index.png`;
+  ogImageUrl = `/${lang}/posts/${getPostSlug(post.id)}/index.png`;
 }
 
 // Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
@@ -70,6 +74,7 @@ const layoutProps = {
   canonicalURL,
   ogImage,
   scrollSmooth: true,
+  lang,
 };
 
 /* ========== Prev/Next Posts (Series-aware) ========== */
@@ -92,7 +97,7 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
 ---
 
 <Layout {...layoutProps}>
-  <Header />
+  <Header lang={lang} />
   
   <!-- Sticky Header for Article Reading Progress -->
   <div
@@ -173,7 +178,7 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
     <div class="my-2 flex flex-wrap items-center gap-2">
       {category && (
         <a
-          href={`/categories/${encodeURIComponent(category)}/`}
+          href={`/${lang}/categories/${encodeURIComponent(category)}/`}
           class="text-sm font-medium text-accent hover:underline"
         >
           {category}
@@ -204,7 +209,7 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
     <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
+      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" lang={lang} />)}
     </ul>
 
     <ShareLinks />
@@ -215,14 +220,14 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
 
     {series && seriesPosts && seriesPosts.length > 0 && (
       <div class="mb-6 rounded-lg border border-border bg-muted/20 px-4 py-3" data-pagefind-ignore>
-        <div class="text-sm font-medium text-muted-foreground">系列：{series.name}</div>
+        <div class="text-sm font-medium text-muted-foreground">{t("post.series", lang)}：{series.name}</div>
         <ol class="mt-2 list-inside list-decimal space-y-1 text-sm">
           {seriesPosts.map((p) => (
             <li>
               {p.id === post.id ? (
                 <span class="font-medium text-accent">{p.data.title}</span>
               ) : (
-                <a href={getPath(p.id, p.filePath)} class="text-foreground/80 hover:text-accent hover:underline">
+                <a href={getLocalizedPostPath(lang, p.id)} class="text-foreground/80 hover:text-accent hover:underline">
                   {p.data.title}
                 </a>
               )}
@@ -237,12 +242,12 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
       {
         prevPost && (
           <a
-            href={getPath(prevPost.id, prevPost.filePath)}
+            href={getLocalizedPostPath(lang, prevPost.id)}
             class="flex w-full gap-1 hover:opacity-75"
           >
             <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
             <div>
-              <span>Previous Post</span>
+              <span>{t("post.prev", lang)}</span>
               <div class="text-sm text-accent/85">{prevPost.title}</div>
             </div>
           </a>
@@ -251,11 +256,11 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
       {
         nextPost && (
           <a
-            href={getPath(nextPost.id, nextPost.filePath)}
+            href={getLocalizedPostPath(lang, nextPost.id)}
             class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
           >
             <div>
-              <span>Next Post</span>
+              <span>{t("post.next", lang)}</span>
               <div class="text-sm text-accent/85">{nextPost.title}</div>
             </div>
             <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
@@ -264,9 +269,11 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
       }
     </div>
 
+    <RelatedPosts posts={getRelatedPosts(post, posts)} lang={lang} />
+
     <Comments />
   </main>
-  <Footer />
+  <Footer lang={lang} />
 </Layout>
 
 <script is:inline data-astro-rerun>

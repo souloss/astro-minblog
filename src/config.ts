@@ -19,7 +19,7 @@ export const SITE = {
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
-  lang: "en" as string, // html lang code. Set this empty and default will be "en"
+  lang: "zh" as string, // html lang code. Default "zh" (Chinese)
   timezone: "Asia/Bangkok", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   umami: {
     enabled: false,
@@ -45,5 +45,10 @@ export const SITE = {
     copyright: true, // Show copyright notice
     recaptchaV3Key: "", // reCAPTCHA v3 key (optional)
     turnstileKey: "", // Cloudflare Turnstile key (optional)
+  },
+  ai: {
+    enabled: true,
+    apiEndpoint: "", // Edge function API endpoint for streaming chat (leave empty for mock mode)
+    mockMode: true, // Use mock responses when no API endpoint is configured
   },
 } as const;

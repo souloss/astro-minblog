@@ -6,68 +6,56 @@ import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import Card from "@/components/ui/Card.astro";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
+import getPostsByLang from "@/utils/getPostsByLang";
 import { SITE } from "@/config";
+import { t } from "@/utils/i18n";
 
-// Redirect to 404 page if `showArchives` config is false
-if (!SITE.showArchives) {
-  return Astro.redirect("/404");
+export async function getStaticPaths() {
+  if (!SITE.showArchives) return [];
+  return [{ params: { lang: "zh" } }, { params: { lang: "en" } }];
 }
 
+const { lang } = Astro.params as { lang: "zh" | "en" };
+
 const posts = await getCollection("blog", ({ data }) => !data.draft);
+const langPosts = getPostsByLang(posts, lang);
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+const months = lang === "zh"
+  ? ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
+  : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-// Calculate stats
-const totalPosts = posts.length;
-const years = getPostsByGroupCondition(posts, post =>
-  post.data.pubDatetime.getFullYear()
-);
+const totalPosts = langPosts.length;
+const years = getPostsByGroupCondition(langPosts, post => post.data.pubDatetime.getFullYear());
 const yearCount = Object.keys(years).length;
 ---
 
-<Layout title={`Archives | ${SITE.title}`}>
-  <Header />
-  <Main pageTitle="Archives" pageDesc="All the articles I've archived.">
-    <!-- Stats -->
+<Layout lang={lang} title={`${t("nav.archives", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("nav.archives", lang)}
+    pageDesc={t("main.allArchived", lang)}
+    data-lang={lang}
+  >
     <div class="mb-8 flex flex-wrap gap-6 text-sm text-muted-foreground">
       <div class="flex items-center gap-2">
         <span class="font-medium text-foreground">{totalPosts}</span>
-        <span>posts</span>
+        <span>{t("archives.posts", lang)}</span>
       </div>
       <div class="flex items-center gap-2">
         <span class="font-medium text-foreground">{yearCount}</span>
-        <span>years</span>
+        <span>{t("archives.years", lang)}</span>
       </div>
     </div>
 
-    <!-- Timeline -->
     <div class="relative">
-      {/* Timeline vertical line */}
       <div class="absolute left-0 top-0 bottom-0 w-px bg-border md:left-1/2 md:-ml-px"></div>
-
       {
         Object.entries(
-          getPostsByGroupCondition(posts, post =>
-            post.data.pubDatetime.getFullYear()
-          )
+          getPostsByGroupCondition(langPosts, post => post.data.pubDatetime.getFullYear())
         )
           .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
           .map(([year, yearGroup]) => (
             <div class="relative">
-              {/* Year marker */}
               <div class="mb-8 flex items-center md:justify-center">
                 <div class="relative z-10 flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-bold text-background shadow-lg">
                   <span>{year}</span>
@@ -76,44 +64,32 @@ const yearCount = Object.keys(years).length;
                   </span>
                 </div>
               </div>
-
-              {/* Months */}
               <div class="ml-6 border-l-2 border-border pl-6 md:ml-0 md:border-l-0 md:pl-0">
                 {Object.entries(
-                  getPostsByGroupCondition(
-                    yearGroup,
-                    post => post.data.pubDatetime.getMonth() + 1
-                  )
+                  getPostsByGroupCondition(yearGroup, post => post.data.pubDatetime.getMonth() + 1)
                 )
                   .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
                   .map(([month, monthGroup]) => (
                     <div class="relative mb-8">
-                      {/* Month marker */}
                       <div class="mb-4 flex items-center gap-2">
                         <div class="absolute left-0 w-3 h-3 rounded-full bg-accent/50 -translate-x-1.5 md:relative md:left-0 md:translate-x-0"></div>
                         <h3 class="ml-4 text-lg font-semibold text-foreground md:ml-0">
                           {months[Number(month) - 1]}
                           <span class="ml-2 text-sm font-normal text-muted-foreground">
-                            ({monthGroup.length} posts)
+                            ({monthGroup.length} {t("archives.posts", lang)})
                           </span>
                         </h3>
                       </div>
-
-                      {/* Posts */}
                       <ul class="ml-6 space-y-4 md:ml-4">
                         {monthGroup
                           .sort(
                             (a, b) =>
-                              Math.floor(
-                                new Date(b.data.pubDatetime).getTime() / 1000
-                              ) -
-                              Math.floor(
-                                new Date(a.data.pubDatetime).getTime() / 1000
-                              )
+                              Math.floor(new Date(b.data.pubDatetime).getTime() / 1000) -
+                              Math.floor(new Date(a.data.pubDatetime).getTime() / 1000)
                           )
-                          .map(data => (
+                          .map((data) => (
                             <li class="relative pl-4 before:absolute before:left-0 before:top-2.5 before:h-1.5 before:w-1.5 before:rounded-full before:bg-muted-foreground/50">
-                              <Card {...data} />
+                              <Card lang={lang} {...data} />
                             </li>
                           ))}
                       </ul>
@@ -125,24 +101,5 @@ const yearCount = Object.keys(years).length;
       }
     </div>
   </Main>
-  <Footer />
+  <Footer lang={lang} />
 </Layout>
-
-<style>
-  /* Timeline animation */
-  .timeline-item {
-    animation: fadeInUp 0.5s ease-out forwards;
-    opacity: 0;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>

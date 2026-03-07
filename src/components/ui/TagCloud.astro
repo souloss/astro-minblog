@@ -7,9 +7,10 @@ type Props = {
   count: number;
   maxCount: number;
   minCount: number;
+  lang?: string;
 };
 
-const { tag, tagName, count, maxCount, minCount } = Astro.props;
+const { tag, tagName, count, maxCount, minCount, lang = "zh" } = Astro.props;
 
 // Calculate relative size based on count
 const getTagSize = (currentCount: number, max: number, min: number): string => {
@@ -47,7 +48,7 @@ const opacityClass = getTagOpacity(count, maxCount, minCount);
 ---
 
 <a
-  href={`/tags/${tag}/`}
+  href={`/${lang}/tags/${tag}/`}
   transition:name={tag}
   class:list={[
     "inline-flex items-center gap-0.5 px-2 py-1 rounded-md transition-all duration-300",

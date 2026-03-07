@@ -3,9 +3,30 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import { SITE } from "@/config";
+
+const aiEnabled = SITE.ai?.enabled ?? false;
 ---
 
 <div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3" id="floating-actions" role="group" aria-label="Page actions">
+  <!-- AI Assistant -->
+  {aiEnabled && (
+    <button
+      id="ai-chat-toggle-fab"
+      class="fab-btn size-11 rounded-full border border-accent bg-accent text-background shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center"
+      aria-label="AI Assistant"
+      title="AI Assistant"
+    >
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 8V4H8"></path>
+        <rect width="16" height="12" x="4" y="8" rx="2"></rect>
+        <path d="M2 14h2"></path>
+        <path d="M20 14h2"></path>
+        <path d="M15 13v2"></path>
+        <path d="M9 13v2"></path>
+      </svg>
+    </button>
+  )}
+
   <!-- Reading Mode (only on article pages) -->
   <button
     id="reading-mode-btn"

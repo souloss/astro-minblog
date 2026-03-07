@@ -6,62 +6,71 @@ import TagCloud from "@/components/ui/TagCloud.astro";
 import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import getTagsWithCount from "@/utils/getTagsWithCount";
+import getPostsByLang from "@/utils/getPostsByLang";
 import { SITE } from "@/config";
+import { t } from "@/utils/i18n";
+
+export const getStaticPaths = () => [
+  { params: { lang: "zh" } },
+  { params: { lang: "en" } },
+];
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
 
 const posts = await getCollection("blog");
-const tags = getTagsWithCount(posts);
+const langPosts = getPostsByLang(posts, lang);
+const tags = getTagsWithCount(langPosts);
 
-// Get max and min counts for size calculation
-const counts = tags.map(t => t.count);
+const counts = tags.map(tag => tag.count);
 const maxCount = Math.max(...counts, 1);
 const minCount = Math.min(...counts, 0);
-
-// Calculate total posts
-const totalPosts = tags.reduce((acc, t) => acc + t.count, 0);
+const totalPosts = tags.reduce((acc, tag) => acc + tag.count, 0);
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
-  <Header />
-  <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    <!-- Stats -->
+<Layout lang={lang} title={`${t("nav.tags", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("nav.tags", lang)}
+    pageDesc={t("main.allTags", lang)}
+    data-lang={lang}
+  >
     <div class="mb-8 flex flex-wrap gap-4 text-sm text-muted-foreground">
       <div class="flex items-center gap-2">
         <span class="font-medium text-foreground">{tags.length}</span>
-        <span>tags</span>
+        <span>{t("tags.tags", lang)}</span>
       </div>
       <div class="flex items-center gap-2">
         <span class="font-medium text-foreground">{totalPosts}</span>
-        <span>tagged posts</span>
+        <span>{t("tags.taggedPosts", lang)}</span>
       </div>
     </div>
-    
-    <!-- Tag Cloud -->
-    <div class="flex flex-wrap items-center justify-center gap-3 p-6 rounded-lg bg-muted/20 border border-border">
+
+    <div class="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-border bg-muted/20 p-6">
       {tags.map(({ tag, tagName, count }) => (
         <TagCloud
-          {tag}
-          {tagName}
-          {count}
+          tag={tag}
+          tagName={tagName}
+          count={count}
           maxCount={maxCount}
           minCount={minCount}
+          lang={lang}
         />
       ))}
     </div>
-    
-    <!-- Legend -->
+
     <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-      <span>Size indicates popularity:</span>
+      <span>{t("tags.sizeLegend", lang)}</span>
       <div class="flex items-center gap-2">
-        <span class="text-xs">Less</span>
+        <span class="text-xs">{t("tags.less", lang)}</span>
         <div class="flex items-center gap-1">
           <div class="h-2 w-2 rounded-full bg-foreground/40"></div>
           <div class="h-3 w-3 rounded-full bg-foreground/60"></div>
           <div class="h-4 w-4 rounded-full bg-foreground/80"></div>
           <div class="h-5 w-5 rounded-full bg-foreground"></div>
         </div>
-        <span class="text-base font-medium">More</span>
+        <span class="text-base font-medium">{t("tags.more", lang)}</span>
       </div>
     </div>
   </Main>
-  <Footer />
+  <Footer lang={lang} />
 </Layout>

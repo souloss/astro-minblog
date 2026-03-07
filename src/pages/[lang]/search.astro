@@ -8,6 +8,15 @@ import { SITE } from "@/config";
 import { getCollection } from "astro:content";
 import getUniqueTags from "@/utils/getUniqueTags";
 import getUniqueCategories from "@/utils/getUniqueCategories";
+import { t } from "@/utils/i18n";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (() => [
+  { params: { lang: "zh" } },
+  { params: { lang: "en" } },
+]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
 
 const posts = await getCollection("blog");
 const tags = getUniqueTags(posts);
@@ -16,9 +25,9 @@ const categories = getUniqueCategories(posts);
 const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 ---
 
-<Layout title={`Search | ${SITE.title}`}>
-  <Header />
-  <Main pageTitle="Search" pageDesc="Search any article with advanced filters ...">
+<Layout lang={lang} title={`${t("search.title", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main pageTitle={t("search.title", lang)} pageDesc={t("main.searchDesc", lang)} data-lang={lang}>
     <div id="search-container" class="space-y-6">
       <!-- Advanced Filters Panel -->
       <div id="search-filters" class="bg-muted/30 rounded-lg border border-border p-4 space-y-4">

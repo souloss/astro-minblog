@@ -1,29 +1,31 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { slugifyStr } from "@/utils/slugify";
-import { getPath } from "@/utils/getPath";
+import { getLocalizedPostPath } from "@/utils/getPath";
 import Datetime from "@/components/ui/Datetime.astro";
 
 type Props = {
   variant?: "h2" | "h3";
+  lang?: string;
 } & CollectionEntry<"blog">;
 
-const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+const { variant: Heading = "h2", id, data, filePath, lang = "zh" } = Astro.props;
 
 const { title, description, category, ...props } = data;
+const postHref = getLocalizedPostPath(lang, id, filePath);
 ---
 
 <li class="my-6">
   {category && (
     <a
-      href={`/categories/${encodeURIComponent(category)}/`}
+      href={`/${lang}/categories/${encodeURIComponent(category)}/`}
       class="text-xs font-medium text-accent hover:underline mb-1 inline-block"
     >
       {category}
     </a>
   )}
   <a
-    href={getPath(id, filePath)}
+    href={postHref}
     class:list={[
       "inline-block text-lg font-medium text-accent",
       "decoration-dashed underline-offset-4 hover:underline",

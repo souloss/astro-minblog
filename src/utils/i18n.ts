@@ -36,7 +36,30 @@ type TranslationKey =
   | "footer.days"
   | "common.backToTop"
   | "common.goBack"
-  | "common.notFound";
+  | "common.notFound"
+  | "hero.greeting"
+  | "hero.desc"
+  | "hero.readMore"
+  | "hero.socialLinks"
+  | "footer.hi"
+  | "footer.copyright"
+  | "footer.sitemap"
+  | "archives.posts"
+  | "archives.years"
+  | "tags.tags"
+  | "tags.taggedPosts"
+  | "tags.sizeLegend"
+  | "tags.less"
+  | "tags.more"
+  | "main.allArticles"
+  | "main.allTags"
+  | "main.allArchived"
+  | "main.tagDesc"
+  | "main.categoryDesc"
+  | "main.noCategories"
+  | "main.searchDesc"
+  | "friends.title"
+  | "friends.desc";
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -76,6 +99,29 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "common.backToTop": "Back to Top",
     "common.goBack": "Go back",
     "common.notFound": "Page Not Found",
+    "hero.greeting": "Mingalaba",
+    "hero.desc": "AstroPaper is a minimal, responsive, accessible and SEO-friendly Astro blog theme. This theme follows best practices and provides accessibility out of the box. Light and dark mode are supported by default. Moreover, additional color schemes can also be configured.",
+    "hero.readMore": "Read the blog posts or check",
+    "hero.socialLinks": "Social Links:",
+    "footer.hi": "Hi",
+    "footer.copyright": "© {year} {author}. All rights reserved.",
+    "footer.sitemap": "Sitemap",
+    "archives.posts": "posts",
+    "archives.years": "years",
+    "tags.tags": "tags",
+    "tags.taggedPosts": "tagged posts",
+    "tags.sizeLegend": "Size indicates popularity:",
+    "tags.less": "Less",
+    "tags.more": "More",
+    "main.allArticles": "All the articles I've posted.",
+    "main.allTags": "All the tags used in posts.",
+    "main.allArchived": "All the articles I've archived.",
+    "main.tagDesc": "All the articles with the tag \"{tag}\".",
+    "main.categoryDesc": "All the articles in the category \"{category}\".",
+    "main.noCategories": "No categories found.",
+    "main.searchDesc": "Search any article with advanced filters ...",
+    "friends.title": "Friends",
+    "friends.desc": "Friendship links, welcome to exchange.",
   },
   zh: {
     "nav.home": "首页",
@@ -114,14 +160,37 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "common.backToTop": "回到顶部",
     "common.goBack": "返回",
     "common.notFound": "页面未找到",
+    "hero.greeting": "你好",
+    "hero.desc": "AstroPaper 是一个极简、响应式、无障碍且 SEO 友好的 Astro 博客主题。本主题遵循最佳实践，开箱即用提供无障碍支持。默认支持亮色和暗色模式，还可配置更多配色方案。",
+    "hero.readMore": "阅读博客文章或查看",
+    "hero.socialLinks": "社交链接：",
+    "footer.hi": "你好",
+    "footer.copyright": "© {year} {author}，版权所有，禁止转载，转发需注明出处",
+    "footer.sitemap": "站点地图",
+    "archives.posts": "篇文章",
+    "archives.years": "年",
+    "tags.tags": "个标签",
+    "tags.taggedPosts": "篇已标记文章",
+    "tags.sizeLegend": "大小表示使用频率：",
+    "tags.less": "少",
+    "tags.more": "多",
+    "main.allArticles": "我发布的所有文章。",
+    "main.allTags": "文章中使用的所有标签。",
+    "main.allArchived": "我归档的所有文章。",
+    "main.tagDesc": "标签「{tag}」下的所有文章。",
+    "main.categoryDesc": "分类「{category}」下的所有文章。",
+    "main.noCategories": "暂无分类。",
+    "main.searchDesc": "使用高级筛选搜索文章...",
+    "friends.title": "友链",
+    "friends.desc": "友情链接，欢迎交换",
   },
 };
 
-export function t(key: TranslationKey): string {
-  const lang = SITE.lang === "zh" ? "zh" : "en";
-  return translations[lang]?.[key] ?? translations["en"][key] ?? key;
+export function t(key: TranslationKey, lang?: string): string {
+  const l = lang ?? (SITE.lang === "zh" ? "zh" : "en");
+  return translations[l]?.[key] ?? translations["en"][key] ?? key;
 }
 
-export function getLang(): string {
-  return SITE.lang === "zh" ? "zh" : "en";
+export function getLang(lang?: string): string {
+  return lang ?? (SITE.lang === "zh" ? "zh" : "en");
 }

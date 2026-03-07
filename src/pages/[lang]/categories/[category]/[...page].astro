@@ -1,0 +1,55 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/nav/Header.astro";
+import Footer from "@/components/nav/Footer.astro";
+import Card from "@/components/ui/Card.astro";
+import Pagination from "@/components/nav/Pagination.astro";
+import getUniqueCategories from "@/utils/getUniqueCategories";
+import getPostsByCategory from "@/utils/getPostsByCategory";
+import { getPostsByLang } from "@/utils/getPostsByLang";
+import { SITE } from "@/config";
+import { t } from "@/utils/i18n";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getCollection("blog");
+  return (["zh", "en"] as const).flatMap(lang => {
+    const langPosts = getPostsByLang(posts, lang);
+    const categories = getUniqueCategories(langPosts);
+    return categories.flatMap(({ category }) => {
+      const categoryPosts = getPostsByCategory(langPosts, category);
+      return paginate(categoryPosts, {
+        params: { lang, category },
+        props: { category },
+        pageSize: SITE.postPerPage,
+      });
+    });
+  });
+}) satisfies GetStaticPaths;
+
+type Props = { page: Page<CollectionEntry<"blog">>; category: string };
+const { page, category } = Astro.props as Props;
+const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
+---
+
+<Layout lang={lang} title={`${t("search.category", lang)}: ${category} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={[`${t("search.category", lang)}:`, category]}
+    titleTransition={category}
+    pageDesc={t("main.categoryDesc", lang).replace("{category}", category)}
+  >
+    <ul>
+      {page.data.map(post => (
+        <Card lang={lang} {...post} />
+      ))}
+    </ul>
+  </Main>
+
+  <Pagination page={page} lang={lang} />
+
+  <Footer lang={lang} noMarginTop={page.lastPage > 1} />
+</Layout>

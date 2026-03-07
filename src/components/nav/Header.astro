@@ -8,27 +8,28 @@ import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import { SITE } from "@/config";
+import { t } from "@/utils/i18n";
 import { isPathActive } from "@/utils/pathUtils";
 
 const { pathname } = Astro.url;
 const isActive = (path: string) => isPathActive(path, pathname);
 
-interface NavItem {
-  href: string;
-  label: string;
-  icon: typeof IconHome;
-  show?: boolean;
+interface Props {
+  lang?: string;
 }
 
-const navItems: NavItem[] = [
-  { href: "/", label: "Home", icon: IconHome },
-  { href: "/posts", label: "Posts", icon: IconArticle },
-  { href: "/tags", label: "Tags", icon: IconTag },
-  { href: "/categories", label: "Categories", icon: IconTag },
-  { href: "/about", label: "About", icon: IconUser },
-  { href: "/friends", label: "Friends", icon: IconUser },
+const { lang = "zh" } = Astro.props;
+
+const base = `/${lang}`;
+const navItems = [
+  { href: `${base}/`, label: t("nav.home", lang), icon: IconHome },
+  { href: `${base}/posts`, label: t("nav.posts", lang), icon: IconArticle },
+  { href: `${base}/tags`, label: t("nav.tags", lang), icon: IconTag },
+  { href: `${base}/categories`, label: t("nav.categories", lang), icon: IconTag },
+  { href: `${base}/about`, label: t("nav.about", lang), icon: IconUser },
+  { href: `${base}/friends`, label: t("nav.friends", lang), icon: IconUser },
   ...(SITE.showArchives
-    ? [{ href: "/archives", label: "Archives", icon: IconArchive }]
+    ? [{ href: `${base}/archives`, label: t("nav.archives", lang), icon: IconArchive }]
     : []),
 ];
 ---
@@ -44,7 +45,7 @@ const navItems: NavItem[] = [
 <header class="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
   <div class="flex h-14 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
     <a
-      href="/"
+      href={`/${lang}/`}
       class="text-lg font-semibold tracking-tight text-foreground transition-colors hover:text-accent sm:text-xl"
     >
       {SITE.title}
@@ -78,14 +79,14 @@ const navItems: NavItem[] = [
             <span id="lang-label">EN</span>
           </button>
           <a
-            href="/search"
+            href={`/${lang}/search`}
             class:list={[
               "flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
               "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-              { "bg-muted/80 text-foreground": isActive("/search") },
+              { "bg-muted/80 text-foreground": isActive(`/${lang}/search`) },
             ]}
-            title="Search"
-            aria-label="Search"
+            title={t("nav.search", lang)}
+            aria-label={t("nav.search", lang)}
           >
             <IconSearch class="size-4" />
           </a>
@@ -129,15 +130,15 @@ const navItems: NavItem[] = [
       ))}
       <li class="border-t border-border pt-2 mt-1">
         <a
-          href="/search"
+          href={`/${lang}/search`}
           class:list={[
             "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
             "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-            { "bg-muted/80 text-foreground": isActive("/search") },
+            { "bg-muted/80 text-foreground": isActive(`/${lang}/search`) },
           ]}
         >
           <IconSearch class="size-5" />
-          <span>Search</span>
+          <span>{t("nav.search", lang)}</span>
         </a>
       </li>
       <li>
@@ -193,16 +194,17 @@ const navItems: NavItem[] = [
     const path = window.location.pathname;
     const isZh = path.startsWith("/zh/") || path === "/zh";
 
-    if (label) label.textContent = isZh ? "中" : "EN";
-    if (labelMobile) labelMobile.textContent = isZh ? "中文" : "English";
+    if (label) label.textContent = isZh ? "EN" : "中";
+    if (labelMobile) labelMobile.textContent = isZh ? "English" : "中文";
 
     btns.forEach(btn => {
       btn?.addEventListener("click", () => {
         if (isZh) {
-          const newPath = path.replace(/^\/zh\/?/, "/") || "/";
+          const newPath = path.replace(/^\/zh\/?/, "/en/") || "/en/";
           window.location.href = newPath;
         } else {
-          window.location.href = "/zh" + (path === "/" ? "/" : path);
+          const newPath = path.replace(/^\/en\/?/, "/zh/") || "/zh/";
+          window.location.href = newPath;
         }
       });
     });

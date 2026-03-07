@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import FloatingActions from "@/components/nav/FloatingActions.astro";
+import AIChatWidget from "@/components/ai/AIChatWidget.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -15,10 +16,12 @@ type Props = {
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
+  lang?: string;
 };
 
 const {
   title = SITE.title,
+  lang = SITE.lang,
   author = SITE.author,
   profile = SITE.profile,
   description = SITE.desc,
@@ -74,7 +77,7 @@ const structuredData = pubDatetime
 <!doctype html>
 <html
   dir={SITE.dir}
-  lang=`${SITE.lang ?? "en"}`
+  lang={lang ?? "zh"}
   class={`${scrollSmooth && "scroll-smooth"}`}
 >
   <head>
@@ -108,7 +111,7 @@ const structuredData = pubDatetime
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:image:alt" content={title} />
-    <meta property="og:locale" content={SITE.lang === "zh" ? "zh_CN" : "en_US"} />
+    <meta property="og:locale" content={lang === "zh" ? "zh_CN" : "en_US"} />
 
     <!-- Article Published/Modified time -->
     {
@@ -211,6 +214,7 @@ const structuredData = pubDatetime
   <body>
     <slot />
     <FloatingActions />
+    <AIChatWidget lang={lang} />
 
     <script src="../scripts/theme.ts"></script>
     <script src="../scripts/copy-code.ts"></script>
