@@ -8,7 +8,7 @@ import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import Card from "@/components/ui/Card.astro";
 import Pagination from "@/components/nav/Pagination.astro";
-import getUniqueCategories from "@/utils/getUniqueCategories";
+import { getCategoryTree, getAllCategoryPaths } from "@/utils/getUniqueCategories";
 import getPostsByCategory from "@/utils/getPostsByCategory";
 import { getPostsByLang } from "@/utils/getPostsByLang";
 import { SITE } from "@/config";
@@ -18,8 +18,11 @@ export const getStaticPaths = (async ({ paginate }) => {
   const posts = await getCollection("blog");
   return (["zh", "en"] as const).flatMap(lang => {
     const langPosts = getPostsByLang(posts, lang);
-    const categories = getUniqueCategories(langPosts);
-    return categories.flatMap(({ category }) => {
+    const tree = getCategoryTree(langPosts);
+    const allCategoryPaths = getAllCategoryPaths(tree);
+
+    // Generate pages for all category paths (including parent categories)
+    return allCategoryPaths.flatMap(category => {
       const categoryPosts = getPostsByCategory(langPosts, category);
       return paginate(categoryPosts, {
         params: { lang, category },

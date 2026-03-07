@@ -1,14 +1,16 @@
 import type { CollectionEntry } from "astro:content";
 
 /**
- * Detect language from post id/path.
- * Posts under zh/ → "zh", posts under en/ → "en".
- * Root-level posts default to "zh".
+ * Detect language from post filePath (directory-based).
+ * Posts under .../zh/ → "zh", posts under .../en/ → "en".
+ * Fallback: check id for "zh/" or "en/" prefix. Default "zh".
  */
 export function getPostLang(post: CollectionEntry<"blog">): "zh" | "en" {
-  const id = post.id;
-  if (id.startsWith("zh/")) return "zh";
-  if (id.startsWith("en/")) return "en";
+  const path = post.filePath ?? post.id;
+  if (path.includes("/zh/")) return "zh";
+  if (path.includes("/en/")) return "en";
+  if (post.id.startsWith("zh/")) return "zh";
+  if (post.id.startsWith("en/")) return "en";
   return "zh";
 }
 

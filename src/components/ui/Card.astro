@@ -18,7 +18,7 @@ const postHref = getLocalizedPostPath(lang, id, filePath);
 <li class="my-6">
   {category && (
     <a
-      href={`/${lang}/categories/${encodeURIComponent(category)}/`}
+      href={`/${lang}/categories/${category.split("/").map(p => encodeURIComponent(p)).join("/")}/`}
       class="text-xs font-medium text-accent hover:underline mb-1 inline-block"
     >
       {category}

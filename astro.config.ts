@@ -23,7 +23,19 @@ export default defineConfig({
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
-    mdx(),
+    mdx({
+      shikiConfig: {
+        themes: { light: "min-light", dark: "night-owl" },
+        defaultColor: false,
+        wrap: false,
+        transformers: [
+          transformerFileName({ style: "v2", hideDot: false }),
+          transformerNotationHighlight(),
+          transformerNotationWordHighlight(),
+          transformerNotationDiff({ matchAlgorithm: "v3" }),
+        ],
+      },
+    }),
   ],
   markdown: {
     remarkPlugins: [

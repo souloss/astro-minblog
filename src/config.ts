@@ -24,7 +24,7 @@ export const SITE = {
   umami: {
     enabled: false,
     websiteId: "",
-    src: "https://analytics.example.com/script.js",
+    src: "https://umami.souloss.cn/"
   },
   waline: {
     enabled: true,

@@ -442,28 +442,45 @@ LIMIT 10;
 
 ### 4.13 代码块特殊功能
 
+本节展示代码块的高级功能。
+
 #### 行高亮
 
-```javascript {2-3,5}
+使用注释 `// [!code highlight]` 标记需要高亮的行：
+
+```javascript
 function highlightExample() {
-  // 这一行会被高亮
+  // [!code highlight]
   const highlighted = true;
   console.log("Hello");
-  // 这一行也会被高亮
+  // [!code highlight]
   return highlighted;
 }
 ```
 
 #### 差异对比
 
-```diff
+使用注释 `// [!code --:1]` 和 `  // [!code ++:1]` 标记新增或删除的行：
+
+```javascript
+// [!code --:1]
 function greeting(name) {
--  console.log("Hello " + name);
-+  console.log(`Hello, ${name}!`);
-+  return `Welcome, ${name}`;
+  console.log("Hello " + name);
+  console.log(`Hello, ${name}!`);
+  // [!code ++:1]
+  return `Welcome, ${name}`;
 }
 ```
 
+#### 文件名称显示
+
+使用 `file="文件名"` 元数据添加文件名标签：
+
+```typescript file="src/utils/helper.ts"
+export function calculateSum(numbers: number[]): number {
+  return numbers.reduce((acc, curr) => acc + curr, 0);
+}
+```
 ---
 
 ## 五、表格

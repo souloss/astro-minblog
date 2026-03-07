@@ -58,4 +58,24 @@ export function getCategoryTree(
   return root;
 }
 
+/**
+ * Get all category paths including parent categories (for generating category pages).
+ * This extracts all possible category paths from the category tree.
+ */
+export function getAllCategoryPaths(tree: CategoryTreeNode[]): string[] {
+  const paths: string[] = [];
+
+  function traverse(nodes: CategoryTreeNode[]) {
+    for (const node of nodes) {
+      paths.push(node.fullPath);
+      if (node.children.length > 0) {
+        traverse(node.children);
+      }
+    }
+  }
+
+  traverse(tree);
+  return paths;
+}
+
 export default getUniqueCategories;
