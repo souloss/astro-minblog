@@ -5,6 +5,9 @@ import { getPostLang } from "@/utils/getPostsByLang";
 import { generateOgImageForPost } from "@/utils/generateOgImages";
 import { SITE } from "@/config";
 
+// Prerender to avoid native module issues in Cloudflare Workers
+export const prerender = true;
+
 export async function getStaticPaths() {
   if (!SITE.dynamicOgImage) {
     return [];
