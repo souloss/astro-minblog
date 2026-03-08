@@ -13,9 +13,9 @@
       "tags:",
       "  - $7",
       "description: $8",
-      "---",
+      "---"
     ],
-    "description": "Adds the frontmatter block for the AstroPaper Blog post"
+    "description": "Adds the frontmatter block for the astro-minblog blog post"
   },
   "Blog Template": {
     "scope": "markdown",
@@ -27,8 +27,8 @@
       "",
       "## Table of contents",
       "",
-      "## ${3: heading 1}",
+      "## ${3: heading 1}"
     ],
-    "description": "Adds the template for the AstroPaper Blog post. You will need to trigger the snippet modal on the 'frontmatter' line to insert the other snipper."
+    "description": "Adds the template for the astro-minblog blog post. You will need to add frontmatter first."
   }
 }

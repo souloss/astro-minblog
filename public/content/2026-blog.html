@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人技术博客系统架构 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --surface2: #f3f2ef;
+  --border: #e5e3de;
+  --border2: #d0cec8;
+  --text: #1a1916;
+  --text2: #5c5a55;
+  --text3: #9b9892;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', 'Noto Sans SC', sans-serif;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ─── HEADER ─── */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 32px 40px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.site-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.site-header .meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+.view-toggle {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+}
+.view-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.view-btn.active {
+  background: var(--text);
+  color: white;
+  border-color: var(--text);
+}
+.view-btn:hover:not(.active) {
+  background: var(--surface2);
+}
+
+/* ─── OVERVIEW MODE ─── */
+#overview-view {
+  padding: 32px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.layer-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow);
+  border-left: 3px solid var(--accent-color);
+}
+.layer-pill:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+.layer-pill .pill-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  border-radius: 8px;
+}
+.layer-pill .pill-info { flex: 1; min-width: 0; }
+.layer-pill .pill-code {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent-color);
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.layer-pill .pill-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.layer-pill .pill-desc {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.layer-pill .pill-arrow {
+  font-size: 12px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+/* ─── DETAIL MODE ─── */
+#detail-view {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 32px 40px 80px;
+  display: none;
+}
+#detail-view.active { display: block; }
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 6px 0;
+  margin-bottom: 24px;
+  letter-spacing: 0.04em;
+  border: none;
+  background: none;
+  transition: color 0.15s;
+}
+.back-btn:hover { color: var(--text); }
+
+/* ─── LAYER CARD ─── */
+.layer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border-top: 3px solid var(--accent-color);
+  scroll-margin-top: 120px;
+}
+
+.layer-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+.layer-header:hover { background: var(--surface2); }
+
+.layer-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  flex-shrink: 0;
+}
+.layer-meta { flex: 1; min-width: 0; }
+.layer-code {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent-color);
+  letter-spacing: 0.1em;
+  margin-bottom: 2px;
+}
+.layer-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.layer-tagline {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.expand-icon {
+  font-size: 12px;
+  color: var(--text3);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.layer-card.open .expand-icon { transform: rotate(90deg); }
+
+.layer-body {
+  display: none;
+  padding: 0 24px 24px;
+  border-top: 1px solid var(--border);
+}
+.layer-card.open .layer-body { display: block; }
+
+/* ─── SECTIONS ─── */
+.section {
+  margin-top: 20px;
+}
+.section-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─── ITEMS ─── */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+.item-grid.wide { grid-template-columns: 1fr; }
+.item-grid.two { grid-template-columns: 1fr 1fr; }
+
+.item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  position: relative;
+}
+.item:hover { border-color: var(--accent-color); background: color-mix(in srgb, var(--accent-color) 5%, var(--surface2)); }
+.item-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.item-name .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  flex-shrink: 0;
+}
+.item-desc {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+  line-height: 1.5;
+  display: none;
+}
+.item.expanded .item-desc { display: block; }
+.item-expand-hint {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+.item.expanded .item-expand-hint { display: none; }
+
+/* ─── TAGS ─── */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  font-size: 11px;
+  font-family: var(--mono);
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  letter-spacing: 0.02em;
+}
+.tag.accent {
+  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  color: var(--accent-color);
+}
+.tag.warn {
+  background: #fff8e6;
+  border-color: #f5d87a;
+  color: #9a6700;
+}
+.tag.ok {
+  background: #f0faf4;
+  border-color: #a3d9b8;
+  color: #1a7a3e;
+}
+
+/* ─── CALLOUT ─── */
+.callout {
+  border-left: 3px solid var(--accent-color);
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--accent-color) 6%, var(--surface2));
+  border-radius: 0 8px 8px 0;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 10px;
+}
+.callout strong { color: var(--text); }
+
+/* ─── DECISION TABLE ─── */
+.decision-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.decision-table th {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.decision-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+.decision-table td:first-child {
+  font-weight: 500;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.decision-table tr:last-child td { border-bottom: none; }
+.decision-table tr:hover td { background: var(--surface2); }
+
+/* ─── BREADCRUMB NAV ─── */
+.layer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+.nav-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.12s;
+  letter-spacing: 0.04em;
+}
+.nav-chip:hover, .nav-chip.active {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+}
+
+/* ─── AI BADGE ─── */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  color: white;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* ─── HIDDEN ─── */
+.hidden { display: none !important; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ─── DIVIDER ─── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <h1>个人技术博客系统架构</h1>
+  <div class="meta">PERSONAL TECH BLOG · SYSTEM DESIGN REFERENCE · 2026</div>
+  <div class="view-toggle">
+    <button class="view-btn active" onclick="switchView('overview')">概览模式</button>
+    <button class="view-btn" onclick="switchView('detail')">详细模式</button>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview-view"></div>
+
+<!-- DETAIL -->
+<div id="detail-view">
+  <button class="back-btn" onclick="switchView('overview')">← 返回概览</button>
+  <div class="layer-nav" id="layer-nav"></div>
+  <div id="layers-container"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const layers = [
+  {
+    code: "L1",
+    name: "内容模型层",
+    icon: "📐",
+    color: "#2563eb",
+    tagline: "内容是什么、如何组织与分类、元信息如何管理",
+    sections: [
+      {
+        title: "内容实体类型",
+        items: [
+          { name: "普通文章 Post", desc: "主要内容单元。包含标题、正文（Markdown/MDX）、封面图、元信息。适合教程、深度分析、观点类内容。" },
+          { name: "系列文章 Series", desc: "多篇有序文章构成的集合，有明确的阅读路径。如「React 深入系列」。系列页面应有完整的进度导航与学习路线图。" },
+          { name: "交互式文章 Interactive Post", desc: "嵌入可交互的组件（代码沙盒、实时 Demo、可调参数的图表、动画演示）。使用 MDX 插入 React 组件。技术博客差异化的重要手段。" },
+          { name: "TIL / 短笔记", desc: "Today I Learned，记录碎片知识点。字数少、频率高。避免大文章门槛，形成持续输出节奏。" },
+          { name: "项目展示 Showcase", desc: "展示个人项目、开源贡献。包含技术栈、解决的问题、演示链接、仓库链接、开发历程。" },
+          { name: "读书笔记 / 书摘", desc: "对书籍、论文、报告的结构化摘录与评论。引用规范参考学术写作，注明来源。" },
+          { name: "外链内容 Curated Links", desc: "精选外部链接合集（Weekly Picks 等）。提供简短评注，体现选题视角。避免单纯搬运无价值内容。" },
+          { name: "FAQ / 知识库", desc: "对读者高频问题的结构化整理。可由评论沉淀而来，也可主动构建。对 SEO 有显著价值（FAQPage Schema）。" },
+          { name: "通知 / 公告", desc: "博客更新说明、停更公告、重大变更通知。独立于文章流，不影响内容 Feed。" },
+        ]
+      },
+      {
+        title: "内容分类与组织",
+        items: [
+          { name: "标签 Tag", desc: "扁平化分类，一篇文章可有多个标签。标签页需有聚合列表，避免孤立标签（无内容的标签不应展示）。标签命名规范：全小写、连字符分隔。" },
+          { name: "专题 Topic / 分类 Category", desc: "层级化分类，粒度比标签粗。适合按技术领域（Frontend / Backend / DevOps）组织。避免分类过细导致内容稀疏。" },
+          { name: "内容关系图", desc: "文章间的语义关系：belongs_to（属于系列）/ references（引用来源）/ derived_from（基于讨论衍生）/ related_to（相关推荐）/ supersedes（替代旧文章）/ updates（追更记录）。这些关系驱动「相关文章」、系列导航等功能。" },
+          { name: "内容状态", desc: "草稿 Draft / 待审 Review / 已发布 Published / 已归档 Archived / 已废弃 Deprecated。废弃文章不应删除，应保留并展示替代链接，避免死链。" },
+        ]
+      },
+      {
+        title: "元信息规范 Frontmatter",
+        items: [
+          { name: "身份元数据", desc: "slug（发布后不得修改）、title、subtitle、description（摘要，150字内，用于 SEO 和 OG）。slug 命名规范：含核心关键词 + 年份（技术文章），如 react-server-components-2024。" },
+          { name: "时间元数据", desc: "publishedAt（发布时间）、updatedAt（最后实质性更新时间）。区分「小修正」与「实质性更新」，只有后者才更新 updatedAt 并通知订阅者。" },
+          { name: "分类元数据", desc: "tags（数组）、series（所属系列 slug）、topic（所属分类）、status（内容状态）。" },
+          { name: "读者元数据", desc: "difficulty（初级/中级/高级）、readingTime（估计阅读时长，可自动计算）、audience（目标读者描述）。降低读者决策成本。" },
+          { name: "版权与声明", desc: "license（CC BY 4.0 等）、aiUsage（是否使用 AI，如何使用）、canonicalUrl（跨平台发布时指向原始地址）。" },
+          { name: "AI 生成元数据", desc: "autoTags（AI 推荐标签）、aiSummary（AI 生成摘要）、coverImagePrompt（AI 配图 Prompt 记录）、embeddings（向量索引标记）。由构建流水线自动填充，人工可覆盖。", ai: true },
+        ]
+      },
+      {
+        title: "内容质量规则",
+        items: [
+          { name: "Schema 校验", desc: "使用 Zod / JSON Schema 对 Frontmatter 进行类型校验。CI 中强制检查：必填字段缺失则构建失败。避免元信息缺失导致 SEO 与结构化数据异常。" },
+          { name: "版本过期管理", desc: "文章可标注 techVersions（涉及的技术版本）。构建时检测版本是否过时（对比 npm registry / GitHub releases），超期自动在文章顶部展示提示 Banner，并创建 GitHub Issue 提醒更新。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L2",
+    name: "创作与生产层",
+    icon: "✍️",
+    color: "#7c3aed",
+    tagline: "内容如何产生、工具链、AI 辅助写作",
+    sections: [
+      {
+        title: "创作工具链",
+        items: [
+          { name: "内容格式", desc: "推荐 MDX：Markdown 语法 + React 组件插入能力。适合技术博客嵌入交互式 Demo、自定义代码块、数学公式（KaTeX）、Mermaid 图表。纯 Markdown 用于简单内容，Hugo/Zola 用户适用。" },
+          { name: "本地编辑器", desc: "Obsidian（双链笔记 → 博客）或 VSCode + MDX 插件。Obsidian 适合「写作驱动」模式，VSCode 适合「工程驱动」模式。本地编辑保证写作不依赖网络或服务。" },
+          { name: "Git-based CMS", desc: "Tina CMS / Keystatic / Contentlayer：内容仍存在 Git 仓库，提供可视化编辑界面。适合多作者协作或需要非技术编辑的场景。个人博客通常直接写 MDX 文件即可。" },
+          { name: "内容模板", desc: "预置各类内容实体的 Frontmatter 模板（plop.js / 脚本生成）。执行 npm run new:post 即生成规范的新文件，避免每次手动填写元信息。" },
+        ]
+      },
+      {
+        title: "AI 辅助写作",
+        ai: true,
+        items: [
+          { name: "自动标签生成", desc: "构建时调用 LLM API（Claude / GPT），分析文章内容，推荐合适的标签（限定在博客已有标签集内）。人工审核后写入 Frontmatter。实现方式：构建脚本 + LLM 调用。", ai: true },
+          { name: "AI 摘要生成", desc: "自动生成文章摘要（description 字段），供 SEO 和列表页展示。可配置：自动生成 / 人工输入 / 混合（AI 草稿，人工润色）。构建时检测 description 为空则触发生成。", ai: true },
+          { name: "AI 配图生成", desc: "根据文章标题和内容，调用 DALL-E / Stable Diffusion / Ideogram，自动生成封面图和 OG 图。记录 Prompt 到 Frontmatter，便于后续复现或修改风格一致性。", ai: true },
+          { name: "写作辅助（本地）", desc: "VSCode 插件（GitHub Copilot / Codeium）辅助技术内容写作：代码补全、技术术语建议、语法检查。与最终内容无直接绑定，属于写作过程辅助工具。", ai: true },
+          { name: "SEO 关键词建议", desc: "构建前调用 AI 分析文章，推荐可优化的关键词布局，检查标题、摘要、H2 是否包含目标关键词。", ai: true },
+        ]
+      },
+      {
+        title: "内容质量保证",
+        items: [
+          { name: "文章写作风格检查", desc: "Vale：可配置规则的散文检查工具（类似代码的 Lint）。可以检查：主动语态比例、术语一致性（如「前端」vs「前端开发」）、避免过度使用的词汇。" },
+          { name: "Markdown 格式规范", desc: "markdownlint：检查 Markdown 语法规范。配合 prettier 统一格式。CI 中执行，不合规则阻断提交。" },
+          { name: "代码示例验证", desc: "文章中的代码示例通过测试文件引用，而非直接嵌入。构建时运行示例代码测试，确保代码示例不会过期报错。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L3",
+    name: "呈现与体验层",
+    icon: "👁",
+    color: "#059669",
+    tagline: "读者如何阅读内容、性能、无障碍、交互式体验",
+    sections: [
+      {
+        title: "性能指标目标",
+        table: {
+          headers: ["指标", "目标值", "说明"],
+          rows: [
+            ["LCP", "< 2.5s", "最大内容元素渲染时间，通常是封面图或首屏标题"],
+            ["INP", "< 200ms", "交互响应时间，替代原 FID 指标（2024 起）"],
+            ["CLS", "< 0.1", "布局偏移，图片未设宽高是主要原因"],
+            ["TTFB", "< 800ms", "服务器响应时间，CDN 边缘节点是关键"],
+            ["FCP", "< 1.8s", "首次内容渲染，字体加载策略影响此指标"],
+          ]
+        }
+      },
+      {
+        title: "阅读功能",
+        items: [
+          { name: "目录 TOC", desc: "2000 字以上文章必须提供。浮动侧边栏（宽屏）或顶部展开（移动端）。滚动时高亮当前章节（IntersectionObserver）。支持折叠，不干扰阅读主区域。" },
+          { name: "代码块增强", desc: "语法高亮（推荐 Shiki，服务端渲染无 JS 成本）、行号、复制按钮、文件名标注、diff 视图（+/-行标色）、语言标识。代码块是技术博客的核心 UI 组件，质量直接影响读者信任度。" },
+          { name: "深浅色主题", desc: "三模式：浅色 / 深色 / 跟随系统（prefers-color-scheme）。用户选择存 localStorage。代码高亮主题随之切换（如 github-light / github-dark）。避免首次加载闪烁（FOUC）：在 <head> 中注入主题检测脚本。" },
+          { name: "阅读进度与统计", desc: "顶部细线进度条（不占空间）。预计阅读时间（按 300字/分钟计算，可配置）。可选：阅读完成率统计（匿名，用于了解读者行为）。" },
+          { name: "版本过期 Banner", desc: "文章 updatedAt 超过 18 个月，或 techVersions 中有过期版本，在文章顶部展示警告 Banner：「本文写于 X 年，部分内容可能已过期，请参考最新文档」。" },
+          { name: "脚注与引用", desc: "学术式脚注（[^1]），点击跳转。引用块（blockquote）带来源标注。外链自动添加 rel=noopener noreferrer 和新标签打开。" },
+        ]
+      },
+      {
+        title: "交互式内容组件",
+        items: [
+          { name: "代码沙盒 Sandbox", desc: "嵌入 CodeSandbox / StackBlitz / 自建 iframe 沙盒，读者可在文章内直接运行和修改代码。技术博客差异化价值最大的功能之一。注意性能：懒加载，用截图 + 点击激活。" },
+          { name: "可交互图表", desc: "D3.js / Observable Plot / Recharts 驱动的可调参数图表。读者可拖动滑块、切换数据，直观理解算法或数据规律。用于数据分析类文章效果显著。" },
+          { name: "动画演示", desc: "算法可视化（排序、树遍历等）、架构图动画。使用 Framer Motion / CSS Animation 实现。减少读者对抽象概念的理解成本。" },
+          { name: "终端模拟器", desc: "嵌入静态终端模拟器，展示命令行交互过程。比截图更生动，读者可复制命令。使用 xterm.js 或自制简单实现。" },
+        ]
+      },
+      {
+        title: "无障碍 WCAG 2.2",
+        items: [
+          { name: "对比度与颜色", desc: "正文文字对比度 ≥ 4.5:1（AA 级）。不以颜色为唯一信息传达方式（如代码 diff 同时使用图标区分增删）。" },
+          { name: "键盘导航", desc: "全站可通过 Tab 键导航。焦点状态可见（不得 outline: none）。弹窗 / 模态框需管理焦点陷阱。" },
+          { name: "语义化 HTML", desc: "正确使用 <article><nav><main><aside><header><footer>。代码块使用 <pre><code>。图片提供有意义的 alt 文本（装饰图 alt=\"\"）。" },
+          { name: "跳转链接", desc: "页面顶部提供「跳到主要内容」链接（visually-hidden，聚焦时显示）。屏幕阅读器友好。" },
+        ]
+      },
+      {
+        title: "媒体优化",
+        items: [
+          { name: "图片管道", desc: "格式：WebP / AVIF 优先，JPEG 兜底。响应式：srcset + sizes 属性。懒加载：loading=\"lazy\"。模糊占位：blur-up 技术避免布局偏移（需设宽高比）。CDN 自动转换（Cloudflare Images / imgix）。" },
+          { name: "字体策略", desc: "字体子集化（中文用 pyftsubset，只保留博客用到的字形，体积减少 90%）。font-display: swap 避免 FOIT。英文代码字体（JetBrains Mono 等）单独加载，避免影响正文渲染。" },
+          { name: "OG 图动态生成", desc: "使用 Satori（Vercel）或 @vercel/og 在边缘函数中动态生成 OG 图，包含文章标题、作者、日期。无需手动设计每篇文章的分享图。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L4",
+    name: "发现与分发层",
+    icon: "📡",
+    color: "#d97706",
+    tagline: "内容如何被搜索引擎收录、如何到达读者",
+    sections: [
+      {
+        title: "SEO 技术基础",
+        items: [
+          { name: "URL 规范化", desc: "全站统一：选定 www 或 non-www、trailing slash 或不带，三选一后通过 301 重定向强制统一。canonical 标签防止重复内容（如分页、标签页与文章本体）。" },
+          { name: "语义化 URL", desc: "格式：/blog/[slug] 或 /[year]/[month]/[slug]。Slug 含核心关键词 + 年份（技术文章时效性强，年份避免读者误读内容新旧）。一经发布不得修改（需修改时用 301 重定向保持旧链有效）。" },
+          { name: "Sitemap 与爬取控制", desc: "sitemap.xml 自动生成，含 <lastmod><priority><changefreq>。robots.txt 控制不希望被索引的路径（草稿、管理后台）。发布后通过 Search Console API 主动 ping 触发快速收录。" },
+          { name: "内链策略", desc: "每篇文章应被至少 2 篇其他文章引用（孤岛文章 SEO 权重低）。系列文章相互链接。标签聚合页作为中间层，汇聚分散内链。避免过度内链，保持自然。" },
+        ]
+      },
+      {
+        title: "结构化数据 Schema.org",
+        items: [
+          { name: "BlogPosting / TechArticle", desc: "包含：headline（标题）、datePublished、dateModified、author（Person）、description、image（OG 图）、url、keywords。TechArticle 额外含 proficiencyLevel（技术难度）。" },
+          { name: "BreadcrumbList", desc: "面包屑导航结构化标记，提升搜索结果展示（可能出现层级路径）。对分类层级清晰的博客尤为有效。" },
+          { name: "FAQPage", desc: "FAQ 内容标记后可在 Google 搜索结果中展开显示问答，显著提升点击率（CTR）。仅标记权威性强、内容准确的 FAQ。" },
+          { name: "ProfilePage / Person", desc: "作者页结构化标记，关联 sameAs（GitHub、Twitter、LinkedIn URL），强化 E-E-A-T（经验、专业度、权威性、可信度）。" },
+        ]
+      },
+      {
+        title: "内容分发渠道",
+        items: [
+          { name: "RSS / Atom Feed（必备）", desc: "输出全文而非摘要（订阅者体验更佳，尊重读者选择）。技术博客读者 RSS 使用率远高于其他领域。通过 Feedly / NetNewsWire 等阅读器可稳定触达核心受众，不受平台算法影响。" },
+          { name: "Newsletter 邮件列表", desc: "邮件列表是最抗平台风险的私域渠道。工具选型：Resend（自建，免费层 3k/月，可靠性强）/ Buttondown（极简，适合个人）/ Listmonk（完全自建，数据自主）。发布频率建议与文章同步，无需单独维护内容。" },
+          { name: "社交平台同步", desc: "半自动同步（GitHub Actions）：发布后延迟 N 小时自动发布到 Twitter/X、Mastodon、微博。保留人工审核窗口（可配置 delay），避免自动化发布错误内容。各平台适配格式（字数限制、话题标签规范不同）。" },
+          { name: "内容聚合平台", desc: "少数派（中文）、DEV.to（英文技术）、掘金：发布内容副本，设置 canonical 指向原博客，避免 SEO 被分散。聚合平台能触达已有社区受众，冷启动期尤为重要。" },
+          { name: "多语言与国际化", desc: "hreflang 标签关联多语言版本。优先翻译流量最高的文章（Search Console 数据驱动决策）。AI 机器翻译（DeepL / Claude）初稿 + 人工润色，可控制时间成本。中英双语对 SEO 有显著价值。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L5",
+    name: "互动与社区层",
+    icon: "💬",
+    color: "#e11d48",
+    tagline: "读者如何参与、反馈如何回流到内容",
+    sections: [
+      {
+        title: "评论系统选型",
+        table: {
+          headers: ["方案", "适用场景", "优势", "限制"],
+          rows: [
+            ["giscus", "技术博客（首选）", "免费、无隐私问题、基于 GitHub Discussions、支持表情回应", "需要 GitHub 账号，非技术读者门槛高"],
+            ["utterances", "轻量技术博客", "极简、基于 GitHub Issues、嵌入简单", "无嵌套回复、功能有限"],
+            ["Waline", "面向大众的技术博客", "支持匿名评论、表情、通知、后台管理", "需自建服务端（Vercel/Railway）"],
+            ["Artalk", "自建完整控制", "完全自建、功能丰富、数据自主", "运维成本最高"],
+          ]
+        },
+        extra: "个人建议：流量起步阶段可不开评论（冷清感比没有评论更差）。等单篇稳定有 100+ UV 后再开启 giscus。"
+      },
+      {
+        title: "互动形态",
+        items: [
+          { name: "文章评论", desc: "正常评论区，支持 Markdown。展示评论数量（但不以评论数量作为文章质量指标）。" },
+          { name: "段落级别反馈", desc: "类似 Medium 的段落高亮 + 评论。读者可对特定段落提问或纠错，比全文评论区更精准。实现复杂度较高，属于进阶功能。" },
+          { name: "表情 Reaction", desc: "GitHub Discussions 自带的 Reaction（👍🎉😕 等）。低门槛互动，减少空评论区的心理压力。" },
+          { name: "Web Share API", desc: "移动端原生分享弹窗，替代传统社交分享按钮。简洁、不引入第三方 JS。回退到复制链接按钮。" },
+          { name: "单篇文章订阅", desc: "读者可订阅特定文章的更新通知（giscus 天然支持）。适合长期维护的参考手册类文章。" },
+        ]
+      },
+      {
+        title: "知识回流机制",
+        items: [
+          { name: "评论 → FAQ", desc: "定期整理评论区中高质量的问答，提炼为文章末尾的 FAQ 模块。同步更新 FAQPage Schema。既提升内容质量，又回馈提问的读者，形成正向循环。" },
+          { name: "纠错 → 勘误追更", desc: "读者指出错误后，在文章内添加勘误块（醒目样式），并在 changelog 中记录。感谢纠错读者（致谢列表）。透明的错误处理提升读者信任度。" },
+          { name: "讨论 → 衍生文章", desc: "评论区中热点讨论往往是最好的选题来源。新文章通过 derived_from 关联到触发它的原文，形成内容图谱。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L6",
+    name: "AI 能力层",
+    icon: "🤖",
+    color: "#7c3aed",
+    tagline: "AI 在技术博客中的系统性集成——从内容生产到读者交互",
+    ai: true,
+    sections: [
+      {
+        title: "构建时 AI（离线处理）",
+        items: [
+          { name: "自动标签与分类", desc: "构建流水线中调用 LLM，分析文章内容，从已有标签集中推荐最匹配的标签（RAG：检索已有标签 → 限制输出范围）。输出写入 Frontmatter 的 autoTags 字段，人工可覆盖。", ai: true },
+          { name: "摘要自动生成", desc: "针对 description 字段为空的文章，构建时自动生成 150字 SEO 摘要。Prompt 设计要点：要求包含核心关键词、语言简洁、避免泛泛而谈。结果供人工审核，不强制使用。", ai: true },
+          { name: "封面图 AI 生成", desc: "根据文章标题 + 内容摘要，生成符合博客视觉风格的封面图和 OG 图。记录生成 Prompt 到 Frontmatter，确保风格一致性可复现。工具：DALL-E 3 / Ideogram / Stable Diffusion。", ai: true },
+          { name: "内容向量化与索引", desc: "将文章内容（标题、摘要、全文）切片后生成 Embedding，存入向量数据库（Upstash Vector / Supabase pgvector / 本地 sqlite-vss）。用于后续语义搜索和相关内容推荐。构建时触发，增量更新。", ai: true },
+          { name: "相关文章推荐优化", desc: "基于 Embedding 向量相似度计算「相关文章」，比基于标签匹配更精准（语义相似而非关键词重叠）。结果在构建时预计算写入静态文件，无需运行时 API 调用。", ai: true },
+        ]
+      },
+      {
+        title: "运行时 AI（用户交互）",
+        items: [
+          { name: "数字分身对话（核心功能）", desc: "基于博主的全量文章和指定信息源（GitHub README、LinkedIn、演讲文稿等）构建知识库，通过 RAG（检索增强生成）实现：读者提问 → 向量检索相关内容 → LLM 组织回答 + 引用来源。让读者可以「和博主对话」。架构：Next.js API Route / Cloudflare Worker + Upstash Vector + Claude/GPT API。", ai: true },
+          { name: "文章内语义搜索", desc: "站内搜索升级为语义搜索（不依赖关键词精确匹配）。输入「怎么优化 React 渲染性能」可找到标题为「memo 和 useMemo 深度解析」的文章。基于预构建的 Embedding 索引，边缘函数实时查询。", ai: true },
+          { name: "个性化内容推荐", desc: "基于读者当前阅读的文章，实时推荐相关文章（相似度排序）。可扩展为基于阅读历史的个性化推荐（需用户授权，隐私敏感，需慎重）。", ai: true },
+          { name: "AI 解释器", desc: "文章中代码块或术语旁添加「Ask AI」按钮，读者点击后弹出对话框，针对该特定代码片段或术语提问。上下文为：当前代码 + 文章段落。降低阅读门槛，对初学者友好。", ai: true },
+        ]
+      },
+      {
+        title: "AI 使用的边界与声明",
+        items: [
+          { name: "透明度声明", desc: "在文章 Frontmatter 中记录 aiUsage 字段（none / assisted / generated），并在页面上以适当方式展示。2026 年读者对 AI 生成内容信任度存疑，主动声明能建立信任而非损害信任。" },
+          { name: "质量把关原则", desc: "AI 生成内容（摘要、标签、配图）应有人工审核环节。「AI 草稿 + 人工确认」的工作流比「全自动发布」更可控，出错率更低。绝不将 AI 生成的技术内容直接发布，事实性错误的代价是读者信任。" },
+          { name: "成本控制", desc: "向量化和摘要生成在构建时批量处理，成本可控（每篇文章约 $0.001-0.01）。运行时 AI 对话需设置 rate limiting，避免 API 成本失控。使用 Upstash 的按量计费控制向量存储成本。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L7",
+    name: "信任与品牌层",
+    icon: "🛡",
+    color: "#0891b2",
+    tagline: "作者身份、内容透明度、社区治理",
+    sections: [
+      {
+        title: "作者身份建立",
+        items: [
+          { name: "About 页面", desc: "技术背景（经历、专长领域）、博客定位（写给谁看、关注什么主题）、联系方式。写作风格：真实、具体，避免空洞的自我介绍。这是读者建立信任感的第一入口。" },
+          { name: "rel=me 互认证", desc: "在个人页面上使用 <a rel=\"me\" href=\"https://github.com/xxx\"> 链接到各平台账号。Mastodon 等联邦平台会验证此链接，显示「已验证」标识。防冒充，同时提升 Google E-E-A-T 信号。" },
+          { name: "ProfilePage Schema", desc: "结构化标记作者信息：name、url、sameAs（社交账号 URL 数组）、image（头像）。搜索引擎可将博主与其他平台上的同名作者关联，建立统一的作者知识图谱。" },
+          { name: "作品集 / Portfolio", desc: "展示个人项目、开源贡献、演讲、课程。与技术文章形成互补：文章展示「能想清楚」，作品集展示「能做出来」。对职业背书有显著价值。" },
+        ]
+      },
+      {
+        title: "内容透明度",
+        items: [
+          { name: "引用来源规范", desc: "学术文章风格：明确标注信息来源（官方文档、论文、一手资料）。外链区分：官方文档 / 参考资料 / 延伸阅读。避免以「众所周知」掩盖无来源的断言。" },
+          { name: "更新日志 Changelog", desc: "重大内容更新附 changelog（what changed, why）。轻微修正（错别字）无需记录。让长期追踪文章的读者了解内容演变。可链接到对应的 Git commit。" },
+          { name: "AI 使用声明", desc: "在适当位置（About 页 + 文章 Frontmatter）说明：是否使用 AI 工具、在哪些环节使用、人工审核机制。2026 年这是建立信任的主动手段，而非需要回避的话题。" },
+          { name: "勘误机制", desc: "文章中有明显的「发现错误？」入口（链接到 GitHub Issue 或邮件）。收到勘误后公开处理：在文章中添加勘误块，在致谢列表中感谢指正者。" },
+        ]
+      },
+      {
+        title: "隐私与治理",
+        items: [
+          { name: "隐私政策", desc: "说明收集哪些数据（访问日志、评论、邮件地址）、如何使用、第三方服务列表（评论系统、分析工具、Newsletter）。使用隐私友好分析工具（Umami/Plausible）可大幅简化隐私说明。" },
+          { name: "社区准则", desc: "如开放评论区，需明确：可接受的讨论行为、不可接受的行为（人身攻击、垃圾广告）、违规处理方式。即使是个人博客也应有最低限度的社区规范。" },
+          { name: "反垃圾评论", desc: "giscus/utterances 通过 GitHub OAuth 天然过滤垃圾。Waline 支持 Akismet 和 Cloudflare Turnstile（无感人机验证）。不建议使用 reCAPTCHA（体验差且隐私问题大）。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L8",
+    name: "工程与部署层",
+    icon: "⚙️",
+    color: "#4f46e5",
+    tagline: "框架选型、CI/CD 工程链路、基础设施配置",
+    sections: [
+      {
+        title: "框架选型决策",
+        table: {
+          headers: ["框架", "适用场景", "优势", "注意"],
+          rows: [
+            ["Astro", "博客首选（2026）", "Islands 架构，零 JS 默认，原生 MDX，构建极快，Shiki 集成", "生态相对 Next.js 小，复杂交互需要 island 组件"],
+            ["Next.js", "有大量交互功能", "App Router + RSC，生态最成熟，Vercel 原生支持", "较重，个人博客有过度工程化风险"],
+            ["Hugo", "极简静态博客", "Go 原生，构建毫秒级，无 JS 工具链依赖，稳定", "模板语言学习曲线，MDX/React 组件不支持"],
+            ["Zola", "极简静态博客", "Rust 原生，单二进制文件，速度极快", "生态更小，适合工程师个人偏好驱动选择"],
+          ]
+        }
+      },
+      {
+        title: "托管平台选型",
+        table: {
+          headers: ["平台", "推荐度", "特点", "适用场景"],
+          rows: [
+            ["Cloudflare Pages", "★★★★★", "全球 CDN，免费层无限带宽，Workers 边缘扩展，内置 WAF，R2 存储", "首选，几乎无成本"],
+            ["Vercel", "★★★★☆", "Next.js 生态最佳，Edge Functions，Preview 部署体验极佳", "使用 Next.js 时优先考虑"],
+            ["Netlify", "★★★☆☆", "插件生态丰富，表单处理，函数部署简单", "需要插件扩展功能时"],
+            ["GitHub Pages", "★★★☆☆", "最简单，与 GitHub 原生集成，无 Edge 功能", "静态内容，无特殊需求时"],
+          ]
+        }
+      },
+      {
+        title: "渲染模式决策",
+        items: [
+          { name: "SSG 静态生成（优先）", desc: "博客主体 99% 场景首选。构建时生成所有 HTML，部署到 CDN。优势：速度最快、安全性最高、无服务器成本。适用于所有文章页、列表页、标签页。" },
+          { name: "边缘函数（增强）", desc: "轻量动态功能的最佳平衡：OG 图动态生成、AB 测试、地理重定向、搜索 API、AI 对话 API。在 CDN 边缘执行，延迟低，无需独立服务器。" },
+          { name: "全动态 SSR（慎用）", desc: "除非有明确的实时数据需求，否则不引入。增加运维复杂度和成本。个人博客几乎没有无法通过 SSG + 边缘函数解决的场景。" },
+        ]
+      },
+      {
+        title: "CI/CD 工程链路",
+        items: [
+          { name: "质量门禁（合并前）", desc: "PR 触发：Frontmatter Schema 校验 + markdownlint + Vale 文章质量检查 + Lighthouse CI（CWV 分数回退则阻断合并）+ 死链检查 + TypeScript 类型检查。所有检查通过才允许合并到 main。" },
+          { name: "Preview 部署", desc: "每个 PR 自动生成 Preview URL，可直接预览文章渲染效果。链接自动回帖到 PR 评论。Cloudflare Pages / Vercel 原生支持，无需额外配置。" },
+          { name: "发布钩子", desc: "合并到 main 后：① 触发构建部署 ② 自动 ping Google Search Console（收录加速）③ 触发 AI 向量化索引更新 ④ 触发 Newsletter 草稿（可选）⑤ 社交媒体延迟发布（GitHub Actions delay）。" },
+          { name: "回滚机制", desc: "Cloudflare Pages / Vercel 支持一键回滚到任意历史部署版本。保留 Git tag 标记重要版本。发生故障时可在 1 分钟内回滚。" },
+        ]
+      },
+      {
+        title: "安全基础配置",
+        items: [
+          { name: "HTTP 安全头", desc: "Strict-Transport-Security（HSTS，强制 HTTPS）、Content-Security-Policy（CSP，防 XSS）、X-Frame-Options（防点击劫持）、Permissions-Policy（限制浏览器 API 访问）。在 Cloudflare / Netlify 的配置文件中统一设置。" },
+          { name: "依赖安全", desc: "Dependabot 自动创建依赖更新 PR。OSSF Scorecard 评估供应链安全评分。npm audit 在 CI 中执行，高危漏洞阻断发布。定期审查第三方脚本（评论系统、分析工具）。" },
+          { name: "域名与 DNS", desc: "DNSSEC 启用（Cloudflare 一键配置）。CAA 记录限制证书颁发机构。HTTPS 证书自动续期（Cloudflare / Let's Encrypt）。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L9",
+    name: "监控与运营层",
+    icon: "📊",
+    color: "#16a34a",
+    tagline: "可观测性、内容健康度、自动化运维",
+    sections: [
+      {
+        title: "搜索健康监控",
+        items: [
+          { name: "Google Search Console", desc: "监控：索引状态（哪些页面被收录）、覆盖率错误（noindex / 404 / 重定向异常）、富结果测试（结构化数据是否有效）、CWV 真实用户数据、关键词排名与点击率。每周检查一次，新文章发布后手动请求索引。" },
+          { name: "Bing Webmaster Tools", desc: "不可忽视：Bing 占全球搜索约 7%，在某些地区和受众群体中比例更高（使用 Edge 的企业用户）。提交 sitemap，监控索引状态。操作与 Google Search Console 类似但独立。" },
+          { name: "Lighthouse CI", desc: "每次部署自动运行 Lighthouse，输出 Performance / SEO / Accessibility / Best Practices 四项评分。设置阈值（如 Performance < 90 则构建失败），防止性能回退。结果存档，趋势可视化。" },
+        ]
+      },
+      {
+        title: "隐私友好流量分析",
+        table: {
+          headers: ["工具", "部署方式", "成本", "特点"],
+          rows: [
+            ["Umami", "自建（Vercel/Railway）", "免费（自建）/ $9/月（托管）", "开源，数据完全自主，界面简洁，无 GDPR 问题"],
+            ["Plausible", "托管", "$9/月起", "最易用，报告直观，无 Cookie，合规友好"],
+            ["Cloudflare Web Analytics", "Cloudflare 原生", "免费", "零配置，在 Cloudflare 托管时首选，功能相对简单"],
+            ["Fathom", "托管", "$14/月起", "隐私设计最严格，适合有 GDPR 合规需求的场景"],
+          ]
+        },
+        extra: "核心原则：不使用 Google Analytics（隐私问题 + GDPR 合规成本 + 信息过载）。隐私友好分析工具数据更简洁，反而更易做出决策。"
+      },
+      {
+        title: "可靠性监控",
+        items: [
+          { name: "站点可用性监控", desc: "UptimeRobot（免费层每 5 分钟检测）或 Better Stack（更丰富的告警和状态页）。监控：主域名 HTTP 状态 + 关键页面（首页 / 最新文章）。宕机时邮件 / 推送告警。可选：公开状态页（status.yourdomain.com）。" },
+          { name: "前端错误监控", desc: "Sentry（免费层足够个人博客使用）：捕获 JS 运行时错误、Promise 未捕获异常。上传 Source Map（构建后删除，避免暴露源码）。重点关注交互式组件的错误率。" },
+        ]
+      },
+      {
+        title: "内容运维自动化",
+        items: [
+          { name: "死链检查", desc: "使用 lychee 或 broken-link-checker，每周通过 GitHub Actions 扫描全站链接（内部链接 + 外部链接）。发现死链自动创建 GitHub Issue，标注具体文章和链接位置。重点：外部链接死亡是不可控的，需定期清理。" },
+          { name: "过期内容提醒", desc: "GitHub Actions 定时任务（每月）：扫描 updatedAt > 18 个月的文章，创建 Issue 提醒审查。扫描 techVersions 中的技术栈版本，对比最新版本，标注版本差距超过 2 个大版本的文章。" },
+          { name: "内容备份", desc: "Git 仓库本身是主要备份（代码 + 内容）。额外备份：每日将 /public 目录（编译产物）同步到 Cloudflare R2 / AWS S3。媒体资源（图片）单独备份。定期测试恢复流程。" },
+          { name: "构建性能监控", desc: "记录每次构建时长，趋势超过阈值则触发告警（内容增多后构建可能明显变慢）。Astro / Next.js 的增量构建能显著缓解，但需要评估构建缓存策略。" },
+        ]
+      }
+    ]
+  },
+  {
+    code: "L10",
+    name: "可持续发展层",
+    icon: "🌱",
+    color: "#65a30d",
+    tagline: "成本控制、内容节奏、价值变现",
+    sections: [
+      {
+        title: "参考成本清单",
+        table: {
+          headers: ["项目", "工具选择", "年成本"],
+          rows: [
+            ["域名", "Cloudflare Registrar / Namesilo", "¥80-120"],
+            ["CDN + 托管", "Cloudflare Pages（免费层）", "¥0"],
+            ["评论系统", "giscus（免费）", "¥0"],
+            ["流量分析", "Umami 自建（Vercel/Railway 免费层）", "¥0"],
+            ["邮件发送", "Resend（免费 3k/月）", "¥0"],
+            ["可用性监控", "UptimeRobot（免费层）", "¥0"],
+            ["错误监控", "Sentry（免费层 5k 错误/月）", "¥0"],
+            ["AI 能力（可选）", "Claude/GPT API（按量计费，低频使用）", "¥50-200"],
+            ["总计（不含 AI）", "—", "< ¥200/年"],
+          ]
+        },
+        extra: "个人技术博客全栈基础运行成本可以控制在 ¥200/年以内（仅域名费）。AI 功能按需开启，低流量阶段成本可忽略。"
+      },
+      {
+        title: "内容运营节奏",
+        items: [
+          { name: "质量 vs 频率权衡", desc: "1 篇深度文章（3000+ 字，有独特见解）> 10 篇浅薄内容。建议频率：深度文章 2-4篇/月，TIL/短笔记不限。深度文章是长尾 SEO 和口碑的核心驱动力，浅薄内容消耗读者信任而无回报。" },
+          { name: "常青内容策略", desc: "常青内容（Evergreen）：不依赖时效性、长期有搜索需求（如「React 性能优化最佳实践」）。占比建议 > 70%。时效性内容（如「2025 年前端框架对比」）有即时流量但快速贬值。维护常青内容比持续产出新内容更高效。" },
+          { name: "内容再利用", desc: "单篇深度文章的延伸路径：→ 拆解为 3-5 条推文/微博串 → Newsletter 精华版 → 演讲 / 分享 PPT → 视频教程 → 完整课程。一次创作，多渠道分发，降低边际内容成本。" },
+          { name: "选题来源管理", desc: "维护选题清单（GitHub Projects / Notion）。来源：评论区问题、Search Console 关键词机会、自己遇到的问题（最真实的素材）、行业热点（短期流量但竞争激烈）。定期回顾，按 ROI 排优先级。" },
+        ]
+      },
+      {
+        title: "价值变现路径",
+        items: [
+          { name: "赞助 / 打赏", desc: "GitHub Sponsors（最易配置）、Ko-fi、爱发电。放置位置：高价值文章末尾（转化率比侧边栏高 5x）+ About 页面。不强制、不反复提醒。有稳定月收入 10-50 美元后可覆盖服务器成本。" },
+          { name: "付费 Newsletter", desc: "成熟阶段（免费订阅者 > 500 人后考虑）。付费内容：更深度分析、早期访问、原始资料。工具：Ghost（自建，功能完整）/ Substack（零成本启动但抽成高）/ Buttondown（轻量）。" },
+          { name: "数字产品", desc: "电子书、模板、代码库、在线课程。Gumroad / Lemon Squeezy 处理支付和分发（支持国内用户支付）。优势：一次创作，长尾收入。前提：有足够的受众基础和内容积累。" },
+          { name: "咨询 / 写作合作", desc: "技术博客是最好的简历。可以带来：技术咨询、技术写作邀约（InfoQ / 掘金等平台的付费约稿）、演讲邀请。间接价值往往大于广告收入。" },
+        ]
+      }
+    ]
+  }
+];
+
+// ════════════════════════════════════════
+// RENDER OVERVIEW
+// ════════════════════════════════════════
+function renderOverview() {
+  const container = document.getElementById('overview-view');
+  container.innerHTML = layers.map((l, i) => `
+    <div class="layer-pill" style="--accent-color: ${l.color}" onclick="goToDetail(${i})">
+      <div class="pill-icon">${l.icon}</div>
+      <div class="pill-info">
+        <div class="pill-code">${l.code}${l.ai ? ' · AI' : ''}</div>
+        <div class="pill-name">${l.name}</div>
+        <div class="pill-desc">${l.tagline}</div>
+      </div>
+      <div class="pill-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════
+// RENDER DETAIL
+// ════════════════════════════════════════
+function renderDetail() {
+  // nav
+  const nav = document.getElementById('layer-nav');
+  nav.innerHTML = layers.map((l, i) => `
+    <span class="nav-chip" id="nav-${i}" style="--accent-color: ${l.color}" onclick="scrollToLayer(${i})">${l.code} ${l.name}</span>
+  `).join('');
+
+  // cards
+  const container = document.getElementById('layers-container');
+  container.innerHTML = layers.map((l, i) => `
+    <div class="layer-card" id="layer-${i}" style="--accent-color: ${l.color}">
+      <div class="layer-header" onclick="toggleLayer(${i})">
+        <div class="layer-icon-wrap">${l.icon}</div>
+        <div class="layer-meta">
+          <div class="layer-code">${l.code}${l.ai ? ' <span class="ai-badge">✦ AI</span>' : ''}</div>
+          <div class="layer-name">${l.name}</div>
+          <div class="layer-tagline">${l.tagline}</div>
+        </div>
+        <div class="expand-icon">›</div>
+      </div>
+      <div class="layer-body">
+        ${l.sections.map(s => renderSection(s, l.color)).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // open all by default
+  layers.forEach((_, i) => {
+    document.getElementById(`layer-${i}`).classList.add('open');
+  });
+}
+
+function renderSection(s, color) {
+  let content = '';
+
+  if (s.table) {
+    content += `
+      <table class="decision-table">
+        <thead><tr>${s.table.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${s.table.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    `;
+    if (s.extra) content += `<div class="callout" style="--accent-color:${color}">${s.extra}</div>`;
+  }
+
+  if (s.items) {
+    content += `<div class="item-grid">`;
+    content += s.items.map((item, idx) => `
+      <div class="item${item.ai ? ' ai-item' : ''}" onclick="toggleItem(this)">
+        <div class="item-name">
+          <span class="dot"></span>
+          ${item.name}${item.ai ? '<span class="ai-badge">AI</span>' : ''}
+        </div>
+        <div class="item-desc">${item.desc}</div>
+        <div class="item-expand-hint">点击展开详情</div>
+      </div>
+    `).join('');
+    content += `</div>`;
+    if (s.extra) content += `<div class="callout" style="--accent-color:${color}">${s.extra}</div>`;
+  }
+
+  return `
+    <div class="section" style="--accent-color:${color}">
+      <div class="section-title">${s.title}</div>
+      ${content}
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════
+// INTERACTIONS
+// ════════════════════════════════════════
+function toggleItem(el) {
+  el.classList.toggle('expanded');
+}
+
+function toggleLayer(i) {
+  const card = document.getElementById(`layer-${i}`);
+  card.classList.toggle('open');
+}
+
+function scrollToLayer(i) {
+  document.querySelectorAll('.nav-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById(`nav-${i}`).classList.add('active');
+  document.getElementById(`layer-${i}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!document.getElementById(`layer-${i}`).classList.contains('open')) {
+    document.getElementById(`layer-${i}`).classList.add('open');
+  }
+}
+
+function goToDetail(i) {
+  switchView('detail');
+  setTimeout(() => scrollToLayer(i), 100);
+}
+
+let currentView = 'overview';
+function switchView(v) {
+  currentView = v;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view-btn')[v === 'overview' ? 0 : 1].classList.add('active');
+
+  if (v === 'overview') {
+    document.getElementById('overview-view').style.display = 'grid';
+    document.getElementById('detail-view').classList.remove('active');
+  } else {
+    document.getElementById('overview-view').style.display = 'none';
+    document.getElementById('detail-view').classList.add('active');
+  }
+}
+
+// Intersection observer for nav highlighting
+function setupNavObserver() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        const i = id.split('-')[1];
+        document.querySelectorAll('.nav-chip').forEach(c => c.classList.remove('active'));
+        const chip = document.getElementById(`nav-${i}`);
+        if (chip) chip.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  layers.forEach((_, i) => {
+    const el = document.getElementById(`layer-${i}`);
+    if (el) observer.observe(el);
+  });
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+renderOverview();
+renderDetail();
+setTimeout(setupNavObserver, 500);
+</script>

@@ -135,7 +135,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
             output.innerHTML = svg;
           } catch (error) {
             void error;
-            output.innerHTML = `<p class="mermaid-error">图表渲染错误: ${error instanceof Error ? error.message : '未知错误'}</p>`;
+            output.innerHTML = `<p class="mermaid-error">图表渲染错误: ${error instanceof Error ? error.message : "未知错误"}</p>`;
           }
         }
       }
@@ -148,7 +148,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
     renderAllDiagrams();
   }
 
-  document.addEventListener('astro:page-load', renderAllDiagrams);
+  document.addEventListener("astro:page-load", renderAllDiagrams);
 </script>
 <style>
   .mermaid-wrapper {

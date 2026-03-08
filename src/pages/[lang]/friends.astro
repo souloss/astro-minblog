@@ -23,32 +23,34 @@ const { lang } = Astro.params as { lang: "zh" | "en" };
     data-lang={lang}
   >
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {FRIENDS.map((friend) => (
-        <a
-          href={friend.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex gap-4 rounded-lg border border-border bg-background/50 p-4 transition-colors hover:border-accent hover:bg-muted/30"
-        >
-          {friend.avatar && (
-            <img
-              src={friend.avatar}
-              alt=""
-              class="size-12 shrink-0 rounded-full object-cover"
-              width="48"
-              height="48"
-            />
-          )}
-          <div class="min-w-0 flex-1">
-            <div class="font-semibold text-foreground">{friend.name}</div>
-            {friend.description && (
-              <div class="mt-1 text-sm text-muted-foreground line-clamp-2">
-                {friend.description}
-              </div>
+      {
+        FRIENDS.map(friend => (
+          <a
+            href={friend.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex gap-4 rounded-lg border border-border bg-background/50 p-4 transition-colors hover:border-accent hover:bg-muted/30"
+          >
+            {friend.avatar && (
+              <img
+                src={friend.avatar}
+                alt=""
+                class="size-12 shrink-0 rounded-full object-cover"
+                width="48"
+                height="48"
+              />
             )}
-          </div>
-        </a>
-      ))}
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-foreground">{friend.name}</div>
+              {friend.description && (
+                <div class="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                  {friend.description}
+                </div>
+              )}
+            </div>
+          </a>
+        ))
+      }
     </div>
   </Main>
   <Footer lang={lang} />

@@ -9,19 +9,29 @@ interface Props {
   page?: number;
 }
 
-const {
-  bvid,
-  page = 1,
-} = Astro.props;
+const { bvid, page = 1 } = Astro.props;
 ---
 
 <div class="bilibili-embed-wrapper my-6">
-  <div class="relative w-full overflow-hidden rounded-lg border border-border bg-muted/20" style="aspect-ratio: 16/9;">
-    <div class="bilibili-placeholder absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity duration-300" data-placeholder>
-      <svg class="size-12 text-muted-foreground animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <polygon points="5 3 19 12 5 21 5 3" />
+  <div
+    class="relative w-full overflow-hidden rounded-lg border border-border bg-muted/20"
+    style="aspect-ratio: 16/9;"
+  >
+    <div
+      class="bilibili-placeholder absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity duration-300"
+      data-placeholder
+    >
+      <svg
+        class="text-muted-foreground size-12 animate-pulse"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        aria-hidden="true"
+      >
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
       </svg>
-      <span class="text-sm text-muted-foreground">加载中...</span>
+      <span class="text-muted-foreground text-sm">加载中...</span>
     </div>
     <iframe
       src={`https://player.bilibili.com/player.html?bvid=${bvid}&page=${page}&high_quality=1&danmaku=0&autoplay=0`}
@@ -31,7 +41,7 @@ const {
       loading="lazy"
       title={`Bilibili 视频 ${bvid}`}
       onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"
-    />
+    ></iframe>
   </div>
 </div>
 

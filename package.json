@@ -1,5 +1,5 @@
 {
-  "name": "astro-paper",
+  "name": "astro-minblog",
   "type": "module",
   "version": "5.5.1",
   "scripts": {
@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "tools:summarize": "tsx tools/summarize.ts",
     "tools:generate-related": "tsx tools/generate-related.ts",
-    "tools:translate": "tsx tools/translate.ts"
+    "tools:translate": "tsx tools/translate.ts",
+    "og": "tsx scripts/generate-og.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
@@ -52,6 +53,7 @@
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "puppeteer-core": "^24.38.0",
     "stylus": "^0.64.0",
     "tsx": "^4.19.2",
     "typescript": "^5.9.3",

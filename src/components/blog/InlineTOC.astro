@@ -6,10 +6,7 @@
  * - Nested heading structure
  * - Click to navigate
  */
-import {
-  type TocHeading,
-  buildNestedHeadings,
-} from "@/utils/toc";
+import { type TocHeading, buildNestedHeadings } from "@/utils/toc";
 
 type Props = {
   headings: TocHeading[];
@@ -20,98 +17,105 @@ const { headings } = Astro.props;
 const nestedHeadings = buildNestedHeadings(headings);
 ---
 
-<div class="inline-toc mt-8 mb-8 border border-border rounded-lg bg-card/50 backdrop-blur-sm" data-inline-toc>
+<div
+  class="inline-toc bg-card/50 mt-8 mb-8 rounded-lg border border-border backdrop-blur-sm"
+  data-inline-toc
+>
   <button
     type="button"
-    class="inline-toc-toggle flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    class="inline-toc-toggle flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     aria-expanded="false"
     aria-controls="inline-toc-content"
     data-toc-toggle
   >
     <div class="flex items-center gap-2">
-      <svg 
-        class="w-4 h-4 text-muted-foreground" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
+      <svg
+        class="text-muted-foreground h-4 w-4"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
         stroke-width="2"
       >
-        <path d="M3 12h18M3 6h18M3 18h18" />
+        <path d="M3 12h18M3 6h18M3 18h18"></path>
       </svg>
       <span>目录</span>
-      <span class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+      <span
+        class="text-muted-foreground rounded-md bg-muted px-1.5 py-0.5 text-xs"
+      >
         {nestedHeadings.length} 章节
       </span>
     </div>
-    <svg 
-      class="w-4 h-4 text-muted-foreground transition-transform duration-200" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
+    <svg
+      class="text-muted-foreground h-4 w-4 transition-transform duration-200"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
       stroke-width="2"
       data-toggle-icon
     >
-      <path d="M6 9l6 6 6-6" />
+      <path d="M6 9l6 6 6-6"></path>
     </svg>
   </button>
-  
-  <div 
-    id="inline-toc-content" 
-    class="inline-toc-content overflow-hidden grid transition-[grid-template-rows] duration-300 ease-out"
+
+  <div
+    id="inline-toc-content"
+    class="inline-toc-content grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out"
     style="grid-template-rows: 0fr;"
     data-toc-content
   >
-    <nav class="min-h-0 border-t border-border bg-card/30">
-      <ul class="py-2 px-4 space-y-1">
-        {nestedHeadings.map((heading) => (
-          <li>
-            <div class="flex items-center justify-between group">
-              <a
-                href={`#${heading.slug}`}
-                class="inline-toc-link block py-1.5 text-sm font-medium text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-md px-2 transition-colors truncate flex-1"
-                data-toc-slug={heading.slug}
-                data-toc-depth={heading.depth}
-              >
-                {heading.text}
-              </a>
-              {heading.children.length > 0 && (
-                <button
-                  type="button"
-                  class="p-1 text-muted-foreground hover:text-accent rounded-md transition-colors"
-                  aria-label="Toggle subheadings"
-                  onclick={`this.parentElement.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180')`}
+    <nav class="bg-card/30 min-h-0 border-t border-border">
+      <ul class="space-y-1 px-4 py-2">
+        {
+          nestedHeadings.map(heading => (
+            <li>
+              <div class="group flex items-center justify-between">
+                <a
+                  href={`#${heading.slug}`}
+                  class="inline-toc-link text-muted-foreground block flex-1 truncate rounded-md px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent/5 hover:text-accent"
+                  data-toc-slug={heading.slug}
+                  data-toc-depth={heading.depth}
                 >
-                  <svg 
-                    class="w-3.5 h-3.5 transition-transform duration-200" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    stroke-width="2"
+                  {heading.text}
+                </a>
+                {heading.children.length > 0 && (
+                  <button
+                    type="button"
+                    class="text-muted-foreground rounded-md p-1 transition-colors hover:text-accent"
+                    aria-label="Toggle subheadings"
+                    onclick={`this.parentElement.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180')`}
                   >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </button>
-              )}
-            </div>
-            
-            {heading.children.length > 0 && (
-              <ul class="hidden pl-4 space-y-1 mt-1 border-l border-border/50 ml-2">
-                {heading.children.map((subHeading: TocHeading) => (
-                  <li>
-                    <a
-                      href={`#${subHeading.slug}`}
-                      class="inline-toc-link block py-1 text-xs text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-md px-2 transition-colors truncate"
-                      data-toc-slug={subHeading.slug}
-                      data-toc-depth={subHeading.depth}
+                    <svg
+                      class="h-3.5 w-3.5 transition-transform duration-200"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
                     >
-                      {subHeading.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {heading.children.length > 0 && (
+                <ul class="mt-1 ml-2 hidden space-y-1 border-l border-border/50 pl-4">
+                  {heading.children.map((subHeading: TocHeading) => (
+                    <li>
+                      <a
+                        href={`#${subHeading.slug}`}
+                        class="inline-toc-link text-muted-foreground block truncate rounded-md px-2 py-1 text-xs transition-colors hover:bg-accent/5 hover:text-accent"
+                        data-toc-slug={subHeading.slug}
+                        data-toc-depth={subHeading.depth}
+                      >
+                        {subHeading.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
       </ul>
     </nav>
   </div>
@@ -121,11 +125,11 @@ const nestedHeadings = buildNestedHeadings(headings);
   .inline-toc-toggle[aria-expanded="true"] [data-toggle-icon] {
     transform: rotate(180deg);
   }
-  
+
   .inline-toc-content[data-expanded="true"] {
     grid-template-rows: 1fr;
   }
-  
+
   .inline-toc-link.active {
     color: var(--accent);
     background-color: color-mix(in srgb, var(--accent) 10%, transparent);
@@ -135,79 +139,85 @@ const nestedHeadings = buildNestedHeadings(headings);
 <script>
   function initInlineTOC() {
     // Only initialize once per container
-    const tocContainers = document.querySelectorAll('[data-inline-toc]');
-    
+    const tocContainers = document.querySelectorAll("[data-inline-toc]");
+
     tocContainers.forEach(tocContainer => {
-        if (tocContainer.hasAttribute('data-initialized')) return;
-        tocContainer.setAttribute('data-initialized', 'true');
+      if (tocContainer.hasAttribute("data-initialized")) return;
+      tocContainer.setAttribute("data-initialized", "true");
 
-        const toggle = tocContainer.querySelector('[data-toc-toggle]');
-        const content = tocContainer.querySelector('[data-toc-content]');
-        const links = tocContainer.querySelectorAll('.inline-toc-link');
-        
-        if (!toggle || !content) return;
+      const toggle = tocContainer.querySelector("[data-toc-toggle]");
+      const content = tocContainer.querySelector("[data-toc-content]");
+      const links = tocContainer.querySelectorAll(".inline-toc-link");
 
-        // Toggle expand/collapse
-        const handleToggle = (e: Event) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-          toggle.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
-          content.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
-          (content as HTMLElement).style.gridTemplateRows = isExpanded ? '0fr' : '1fr';
-        };
-        
-        toggle.addEventListener('click', handleToggle);
+      if (!toggle || !content) return;
 
-        // Track active section (optional for InlineTOC, but good for consistency)
-        const observerOptions = {
-          root: null,
-          rootMargin: '-80px 0px -70% 0px',
-          threshold: 0,
-        };
+      // Toggle expand/collapse
+      const handleToggle = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", isExpanded ? "false" : "true");
+        content.setAttribute("data-expanded", isExpanded ? "false" : "true");
+        (content as HTMLElement).style.gridTemplateRows = isExpanded
+          ? "0fr"
+          : "1fr";
+      };
 
-        const headingElements = new Map();
+      toggle.addEventListener("click", handleToggle);
 
-        links.forEach(link => {
-          const slug = (link as HTMLElement).dataset.tocSlug;
-          if (slug) {
-            const heading = document.getElementById(slug);
-            if (heading) {
-              headingElements.set(slug, heading);
-            }
+      // Track active section (optional for InlineTOC, but good for consistency)
+      const observerOptions = {
+        root: null,
+        rootMargin: "-80px 0px -70% 0px",
+        threshold: 0,
+      };
+
+      const headingElements = new Map();
+
+      links.forEach(link => {
+        const slug = (link as HTMLElement).dataset.tocSlug;
+        if (slug) {
+          const heading = document.getElementById(slug);
+          if (heading) {
+            headingElements.set(slug, heading);
+          }
+        }
+      });
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const slug = entry.target.id;
+
+          if (entry.isIntersecting) {
+            updateActiveLink(slug);
           }
         });
+      }, observerOptions);
 
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            const slug = entry.target.id;
-            
-            if (entry.isIntersecting) {
-              updateActiveLink(slug);
-            }
-          });
-        }, observerOptions);
+      headingElements.forEach(element => {
+        observer.observe(element);
+      });
 
-        headingElements.forEach((element) => {
-          observer.observe(element);
+      function updateActiveLink(activeSlug: string) {
+        links.forEach(link => {
+          const isActive = (link as HTMLElement).dataset.tocSlug === activeSlug;
+          link.classList.toggle("active", isActive);
         });
+      }
 
-        function updateActiveLink(activeSlug: string) {
-          links.forEach(link => {
-            const isActive = (link as HTMLElement).dataset.tocSlug === activeSlug;
-            link.classList.toggle('active', isActive);
-          });
-        }
-        
-        // Clean up observer when navigating away (Astro specific)
-        document.addEventListener('astro:before-swap', () => {
-            observer.disconnect();
-        }, { once: true });
+      // Clean up observer when navigating away (Astro specific)
+      document.addEventListener(
+        "astro:before-swap",
+        () => {
+          observer.disconnect();
+        },
+        { once: true }
+      );
     });
   }
 
   // Handle initial load and view transitions
-  document.addEventListener('astro:page-load', initInlineTOC);
+  document.addEventListener("astro:page-load", initInlineTOC);
   // Also run on DOMContentLoaded for first paint if not using View Transitions or as fallback
-  document.addEventListener('DOMContentLoaded', initInlineTOC);
+  document.addEventListener("DOMContentLoaded", initInlineTOC);
 </script>

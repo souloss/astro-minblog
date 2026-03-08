@@ -17,10 +17,18 @@ import { t } from "@/utils/i18n";
     <div class="mb-14 flex flex-col items-center justify-center" id="not-found">
       <h1 class="text-9xl font-bold text-accent">404</h1>
       <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-2xl sm:text-3xl" data-zh={t("common.notFound", "zh")} data-en={t("common.notFound", "en")}>
+      <p
+        class="mt-4 text-2xl sm:text-3xl"
+        data-zh={t("common.notFound", "zh")}
+        data-en={t("common.notFound", "en")}
+      >
         {t("common.notFound", SITE.lang)}
       </p>
-      <p class="mt-2 text-muted-foreground" data-zh={t("common.notFoundDesc", "zh")} data-en={t("common.notFoundDesc", "en")}>
+      <p
+        class="text-muted-foreground mt-2"
+        data-zh={t("common.notFoundDesc", "zh")}
+        data-en={t("common.notFoundDesc", "en")}
+      >
         {t("common.notFoundDesc", SITE.lang)}
       </p>
       <LinkButton
@@ -28,7 +36,10 @@ import { t } from "@/utils/i18n";
         class="my-6 text-lg underline decoration-dashed underline-offset-8"
         id="go-home-link"
       >
-        <span data-zh={t("common.goHome", "zh")} data-en={t("common.goHome", "en")}>
+        <span
+          data-zh={t("common.goHome", "zh")}
+          data-en={t("common.goHome", "en")}
+        >
           {t("common.goHome", SITE.lang)}
         </span>
       </LinkButton>

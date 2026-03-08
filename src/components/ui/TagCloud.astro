@@ -15,10 +15,10 @@ const { tag, tagName, count, maxCount, minCount, lang = "zh" } = Astro.props;
 // Calculate relative size based on count
 const getTagSize = (currentCount: number, max: number, min: number): string => {
   if (max === min) return "text-base";
-  
+
   // Normalize to 0-1 range
   const normalized = (currentCount - min) / (max - min);
-  
+
   // Map to size classes with more granular steps
   if (normalized > 0.9) return "text-3xl font-bold";
   if (normalized > 0.8) return "text-2xl font-semibold";
@@ -32,11 +32,15 @@ const getTagSize = (currentCount: number, max: number, min: number): string => {
 };
 
 // Calculate opacity based on count
-const getTagOpacity = (currentCount: number, max: number, min: number): string => {
+const getTagOpacity = (
+  currentCount: number,
+  max: number,
+  min: number
+): string => {
   if (max === min) return "opacity-90";
-  
+
   const normalized = (currentCount - min) / (max - min);
-  
+
   if (normalized > 0.7) return "opacity-100";
   if (normalized > 0.5) return "opacity-90";
   if (normalized > 0.3) return "opacity-80";
@@ -51,9 +55,9 @@ const opacityClass = getTagOpacity(count, maxCount, minCount);
   href={`/${lang}/tags/${tag}/`}
   transition:name={tag}
   class:list={[
-    "inline-flex items-center gap-0.5 px-2 py-1 rounded-md transition-all duration-300",
-    "hover:bg-accent/10 hover:text-accent hover:scale-105",
-    "focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent",
+    "inline-flex items-center gap-0.5 rounded-md px-2 py-1 transition-all duration-300",
+    "hover:scale-105 hover:bg-accent/10 hover:text-accent",
+    "focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-dashed",
     sizeClass,
     opacityClass,
   ]}

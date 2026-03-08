@@ -8,7 +8,10 @@ import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import Card from "@/components/ui/Card.astro";
 import Pagination from "@/components/nav/Pagination.astro";
-import { getCategoryTree, getAllCategoryPaths } from "@/utils/getUniqueCategories";
+import {
+  getCategoryTree,
+  getAllCategoryPaths,
+} from "@/utils/getUniqueCategories";
 import getPostsByCategory from "@/utils/getPostsByCategory";
 import { getPostsByLang } from "@/utils/getPostsByLang";
 import { SITE } from "@/config";
@@ -38,7 +41,10 @@ const { page, category } = Astro.props as Props;
 const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
 ---
 
-<Layout lang={lang} title={`${t("search.category", lang)}: ${category} | ${SITE.title}`}>
+<Layout
+  lang={lang}
+  title={`${t("search.category", lang)}: ${category} | ${SITE.title}`}
+>
   <Header lang={lang} />
   <Main
     pageTitle={[`${t("search.category", lang)}:`, category]}
@@ -46,9 +52,7 @@ const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
     pageDesc={t("main.categoryDesc", lang).replace("{category}", category)}
   >
     <ul>
-      {page.data.map(post => (
-        <Card lang={lang} {...post} />
-      ))}
+      {page.data.map(post => <Card lang={lang} {...post} />)}
     </ul>
   </Main>
 

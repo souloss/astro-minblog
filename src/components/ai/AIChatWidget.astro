@@ -9,98 +9,150 @@ const { lang = "zh" } = Astro.props;
 const aiEnabled = SITE.ai?.enabled ?? false;
 ---
 
-{aiEnabled && (
-  <div id="ai-chat-root" data-lang={lang}>
-    {/* Chat panel — toggle button lives in FloatingActions */}
-    <div
-      id="ai-chat-panel"
-      class="fixed bottom-20 right-6 z-50 hidden w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
-      style="height: min(520px, calc(100vh - 8rem)); bottom: 5rem;"
-    >
-      {/* Header */}
-      <div class="flex items-center justify-between border-b border-border px-4 py-3">
-        <div class="flex items-center gap-2">
-          <svg class="size-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 8V4H8"></path>
-            <rect width="16" height="12" x="4" y="8" rx="2"></rect>
-            <path d="M2 14h2"></path>
-            <path d="M20 14h2"></path>
-            <path d="M15 13v2"></path>
-            <path d="M9 13v2"></path>
-          </svg>
-          <span class="text-sm font-semibold text-foreground">AI Assistant</span>
-          <span class="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-medium text-accent">Beta</span>
-        </div>
-        <div class="flex items-center gap-1">
-          <button
-            id="ai-chat-clear"
-            class="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-            aria-label="Clear conversation"
-            title="Clear conversation"
-          >
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 6h18"></path>
-              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+{
+  aiEnabled && (
+    <div id="ai-chat-root" data-lang={lang}>
+      {/* Chat panel — toggle button lives in FloatingActions */}
+      <div
+        id="ai-chat-panel"
+        class="fixed right-6 bottom-20 z-50 hidden w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+        style="height: min(520px, calc(100vh - 8rem)); bottom: 5rem;"
+      >
+        {/* Header */}
+        <div class="flex items-center justify-between border-b border-border px-4 py-3">
+          <div class="flex items-center gap-2">
+            <svg
+              class="size-5 text-accent"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 8V4H8" />
+              <rect width="16" height="12" x="4" y="8" rx="2" />
+              <path d="M2 14h2" />
+              <path d="M20 14h2" />
+              <path d="M15 13v2" />
+              <path d="M9 13v2" />
             </svg>
-          </button>
-          <button
-            id="ai-chat-close"
-            class="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-            aria-label="Close chat"
-            title="Close"
-          >
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 6 6 18"></path>
-              <path d="m6 6 12 12"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div id="ai-chat-messages" class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-        <div class="flex gap-2" data-role="assistant">
-          <div class="shrink-0 mt-0.5 flex size-6 items-center justify-center rounded-full bg-accent/15">
-            <svg class="size-3.5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 8V4H8"></path>
-              <rect width="16" height="12" x="4" y="8" rx="2"></rect>
-              <path d="M2 14h2"></path>
-              <path d="M20 14h2"></path>
-              <path d="M15 13v2"></path>
-              <path d="M9 13v2"></path>
-            </svg>
+            <span class="text-sm font-semibold text-foreground">
+              AI Assistant
+            </span>
+            <span class="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-medium text-accent">
+              Beta
+            </span>
           </div>
-          <div class="rounded-lg bg-muted/40 px-3 py-2 text-sm text-foreground leading-relaxed" id="ai-welcome-msg"></div>
+          <div class="flex items-center gap-1">
+            <button
+              id="ai-chat-clear"
+              class="text-muted-foreground rounded-md p-1.5 transition-colors hover:bg-muted/60 hover:text-foreground"
+              aria-label="Clear conversation"
+              title="Clear conversation"
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
+            <button
+              id="ai-chat-close"
+              class="text-muted-foreground rounded-md p-1.5 transition-colors hover:bg-muted/60 hover:text-foreground"
+              aria-label="Close chat"
+              title="Close"
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Input */}
-      <div class="border-t border-border px-3 py-3">
-        <form id="ai-chat-form" class="flex gap-2">
-          <input
-            id="ai-chat-input"
-            type="text"
-            placeholder=""
-            class="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-            autocomplete="off"
-          />
-          <button
-            type="submit"
-            id="ai-chat-send"
-            class="shrink-0 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-background transition-colors hover:bg-accent/90 disabled:opacity-50"
-            disabled
-          >
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m22 2-7 20-4-9-9-4Z"></path>
-              <path d="M22 2 11 13"></path>
-            </svg>
-          </button>
-        </form>
+        {/* Messages */}
+        <div
+          id="ai-chat-messages"
+          class="flex-1 space-y-3 overflow-y-auto px-4 py-3"
+        >
+          <div class="flex gap-2" data-role="assistant">
+            <div class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15">
+              <svg
+                class="size-3.5 text-accent"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 8V4H8" />
+                <rect width="16" height="12" x="4" y="8" rx="2" />
+                <path d="M2 14h2" />
+                <path d="M20 14h2" />
+                <path d="M15 13v2" />
+                <path d="M9 13v2" />
+              </svg>
+            </div>
+            <div
+              class="rounded-lg bg-muted/40 px-3 py-2 text-sm leading-relaxed text-foreground"
+              id="ai-welcome-msg"
+            />
+          </div>
+        </div>
+
+        {/* Input */}
+        <div class="border-t border-border px-3 py-3">
+          <form id="ai-chat-form" class="flex gap-2">
+            <input
+              id="ai-chat-input"
+              type="text"
+              placeholder=""
+              class="placeholder:text-muted-foreground flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+              autocomplete="off"
+            />
+            <button
+              type="submit"
+              id="ai-chat-send"
+              class="shrink-0 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-background transition-colors hover:bg-accent/90 disabled:opacity-50"
+              disabled
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m22 2-7 20-4-9-9-4Z" />
+                <path d="M22 2 11 13" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-)}
+  )
+}
 
 <script>
   function initAIChat() {
@@ -118,22 +170,35 @@ const aiEnabled = SITE.ai?.enabled ?? false;
     const messages = document.getElementById("ai-chat-messages");
     const welcomeMsg = document.getElementById("ai-welcome-msg");
 
-    if (!toggle || !panel || !close || !clear || !form || !input || !send || !messages || !welcomeMsg) return;
+    if (
+      !toggle ||
+      !panel ||
+      !close ||
+      !clear ||
+      !form ||
+      !input ||
+      !send ||
+      !messages ||
+      !welcomeMsg
+    )
+      return;
 
     const i18n = {
       zh: {
-        welcome: "你好！我是 AI 助手，可以帮你了解这个博客的内容。试试问我关于文章、技术或任何你感兴趣的话题吧！",
+        welcome:
+          "你好！我是 AI 助手，可以帮你了解这个博客的内容。试试问我关于文章、技术或任何你感兴趣的话题吧！",
         placeholder: "输入你的问题...",
         thinking: "正在思考...",
       },
       en: {
-        welcome: "Hi! I'm the AI assistant. I can help you explore the blog content. Try asking me about articles, tech topics, or anything you're curious about!",
+        welcome:
+          "Hi! I'm the AI assistant. I can help you explore the blog content. Try asking me about articles, tech topics, or anything you're curious about!",
         placeholder: "Type your question...",
         thinking: "Thinking...",
       },
     };
 
-    const t = (lang === "zh" ? i18n.zh : i18n.en);
+    const t = lang === "zh" ? i18n.zh : i18n.en;
     welcomeMsg.textContent = t.welcome;
     input.placeholder = t.placeholder;
 
@@ -163,7 +228,7 @@ const aiEnabled = SITE.ai?.enabled ?? false;
       send.disabled = !input.value.trim() || isStreaming;
     });
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", async e => {
       e.preventDefault();
       const question = input.value.trim();
       if (!question || isStreaming) return;
@@ -178,9 +243,13 @@ const aiEnabled = SITE.ai?.enabled ?? false;
       send.disabled = !input.value.trim();
     });
 
-    function appendMessage(role: "user" | "assistant", content: string): HTMLElement {
+    function appendMessage(
+      role: "user" | "assistant",
+      content: string
+    ): HTMLElement {
       const wrapper = document.createElement("div");
-      wrapper.className = "flex gap-2" + (role === "user" ? " justify-end" : "");
+      wrapper.className =
+        "flex gap-2" + (role === "user" ? " justify-end" : "");
       wrapper.dataset.role = role;
 
       if (role === "user") {
@@ -205,7 +274,9 @@ const aiEnabled = SITE.ai?.enabled ?? false;
     async function streamMockResponse(question: string, lang: string) {
       const response = getMockResponse(question, lang);
       const msgEl = appendMessage("assistant", "");
-      const textEl = msgEl.querySelector(".rounded-lg.bg-muted\\/40") as HTMLElement;
+      const textEl = msgEl.querySelector(
+        ".rounded-lg.bg-muted\\/40"
+      ) as HTMLElement;
       if (!textEl) return;
 
       textEl.innerHTML = `<span class="inline-flex gap-1 text-muted-foreground"><span class="animate-pulse">●</span><span class="animate-pulse" style="animation-delay:0.2s">●</span><span class="animate-pulse" style="animation-delay:0.4s">●</span></span>`;
@@ -231,13 +302,23 @@ const aiEnabled = SITE.ai?.enabled ?? false;
           : "Astro is a modern static site generator perfect for content-driven websites. Its core feature is the 'Islands Architecture' — zero JavaScript by default, loading JS only for interactive components. This blog is built with Astro, using Tailwind CSS for styling, with support for MDX, code highlighting, math equations, and more.";
       }
 
-      if (q.includes("博客") || q.includes("blog") || q.includes("文章") || q.includes("post")) {
+      if (
+        q.includes("博客") ||
+        q.includes("blog") ||
+        q.includes("文章") ||
+        q.includes("post")
+      ) {
         return isZh
-          ? "这个博客使用 AstroPaper 主题，支持多种功能：Markdown/MDX 文章、代码语法高亮、数学公式(KaTeX)、Mermaid 图表、标签分类系统、全文搜索(Pagefind)、评论系统(Waline)、深色模式等。文章按中文和英文分别存放在不同目录中。"
-          : "This blog uses the AstroPaper theme with many features: Markdown/MDX posts, syntax highlighting, math equations (KaTeX), Mermaid diagrams, tag/category system, full-text search (Pagefind), comments (Waline), dark mode, and more. Articles are organized in separate directories for Chinese and English.";
+          ? "这个博客使用 astro-minblog 主题，支持多种功能：Markdown/MDX 文章、代码语法高亮、数学公式(KaTeX)、Mermaid 图表、标签分类系统、全文搜索(Pagefind)、评论系统(Waline)、深色模式等。文章按中文和英文分别存放在不同目录中。"
+          : "This blog uses the astro-minblog theme with many features: Markdown/MDX posts, syntax highlighting, math equations (KaTeX), Mermaid diagrams, tag/category system, full-text search (Pagefind), comments (Waline), dark mode, and more. Articles are organized in separate directories for Chinese and English.";
       }
 
-      if (q.includes("主题") || q.includes("theme") || q.includes("暗色") || q.includes("dark")) {
+      if (
+        q.includes("主题") ||
+        q.includes("theme") ||
+        q.includes("暗色") ||
+        q.includes("dark")
+      ) {
         return isZh
           ? "本博客支持亮色和暗色两种主题模式，可以通过右下角的主题切换按钮自由切换。主题颜色方案可以在配置文件中自定义，支持多种预定义配色方案。系统会自动检测你的系统偏好设置。"
           : "This blog supports both light and dark theme modes, switchable via the theme toggle button in the bottom right. Color schemes can be customized in the config file with multiple predefined options. The system automatically detects your OS preference.";
@@ -249,7 +330,11 @@ const aiEnabled = SITE.ai?.enabled ?? false;
     }
 
     function escapeHtml(str: string): string {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     function sleep(ms: number): Promise<void> {

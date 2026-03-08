@@ -9,34 +9,52 @@ interface Props {
   title?: string;
 }
 
-const { posts, lang = "zh", title = lang === "zh" ? "相关推荐" : "Related Posts" } = Astro.props;
+const {
+  posts,
+  lang = "zh",
+  title = lang === "zh" ? "相关推荐" : "Related Posts",
+} = Astro.props;
 ---
 
-{posts.length > 0 && (
-  <div class="mt-8" data-pagefind-ignore>
-    <h3 class="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
-      <svg class="size-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
-      </svg>
-      {title}
-    </h3>
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {posts.map(post => (
-        <a
-          href={getLocalizedPostPath(lang, post.id)}
-          class="group flex flex-col rounded-lg border border-border bg-background/50 p-4 transition-all duration-200 hover:border-accent/50 hover:bg-muted/30 hover:shadow-sm"
+{
+  posts.length > 0 && (
+    <div class="mt-8" data-pagefind-ignore>
+      <h3 class="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+        <svg
+          class="size-5 text-accent"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          <h4 class="line-clamp-2 text-sm font-medium text-foreground transition-colors group-hover:text-accent">
-            {post.data.title}
-          </h4>
-          <p class="mt-1.5 line-clamp-2 text-xs text-muted-foreground">
-            {post.data.description}
-          </p>
-          <div class="mt-auto pt-2">
-            <Datetime pubDatetime={post.data.pubDatetime} modDatetime={post.data.modDatetime} lang={lang} />
-          </div>
-        </a>
-      ))}
+          <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+        </svg>
+        {title}
+      </h3>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map(post => (
+          <a
+            href={getLocalizedPostPath(lang, post.id)}
+            class="group flex flex-col rounded-lg border border-border bg-background/50 p-4 transition-all duration-200 hover:border-accent/50 hover:bg-muted/30 hover:shadow-sm"
+          >
+            <h4 class="line-clamp-2 text-sm font-medium text-foreground transition-colors group-hover:text-accent">
+              {post.data.title}
+            </h4>
+            <p class="text-muted-foreground mt-1.5 line-clamp-2 text-xs">
+              {post.data.description}
+            </p>
+            <div class="mt-auto pt-2">
+              <Datetime
+                pubDatetime={post.data.pubDatetime}
+                modDatetime={post.data.modDatetime}
+                lang={lang}
+              />
+            </div>
+          </a>
+        ))}
+      </div>
     </div>
-  </div>
-)}
+  )
+}

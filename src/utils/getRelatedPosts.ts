@@ -29,7 +29,11 @@ function getSimilarityScore(
     }
   }
 
-  if (a.data.series && b.data.series && a.data.series.name === b.data.series.name) {
+  if (
+    a.data.series &&
+    b.data.series &&
+    a.data.series.name === b.data.series.name
+  ) {
     score += 4;
   }
 

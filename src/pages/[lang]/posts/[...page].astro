@@ -31,14 +31,9 @@ const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
 
 <Layout lang={lang} title={`${t("nav.posts", lang)} | ${SITE.title}`}>
   <Header lang={lang} />
-  <Main
-    pageTitle={t("nav.posts", lang)}
-    pageDesc={t("main.allArticles", lang)}
-  >
+  <Main pageTitle={t("nav.posts", lang)} pageDesc={t("main.allArticles", lang)}>
     <ul>
-      {page.data.map(post => (
-        <Card lang={lang} {...post} />
-      ))}
+      {page.data.map(post => <Card lang={lang} {...post} />)}
     </ul>
   </Main>
 

@@ -5,7 +5,15 @@ import { SITE } from "@/config";
 export const BLOG_PATH = "src/data/blog";
 
 const blog = defineCollection({
-  loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: `./${BLOG_PATH}` }),
+  loader: glob({
+    pattern: "**/[^_]*.{md,mdx}",
+    base: `./${BLOG_PATH}`,
+    generateId: ({ entry }) => {
+      // 自动从文件路径生成唯一 ID：目录/文件名（无扩展名）
+      // 例如: zh/dynamic-og-images.md -> zh/dynamic-og-images
+      return entry.replace(/\.(md|mdx)$/, "");
+    },
+  }),
   schema: ({ image }) =>
     z.object({
       author: z.string().default(SITE.author),

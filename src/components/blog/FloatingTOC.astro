@@ -9,10 +9,7 @@
  * - Hover state: Full text
  * - Auto-expand active section
  */
-import {
-  type TocHeading,
-  buildNestedHeadings,
-} from "@/utils/toc";
+import { type TocHeading, buildNestedHeadings } from "@/utils/toc";
 
 type Props = {
   headings: TocHeading[];
@@ -24,58 +21,62 @@ const nestedHeadings = buildNestedHeadings(headings);
 ---
 
 <aside
-  class="floating-toc-container hidden xl:flex fixed left-[calc(50%+28rem)] top-32 z-20 flex-col gap-2 items-start group/container"
+  class="floating-toc-container group/container fixed top-32 left-[calc(50%+28rem)] z-20 hidden flex-col items-start gap-2 xl:flex"
   aria-label="文章目录"
   data-floating-toc
 >
   {/* Invisible Hover Area: Extends coverage to make hover more stable */}
   <div class="absolute -inset-8 z-[-1] min-w-[200px]"></div>
 
-  <div 
-    class="floating-toc-panel flex flex-col gap-1 p-0 w-auto items-start bg-transparent relative"
+  <div
+    class="floating-toc-panel relative flex w-auto flex-col items-start gap-1 bg-transparent p-0"
   >
-
     <nav class="toc-nav max-h-[70vh] pr-1 pl-1">
-      <ul class="flex flex-col gap-3 items-start">
-        {nestedHeadings.map((heading) => (
-          <li class="toc-item flex flex-col items-start" data-slug={heading.slug}>
-            <a
-              href={`#${heading.slug}`}
-              class="toc-link block relative group/link flex items-center transition-all duration-300 min-h-[16px]"
-              data-toc-slug={heading.slug}
+      <ul class="flex flex-col items-start gap-3">
+        {
+          nestedHeadings.map(heading => (
+            <li
+              class="toc-item flex flex-col items-start"
+              data-slug={heading.slug}
             >
-              {/* Bar: Visible in Idle, transitions to 0 width in Container Hover */}
-              <span class="toc-bar block h-1 rounded-sm bg-muted transition-all duration-300 group-hover/link:bg-accent group-data-[active=true]/link:bg-accent group-hover/container:w-0 group-hover/container:opacity-0 w-[48px]"></span>
-              
-              {/* Text: Hidden in Idle, Visible in Container Hover */}
-              <span class="toc-text absolute left-0 opacity-0 -translate-x-2 transition-all duration-300 group-hover/container:opacity-100 group-hover/container:translate-x-0 group-hover/link:text-accent group-data-[active=true]/link:text-accent group-data-[active=true]/link:font-medium whitespace-nowrap text-sm text-muted-foreground pointer-events-none group-hover/container:pointer-events-auto">
-                {heading.text}
-              </span>
-            </a>
-            
-            {heading.children.length > 0 && (
-              <ul class="toc-sublist mt-3 hidden flex-col gap-2 items-start border-l border-border/0 pl-1">
-                {heading.children.map((subHeading: TocHeading) => (
-                  <li data-slug={subHeading.slug} class="flex justify-start">
-                    <a
-                      href={`#${subHeading.slug}`}
-                      class="toc-link block relative group/link flex items-center transition-all duration-300 min-h-[16px]"
-                      data-toc-slug={subHeading.slug}
-                    >
-                      {/* Sub-item Bar: shorter width */}
-                      <span class="toc-bar block h-1 rounded-sm bg-muted transition-all duration-300 group-hover/link:bg-accent group-data-[active=true]/link:bg-accent group-hover/container:w-0 group-hover/container:opacity-0 w-[38px]"></span>
+              <a
+                href={`#${heading.slug}`}
+                class="toc-link group/link relative block flex min-h-[16px] items-center transition-all duration-300"
+                data-toc-slug={heading.slug}
+              >
+                {/* Bar: Visible in Idle, transitions to 0 width in Container Hover */}
+                <span class="toc-bar block h-1 w-[48px] rounded-sm bg-muted transition-all duration-300 group-hover/container:w-0 group-hover/container:opacity-0 group-hover/link:bg-accent group-data-[active=true]/link:bg-accent" />
 
-                      {/* Sub-item Text */}
-                      <span class="toc-text absolute left-0 opacity-0 -translate-x-2 transition-all duration-300 group-hover/container:opacity-100 group-hover/container:translate-x-0 group-hover/link:text-accent group-data-[active=true]/link:text-accent group-data-[active=true]/link:font-medium whitespace-nowrap text-xs text-muted-foreground pointer-events-none group-hover/container:pointer-events-auto">
-                        {subHeading.text}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+                {/* Text: Hidden in Idle, Visible in Container Hover */}
+                <span class="toc-text text-muted-foreground pointer-events-none absolute left-0 -translate-x-2 text-sm whitespace-nowrap opacity-0 transition-all duration-300 group-hover/container:pointer-events-auto group-hover/container:translate-x-0 group-hover/container:opacity-100 group-hover/link:text-accent group-data-[active=true]/link:font-medium group-data-[active=true]/link:text-accent">
+                  {heading.text}
+                </span>
+              </a>
+
+              {heading.children.length > 0 && (
+                <ul class="toc-sublist mt-3 hidden flex-col items-start gap-2 border-l border-border/0 pl-1">
+                  {heading.children.map((subHeading: TocHeading) => (
+                    <li data-slug={subHeading.slug} class="flex justify-start">
+                      <a
+                        href={`#${subHeading.slug}`}
+                        class="toc-link group/link relative block flex min-h-[16px] items-center transition-all duration-300"
+                        data-toc-slug={subHeading.slug}
+                      >
+                        {/* Sub-item Bar: shorter width */}
+                        <span class="toc-bar block h-1 w-[38px] rounded-sm bg-muted transition-all duration-300 group-hover/container:w-0 group-hover/container:opacity-0 group-hover/link:bg-accent group-data-[active=true]/link:bg-accent" />
+
+                        {/* Sub-item Text */}
+                        <span class="toc-text text-muted-foreground pointer-events-none absolute left-0 -translate-x-2 text-xs whitespace-nowrap opacity-0 transition-all duration-300 group-hover/container:pointer-events-auto group-hover/container:translate-x-0 group-hover/container:opacity-100 group-hover/link:text-accent group-data-[active=true]/link:font-medium group-data-[active=true]/link:text-accent">
+                          {subHeading.text}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
       </ul>
     </nav>
   </div>
@@ -86,21 +87,27 @@ const nestedHeadings = buildNestedHeadings(headings);
   .toc-sublist {
     display: none;
   }
-  
+
   /* Show sublist when parent is active */
   .toc-item.active .toc-sublist {
     display: flex;
     animation: fadeIn 0.3s ease;
   }
-  
+
   /* Also show sublist if a child is active */
   .toc-item:has(.toc-sublist .toc-link.active) .toc-sublist {
     display: flex;
   }
-  
+
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-2px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Scrollbar hiding */
@@ -115,17 +122,18 @@ const nestedHeadings = buildNestedHeadings(headings);
 
 <script>
   function initFloatingTOC() {
-    const tocContainer = document.querySelector('[data-floating-toc]');
+    const tocContainer = document.querySelector("[data-floating-toc]");
     if (!tocContainer) return;
 
-    const tocLinks = tocContainer.querySelectorAll<HTMLAnchorElement>('a[data-toc-slug]');
-    const tocItems = tocContainer.querySelectorAll('.toc-item');
-    const indicator = tocContainer.querySelector<HTMLElement>('.toc-progress');
-    
+    const tocLinks =
+      tocContainer.querySelectorAll<HTMLAnchorElement>("a[data-toc-slug]");
+    const tocItems = tocContainer.querySelectorAll(".toc-item");
+    const indicator = tocContainer.querySelector<HTMLElement>(".toc-progress");
+
     // Intersection Observer
     const observerOptions = {
       root: null,
-      rootMargin: '-100px 0px -66% 0px',
+      rootMargin: "-100px 0px -66% 0px",
       threshold: 0,
     };
 
@@ -141,7 +149,7 @@ const nestedHeadings = buildNestedHeadings(headings);
       }
     });
 
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           setActive(entry.target.id);
@@ -149,7 +157,7 @@ const nestedHeadings = buildNestedHeadings(headings);
       });
     }, observerOptions);
 
-    headingElements.forEach((element) => {
+    headingElements.forEach(element => {
       observer.observe(element);
     });
 
@@ -158,44 +166,48 @@ const nestedHeadings = buildNestedHeadings(headings);
       tocLinks.forEach(link => {
         const isActive = link.dataset.tocSlug === activeSlug;
         if (isActive) {
-            link.setAttribute('data-active', 'true');
-            link.classList.add('active');
+          link.setAttribute("data-active", "true");
+          link.classList.add("active");
         } else {
-            link.removeAttribute('data-active');
-            link.classList.remove('active');
+          link.removeAttribute("data-active");
+          link.classList.remove("active");
         }
       });
 
       // 2. Update Active Items (for sublist expansion)
       tocItems.forEach(item => {
-        const slug = item.getAttribute('data-slug');
+        const slug = item.getAttribute("data-slug");
         const hasActiveChild = item.querySelector(`.toc-link.active`);
-        
+
         // If this item is active OR has an active child, mark as active
         if (slug === activeSlug || hasActiveChild) {
-           item.classList.add('active');
+          item.classList.add("active");
         } else {
-           // Only remove if it's not the parent of the active item
-           // Actually, we re-evaluate all. 
-           // Simpler: Just remove active from all, then add to the one matching activeSlug's parent h2
-           item.classList.remove('active');
+          // Only remove if it's not the parent of the active item
+          // Actually, we re-evaluate all.
+          // Simpler: Just remove active from all, then add to the one matching activeSlug's parent h2
+          item.classList.remove("active");
         }
       });
-      
 
       // Re-apply active to parent of currently active link
       if (activeSlug && tocContainer) {
-        const activeLink = tocContainer.querySelector(`.toc-link[data-toc-slug="${activeSlug}"]`);
+        const activeLink = tocContainer.querySelector(
+          `.toc-link[data-toc-slug="${activeSlug}"]`
+        );
         if (activeLink) {
-          const parentItem = activeLink.closest('.toc-item');
+          const parentItem = activeLink.closest(".toc-item");
           if (parentItem) {
-            parentItem.classList.add('active');
+            parentItem.classList.add("active");
           }
         }
       }
       if (indicator) {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const winScroll =
+          document.body.scrollTop || document.documentElement.scrollTop;
+        const height =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
         indicator.style.height = `${scrolled}%`;
       }
@@ -204,8 +216,11 @@ const nestedHeadings = buildNestedHeadings(headings);
     // Scroll Progress Update (Continuous)
     document.addEventListener("scroll", () => {
       if (indicator) {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const winScroll =
+          document.body.scrollTop || document.documentElement.scrollTop;
+        const height =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
         indicator.style.height = `${scrolled}%`;
       }
@@ -213,19 +228,20 @@ const nestedHeadings = buildNestedHeadings(headings);
 
     // Smooth Scroll Click Handler
     tocLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
+      link.addEventListener("click", e => {
         e.preventDefault();
         const slug = link.dataset.tocSlug;
         if (slug) {
           const heading = document.getElementById(slug);
           if (heading) {
-            history.pushState(null, '', `#${slug}`);
+            history.pushState(null, "", `#${slug}`);
             const headerOffset = 80;
             const elementPosition = heading.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            const offsetPosition =
+              elementPosition + window.pageYOffset - headerOffset;
             window.scrollTo({
               top: offsetPosition,
-              behavior: "smooth"
+              behavior: "smooth",
             });
             setActive(slug);
           }
@@ -234,11 +250,11 @@ const nestedHeadings = buildNestedHeadings(headings);
     });
 
     // Cleanup
-    document.addEventListener('astro:before-swap', () => {
+    document.addEventListener("astro:before-swap", () => {
       observer.disconnect();
     });
   }
 
-  document.addEventListener('astro:page-load', initFloatingTOC);
+  document.addEventListener("astro:page-load", initFloatingTOC);
   initFloatingTOC();
 </script>

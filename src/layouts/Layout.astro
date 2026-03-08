@@ -111,16 +111,37 @@ const structuredData = pubDatetime
     <meta name="description" content={description} />
     <meta name="author" content={author} />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href="/rss.xml"
+    />
 
     <!-- hreflang for multilingual SEO -->
-    {altURL && (
-      <>
-        <link rel="alternate" hreflang={lang === "zh" ? "zh-Hans" : "en"} href={canonicalURL} />
-        <link rel="alternate" hreflang={altLang === "zh" ? "zh-Hans" : "en"} href={altURL} />
-        <link rel="alternate" hreflang="x-default" href={new URL(`/zh${pathname.replace(/^\/(zh|en)/, "")}`, Astro.url)} />
-      </>
-    )}
+    {
+      altURL && (
+        <>
+          <link
+            rel="alternate"
+            hreflang={lang === "zh" ? "zh-Hans" : "en"}
+            href={canonicalURL}
+          />
+          <link
+            rel="alternate"
+            hreflang={altLang === "zh" ? "zh-Hans" : "en"}
+            href={altURL}
+          />
+          <link
+            rel="alternate"
+            hreflang="x-default"
+            href={
+              new URL(`/zh${pathname.replace(/^\/(zh|en)/, "")}`, Astro.url)
+            }
+          />
+        </>
+      )
+    }
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article" />
@@ -151,9 +172,10 @@ const structuredData = pubDatetime
     }
 
     <!-- Article Tags -->
-    {tags.length > 0 && tags.map(tag => (
-      <meta property="article:tag" content={tag} />
-    ))}
+    {
+      tags.length > 0 &&
+        tags.map(tag => <meta property="article:tag" content={tag} />)
+    }
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -177,14 +199,16 @@ const structuredData = pubDatetime
       title={SITE.title}
       href={new URL("rss.xml", Astro.site)}
     />
-    {lang && (
-      <link
-        rel="alternate"
-        type="application/rss+xml"
-        title={`${SITE.title} (${lang === "zh" ? "中文" : "English"})`}
-        href={new URL(`${lang}/rss.xml`, Astro.site)}
-      />
-    )}
+    {
+      lang && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${SITE.title} (${lang === "zh" ? "中文" : "English"})`}
+          href={new URL(`${lang}/rss.xml`, Astro.site)}
+        />
+      )
+    }
 
     <meta name="theme-color" content="" />
 
@@ -203,14 +227,16 @@ const structuredData = pubDatetime
     <ClientRouter />
 
     {/* Umami Analytics */}
-    {SITE.umami?.enabled && SITE.umami.websiteId && (
-      <script
-        is:inline
-        defer
-        src={SITE.umami.src}
-        data-website-id={SITE.umami.websiteId}
-      />
-    )}
+    {
+      SITE.umami?.enabled && SITE.umami.websiteId && (
+        <script
+          is:inline
+          defer
+          src={SITE.umami.src}
+          data-website-id={SITE.umami.websiteId}
+        />
+      )
+    }
 
     <!-- Minimal inline script to prevent FOUC - sets theme immediately -->
     <script is:inline>

@@ -34,7 +34,7 @@ const totalPosts = tags.reduce((acc, tag) => acc + tag.count, 0);
     pageDesc={t("main.allTags", lang)}
     data-lang={lang}
   >
-    <div class="mb-8 flex flex-wrap gap-4 text-sm text-muted-foreground">
+    <div class="text-muted-foreground mb-8 flex flex-wrap gap-4 text-sm">
       <div class="flex items-center gap-2">
         <span class="font-medium text-foreground">{tags.length}</span>
         <span>{t("tags.tags", lang)}</span>
@@ -45,20 +45,26 @@ const totalPosts = tags.reduce((acc, tag) => acc + tag.count, 0);
       </div>
     </div>
 
-    <div class="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-border bg-muted/20 p-6">
-      {tags.map(({ tag, tagName, count }) => (
-        <TagCloud
-          tag={tag}
-          tagName={tagName}
-          count={count}
-          maxCount={maxCount}
-          minCount={minCount}
-          lang={lang}
-        />
-      ))}
+    <div
+      class="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-border bg-muted/20 p-6"
+    >
+      {
+        tags.map(({ tag, tagName, count }) => (
+          <TagCloud
+            tag={tag}
+            tagName={tagName}
+            count={count}
+            maxCount={maxCount}
+            minCount={minCount}
+            lang={lang}
+          />
+        ))
+      }
     </div>
 
-    <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+    <div
+      class="text-muted-foreground mt-6 flex flex-wrap items-center justify-center gap-4 text-xs"
+    >
       <span>{t("tags.sizeLegend", lang)}</span>
       <div class="flex items-center gap-2">
         <span class="text-xs">{t("tags.less", lang)}</span>

@@ -4,7 +4,9 @@
  */
 export function isPathActive(path: string, pathname: string): boolean {
   const currentPath =
-    pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
+    pathname.endsWith("/") && pathname !== "/"
+      ? pathname.slice(0, -1)
+      : pathname;
 
   if (currentPath === path) return true;
 

@@ -2,7 +2,7 @@
 author: Sat Naing
 pubDatetime: 2022-09-25T15:20:35Z
 modDatetime: 2026-01-09T15:00:15.170Z
-title: Customizing AstroPaper theme color schemes
+title: Customizing astro-minblog theme color schemes
 featured: false
 draft: false
 category: 教程/配置
@@ -11,7 +11,7 @@ tags:
   - docs
 description:
   How you can enable/disable light & dark mode; and customize color schemes
-  of AstroPaper theme.
+  of astro-minblog theme.
 ---
 
 This post will explain how you can enable/disable light & dark mode for the website. Moreover, you'll learn how you can customize color schemes of the entire website.
@@ -20,16 +20,16 @@ This post will explain how you can enable/disable light & dark mode for the webs
 
 ## Enable/disable light & dark mode
 
-AstroPaper theme will include light and dark mode by default. In other words, there will be two color schemes\_ one for light mode and another for dark mode. This default behavior can be disabled in `SITE` configuration object.
+astro-minblog theme will include light and dark mode by default. In other words, there will be two color schemes\_ one for light mode and another for dark mode. This default behavior can be disabled in `SITE` configuration object.
 
 ```js file="src/config.ts"
 export const SITE = {
-  website: "https://astro-paper.pages.dev/", // replace this with your deployed domain
+  website: "https://demo-astromin.souloss.cn/", // replace this with your deployed domain
   author: "Sat Naing",
-  profile: "https://satnaing.dev/",
+  profile: "https://souloss.cn/",
   desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
-  title: "AstroPaper",
-  ogImage: "astropaper-og.jpg",
+  title: "astro-minblog",
+  ogImage: "astro-minblog-og.jpg",
   lightAndDarkMode: true, // [!code highlight]
   postPerIndex: 4,
   postPerPage: 4,
@@ -39,7 +39,7 @@ export const SITE = {
   editPost: {
     enabled: true,
     text: "Suggest Changes",
-    url: "https://github.com/satnaing/astro-paper/edit/main/",
+    url: "https://github.com/souloss/astro-minblog/edit/main/",
   },
   dynamicOgImage: true,
   lang: "en", // html lang code. Set this empty and default will be "en"
@@ -90,7 +90,7 @@ To avoid color flickering on page reload, we have to place the theme initializat
 
 ## Customize color schemes
 
-Both light & dark color schemes of AstroPaper theme can be customized in the `global.css` file.
+Both light & dark color schemes of astro-minblog theme can be customized in the `global.css` file.
 
 ```css file="src/styles/global.css"
 @import "tailwindcss";
@@ -117,7 +117,7 @@ html[data-theme="dark"] {
 /* ... */
 ```
 
-In the AstroPaper theme, the `:root` and `html[data-theme="light"]` selectors define the light color scheme, while `html[data-theme="dark"]` defines the dark color scheme.
+In the astro-minblog theme, the `:root` and `html[data-theme="light"]` selectors define the light color scheme, while `html[data-theme="dark"]` defines the dark color scheme.
 
 To customize your own color scheme, specify your light colors inside `:root, html[data-theme="light"]`, and your dark colors inside `html[data-theme="dark"]`.
 
@@ -146,4 +146,4 @@ html[data-theme="light"] {
 /* ... */
 ```
 
-> Check out some [predefined color schemes](https://astro-paper.pages.dev/posts/predefined-color-schemes/) AstroPaper has already crafted for you.
+> Check out some [predefined color schemes](https://demo-astromin.souloss.cn/posts/predefined-color-schemes/) astro-minblog has already crafted for you.

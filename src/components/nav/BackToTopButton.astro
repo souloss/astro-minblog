@@ -6,13 +6,10 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 <div class="back-to-top-wrapper hidden lg:block">
   <div
     id="back-to-top-btn"
-    class="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition"
+    class="back-to-top-btn hide flex items-center overflow-hidden rounded-2xl transition"
     onclick="backToTop()"
   >
-    <button
-      aria-label="Back to Top"
-      class="h-[3rem] w-[3rem] rounded-full"
-    >
+    <button aria-label="Back to Top" class="h-[3rem] w-[3rem] rounded-full">
       <IconArrowNarrowUp class="mx-auto" />
     </button>
   </div>
@@ -171,7 +168,7 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 </style>
 
 <script is:raw is:inline>
-  window.backToTop = function() {
+  window.backToTop = function () {
     window.scroll({ top: 0, behavior: "smooth" });
   };
 

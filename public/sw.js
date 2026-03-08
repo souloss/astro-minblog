@@ -1,11 +1,8 @@
+// Service Worker
 const CACHE_NAME = "astro-blog-v1";
 const OFFLINE_URL = "/404";
 
-const PRECACHE_URLS = [
-  "/",
-  "/zh/",
-  "/favicon.ico",
-];
+const PRECACHE_URLS = ["/", "/zh/", "/favicon.ico"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -16,11 +13,13 @@ self.addEventListener("install", event => {
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    caches
+      .keys()
+      .then(keys =>
+        Promise.all(
+          keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        )
       )
-    )
   );
   self.clients.claim();
 });
@@ -34,10 +33,12 @@ self.addEventListener("fetch", event => {
     event.respondWith(
       caches.open(CACHE_NAME).then(cache =>
         cache.match(event.request).then(
-          cached => cached || fetch(event.request).then(response => {
-            if (response.ok) cache.put(event.request, response.clone());
-            return response;
-          })
+          cached =>
+            cached ||
+            fetch(event.request).then(response => {
+              if (response.ok) cache.put(event.request, response.clone());
+              return response;
+            })
         )
       )
     );
@@ -49,10 +50,14 @@ self.addEventListener("fetch", event => {
       fetch(event.request)
         .then(response => {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          caches
+            .open(CACHE_NAME)
+            .then(cache => cache.put(event.request, clone));
           return response;
         })
-        .catch(() => caches.match(event.request).then(r => r || caches.match(OFFLINE_URL)))
+        .catch(() =>
+          caches.match(event.request).then(r => r || caches.match(OFFLINE_URL))
+        )
     );
   }
 });

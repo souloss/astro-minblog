@@ -32,10 +32,24 @@ const {
 ---
 
 <div class="music-player-wrapper my-6 min-h-[140px]">
-  <div class="music-player-loading flex items-center justify-center gap-2 py-8 text-muted-foreground" data-loading>
+  <div
+    class="music-player-loading text-muted-foreground flex items-center justify-center gap-2 py-8"
+    data-loading
+  >
     <svg class="size-6 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+        fill="none"></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
     </svg>
     <span class="text-sm">加载播放器...</span>
   </div>
@@ -50,8 +64,7 @@ const {
     list-folded="true"
     order="list"
     preload="auto"
-    mutex="true"
-  ></meting-js>
+    mutex="true"></meting-js>
 </div>
 
 <script>
@@ -60,23 +73,27 @@ const {
       return Promise.resolve();
     }
 
-    return new Promise<void>((resolve) => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css';
+    return new Promise<void>(resolve => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css";
       document.head.appendChild(link);
 
-      const aplayerScript = document.createElement('script');
-      aplayerScript.src = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js';
+      const aplayerScript = document.createElement("script");
+      aplayerScript.src =
+        "https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js";
       aplayerScript.onload = () => {
-        const metingScript = document.createElement('script');
-        metingScript.src = 'https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js';
+        const metingScript = document.createElement("script");
+        metingScript.src =
+          "https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js";
         metingScript.onload = () => {
           const hideLoading = () => {
-            document.querySelectorAll('.music-player-wrapper [data-loading]').forEach(el => el.classList.add('hidden'));
+            document
+              .querySelectorAll(".music-player-wrapper [data-loading]")
+              .forEach(el => el.classList.add("hidden"));
           };
           setTimeout(hideLoading, 500);
-          if (document.querySelector('.aplayer')) hideLoading();
+          if (document.querySelector(".aplayer")) hideLoading();
           resolve(void 0);
         };
         document.head.appendChild(metingScript);
@@ -86,7 +103,7 @@ const {
   }
 
   loadResources();
-  document.addEventListener('astro:page-load', loadResources);
+  document.addEventListener("astro:page-load", loadResources);
 </script>
 
 <style is:global>

@@ -36,7 +36,10 @@ const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
 const tag = Astro.params.tag ?? "";
 ---
 
-<Layout lang={lang} title={`${t("search.tags", lang)}: ${tagName} | ${SITE.title}`}>
+<Layout
+  lang={lang}
+  title={`${t("search.tags", lang)}: ${tagName} | ${SITE.title}`}
+>
   <Header lang={lang} />
   <Main
     pageTitle={[`${t("search.tags", lang)}:`, tagName]}
@@ -44,9 +47,7 @@ const tag = Astro.params.tag ?? "";
     pageDesc={t("main.tagDesc", lang).replace("{tag}", tagName)}
   >
     <ul>
-      {page.data.map(post => (
-        <Card lang={lang} {...post} />
-      ))}
+      {page.data.map(post => <Card lang={lang} {...post} />)}
     </ul>
   </Main>
 

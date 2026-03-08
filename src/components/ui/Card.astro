@@ -9,21 +9,32 @@ type Props = {
   lang?: string;
 } & CollectionEntry<"blog">;
 
-const { variant: Heading = "h2", id, data, filePath, lang = "zh" } = Astro.props;
+const {
+  variant: Heading = "h2",
+  id,
+  data,
+  filePath,
+  lang = "zh",
+} = Astro.props;
 
 const { title, description, category, ...props } = data;
 const postHref = getLocalizedPostPath(lang, id, filePath);
 ---
 
 <li class="my-6">
-  {category && (
-    <a
-      href={`/${lang}/categories/${category.split("/").map(p => encodeURIComponent(p)).join("/")}/`}
-      class="text-xs font-medium text-accent hover:underline mb-1 inline-block"
-    >
-      {category}
-    </a>
-  )}
+  {
+    category && (
+      <a
+        href={`/${lang}/categories/${category
+          .split("/")
+          .map(p => encodeURIComponent(p))
+          .join("/")}/`}
+        class="mb-1 inline-block text-xs font-medium text-accent hover:underline"
+      >
+        {category}
+      </a>
+    )
+  }
   <a
     href={postHref}
     class:list={[

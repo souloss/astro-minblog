@@ -18,7 +18,10 @@ function initLightbox() {
     document.body.appendChild(overlay);
 
     overlay.addEventListener("click", e => {
-      if (e.target === overlay || (e.target as HTMLElement).id === "lightbox-close") {
+      if (
+        e.target === overlay ||
+        (e.target as HTMLElement).id === "lightbox-close"
+      ) {
         close();
       }
     });

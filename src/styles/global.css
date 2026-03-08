@@ -37,7 +37,9 @@ html[data-theme="dark"] {
 }
 
 @theme inline {
-  --font-app: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, monospace;
+  --font-app:
+    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas,
+    monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
@@ -56,17 +58,26 @@ html[data-theme="dark"] {
   }
   body {
     @apply flex min-h-svh flex-col bg-background font-app text-foreground selection:bg-accent/75 selection:text-background;
-    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: background-color, color;
   }
 
-  header, footer, nav, article, main, aside, section,
-  .theme-transition, [data-theme-transition] {
-    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  header,
+  footer,
+  nav,
+  article,
+  main,
+  aside,
+  section,
+  .theme-transition,
+  [data-theme-transition] {
+    transition:
+      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: background-color, color, border-color;
   }
 
@@ -375,7 +386,10 @@ pre {
   color: rgba(200, 200, 200, 0.7);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s,
+    color 0.2s;
 }
 
 pre:hover .copy-code-btn {
@@ -462,22 +476,24 @@ html.no-view-transitions article,
 html.no-view-transitions main,
 html.no-view-transitions aside,
 html.no-view-transitions section {
-  transition: background-color var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
-              color var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
-              border-color var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background-color var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+    color var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+    border-color var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ===== Theme Toggle Button ===== */
 #theme-btn {
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.2s ease-out;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease-out;
 }
 
 #theme-btn::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -2px;
   border-radius: 50%;
@@ -503,7 +519,7 @@ html[data-theme="dark"] #theme-btn::after {
 }
 
 #theme-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -511,9 +527,10 @@ html[data-theme="dark"] #theme-btn::after {
   height: 0;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s ease-out;
+  transition:
+    width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s ease-out;
   opacity: 0;
 }
 
@@ -524,17 +541,26 @@ html[data-theme="dark"] #theme-btn::after {
 }
 
 html:not([data-theme="dark"]) #theme-btn:active::before {
-  background: radial-gradient(circle, rgba(0, 108, 172, 0.3) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(0, 108, 172, 0.3) 0%,
+    transparent 70%
+  );
 }
 
 html[data-theme="dark"] #theme-btn:active::before {
-  background: radial-gradient(circle, rgba(255, 107, 1, 0.3) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 107, 1, 0.3) 0%,
+    transparent 70%
+  );
 }
 
 #theme-btn svg {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.3s ease-out,
-              color 0.3s ease-out;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease-out,
+    color 0.3s ease-out;
 }
 
 #theme-btn .icon-moon {
@@ -689,7 +715,10 @@ html.theme-transition body {
     page-break-inside: avoid;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     page-break-after: avoid;
     color: #000 !important;
   }
@@ -699,8 +728,12 @@ html.theme-transition body {
   }
 }
 
-.card, [class*="card"], article, .prose {
-  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+.card,
+[class*="card"],
+article,
+.prose {
+  transition:
+    background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }

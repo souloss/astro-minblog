@@ -15,9 +15,11 @@ interface Props {
 const { code, title = "Interactive Code" } = Astro.props;
 ---
 
-<div class="code-runner my-6 rounded-lg border border-border overflow-hidden">
-  <div class="flex items-center justify-between bg-muted/30 px-4 py-2 border-b border-border">
-    <span class="text-xs font-medium text-muted-foreground">{title}</span>
+<div class="code-runner my-6 overflow-hidden rounded-lg border border-border">
+  <div
+    class="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2"
+  >
+    <span class="text-muted-foreground text-xs font-medium">{title}</span>
     <button
       class="code-run-btn rounded-md bg-accent/10 px-3 py-1 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
       data-code={code}
@@ -25,9 +27,10 @@ const { code, title = "Interactive Code" } = Astro.props;
       ▶ Run
     </button>
   </div>
-  <pre class="!m-0 !rounded-none"><code class="language-javascript">{code}</code></pre>
+  <pre
+    class="!m-0 !rounded-none"><code class="language-javascript">{code}</code></pre>
   <div
-    class="code-output hidden border-t border-border bg-muted/10 px-4 py-3 font-mono text-sm text-muted-foreground max-h-48 overflow-auto"
+    class="code-output text-muted-foreground hidden max-h-48 overflow-auto border-t border-border bg-muted/10 px-4 py-3 font-mono text-sm"
     data-output
   >
   </div>
@@ -35,29 +38,31 @@ const { code, title = "Interactive Code" } = Astro.props;
 
 <script>
   function initCodeRunners() {
-    document.querySelectorAll<HTMLButtonElement>(".code-run-btn").forEach(btn => {
-      if (btn.dataset.initialized) return;
-      btn.dataset.initialized = "true";
+    document
+      .querySelectorAll<HTMLButtonElement>(".code-run-btn")
+      .forEach(btn => {
+        if (btn.dataset.initialized) return;
+        btn.dataset.initialized = "true";
 
-      btn.addEventListener("click", () => {
-        const code = btn.dataset.code || "";
-        const runner = btn.closest(".code-runner");
-        const output = runner?.querySelector("[data-output]") as HTMLElement;
-        if (!output) return;
+        btn.addEventListener("click", () => {
+          const code = btn.dataset.code || "";
+          const runner = btn.closest(".code-runner");
+          const output = runner?.querySelector("[data-output]") as HTMLElement;
+          if (!output) return;
 
-        output.classList.remove("hidden");
-        output.textContent = "";
+          output.classList.remove("hidden");
+          output.textContent = "";
 
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-        iframe.sandbox.add("allow-scripts");
-        document.body.appendChild(iframe);
+          const iframe = document.createElement("iframe");
+          iframe.style.display = "none";
+          iframe.sandbox.add("allow-scripts");
+          document.body.appendChild(iframe);
 
-        const logs: string[] = [];
-        const win = iframe.contentWindow;
-        if (!win) return;
+          const logs: string[] = [];
+          const win = iframe.contentWindow;
+          if (!win) return;
 
-        const script = `
+          const script = `
           const _logs = [];
           const _origLog = console.log;
           console.log = (...args) => {
@@ -74,23 +79,26 @@ const { code, title = "Interactive Code" } = Astro.props;
           parent.postMessage({ type: 'code-done', logs: _logs }, '*');
         `;
 
-        const handler = (e: MessageEvent) => {
-          if (e.source !== win) return;
-          if (e.data?.type === "code-output" || e.data?.type === "code-done") {
-            logs.length = 0;
-            logs.push(...(e.data.logs || []));
-            output.textContent = logs.join("\n") || "(no output)";
-          }
-          if (e.data?.type === "code-done") {
-            window.removeEventListener("message", handler);
-            setTimeout(() => iframe.remove(), 100);
-          }
-        };
+          const handler = (e: MessageEvent) => {
+            if (e.source !== win) return;
+            if (
+              e.data?.type === "code-output" ||
+              e.data?.type === "code-done"
+            ) {
+              logs.length = 0;
+              logs.push(...(e.data.logs || []));
+              output.textContent = logs.join("\n") || "(no output)";
+            }
+            if (e.data?.type === "code-done") {
+              window.removeEventListener("message", handler);
+              setTimeout(() => iframe.remove(), 100);
+            }
+          };
 
-        window.addEventListener("message", handler);
-        iframe.srcdoc = `<script>${script}<\/script>`;
+          window.addEventListener("message", handler);
+          iframe.srcdoc = `<script>${script}<\/script>`;
+        });
       });
-    });
   }
 
   initCodeRunners();

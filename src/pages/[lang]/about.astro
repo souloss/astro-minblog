@@ -20,18 +20,37 @@ const { lang } = Astro.params as { lang: "zh" | "en" };
   <Breadcrumb />
   <main id="main-content" class="app-layout">
     <section id="about" class="app-prose mb-28 max-w-app prose-img:border-0">
-      <h1 class="text-2xl tracking-wider sm:text-3xl">{t("nav.about", lang)}</h1>
-      {lang === "zh" ? (
-        <Fragment>
-          <p>AstroPaper 是一个极简、无障碍且 SEO 友好的博客主题，基于 <a href="https://astro.build/">Astro</a> 和 <a href="https://tailwindcss.com/">Tailwind CSS</a> 构建。</p>
-          <p>AstroPaper 为博客（甚至作品集）提供了坚实的基础——完整的 Markdown 支持、内置暗色模式，以及开箱即用的简洁布局。</p>
-        </Fragment>
-      ) : (
-        <Fragment>
-          <p>AstroPaper is a minimal, accessible and SEO-friendly blog theme built with <a href="https://astro.build/">Astro</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>.</p>
-          <p>AstroPaper provides a solid foundation for blogs, or even portfolios — with full markdown support, built-in dark mode, and a clean layout that works out-of-the-box.</p>
-        </Fragment>
-      )}
+      <h1 class="text-2xl tracking-wider sm:text-3xl">
+        {t("nav.about", lang)}
+      </h1>
+      {
+        lang === "zh" ? (
+          <Fragment>
+            <p>
+              astro-minblog 是一个极简、无障碍且 SEO 友好的博客主题，基于{" "}
+              <a href="https://astro.build/">Astro</a> 和{" "}
+              <a href="https://tailwindcss.com/">Tailwind CSS</a> 构建。
+            </p>
+            <p>
+              astro-minblog 为博客（甚至作品集）提供了坚实的基础——完整的
+              Markdown 支持、内置暗色模式，以及开箱即用的简洁布局。
+            </p>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <p>
+              astro-minblog is a minimal, accessible and SEO-friendly blog theme
+              built with <a href="https://astro.build/">Astro</a> and{" "}
+              <a href="https://tailwindcss.com/">Tailwind CSS</a>.
+            </p>
+            <p>
+              astro-minblog provides a solid foundation for blogs, or even
+              portfolios — with full markdown support, built-in dark mode, and a
+              clean layout that works out-of-the-box.
+            </p>
+          </Fragment>
+        )
+      }
     </section>
   </main>
   <Footer lang={lang} />

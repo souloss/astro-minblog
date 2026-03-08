@@ -72,7 +72,10 @@ function observeWebVitals() {
     const clsObserver = new PerformanceObserver(list => {
       let clsValue = 0;
       for (const entry of list.getEntries()) {
-        if (!(entry as PerformanceEntry & { hadRecentInput?: boolean }).hadRecentInput) {
+        if (
+          !(entry as PerformanceEntry & { hadRecentInput?: boolean })
+            .hadRecentInput
+        ) {
           clsValue += (entry as PerformanceEntry & { value: number }).value;
         }
       }

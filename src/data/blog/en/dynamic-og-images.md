@@ -2,18 +2,18 @@
 author: Sat Naing
 pubDatetime: 2022-12-28T04:59:04.866Z
 modDatetime: 2025-03-12T13:39:20.763Z
-title: Dynamic OG image generation in AstroPaper blog posts
-slug: dynamic-og-image-generation-in-astropaper-blog-posts
+title: Dynamic OG image generation in astro-minblog blog posts
+slug: dynamic-og-image-generation-in-astro-minblog-blog-posts
 featured: false
 draft: false
 category: 教程/博客
 tags:
   - docs
   - release
-description: New feature in AstroPaper v1.4.0, introducing dynamic OG image generation for blog posts.
+description: New feature in astro-minblog v1.4.0, introducing dynamic OG image generation for blog posts.
 ---
 
-New feature in AstroPaper v1.4.0, introducing dynamic OG image generation for blog posts.
+New feature in astro-minblog v1.4.0, introducing dynamic OG image generation for blog posts.
 
 ## Table of contents
 
@@ -25,22 +25,22 @@ OG images (aka Social Images) play an important role in social media engagements
 
 ## Default/Static OG image (the old way)
 
-AstroPaper already provided a way to add an OG image to a blog post. The author can specify the OG image in the frontmatter `ogImage`. Even when the author doesn't define the OG image in the frontmatter, the default OG image will be used as a fallback (in this case `public/astropaper-og.jpg`). But the problem is that the default OG image is static, which means every blog post that does not include an OG image in the frontmatter will always use the same default OG image despite each post title/content being different from others.
+astro-minblog already provided a way to add an OG image to a blog post. The author can specify the OG image in the frontmatter `ogImage`. Even when the author doesn't define the OG image in the frontmatter, the default OG image will be used as a fallback (in this case `public/astro-minblog-og.jpg`). But the problem is that the default OG image is static, which means every blog post that does not include an OG image in the frontmatter will always use the same default OG image despite each post title/content being different from others.
 
 ## Dynamic OG Image
 
 Generating a dynamic OG image for each post allows the author to avoid specifying an OG image for every single blog post. Besides, this will prevent the fallback OG image from being identical to all blog posts.
 
-In AstroPaper v1.4.0, Vercel's [Satori](https://github.com/vercel/satori) package is used for dynamic OG image generation.
+In astro-minblog v1.4.0, Vercel's [Satori](https://github.com/vercel/satori) package is used for dynamic OG image generation.
 
 Dynamic OG images will be generated at build time for blog posts that
 
 - don't include OG image in the frontmatter
 - are not marked as draft.
 
-## Anatomy of AstroPaper dynamic OG image
+## Anatomy of astro-minblog dynamic OG image
 
-Dynamic OG image of AstroPaper includes _the blog post title_, _author name_ and _site title_. Author name and site title will be retrieved via `SITE.author` and `SITE.title` of **"src/config.ts"** file. The title is generated from the blog post frontmatter `title`.  
+Dynamic OG image of astro-minblog includes _the blog post title_, _author name_ and _site title_. Author name and site title will be retrieved via `SITE.author` and `SITE.title` of **"src/config.ts"** file. The title is generated from the blog post frontmatter `title`.  
 ![Example Dynamic OG Image link](https://user-images.githubusercontent.com/53733092/209704501-e9c2236a-3f4d-4c67-bab3-025aebd63382.png)
 
 ### Issue Non-Latin Characters
@@ -78,7 +78,7 @@ async function loadGoogleFonts(
 }
 ```
 
-> Check out [this PR](https://github.com/satnaing/astro-paper/pull/318) for more info.
+> Check out [this PR](https://github.com/souloss/astro-minblog/pull/318) for more info.
 
 ## Trade-off
 
@@ -86,7 +86,7 @@ While this is a nice feature to have, there's a trade-off. Each OG image takes r
 
 For example: If one OG image takes one second to generate, then 60 images will take around one minute, and 600 images will take approximately 10 minutes. This can significantly impact build times as your content scales.
 
-Related issue: [#428](https://github.com/satnaing/astro-paper/issues/428)
+Related issue: [#428](https://github.com/souloss/astro-minblog/issues/428)
 
 ## Limitations
 

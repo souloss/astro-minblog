@@ -44,7 +44,9 @@ const {
 } = post.data;
 
 const { Content, headings } = await render(post);
-const { minutes: readingMinutes, words: wordCount } = getReadingTime(post.body ?? "");
+const { minutes: readingMinutes, words: wordCount } = getReadingTime(
+  post.body ?? ""
+);
 
 let ogImageUrl: string | undefined;
 
@@ -126,15 +128,20 @@ const seriesPosts = series
       .sort((a, b) => (a.data.series?.order ?? 0) - (b.data.series?.order ?? 0))
   : null;
 
-const navList = (seriesPosts ?? posts).map(({ data: { title }, id, filePath }) => ({
-  id,
-  title,
-  filePath,
-}));
+const navList = (seriesPosts ?? posts).map(
+  ({ data: { title }, id, filePath }) => ({
+    id,
+    title,
+    filePath,
+  })
+);
 
 const currentPostIndex = navList.findIndex(a => a.id === post.id);
 const prevPost = currentPostIndex > 0 ? navList[currentPostIndex - 1] : null;
-const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 ? navList[currentPostIndex + 1] : null;
+const nextPost =
+  currentPostIndex >= 0 && currentPostIndex < navList.length - 1
+    ? navList[currentPostIndex + 1]
+    : null;
 ---
 
 <Layout {...layoutProps}>
@@ -144,11 +151,11 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
     set:html={JSON.stringify(breadcrumbList)}
   />
   <Header lang={lang} />
-  
+
   <!-- Sticky Header for Article Reading Progress -->
   <div
     id="sticky-header"
-    class="fixed top-0 start-0 z-50 w-full transform border-b border-border bg-background/80 opacity-0 transition-all duration-300 -translate-y-full backdrop-blur-md"
+    class="fixed start-0 top-0 z-50 w-full -translate-y-full transform border-b border-border bg-background/80 opacity-0 backdrop-blur-md transition-all duration-300"
   >
     <div class="app-layout flex h-14 items-center justify-between">
       <div class="flex items-center gap-4 overflow-hidden">
@@ -162,7 +169,7 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
       <div class="flex items-center gap-2">
         <button
           id="sticky-toc-toggle"
-          class="flex items-center gap-1 rounded-md p-2 text-muted-foreground hover:bg-muted/50 hover:text-accent sm:hidden"
+          class="text-muted-foreground flex items-center gap-1 rounded-md p-2 hover:bg-muted/50 hover:text-accent sm:hidden"
           aria-label="Toggle Table of Contents"
         >
           <svg
@@ -184,7 +191,7 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
           </svg>
         </button>
         <button
-          class="rounded-md p-2 text-muted-foreground hover:bg-muted/50 hover:text-accent"
+          class="text-muted-foreground rounded-md p-2 hover:bg-muted/50 hover:text-accent"
           onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
           aria-label="Scroll to top"
         >
@@ -204,8 +211,12 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
         </button>
       </div>
     </div>
-    <div class="absolute bottom-0 start-0 h-[2px] w-full bg-muted/30">
-      <div id="progress-bar" class="h-full w-0 bg-accent transition-all duration-150 ease-out"></div>
+    <div class="absolute start-0 bottom-0 h-[2px] w-full bg-muted/30">
+      <div
+        id="progress-bar"
+        class="h-full w-0 bg-accent transition-all duration-150 ease-out"
+      >
+      </div>
     </div>
   </div>
 
@@ -222,26 +233,26 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
       {title}
     </h1>
     <div class="my-2 flex flex-wrap items-center gap-2">
-      {category && (
-        <a
-          href={`/${lang}/categories/${encodeURIComponent(category)}/`}
-          class="text-sm font-medium text-accent hover:underline"
-        >
-          {category}
-        </a>
-      )}
+      {
+        category && (
+          <a
+            href={`/${lang}/categories/${encodeURIComponent(category)}/`}
+            class="text-sm font-medium text-accent hover:underline"
+          >
+            {category}
+          </a>
+        )
+      }
       {category && <span class="text-muted-foreground">·</span>}
       <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" lang={lang} />
       <span class="text-muted-foreground">·</span>
-      <span class="text-sm opacity-80 sm:text-base" title={t("post.wordCount", lang).replace("{count}", String(wordCount))}>
+      <span
+        class="text-sm opacity-80 sm:text-base"
+        title={t("post.wordCount", lang).replace("{count}", String(wordCount))}
+      >
         {t("post.readingTime", lang).replace("{min}", String(readingMinutes))}
       </span>
-      <span
-        aria-hidden="true"
-        class:list={[
-          "max-sm:hidden",
-        ]}> </span
-      >
+      <span aria-hidden="true" class:list={["max-sm:hidden"]}> </span>
     </div>
     <InlineTOC headings={headings} />
     <article
@@ -254,9 +265,12 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
 
     <hr class="my-8 border-dashed" />
 
-
     <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" lang={lang} />)}
+      {
+        tags.map(tag => (
+          <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" lang={lang} />
+        ))
+      }
     </ul>
 
     <ShareLinks />
@@ -265,24 +279,34 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
 
     <hr class="my-6 border-dashed" />
 
-    {series && seriesPosts && seriesPosts.length > 0 && (
-      <div class="mb-6 rounded-lg border border-border bg-muted/20 px-4 py-3" data-pagefind-ignore>
-        <div class="text-sm font-medium text-muted-foreground">{t("post.series", lang)}：{series.name}</div>
-        <ol class="mt-2 list-inside list-decimal space-y-1 text-sm">
-          {seriesPosts.map((p) => (
-            <li>
-              {p.id === post.id ? (
-                <span class="font-medium text-accent">{p.data.title}</span>
-              ) : (
-                <a href={getLocalizedPostPath(lang, p.id)} class="text-foreground/80 hover:text-accent hover:underline">
-                  {p.data.title}
-                </a>
-              )}
-            </li>
-          ))}
-        </ol>
-      </div>
-    )}
+    {
+      series && seriesPosts && seriesPosts.length > 0 && (
+        <div
+          class="mb-6 rounded-lg border border-border bg-muted/20 px-4 py-3"
+          data-pagefind-ignore
+        >
+          <div class="text-muted-foreground text-sm font-medium">
+            {t("post.series", lang)}：{series.name}
+          </div>
+          <ol class="mt-2 list-inside list-decimal space-y-1 text-sm">
+            {seriesPosts.map(p => (
+              <li>
+                {p.id === post.id ? (
+                  <span class="font-medium text-accent">{p.data.title}</span>
+                ) : (
+                  <a
+                    href={getLocalizedPostPath(lang, p.id)}
+                    class="text-foreground/80 hover:text-accent hover:underline"
+                  >
+                    {p.data.title}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )
+    }
 
     <!-- Previous/Next Post Buttons -->
     <div data-pagefind-ignore class="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -328,18 +352,21 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
     const header = document.getElementById("sticky-header");
     const progressBar = document.getElementById("progress-bar");
     const tocToggle = document.getElementById("sticky-toc-toggle");
-    
+
     if (!header || !progressBar) return;
 
     // Handle scroll
     document.addEventListener("scroll", () => {
-      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const winScroll =
+        document.body.scrollTop || document.documentElement.scrollTop;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
       const scrolled = (winScroll / height) * 100;
-      
+
       // Update progress bar
       progressBar.style.width = scrolled + "%";
-      
+
       // Show/hide header based on scroll position (e.g. past 300px)
       if (winScroll > 300) {
         header.classList.remove("-translate-y-full", "opacity-0");
@@ -354,11 +381,14 @@ const nextPost = currentPostIndex >= 0 && currentPostIndex < navList.length - 1 
         // Scroll to InlineTOC and open it
         const inlineToc = document.querySelector("[data-inline-toc]");
         if (inlineToc) {
-           inlineToc.scrollIntoView({ behavior: "smooth", block: "center" });
-           const toggleBtn = inlineToc.querySelector("[data-toc-toggle]");
-           if (toggleBtn && toggleBtn.getAttribute("aria-expanded") === "false") {
-             toggleBtn.click();
-           }
+          inlineToc.scrollIntoView({ behavior: "smooth", block: "center" });
+          const toggleBtn = inlineToc.querySelector("[data-toc-toggle]");
+          if (
+            toggleBtn &&
+            toggleBtn.getAttribute("aria-expanded") === "false"
+          ) {
+            toggleBtn.click();
+          }
         }
       });
     }

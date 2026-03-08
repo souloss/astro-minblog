@@ -1,10 +1,10 @@
 export const SITE = {
-  website: "https://astro-paper.pages.dev/", // replace this with your deployed domain
+  website: "https://demo-astromin.souloss.cn/", // replace this with your deployed domain
   author: "Souloss",
-  profile: "https://satnaing.dev/",
+  profile: "https://souloss.cn/",
   desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
   title: "Souloss",
-  ogImage: "astropaper-og.jpg",
+  ogImage: "astro-minblog-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
@@ -15,7 +15,7 @@ export const SITE = {
   editPost: {
     enabled: true,
     text: "Edit page",
-    url: "https://github.com/satnaing/astro-paper/edit/main/",
+    url: "https://github.com/souloss/astro-minblog/edit/main/",
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
@@ -24,7 +24,7 @@ export const SITE = {
   umami: {
     enabled: false,
     websiteId: "",
-    src: "https://umami.souloss.cn/"
+    src: "https://umami.souloss.cn/",
   },
   waline: {
     enabled: true,

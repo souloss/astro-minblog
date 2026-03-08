@@ -17,7 +17,12 @@ type Props = {
   lang?: string;
 } & HTMLAttributes<"footer">;
 
-const { noMarginTop = false, lang = "zh", class: className, ...attrs } = Astro.props;
+const {
+  noMarginTop = false,
+  lang = "zh",
+  class: className,
+  ...attrs
+} = Astro.props;
 
 const copyrightText = t("footer.copyright", lang)
   .replace("{year}", String(currentYear))
@@ -53,21 +58,31 @@ const copyrightText = t("footer.copyright", lang)
         </a>
       </div>
 
-      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+      <span class="hidden px-2 text-neutral-500 sm:inline dark:text-neutral-500"
+        >|</span
+      >
 
       <!-- Column 2: Running days -->
       <div class="px-4">
-        <span>{t("footer.running", lang)} {runningDays} {t("footer.days", lang)}</span>
+        <span
+          >{t("footer.running", lang)}
+          {runningDays}
+          {t("footer.days", lang)}</span
+        >
       </div>
 
-      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+      <span class="hidden px-2 text-neutral-500 sm:inline dark:text-neutral-500"
+        >|</span
+      >
 
       <!-- Column 3: Copyright -->
       <div class="px-4">
         <span>{copyrightText}</span>
       </div>
 
-      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+      <span class="hidden px-2 text-neutral-500 sm:inline dark:text-neutral-500"
+        >|</span
+      >
 
       <!-- Column 4: Sitemap -->
       <div class="px-4">
@@ -79,16 +94,13 @@ const copyrightText = t("footer.copyright", lang)
         </a>
       </div>
 
-      <span class="hidden text-neutral-500 px-2 sm:inline dark:text-neutral-500">|</span>
+      <span class="hidden px-2 text-neutral-500 sm:inline dark:text-neutral-500"
+        >|</span
+      >
 
       <!-- Column 5: RSS -->
       <div class="px-4">
-        <a
-          href="/rss.xml"
-          class="transition-colors hover:text-accent"
-        >
-          RSS
-        </a>
+        <a href="/rss.xml" class="transition-colors hover:text-accent"> RSS </a>
       </div>
     </div>
   </div>
