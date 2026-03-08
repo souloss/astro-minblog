@@ -68,6 +68,16 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
     },
+    ssr: {
+      // Externalize native modules that can't run in Cloudflare Workers
+      // These are only used during prerendering (build time), not at runtime
+      external: ["@resvg/resvg-js", "sharp"],
+    },
+    build: {
+      rollupOptions: {
+        external: [/@resvg\/resvg-js/, /@resvg\/resvg-js-linux-.*/, /\.node$/],
+      },
+    },
   },
   image: {
     responsiveStyles: true,
