@@ -60,6 +60,15 @@ type TranslationKey =
   | "main.searchDesc"
   | "friends.title"
   | "friends.desc"
+  | "nav.series"
+  | "series.title"
+  | "series.desc"
+  | "series.articles"
+  | "series.latestUpdate"
+  | "series.noSeries"
+  | "series.seriesDesc"
+  | "series.currentReading"
+  | "series.progress"
   | "post.updated"
   | "post.readingTime"
   | "post.wordCount"
@@ -128,6 +137,15 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "main.searchDesc": "Search any article with advanced filters ...",
     "friends.title": "Friends",
     "friends.desc": "Friendship links, welcome to exchange.",
+    "nav.series": "Series",
+    "series.title": "Series",
+    "series.desc": "Curated article series for deep-diving into topics.",
+    "series.articles": "{count} articles",
+    "series.latestUpdate": "Last updated",
+    "series.noSeries": "No series found.",
+    "series.seriesDesc": 'All articles in the series "{name}".',
+    "series.currentReading": "Currently reading",
+    "series.progress": "Article {current} of {total}",
     "post.updated": "Updated:",
     "post.readingTime": "{min} min read",
     "post.wordCount": "{count} words",
@@ -195,6 +213,15 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "main.searchDesc": "使用高级筛选搜索文章...",
     "friends.title": "友链",
     "friends.desc": "友情链接，欢迎交换",
+    "nav.series": "专栏",
+    "series.title": "专栏",
+    "series.desc": "精心策划的系列文章，深入探索各个主题。",
+    "series.articles": "{count} 篇文章",
+    "series.latestUpdate": "最近更新",
+    "series.noSeries": "暂无系列文章。",
+    "series.seriesDesc": "系列「{name}」中的所有文章。",
+    "series.currentReading": "正在阅读",
+    "series.progress": "第 {current} 篇，共 {total} 篇",
     "post.updated": "更新于：",
     "post.readingTime": "{min} 分钟阅读",
     "post.wordCount": "{count} 字",
