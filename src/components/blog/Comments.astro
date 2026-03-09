@@ -60,7 +60,15 @@ const enabled = SITE.waline?.enabled;
             try {
               // Clean up previous instance
               if (walineInstance) {
-                walineInstance.destroy();
+                // Handle both sync errors and Promise rejections from destroy()
+                // Waline's internal Vue components may reject with AbortError during cleanup
+                const result = walineInstance.destroy();
+                if (result && typeof result.catch === 'function') {
+                  result.catch(() => {
+                    // Suppress internal Vue AbortError during cleanup
+                  });
+                }
+                walineInstance = null;
               }
               
               walineInstance = init({
@@ -130,10 +138,28 @@ const enabled = SITE.waline?.enabled;
 
         // Handle View Transitions (if using ClientRouter)
         document.addEventListener('astro:page-load', loadWaline);
+        
+        // Cleanup before page swap to prevent AbortError
+        document.addEventListener('astro:before-swap', () => {
+          if (walineInstance) {
+            // Handle both sync errors and Promise rejections from destroy()
+            const result = walineInstance.destroy();
+            if (result && typeof result.catch === 'function') {
+              result.catch(() => {
+                // Ignore errors during cleanup - component may already be unmounted
+              });
+            }
+            walineInstance = null;
+          }
+        });
       </script>
       
       <style is:global>
-        /* Enhanced Waline Styles to match astro-minblog theme */
+        /* ===========================================
+         * WALINE COMMENT SYSTEM STYLES
+         * Comprehensive theming for light/dark modes
+         * =========================================== */
+        
         .comments-section {
           animation: fadeIn 0.5s ease-out;
         }
@@ -149,53 +175,125 @@ const enabled = SITE.waline?.enabled;
           }
         }
         
+        /* ===========================================
+         * ROOT VARIABLES (Common)
+         * =========================================== */
         :root {
+          /* Theme Colors */
           --waline-theme-color: var(--accent) !important;
           --waline-active-color: var(--accent) !important;
+          
+          /* Typography */
           --waline-font-size: 0.9375rem !important;
           --waline-border-radius: 0.5rem !important;
+          
+          /* Avatar */
+          --waline-avatar-size: 2.75rem !important;
+          --waline-m-avatar-size: 2.25rem !important;
+          
+          /* Box Shadow */
+          --waline-box-shadow: none !important;
         }
         
-        html[data-theme="dark"] {
-          --waline-bgcolor: var(--card) !important;
-          --waline-bgcolor-light: var(--muted) !important;
-          --waline-bgcolor-hover: rgba(255, 255, 255, 0.05) !important;
-          --waline-border-color: var(--border) !important;
-          --waline-font-color: var(--foreground) !important;
-          --waline-disable-bgcolor: rgba(128, 128, 128, 0.2) !important;
-          --waline-disable-color: var(--foreground-soft) !important;
-          --waline-bq-color: var(--foreground-soft) !important;
-        }
-        
+        /* ===========================================
+         * LIGHT MODE THEME
+         * =========================================== */
         html:not([data-theme="dark"]) {
-          --waline-bgcolor: var(--surface) !important;
-          --waline-bgcolor-light: var(--muted) !important;
-          --waline-bgcolor-hover: rgba(0, 0, 0, 0.03) !important;
-          --waline-border-color: var(--border) !important;
+          /* Primary Backgrounds - use --card for consistency */
+          --waline-bg-color: var(--card) !important;
+          --waline-bg-color-light: var(--muted) !important;
+          --waline-bg-color-hover: rgba(0, 0, 0, 0.05) !important;
+          
+          /* Text Colors */
+          --waline-color: var(--foreground) !important;
           --waline-font-color: var(--foreground) !important;
+          
+          /* Border & Disabled */
+          --waline-border-color: var(--border) !important;
+          --waline-disable-bg-color: var(--muted) !important;
+          --waline-disable-color: var(--foreground-soft) !important;
+          
+          /* Special Colors */
+          --waline-bq-color: var(--muted) !important;
+          --waline-info-bg-color: var(--muted) !important;
+          --waline-info-color: var(--foreground-soft) !important;
+          --waline-code-bg-color: #1e1e1e !important;
+          
+          /* White/Grey overrides */
+          --waline-white: var(--card) !important;
+          --waline-light-grey: var(--foreground-soft) !important;
+          --waline-dark-grey: var(--foreground) !important;
         }
-
-        /* Fix padding/margin issues */
+        
+        /* ===========================================
+         * DARK MODE THEME
+         * =========================================== */
+        html[data-theme="dark"] {
+          /* Primary Backgrounds - use --card for consistency */
+          --waline-bg-color: var(--card) !important;
+          --waline-bg-color-light: var(--muted) !important;
+          --waline-bg-color-hover: rgba(255, 255, 255, 0.05) !important;
+          
+          /* Text Colors */
+          --waline-color: var(--foreground) !important;
+          --waline-font-color: var(--foreground) !important;
+          
+          /* Border & Disabled */
+          --waline-border-color: var(--border) !important;
+          --waline-disable-bg-color: rgba(128, 128, 128, 0.2) !important;
+          --waline-disable-color: var(--foreground-soft) !important;
+          
+          /* Special Colors */
+          --waline-bq-color: var(--muted) !important;
+          --waline-info-bg-color: var(--muted) !important;
+          --waline-info-color: var(--foreground-soft) !important;
+          --waline-code-bg-color: #0d1117 !important;
+          
+          /* White/Grey overrides */
+          --waline-white: var(--card) !important;
+          --waline-light-grey: var(--foreground-soft) !important;
+          --waline-dark-grey: var(--foreground) !important;
+        }
+        
+        /* ===========================================
+         * CONTAINER & PANEL STYLES
+         * =========================================== */
         #waline {
           padding-top: 0.5rem;
         }
         
-        /* Enhanced input styles */
+        /* Main panel - ensure consistent background */
+        #waline .wl-panel {
+          background-color: var(--card) !important;
+          border-color: var(--border) !important;
+        }
+        
+        /* Header area */
+        #waline .wl-header {
+          background-color: transparent !important;
+        }
+        
+        #waline .wl-header-item {
+          background-color: var(--muted) !important;
+          border-color: var(--border) !important;
+        }
+        
+        /* Input wrapper */
+        #waline .wl-input-wrapper {
+          background-color: var(--card) !important;
+          border-color: var(--border) !important;
+        }
+        
+        /* ===========================================
+         * INPUT & EDITOR STYLES
+         * =========================================== */
         #waline .wl-editor,
         #waline .wl-input {
           min-height: 120px !important;
+          background-color: var(--card) !important;
+          border-color: var(--border) !important;
           border-radius: 0.5rem !important;
           transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-        }
-        
-        html:not([data-theme="dark"]) #waline .wl-editor,
-        html:not([data-theme="dark"]) #waline .wl-input {
-          background-color: #fff !important;
-        }
-        
-        html[data-theme="dark"] #waline .wl-editor,
-        html[data-theme="dark"] #waline .wl-input {
-          background-color: var(--card) !important;
         }
         
         #waline .wl-input {
@@ -208,24 +306,46 @@ const enabled = SITE.waline?.enabled;
           box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent) !important;
         }
         
-        /* Button styles */
+        /* Textarea */
+        #waline textarea {
+          background-color: var(--card) !important;
+          color: var(--foreground) !important;
+        }
+        
+        /* ===========================================
+         * BUTTON STYLES
+         * =========================================== */
         #waline .wl-btn {
           transition: all 0.2s ease !important;
           border-radius: 0.375rem !important;
+          background-color: var(--muted) !important;
+          color: var(--foreground) !important;
         }
         
         #waline .wl-btn:hover {
           transform: translateY(-1px);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          background-color: var(--bg-color-hover) !important;
         }
         
         #waline .wl-primary-btn {
           font-weight: 500 !important;
+          background-color: var(--accent) !important;
+          color: var(--background) !important;
         }
         
-        /* Comment card styles */
+        #waline .wl-primary-btn:hover {
+          background-color: var(--accent) !important;
+          opacity: 0.9;
+        }
+        
+        /* ===========================================
+         * COMMENT CARD STYLES
+         * =========================================== */
         #waline .wl-card {
           border-radius: 0.5rem !important;
+          background-color: var(--card) !important;
+          border-color: var(--border) !important;
           transition: box-shadow 0.2s ease !important;
         }
         
@@ -233,50 +353,173 @@ const enabled = SITE.waline?.enabled;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         
-        /* Avatar styles */
+        /* Comment content area */
+        #waline .wl-content {
+          background-color: transparent !important;
+        }
+        
+        /* Comment meta info */
+        #waline .wl-meta {
+          color: var(--foreground-soft) !important;
+        }
+        
+        /* ===========================================
+         * AVATAR STYLES
+         * =========================================== */
         #waline .wl-avatar {
           border-radius: 50% !important;
         }
         
-        /* Reaction styles */
+        /* ===========================================
+         * REACTION STYLES
+         * =========================================== */
+        #waline .wl-reaction {
+          background-color: transparent !important;
+        }
+        
         #waline .wl-reaction-img {
           transition: transform 0.2s ease !important;
+          background-color: var(--muted) !important;
+          border-radius: 0.5rem !important;
         }
         
         #waline .wl-reaction-img:hover {
           transform: scale(1.1);
         }
         
-        /* Quote styles */
+        #waline .wl-reaction-title {
+          color: var(--foreground-soft) !important;
+        }
+        
+        /* ===========================================
+         * QUOTE & CODE STYLES
+         * =========================================== */
         #waline .wl-quote {
           border-left-color: var(--accent) !important;
+          background-color: var(--muted) !important;
+          color: var(--foreground) !important;
         }
         
-        /* Meta info styles */
-        #waline .wl-meta {
-          color: var(--muted-foreground) !important;
+        #waline .wl-content pre,
+        #waline .wl-content code {
+          background-color: var(--waline-code-bg-color) !important;
+          border-radius: 0.25rem !important;
         }
         
-        /* Emoji picker */
+        /* ===========================================
+         * EMOJI PICKER
+         * =========================================== */
         #waline .wl-emoji-popup {
           border-radius: 0.5rem !important;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+          background-color: var(--card) !important;
+          border-color: var(--border) !important;
         }
         
-        /* Reply form */
+        #waline .wl-tab-wrapper button {
+          color: var(--foreground) !important;
+        }
+        
+        #waline .wl-tab-wrapper button.active {
+          color: var(--accent) !important;
+          border-bottom-color: var(--accent) !important;
+        }
+        
+        /* ===========================================
+         * REPLY FORM
+         * =========================================== */
         #waline .wl-reply-wrapper {
           border-radius: 0.5rem !important;
+          background-color: var(--muted) !important;
         }
         
-        /* Pagination */
+        #waline .wl-reply {
+          background-color: var(--card) !important;
+        }
+        
+        /* ===========================================
+         * PAGINATION
+         * =========================================== */
         #waline .wl-page-button {
           border-radius: 0.25rem !important;
           transition: background-color 0.2s ease !important;
+          background-color: var(--muted) !important;
+          color: var(--foreground) !important;
         }
         
-        /* Loading animation */
+        #waline .wl-page-button:hover {
+          background-color: var(--accent) !important;
+          color: var(--background) !important;
+        }
+        
+        #waline .wl-page-button.active {
+          background-color: var(--accent) !important;
+          color: var(--background) !important;
+        }
+        
+        /* ===========================================
+         * ADMIN & BADGE STYLES
+         * =========================================== */
+        #waline .wl-badge {
+          background-color: var(--accent) !important;
+          color: var(--background) !important;
+        }
+        
+        #waline .wl-admin {
+          color: var(--accent) !important;
+        }
+        
+        /* ===========================================
+         * LOGIN FORM
+         * =========================================== */
+        #waline .wl-login-form {
+          background-color: var(--card) !important;
+        }
+        
+        /* ===========================================
+         * LOADING ANIMATION
+         * =========================================== */
         #waline-loading {
           transition: opacity 0.3s ease;
+        }
+        
+        /* ===========================================
+         * GUEST STYLES
+         * =========================================== */
+        #waline .wl-guest {
+          background-color: transparent !important;
+        }
+        
+        #waline .wl-guest .wl-nick,
+        #waline .wl-guest .wl-link {
+          background-color: var(--card) !important;
+          border-color: var(--border) !important;
+          color: var(--foreground) !important;
+        }
+        
+        /* ===========================================
+         * COMMENT OPERATIONS
+         * =========================================== */
+        #waline .wl-comment-actions button {
+          color: var(--foreground-soft) !important;
+        }
+        
+        #waline .wl-comment-actions button:hover {
+          color: var(--accent) !important;
+        }
+        
+        /* ===========================================
+         * IMAGE PREVIEW
+         * =========================================== */
+        #waline .wl-image-preview {
+          background-color: rgba(0, 0, 0, 0.85) !important;
+        }
+        
+        /* ===========================================
+         * VERIFICATION BADGE
+         * =========================================== */
+        #waline .wl-verified-icon {
+          color: var(--accent) !important;
         }
       </style>
     </div>

@@ -302,10 +302,18 @@ const structuredData = pubDatetime
     <FloatingActions />
     <AIChatWidget lang={lang} />
 
-    <script src="../scripts/theme.ts" defer></script>
-    <script src="../scripts/lightbox.ts" defer></script>
-    <script src="../scripts/reading-position.ts" defer></script>
-    <script src="../scripts/web-vitals.ts" async></script>
+    <script>
+      import '../scripts/theme.ts';
+    </script>
+    <script>
+      import '../scripts/lightbox.ts';
+    </script>
+    <script>
+      import '../scripts/reading-position.ts';
+    </script>
+    <script>
+      import '../scripts/web-vitals.ts';
+    </script>
     <script is:inline>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js").catch(function () {});
