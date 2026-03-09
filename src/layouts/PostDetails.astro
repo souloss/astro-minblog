@@ -48,21 +48,20 @@ const { minutes: readingMinutes, words: wordCount } = getReadingTime(
   post.body ?? ""
 );
 
-let ogImageUrl: string | undefined;
-
-// Determine OG image source
-if (typeof initOgImage === "string") {
-  ogImageUrl = initOgImage; // Remote OG image (absolute URL)
-} else if (initOgImage?.src) {
-  ogImageUrl = initOgImage.src; // Local asset
+// Banner image: only real local assets or valid remote URLs (not dynamic OG stubs)
+let bannerImageUrl: string | undefined;
+if (initOgImage && typeof initOgImage === "object" && "src" in initOgImage) {
+  bannerImageUrl = initOgImage.src;
+} else if (typeof initOgImage === "string" && initOgImage.startsWith("http")) {
+  bannerImageUrl = initOgImage;
 }
 
-// Use dynamic OG image if enabled and no remote|local ogImage
+// OG meta image: includes dynamic fallback for social sharing
+let ogImageUrl: string | undefined = bannerImageUrl;
 if (!ogImageUrl && SITE.dynamicOgImage) {
   ogImageUrl = `/${lang}/posts/${getPostSlug(post.id)}/index.png`;
 }
 
-// Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
 const ogImage = ogImageUrl
   ? new URL(ogImageUrl, Astro.url.origin).href
   : undefined;
@@ -226,34 +225,75 @@ const nextPost =
     class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
     data-pagefind-body
   >
-    <h1
-      transition:name={slugifyStr(title.replaceAll(".", "-"))}
-      class="inline-block text-2xl font-bold text-accent sm:text-3xl"
-    >
-      {title}
-    </h1>
-    <div class="my-2 flex flex-wrap items-center gap-2">
-      {
-        category && (
+    {/* Article Hero Section */}
+    <div class="mb-6">
+      {bannerImageUrl && (
+        <div class="relative -mx-4 mb-6 h-48 overflow-hidden rounded-xl sm:h-56 md:h-64">
+          <img
+            src={bannerImageUrl}
+            alt={title}
+            class="h-full w-full object-cover object-center"
+            loading="eager"
+            decoding="async"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+        </div>
+      )}
+
+      <h1
+        transition:name={slugifyStr(title.replaceAll(".", "-"))}
+        class="inline-block text-2xl font-bold text-accent sm:text-3xl"
+      >
+        {title}
+      </h1>
+
+      {description && (
+        <p class="mt-2 text-base text-foreground-soft leading-relaxed">{description}</p>
+      )}
+
+      {/* Metadata bar */}
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border/60 bg-card/40 px-4 py-3">
+        {category && (
           <a
             href={`/${lang}/categories/${encodeURIComponent(category)}/`}
-            class="text-sm font-medium text-accent hover:underline"
+            class="text-sm font-medium text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent"
           >
             {category}
           </a>
-        )
-      }
-      {category && <span class="text-muted-foreground">·</span>}
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" lang={lang} />
-      <span class="text-muted-foreground">·</span>
-      <span
-        class="text-sm opacity-80 sm:text-base"
-        title={t("post.wordCount", lang).replace("{count}", String(wordCount))}
-      >
-        {t("post.readingTime", lang).replace("{min}", String(readingMinutes))}
-      </span>
-      <span aria-hidden="true" class:list={["max-sm:hidden"]}> </span>
+        )}
+        {category && <span class="text-border">|</span>}
+        <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" lang={lang} />
+        <span class="text-border">|</span>
+        <span
+          class="flex items-center gap-1 text-sm opacity-80 sm:text-base"
+          title={t("post.wordCount", lang).replace("{count}", String(wordCount))}
+        >
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+          </svg>
+          {t("post.readingTime", lang).replace("{min}", String(readingMinutes))}
+        </span>
+        <span class="text-border">|</span>
+        <span class="text-sm opacity-80">
+          {wordCount.toLocaleString()} {lang === "zh" ? "字" : "words"}
+        </span>
+      </div>
+
+      {/* Tags preview */}
+      {tags.length > 0 && (
+        <div class="mt-3 flex flex-wrap gap-2" data-pagefind-ignore>
+          {tags.map(tag => (
+            <a
+              href={`/${lang}/tags/${slugifyStr(tag)}/`}
+              class="rounded-md bg-muted/60 px-2.5 py-1 text-xs font-medium text-foreground-soft transition-colors hover:bg-accent/10 hover:text-accent"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
     </div>
+
     <InlineTOC headings={headings} />
     <article
       id="article"

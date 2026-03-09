@@ -48,8 +48,14 @@ export const SITE = {
   },
   ai: {
     enabled: true,
-    apiEndpoint: "", // Edge function API endpoint for streaming chat (leave empty for mock mode)
-    mockMode: true, // Use mock responses when no API endpoint is configured
+    apiEndpoint: "", // OpenAI-compatible API endpoint (e.g. "https://api.openai.com/v1/chat/completions")
+    apiKey: "", // API key — set here or via AI_API_KEY env var at build time
+    model: "gpt-4o-mini", // Model name for the chat endpoint
+    maxTokens: 1024,
+    systemPrompt:
+      "你是一个技术博客的 AI 助手，帮助读者了解博客内容、技术主题。回答简洁、准确，使用与用户相同的语言。",
+    mockMode: true, // Falls back to mock when apiEndpoint is empty
+    vectorSearch: true, // Enable vector-based context retrieval from local index
   },
   sponsor: {
     enabled: true,

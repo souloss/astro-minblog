@@ -157,18 +157,18 @@ const enabled = SITE.waline?.enabled;
         }
         
         html[data-theme="dark"] {
-          --waline-bgcolor: var(--background) !important;
+          --waline-bgcolor: var(--card) !important;
           --waline-bgcolor-light: var(--muted) !important;
           --waline-bgcolor-hover: rgba(255, 255, 255, 0.05) !important;
           --waline-border-color: var(--border) !important;
           --waline-font-color: var(--foreground) !important;
           --waline-disable-bgcolor: rgba(128, 128, 128, 0.2) !important;
-          --waline-disable-color: var(--muted-foreground) !important;
-          --waline-bq-color: var(--muted-foreground) !important;
+          --waline-disable-color: var(--foreground-soft) !important;
+          --waline-bq-color: var(--foreground-soft) !important;
         }
         
         html:not([data-theme="dark"]) {
-          --waline-bgcolor: var(--background) !important;
+          --waline-bgcolor: var(--surface) !important;
           --waline-bgcolor-light: var(--muted) !important;
           --waline-bgcolor-hover: rgba(0, 0, 0, 0.03) !important;
           --waline-border-color: var(--border) !important;
@@ -181,15 +181,31 @@ const enabled = SITE.waline?.enabled;
         }
         
         /* Enhanced input styles */
-        #waline .wl-editor {
+        #waline .wl-editor,
+        #waline .wl-input {
           min-height: 120px !important;
           border-radius: 0.5rem !important;
           transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
         
-        #waline .wl-editor:focus {
+        html:not([data-theme="dark"]) #waline .wl-editor,
+        html:not([data-theme="dark"]) #waline .wl-input {
+          background-color: #fff !important;
+        }
+        
+        html[data-theme="dark"] #waline .wl-editor,
+        html[data-theme="dark"] #waline .wl-input {
+          background-color: var(--card) !important;
+        }
+        
+        #waline .wl-input {
+          min-height: auto !important;
+        }
+        
+        #waline .wl-editor:focus,
+        #waline .wl-input:focus {
           border-color: var(--accent) !important;
-          box-shadow: 0 0 0 3px rgba(var(--color-accent), 0.1) !important;
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent) !important;
         }
         
         /* Button styles */

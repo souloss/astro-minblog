@@ -117,7 +117,7 @@ const yearCount = Object.keys(years).length;
                           </span>
                         </h3>
                       </div>
-                      <ul class="ml-6 space-y-4 md:ml-4">
+                      <ul class="ml-6 grid grid-cols-1 gap-3 md:ml-4">
                         {monthGroup
                           .sort(
                             (a, b) =>
@@ -129,9 +129,7 @@ const yearCount = Object.keys(years).length;
                               )
                           )
                           .map(data => (
-                            <li class="before:bg-muted-foreground/50 relative pl-4 before:absolute before:top-2.5 before:left-0 before:h-1.5 before:w-1.5 before:rounded-full">
-                              <Card lang={lang} {...data} />
-                            </li>
+                              <Card lang={lang} compact {...data} />
                           ))}
                       </ul>
                     </div>

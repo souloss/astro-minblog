@@ -44,9 +44,13 @@ html[data-theme="dark"] {
     monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-soft: var(--foreground-soft);
   --color-accent: var(--accent);
+  --color-card: var(--card);
+  --color-surface: var(--surface);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-shadow-elevated: var(--shadow-elevated);
 }
 
 @layer base {

@@ -1,54 +1,201 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import type { ImageMetadata } from "astro";
 import { slugifyStr } from "@/utils/slugify";
 import { getLocalizedPostPath } from "@/utils/getPath";
-import Datetime from "@/components/ui/Datetime.astro";
+import { getReadingTime } from "@/utils/getReadingTime";
+import { t } from "@/utils/i18n";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 
 type Props = {
   variant?: "h2" | "h3";
+  compact?: boolean;
   lang?: string;
 } & CollectionEntry<"blog">;
 
 const {
   variant: Heading = "h2",
+  compact = false,
   id,
   data,
+  body,
   filePath,
   lang = "zh",
 } = Astro.props;
 
-const { title, description, category, ...props } = data;
+const { title, description, category, ogImage, tags, pubDatetime, modDatetime, timezone } = data;
 const postHref = getLocalizedPostPath(lang, id, filePath);
+const { minutes: readingMinutes } = getReadingTime(body ?? "");
+
+let coverSrc: string | undefined;
+if (ogImage && typeof ogImage === "object" && "src" in ogImage) {
+  coverSrc = (ogImage as ImageMetadata).src;
+} else if (typeof ogImage === "string" && ogImage.startsWith("http")) {
+  coverSrc = ogImage;
+}
+// Skip string paths that aren't URLs — they're likely broken local refs or dynamic OG stubs
+
+const langLabel = id.startsWith("en/") ? "English" : "中文";
+
+import dayjs from "dayjs";
+import utcPlugin from "dayjs/plugin/utc";
+import timezonePlugin from "dayjs/plugin/timezone";
+import { SITE } from "@/config";
+
+dayjs.extend(utcPlugin);
+dayjs.extend(timezonePlugin);
+
+const isModified = modDatetime && modDatetime > pubDatetime;
+const datetime = dayjs(isModified ? modDatetime : pubDatetime).tz(timezone || SITE.timezone);
+const dateStr = lang === "zh"
+  ? datetime.format("YYYY 年 M 月 D 日")
+  : datetime.format("MMM D, YYYY");
 ---
 
-<li class="my-6">
-  {
-    category && (
-      <a
-        href={`/${lang}/categories/${category
-          .split("/")
-          .map(p => encodeURIComponent(p))
-          .join("/")}/`}
-        class="mb-1 inline-block text-xs font-medium text-accent hover:underline"
-      >
-        {category}
-      </a>
-    )
-  }
-  <a
-    href={postHref}
-    class:list={[
-      "inline-block text-lg font-medium text-accent",
-      "decoration-dashed underline-offset-4 hover:underline",
-      "focus-visible:no-underline focus-visible:underline-offset-0",
-    ]}
-  >
-    <Heading
-      style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+{compact ? (
+  <li class="group">
+    <a
+      href={postHref}
+      class="block rounded-lg border border-border bg-card/50 p-4 transition-all duration-200 hover:border-accent/40 hover:shadow-md focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent"
     >
-      {title}
-    </Heading>
-  </a>
-  <Datetime {...props} lang={lang} />
-  <p>{description}</p>
-</li>
+      {category && (
+        <span class="mb-1 inline-block text-xs font-medium text-accent">
+          {category}
+        </span>
+      )}
+      <Heading
+        style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+        class="text-base font-semibold text-foreground transition-colors group-hover:text-accent"
+      >
+        {title}
+      </Heading>
+      <p class="mt-1 line-clamp-1 text-sm text-foreground-soft">{description}</p>
+      <div class="mt-2 flex items-center gap-3 text-xs text-foreground-soft">
+        <time datetime={datetime.toISOString()}>{dateStr}</time>
+        <span>·</span>
+        <span>{t("post.readingTime", lang).replace("{min}", String(readingMinutes))}</span>
+      </div>
+    </a>
+  </li>
+) : (
+  <li class="group">
+    <a
+      href={postHref}
+      class="relative flex min-h-[220px] overflow-hidden rounded-xl border border-border/60 transition-all duration-300 hover:border-accent/40 hover:shadow-lg hover:shadow-shadow-elevated/10 focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent sm:min-h-[200px]"
+    >
+      {/* Background image or gradient fallback */}
+      {coverSrc ? (
+        <div class="absolute inset-0">
+          <img
+            src={coverSrc}
+            alt=""
+            class="h-full w-full object-cover object-center"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
+        </div>
+      ) : (
+        <div class="absolute inset-0 bg-gradient-to-br from-card via-muted/80 to-card" />
+      )}
+
+      {/* Content overlay */}
+      <div class={`relative z-10 flex w-full flex-col justify-between p-5 sm:p-6 ${coverSrc ? "text-white" : ""}`}>
+        {/* Top section: date + category */}
+        <div>
+          <div class="flex items-center gap-3">
+            <time
+              datetime={datetime.toISOString()}
+              class:list={[
+                "font-app text-xs tracking-wide",
+                coverSrc ? "text-white/80" : "text-foreground-soft"
+              ]}
+            >
+              {dateStr}
+            </time>
+            {category && (
+              <>
+                <span class:list={[coverSrc ? "text-white/40" : "text-foreground-soft/40"]}>·</span>
+                <span class:list={[
+                  "text-xs font-medium",
+                  coverSrc ? "text-white/80" : "text-accent"
+                ]}>
+                  {category}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Title */}
+          <Heading
+            style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+            class:list={[
+              "mt-2 text-lg font-bold leading-snug sm:text-xl",
+              coverSrc ? "text-white" : "text-foreground",
+              "transition-colors group-hover:text-accent"
+            ]}
+          >
+            {title}
+          </Heading>
+
+          {/* Description */}
+          <p class:list={[
+            "mt-2 line-clamp-2 text-sm leading-relaxed",
+            coverSrc ? "text-white/75" : "text-foreground-soft"
+          ]}>
+            {description}
+          </p>
+        </div>
+
+        {/* Bottom section: meta + tags */}
+        <div class="mt-4 flex flex-wrap items-end justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            {/* Reading time */}
+            <span class:list={[
+              "flex items-center gap-1 text-xs",
+              coverSrc ? "text-white/70" : "text-foreground-soft"
+            ]}>
+              <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+              </svg>
+              {readingMinutes} min
+            </span>
+
+            {/* Language badge */}
+            <span class:list={[
+              "flex items-center gap-1 text-xs",
+              coverSrc ? "text-white/70" : "text-foreground-soft"
+            ]}>
+              <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+              {langLabel}
+            </span>
+
+            {/* Tags */}
+            {tags.length > 0 && (
+              <div class="flex flex-wrap gap-1.5">
+                {tags.slice(0, 3).map(tag => (
+                  <span class:list={[
+                    "rounded-md px-2 py-0.5 text-xs",
+                    coverSrc
+                      ? "bg-white/15 text-white/80 backdrop-blur-sm"
+                      : "bg-muted text-foreground-soft"
+                  ]}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Arrow indicator */}
+          <IconArrowRight class:list={[
+            "size-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1",
+            coverSrc ? "text-white/60" : "text-foreground-soft"
+          ]} />
+        </div>
+      </div>
+    </a>
+  </li>
+)}

@@ -46,7 +46,7 @@ const tag = Astro.params.tag ?? "";
     titleTransition={tag}
     pageDesc={t("main.tagDesc", lang).replace("{tag}", tagName)}
   >
-    <ul>
+    <ul class="grid grid-cols-1 gap-5">
       {page.data.map(post => <Card lang={lang} {...post} />)}
     </ul>
   </Main>

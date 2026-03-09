@@ -4,8 +4,8 @@
   "description": "A minimal, responsive and SEO-friendly Astro blog theme.",
   "start_url": "/zh/",
   "display": "standalone",
-  "background_color": "#fdfdfd",
-  "theme_color": "#006cac",
+  "background_color": "#f7f3eb",
+  "theme_color": "#0f766e",
   "icons": [
     {
       "src": "/favicon.ico",

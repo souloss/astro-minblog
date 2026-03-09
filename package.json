@@ -14,6 +14,9 @@
     "tools:summarize": "tsx tools/summarize.ts",
     "tools:generate-related": "tsx tools/generate-related.ts",
     "tools:translate": "tsx tools/translate.ts",
+    "tools:vectorize": "tsx tools/vectorize.ts",
+    "tools:cover": "tsx tools/generate-cover.ts",
+    "tools:tags": "tsx tools/generate-tags.ts",
     "og": "tsx scripts/generate-og.ts"
   },
   "dependencies": {

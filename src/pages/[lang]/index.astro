@@ -91,7 +91,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           <h2 class="text-2xl font-semibold tracking-wide">
             {t("post.featured", lang)}
           </h2>
-          <ul>
+          <ul class="mt-4 grid grid-cols-1 gap-5">
             {featuredPosts.map(post => (
               <Card variant="h3" lang={lang} {...post} />
             ))}
@@ -106,7 +106,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           <h2 class="text-2xl font-semibold tracking-wide">
             {t("post.recentPosts", lang)}
           </h2>
-          <ul>
+          <ul class="mt-4 grid grid-cols-1 gap-5">
             {recentPosts.map(
               (post, index) =>
                 index < SITE.postPerIndex && (

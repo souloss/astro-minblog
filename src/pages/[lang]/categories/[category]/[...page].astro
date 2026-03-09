@@ -51,7 +51,7 @@ const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
     titleTransition={category}
     pageDesc={t("main.categoryDesc", lang).replace("{category}", category)}
   >
-    <ul>
+    <ul class="grid grid-cols-1 gap-5">
       {page.data.map(post => <Card lang={lang} {...post} />)}
     </ul>
   </Main>
