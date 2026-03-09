@@ -110,7 +110,7 @@
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply bg-(--shiki-light-bg) text-(--shiki-light);
+    @apply bg-background text-(--shiki-light);
   }
 
   .astro-code span {
@@ -118,7 +118,7 @@
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-(--shiki-dark-bg) text-(--shiki-dark);
+    @apply bg-background text-(--shiki-dark);
   }
 
   html[data-theme="dark"] .astro-code span {

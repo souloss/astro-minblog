@@ -15,7 +15,7 @@
   padding-top: 0.85rem;
   padding-bottom: 0.85rem;
   padding-inline: 0;
-  background: none;
+  background: none !important;
   overflow-x: auto;
 }
 
@@ -149,7 +149,7 @@
   left: 0;
   right: 0;
   height: 4rem;
-  background: linear-gradient(to bottom, transparent, var(--card));
+  background: linear-gradient(to bottom, transparent, var(--background));
   pointer-events: none;
 }
 

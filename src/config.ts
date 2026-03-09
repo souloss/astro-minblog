@@ -52,8 +52,11 @@ export const SITE = {
     mockMode: true, // Use mock responses when no API endpoint is configured
   },
   sponsor: {
-    enabled: false,
-    methods: [] as { name: string; icon: string; image: string }[],
+    enabled: true,
+    methods: [
+      { name: "微信支付", icon: "wechat", image: "/images/wechat-pay.svg" },
+      { name: "支付宝", icon: "alipay", image: "/images/alipay.svg" },
+    ] as { name: string; icon: string; image: string }[],
     sponsors: [] as {
       name: string;
       platform?: string;

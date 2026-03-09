@@ -4,6 +4,7 @@ import Header from "@/components/nav/Header.astro";
 import Footer from "@/components/nav/Footer.astro";
 import Breadcrumb from "@/components/nav/Breadcrumb.astro";
 import Layout from "@/layouts/Layout.astro";
+import Sponsorship from "@/components/social/Sponsorship.astro";
 import { SITE } from "@/config";
 import { t } from "@/utils/i18n";
 
@@ -13,6 +14,7 @@ export const getStaticPaths = (() => [
 ]) satisfies GetStaticPaths;
 
 const { lang } = Astro.params as { lang: "zh" | "en" };
+const hasSponsor = SITE.sponsor?.enabled;
 ---
 
 <Layout lang={lang} title={`${t("nav.about", lang)} | ${SITE.title}`}>
@@ -49,6 +51,22 @@ const { lang } = Astro.params as { lang: "zh" | "en" };
               clean layout that works out-of-the-box.
             </p>
           </Fragment>
+        )
+      }
+
+      {
+        hasSponsor && (
+          <div id="sponsorship" class="mt-12">
+            <h2 class="text-xl tracking-wider sm:text-2xl">
+              {lang === "zh" ? "赞赏支持" : "Support & Sponsorship"}
+            </h2>
+            <p class="text-foreground-soft">
+              {lang === "zh"
+                ? "如果你觉得我的内容对你有帮助，欢迎请我喝杯咖啡 :)"
+                : "If you find my content helpful, feel free to buy me a coffee :)"}
+            </p>
+            <Sponsorship class="mt-4" />
+          </div>
         )
       }
     </section>

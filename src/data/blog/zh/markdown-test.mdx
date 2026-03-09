@@ -474,11 +474,18 @@ function greeting(name) {
 
 #### 文件名称显示
 
-使用 `file="文件名"` 元数据添加文件名标签：
+使用 `title="文件名"` 或 `file="文件名"` 元数据添加文件名标签：
 
-```typescript file="src/utils/helper.ts"
+```typescript title="src/utils/helper.ts"
 export function calculateSum(numbers: number[]): number {
   return numbers.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+```css file="src/styles/theme.css"
+:root {
+  --primary: #0f766e;
+  --background: #f7f3eb;
 }
 ```
 ---

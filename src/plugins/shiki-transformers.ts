@@ -76,8 +76,8 @@ export const updateStyle = (): ShikiTransformer => ({
 });
 
 /**
- * Parses `title="..."` from the code-fence meta string and prepends
- * a styled title bar to the code block.
+ * Parses `title="..."` or `file="..."` from the code-fence meta string
+ * and prepends a styled title bar to the code block.
  */
 export const addTitle = (): ShikiTransformer => ({
   name: "shiki-transformer-add-title",
@@ -85,10 +85,11 @@ export const addTitle = (): ShikiTransformer => ({
     const rawMeta = this.options.meta?.__raw;
     if (!rawMeta) return;
     const meta = parseMetaString(rawMeta);
-    if (!meta.title) return;
+    const label = meta.title || meta.file;
+    if (!label) return;
 
     node.children.unshift(
-      el("div", { class: "code-title" }, meta.title.toString())
+      el("div", { class: "code-title" }, label.toString())
     );
   },
 });

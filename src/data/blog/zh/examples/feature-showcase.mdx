@@ -1,0 +1,341 @@
+---
+title: 新特性与组件展示
+pubDatetime: 2026-03-09T00:00:00.000Z
+author: Souloss
+description: 本文全面展示博客新增的所有特性、组件和样式增强，包括代码块增强、UI 组件、社交组件等。
+tags:
+  - 测试
+  - 组件
+  - 功能展示
+category: 博客/测试
+featured: true
+draft: false
+---
+
+import GithubCard from "@/components/ui/GithubCard.astro";
+import Timeline from "@/components/ui/Timeline.astro";
+import Collapse from "@/components/ui/Collapse.astro";
+import Sponsorship from "@/components/social/Sponsorship.astro";
+import Alert from "@/components/ui/Alert.astro";
+
+本文用于测试和展示博客近期新增的所有特性与组件，包括代码块增强（文件名、语言标签、复制按钮、折叠）、UI 组件（Timeline、Collapse、GithubCard）、社交组件（Sponsorship、Copyright）以及各种 Remark/Rehype 插件效果。
+
+---
+
+## 一、代码块增强
+
+### 1.1 文件名标签
+
+使用 `title="文件名"` 或 `file="文件名"` 元数据为代码块添加文件名标签：
+
+```typescript title="src/utils/helper.ts"
+export function calculateSum(numbers: number[]): number {
+  return numbers.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+```css file="src/styles/theme.css"
+:root {
+  --primary: #0f766e;
+  --background: #f7f3eb;
+  --foreground: #152334;
+}
+```
+
+### 1.2 语言标签和复制按钮
+
+每个代码块右上角会自动显示语言标签，悬浮时切换为复制按钮：
+
+```python
+def fibonacci(n: int) -> list[int]:
+    if n <= 0:
+        return []
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i - 1] + fib[i - 2])
+    return fib
+
+print(fibonacci(10))
+```
+
+```rust
+fn main() {
+    let greeting = "Hello, World!";
+    println!("{}", greeting);
+
+    let numbers: Vec<i32> = (1..=10).collect();
+    let sum: i32 = numbers.iter().sum();
+    println!("Sum: {}", sum);
+}
+```
+
+### 1.3 长代码块自动折叠
+
+超过 15 行的代码块会自动折叠，点击底部按钮展开/收起：
+
+```typescript title="src/plugins/shiki-transformers.ts"
+interface HastElement {
+  type: "element";
+  tagName: string;
+  properties: Record<string, unknown>;
+  children: (HastElement | HastText)[];
+}
+
+interface HastText {
+  type: "text";
+  value: string;
+}
+
+function el(
+  tag: string,
+  props: Record<string, unknown>,
+  children: (HastElement | HastText)[] | string = []
+): HastElement {
+  return {
+    type: "element",
+    tagName: tag,
+    properties: props,
+    children:
+      typeof children === "string"
+        ? [{ type: "text" as const, value: children }]
+        : children,
+  };
+}
+
+function parseMetaString(str = ""): Record<string, string | true> {
+  return Object.fromEntries(
+    str.split(" ").reduce(
+      (acc: [string, string | true][], cur) => {
+        const matched = cur.match(/(.+)?=("(.+)"|'(.+)')$/);
+        if (matched === null) return acc;
+        const key = matched[1];
+        const value = matched[3] || matched[4] || true;
+        acc.push([key, value]);
+        return acc;
+      },
+      [] as [string, string | true][]
+    )
+  );
+}
+```
+
+### 1.4 行高亮
+
+使用 `// [!code highlight]` 标记高亮行：
+
+```javascript
+function greet(name) {
+  const message = `Hello, ${name}!`; // [!code highlight]
+  console.log(message);
+  return message; // [!code highlight]
+}
+```
+
+### 1.5 差异对比
+
+使用 `// [!code ++]` 和 `// [!code --]` 标记差异：
+
+```javascript
+function config() {
+  return {
+    theme: "light", // [!code --]
+    theme: "dark", // [!code ++]
+    lang: "en", // [!code --]
+    lang: "zh", // [!code ++]
+  };
+}
+```
+
+### 1.6 词高亮
+
+使用 `// [!code word:关键词]` 高亮特定关键词：
+
+```typescript
+// [!code word:astro]
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  site: "https://astro.build",
+  integrations: [],
+});
+```
+
+---
+
+## 二、UI 组件
+
+### 2.1 GitHub 仓库卡片
+
+使用 `<GithubCard>` 组件展示 GitHub 仓库信息，自动获取 star、fork 数量等数据：
+
+<GithubCard repo="withastro/astro" />
+
+<GithubCard repo="tailwindlabs/tailwindcss" />
+
+<GithubCard repo="souloss/astro-minblog" />
+
+### 2.2 时间线
+
+使用 `<Timeline>` 组件展示按时间排列的事件：
+
+<Timeline
+  events={[
+    { date: "2026-03", content: "新增代码块增强功能（文件名、复制、折叠）" },
+    { date: "2026-02", content: "迁移 UI 组件（Timeline、Collapse、GithubCard）" },
+    { date: "2026-01", content: "集成 Remark/Rehype 插件生态" },
+    { date: "2025-12", content: "基于 Astro v5 重构博客架构" },
+    { date: "2025-10", content: "项目启动，确定技术栈" },
+  ]}
+/>
+
+### 2.3 折叠面板
+
+使用 `<Collapse>` 组件隐藏详细内容，点击展开查看：
+
+<Collapse title="点击展开：Astro 项目结构说明">
+  一个典型的 Astro 项目目录结构如下：
+
+  - `src/pages/` — 路由页面
+  - `src/layouts/` — 页面布局模板
+  - `src/components/` — 可复用组件
+  - `src/data/` — 内容集合（博客文章等）
+  - `src/styles/` — 全局样式
+  - `src/plugins/` — 自定义 Remark/Rehype 插件
+  - `public/` — 静态资源
+</Collapse>
+
+<Collapse title="点击展开：为什么选择 Astro？">
+  Astro 的核心优势：
+
+  1. **零 JS 默认** — 静态页面不发送任何 JavaScript
+  2. **岛屿架构** — 仅在需要交互的地方加载 JS
+  3. **内容优先** — 原生支持 Markdown/MDX
+  4. **框架无关** — 可以混用 React、Vue、Svelte 等
+  5. **极致性能** — Lighthouse 接近满分
+</Collapse>
+
+---
+
+## 三、GitHub Alerts
+
+使用标准 GitHub Alert 语法（由 `remark-github-alerts` 插件支持）：
+
+> [!NOTE]
+> 这是一条提示信息，用于强调用户应该知道的重要细节。
+
+> [!TIP]
+> 这是一条建议信息，帮助用户更好地完成任务。
+
+> [!IMPORTANT]
+> 这是一条重要信息，用户必须知道的关键内容。
+
+> [!WARNING]
+> 这是一条警告信息，需要用户立即注意以避免问题。
+
+> [!CAUTION]
+> 这是一条谨慎信息，提醒用户某些操作可能带来的风险。
+
+---
+
+## 四、数学公式
+
+行内公式：$E = mc^2$，以及 $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$。
+
+块级公式：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+$$
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
+$$
+
+---
+
+## 五、Emoji 表情
+
+支持 `:emoji_code:` 语法：
+
+- :rocket: 火箭 — 项目启动
+- :sparkles: 闪光 — 新功能
+- :bug: 虫子 — Bug 修复
+- :memo: 备忘 — 文档更新
+- :art: 调色板 — UI 优化
+
+---
+
+## 六、表格（响应式滚动）
+
+以下宽表格在小屏幕上会自动支持水平滚动（由 `rehype-table-scroll` 插件实现）：
+
+| 功能 | 描述 | 插件/实现 | 类型 | 状态 |
+|------|------|-----------|------|------|
+| 文件名标签 | 代码块显示文件名 | Shiki Transformer | 构建时 | 已完成 |
+| 复制按钮 | 一键复制代码 | Shiki Transformer | 构建时 | 已完成 |
+| 代码折叠 | 长代码自动折叠 | Shiki Transformer | 构建时 | 已完成 |
+| 阅读时间 | 自动计算阅读时长 | Remark Plugin | 构建时 | 已完成 |
+| 图片缩放 | 图片添加 zoomable 类 | Remark Plugin | 构建时 | 已完成 |
+| 外链属性 | 外部链接安全属性 | Rehype Plugin | 构建时 | 已完成 |
+| 表格滚动 | 宽表格水平滚动 | Rehype Plugin | 构建时 | 已完成 |
+| 标题锚点 | 标题自动添加锚链 | Rehype Plugin | 构建时 | 已完成 |
+
+---
+
+## 七、外部链接
+
+外部链接会自动添加 `target="_blank"` 和 `rel="nofollow noopener noreferrer"` 属性（由 `rehype-external-links` 插件实现）：
+
+- [Astro 官网](https://astro.build/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [GitHub](https://github.com/)
+- [Cloudflare Pages](https://pages.cloudflare.com/)
+
+---
+
+## 八、键盘快捷键
+
+使用 `<kbd>` 标签展示快捷键：
+
+- <kbd>Ctrl</kbd> + <kbd>C</kbd> — 复制
+- <kbd>Ctrl</kbd> + <kbd>V</kbd> — 粘贴
+- <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> — 命令面板
+
+---
+
+## 九、混合语言代码示例
+
+```json file="package.json"
+{
+  "name": "astro-minblog",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  }
+}
+```
+
+```yaml title="deploy.yml"
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pnpm install
+      - run: pnpm build
+```
+
+```bash title="setup.sh"
+#!/bin/bash
+pnpm create astro@latest
+cd my-blog
+pnpm add tailwindcss @tailwindcss/typography
+pnpm dev
+```
