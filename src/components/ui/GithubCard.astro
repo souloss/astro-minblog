@@ -1,0 +1,191 @@
+---
+interface Props {
+  repo: string;
+}
+
+const { repo: repoRaw } = Astro.props;
+const repo = repoRaw.replace(/^https:\/\/github\.com\//, "");
+const [owner, repoName] = repo.split("/");
+---
+
+<github-card class="not-prose loading" data-repo={repo}>
+  <a
+    href={`https://github.com/${repo}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group flex flex-col gap-y-2 rounded-xl border px-4 py-3 transition-colors hover:bg-muted sm:px-5 sm:py-4"
+  >
+    <div class="flex items-center justify-between gap-x-2">
+      <div
+        class="flex min-w-0 flex-1 items-center gap-x-2 text-foreground group-hover:text-accent"
+      >
+        <div
+          id="gh-avatar"
+          class="load-block me-2 size-7 flex-shrink-0 rounded-full bg-cover sm:size-8"
+        >
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-x-1 max-sm:flex-wrap">
+            <span class="truncate text-base transition-colors sm:text-lg"
+              >{owner}</span
+            >
+            <span class="text-foreground-soft max-sm:hidden">/</span>
+            <span
+              class="truncate text-base font-medium transition-colors sm:text-lg max-sm:w-full"
+              >{repoName}</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="flex-shrink-0 rounded-full bg-card p-1">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+    <p id="gh-description" class="load-block text-sm sm:text-base"
+      >Loading...</p
+    >
+    <div class="flex items-center justify-between gap-x-2">
+      <div
+        class="load-block flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-x-5"
+      >
+        <div class="flex items-center gap-x-1.5 sm:gap-x-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+            ></polygon>
+          </svg>
+          <span id="gh-stars" class="text-sm leading-tight sm:text-base"
+            >???</span
+          >
+        </div>
+        <div class="flex items-center gap-x-1.5 sm:gap-x-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="18" cy="18" r="3"></circle>
+            <circle cx="6" cy="6" r="3"></circle>
+            <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+            <line x1="6" y1="9" x2="6" y2="21"></line>
+          </svg>
+          <span id="gh-forks" class="text-sm leading-tight sm:text-base"
+            >???</span
+          >
+        </div>
+      </div>
+      <span id="gh-language" class="load-block text-sm leading-tight sm:text-base"
+        >?????</span
+      >
+    </div>
+  </a>
+</github-card>
+
+<style>
+  @keyframes pulsate {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .loading .load-block {
+    color: transparent;
+    border-radius: 0.375rem;
+    background-color: var(--card);
+    animation: pulsate 2s infinite linear;
+    user-select: none;
+  }
+  .loading .load-block:nth-child(2) {
+    animation-delay: 1s;
+  }
+  :not(.loading) #gh-avatar {
+    background-color: var(--card);
+  }
+</style>
+
+<script>
+  interface GithubRepoData {
+    stargazers_count: number;
+    forks: number;
+    language: string;
+    owner: { avatar_url: string };
+    license?: { spdx_id: string };
+    description: string;
+  }
+
+  class GithubCardElement extends HTMLElement {
+    async connectedCallback() {
+      const repo = this.dataset.repo;
+      if (!repo) return;
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repo}`, {
+          referrerPolicy: "no-referrer",
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as GithubRepoData;
+
+        this.setText("#gh-stars", this.fmt(data.stargazers_count));
+        this.setText("#gh-forks", this.fmt(data.forks));
+        this.setText("#gh-language", data.language || "N/A");
+        this.setText(
+          "#gh-description",
+          data.description?.replace(/:[a-zA-Z0-9_]+:/g, "") ||
+            "No description"
+        );
+
+        const avatar = this.querySelector("#gh-avatar") as HTMLElement;
+        if (avatar)
+          avatar.style.backgroundImage = `url(${data.owner.avatar_url})`;
+
+        this.classList.remove("loading");
+      } catch {
+        this.setText("#gh-description", "Failed to fetch data");
+      }
+    }
+
+    private setText(sel: string, text: string) {
+      const el = this.querySelector(sel) as HTMLElement;
+      if (el) el.textContent = text;
+    }
+
+    private fmt(n: number) {
+      return Intl.NumberFormat("en-us", {
+        notation: "compact",
+        maximumFractionDigits: 1,
+      }).format(n);
+    }
+  }
+
+  customElements.define("github-card", GithubCardElement);
+</script>

@@ -51,4 +51,18 @@ export const SITE = {
     apiEndpoint: "", // Edge function API endpoint for streaming chat (leave empty for mock mode)
     mockMode: true, // Use mock responses when no API endpoint is configured
   },
+  sponsor: {
+    enabled: false,
+    methods: [] as { name: string; icon: string; image: string }[],
+    sponsors: [] as {
+      name: string;
+      platform?: string;
+      amount: number;
+      date: string;
+    }[],
+  },
+  copyright: {
+    license: "CC BY-NC-SA 4.0",
+    licenseUrl: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  },
 } as const;

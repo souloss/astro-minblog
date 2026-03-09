@@ -8,13 +8,27 @@ import remarkMath from "remark-math";
 import remarkGithubAlerts from "remark-github-alerts";
 import remarkEmoji from "remark-emoji";
 import rehypeKatex from "rehype-katex";
+import { remarkReadingTime } from "./src/plugins/remark-reading-time";
+import { remarkAddZoomable } from "./src/plugins/remark-add-zoomable";
+import { rehypeExternalLinks } from "./src/plugins/rehype-external-links";
+import { rehypeTableScroll } from "./src/plugins/rehype-table-scroll";
+import { rehypeAutolinkHeadings } from "./src/plugins/rehype-autolink-headings";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
-import { transformerFileName } from "./src/utils/transformers/fileName";
+import {
+  updateStyle,
+  addTitle,
+  addLanguage,
+  addCopyButton,
+  addCollapse,
+} from "./src/plugins/shiki-transformers";
 import { SITE } from "./src/config";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const asTransformer = (t: any) => t;
 
 // https://astro.build/config
 export default defineConfig({
@@ -30,7 +44,11 @@ export default defineConfig({
         defaultColor: false,
         wrap: false,
         transformers: [
-          transformerFileName({ style: "v2", hideDot: false }),
+          asTransformer(updateStyle()),
+          asTransformer(addTitle()),
+          asTransformer(addLanguage()),
+          asTransformer(addCopyButton(2000)),
+          asTransformer(addCollapse(15)),
           transformerNotationHighlight(),
           transformerNotationWordHighlight(),
           transformerNotationDiff({ matchAlgorithm: "v3" }),
@@ -45,15 +63,26 @@ export default defineConfig({
       remarkMath,
       remarkGithubAlerts,
       remarkEmoji,
+      remarkReadingTime,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [remarkAddZoomable as any, { className: "zoomable" }],
     ],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [
+      rehypeKatex,
+      rehypeExternalLinks,
+      rehypeTableScroll,
+      rehypeAutolinkHeadings,
+    ],
     shikiConfig: {
-      // For more themes, visit https://shiki.style/themes
       themes: { light: "github-light", dark: "night-owl" },
       defaultColor: false,
       wrap: false,
       transformers: [
-        transformerFileName({ style: "v2", hideDot: false }),
+        asTransformer(updateStyle()),
+        asTransformer(addTitle()),
+        asTransformer(addLanguage()),
+        asTransformer(addCopyButton(2000)),
+        asTransformer(addCollapse(15)),
         transformerNotationHighlight(),
         transformerNotationWordHighlight(),
         transformerNotationDiff({ matchAlgorithm: "v3" }),

@@ -1,0 +1,34 @@
+---
+import { SITE } from "@/config";
+
+interface Props {
+  class?: string;
+  progressMax?: number;
+}
+
+const { class: className = "", progressMax = 50 } = Astro.props;
+const sponsors = SITE.sponsor?.sponsors ?? [];
+---
+
+{
+  sponsors.length > 0 && (
+    <div class:list={["grid gap-3 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-3", className]}>
+      {sponsors.map(sponsor => (
+        <div class="relative h-full overflow-hidden rounded-xl border px-4 py-3">
+          <div class="mb-2 line-clamp-1 font-medium">{sponsor.name}</div>
+          <div class="text-xs text-foreground-soft">
+            {sponsor.date}
+            {sponsor.platform && ` via ${sponsor.platform}`}
+          </div>
+          <span class="absolute bottom-2 right-4 font-medium">
+            ¥{sponsor.amount}
+          </span>
+          <div
+            class="absolute bottom-0 left-0 h-1 rounded-b-xl bg-accent/30 transition-all"
+            style={{ width: `${Math.min((sponsor.amount / progressMax) * 100, 100)}%` }}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}

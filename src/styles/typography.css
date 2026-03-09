@@ -81,6 +81,20 @@
       @apply border-s-accent/80 wrap-break-word opacity-80;
     }
 
+    .heading-anchor {
+      @apply mr-1.5 text-accent/50 no-underline opacity-0 transition-opacity;
+    }
+
+    h1:hover .heading-anchor,
+    h2:hover .heading-anchor,
+    h3:hover .heading-anchor,
+    h4:hover .heading-anchor,
+    h5:hover .heading-anchor,
+    h6:hover .heading-anchor,
+    .heading-anchor:focus {
+      @apply opacity-100;
+    }
+
     details {
       @apply inline-block cursor-pointer text-foreground select-none [&_p]:hidden [&_ul]:my-0!;
     }
@@ -96,27 +110,40 @@
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply flex border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
+    @apply bg-(--shiki-light-bg) text-(--shiki-light);
+  }
+
+  .astro-code span {
+    @apply text-(--shiki-light);
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+    @apply bg-(--shiki-dark-bg) text-(--shiki-dark);
   }
 
-  /* Styles for Shiki transformers */
-  /* https://shiki.style/packages/transformers */
-  .astro-code {
-    .line.diff.add {
-      @apply relative inline-block w-full bg-green-400/20 before:absolute before:-left-3 before:text-green-500 before:content-['+'];
-    }
-    .line.diff.remove {
-      @apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
-    }
-    .line.highlighted {
-      @apply inline-block w-full bg-slate-400/20;
-    }
-    .highlighted-word {
-      @apply rounded-sm border border-border px-0.5 py-px;
-    }
+  html[data-theme="dark"] .astro-code span {
+    @apply text-(--shiki-dark);
+  }
+
+  /* Shiki transformer styles: diff, highlight, word-highlight */
+  .astro-code .line.diff.add {
+    @apply relative inline-block w-full bg-green-400/20;
+  }
+  .astro-code .line.diff.add::after {
+    content: "+";
+    @apply absolute left-1 text-green-500;
+  }
+  .astro-code .line.diff.remove {
+    @apply relative inline-block w-full bg-red-500/20;
+  }
+  .astro-code .line.diff.remove::after {
+    content: "-";
+    @apply absolute left-1 text-red-500;
+  }
+  .astro-code .line.highlighted {
+    @apply inline-block w-full bg-slate-400/20;
+  }
+  .astro-code .highlighted-word {
+    @apply rounded-sm border border-border px-0.5 py-px;
   }
 }

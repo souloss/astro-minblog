@@ -1,0 +1,152 @@
+---
+import { SITE } from "@/config";
+
+interface Props {
+  title: string;
+  pubDatetime: Date;
+  url?: string;
+  lang?: string;
+}
+
+const { title, pubDatetime, url, lang = "zh" } = Astro.props;
+const pageUrl = url || Astro.url.href;
+const copyrightConfig = SITE.copyright;
+const hasSponsor = SITE.sponsor?.enabled;
+---
+
+<div class="copyright-box mt-8 rounded-xl border">
+  <div class="flex flex-col gap-2 px-3 py-3 sm:px-4">
+    <div class="flex items-center gap-2 text-sm font-medium text-foreground">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M14.83 14.83a4 4 0 1 1 0-5.66"></path>
+      </svg>
+      <span class="line-clamp-1">{title}</span>
+    </div>
+    <div class="text-xs text-foreground-soft break-all">{pageUrl}</div>
+    <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-foreground-soft">
+      <span>
+        {lang === "zh" ? "作者" : "Author"}:
+        <span class="text-foreground">{SITE.author}</span>
+      </span>
+      <span>
+        {lang === "zh" ? "发布于" : "Published"}:
+        <time class="text-foreground">
+          {pubDatetime.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </time>
+      </span>
+      <span>
+        {lang === "zh" ? "许可" : "License"}:
+        <a
+          href={copyrightConfig?.licenseUrl || "https://creativecommons.org/licenses/by-nc-sa/4.0/"}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent hover:underline"
+        >
+          {copyrightConfig?.license || "CC BY-NC-SA 4.0"}
+        </a>
+      </span>
+    </div>
+    <div class="mt-1 flex items-center gap-2">
+      <button
+        id="copy-link-btn"
+        class="flex items-center gap-1 rounded-md border px-2 py-1 text-xs text-foreground-soft transition-colors hover:bg-muted hover:text-foreground"
+        aria-label={lang === "zh" ? "复制链接" : "Copy link"}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        {lang === "zh" ? "复制链接" : "Copy link"}
+      </button>
+      <a
+        href={`https://x.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(title)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-1 rounded-md border px-2 py-1 text-xs text-foreground-soft transition-colors hover:bg-muted hover:text-foreground"
+        aria-label="Share on X"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      </a>
+      <a
+        href={`https://service.weibo.com/share/share.php?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(title)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-1 rounded-md border px-2 py-1 text-xs text-foreground-soft transition-colors hover:bg-muted hover:text-foreground"
+        aria-label="Share on Weibo"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9.82 13.87c-2.27 0-4.11.96-4.11 2.14s1.84 2.14 4.11 2.14 4.11-.96 4.11-2.14-1.84-2.14-4.11-2.14zm1.28 3.16c-.63.37-1.52.43-2 .13-.47-.29-.4-.87.18-1.28.58-.41 1.48-.47 1.97-.13.49.34.42.91-.15 1.28zM20.5 7.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM22 4c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1zm-2.18 3.35c-.94-3.47-4.58-5.16-8.13-3.78-3.43 1.34-5.54 5.1-4.6 8.31.93 3.18 4.58 4.86 8.12 3.85 3.66-1.04 5.55-5.06 4.61-8.38z" />
+        </svg>
+      </a>
+    </div>
+  </div>
+  {
+    hasSponsor && (
+      <div class="rounded-b-xl border-t px-3 pb-1.5 pt-1">
+        <a
+          href={`/${lang}/about#sponsorship`}
+          class="flex items-center justify-between text-sm text-foreground-soft transition-colors hover:text-accent"
+        >
+          <span>{lang === "zh" ? "请我喝杯咖啡 ☕" : "Buy me a cup of coffee ☕"}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  function initCopyLink() {
+    document.querySelectorAll("#copy-link-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        navigator.clipboard.writeText(window.location.href);
+        const original = btn.textContent;
+        btn.textContent = "✓ Copied!";
+        setTimeout(() => {
+          if (original) btn.textContent = original;
+        }, 2000);
+      });
+    });
+  }
+  initCopyLink();
+  document.addEventListener("astro:page-load", initCopyLink);
+</script>

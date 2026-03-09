@@ -1,0 +1,194 @@
+/* ===== Code Block Container ===== */
+.astro-code {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.astro-code pre {
+  margin: 0;
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+  padding-inline: 0;
+  background: none;
+  overflow-x: auto;
+}
+
+.astro-code pre code {
+  display: block;
+  width: fit-content;
+  min-width: 100%;
+  min-height: 1.5rem;
+  counter-reset: step;
+  counter-increment: step 0;
+}
+
+/* ===== Line Numbers ===== */
+.astro-code pre code .line {
+  padding-inline-end: 3rem;
+}
+
+.astro-code pre code .line::before {
+  content: counter(step);
+  counter-increment: step;
+  display: inline-block;
+  width: 3ch;
+  margin-right: 1.25rem;
+  margin-left: 0.75rem;
+  text-align: right;
+  color: var(--foreground-soft);
+  opacity: 0.35;
+  font-size: 0.8em;
+}
+
+/* ===== Title Bar ===== */
+.astro-code .code-title {
+  font-size: 0.875rem;
+  color: var(--foreground-soft);
+  padding: 0.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.astro-code:has(.code-title) pre {
+  border-radius: 0 0 0.75rem 0.75rem;
+}
+
+/* ===== Language Label ===== */
+.astro-code .code-language {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.125rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--foreground-soft);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.astro-code:has(.code-title) .code-language {
+  top: auto;
+  bottom: 0;
+}
+
+/* ===== Copy Button ===== */
+.astro-code .code-copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  color: var(--foreground-soft);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.astro-code .code-copy .success {
+  display: none;
+}
+
+.astro-code .code-copy.copied .ready {
+  display: none;
+}
+
+.astro-code .code-copy.copied .success {
+  display: block;
+  color: #22c55e;
+}
+
+.astro-code:has(.code-title) .code-copy {
+  top: calc(0.5rem + 1.75rem);
+}
+
+.astro-code:hover .code-copy,
+.astro-code:focus-within .code-copy {
+  opacity: 1;
+}
+
+.astro-code:hover .code-language,
+.astro-code:focus-within .code-language {
+  opacity: 0;
+}
+
+.astro-code .code-copy:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+/* ===== Collapse Toggle ===== */
+.astro-code.collapsed pre {
+  max-height: 24rem;
+  overflow: hidden;
+}
+
+.astro-code .code-collapse-fade {
+  display: none;
+}
+
+.astro-code.collapsed .code-collapse-fade {
+  display: block;
+  position: absolute;
+  bottom: 2.5rem;
+  left: 0;
+  right: 0;
+  height: 4rem;
+  background: linear-gradient(to bottom, transparent, var(--card));
+  pointer-events: none;
+}
+
+.astro-code .code-collapse-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--foreground-soft);
+  background: var(--muted);
+  border: none;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.astro-code.collapsed .code-collapse-toggle {
+  display: flex;
+}
+
+.astro-code:not(.collapsed) .code-collapse-toggle {
+  display: flex;
+}
+
+.astro-code:not(.collapsed) .code-collapse-toggle svg {
+  transform: rotate(180deg);
+}
+
+.astro-code:not(.collapsed) .code-collapse-toggle span {
+  display: none;
+}
+
+.astro-code:not(.collapsed) .code-collapse-toggle::after {
+  content: "Collapse";
+}
+
+.astro-code .code-collapse-toggle:hover {
+  background: var(--card);
+}

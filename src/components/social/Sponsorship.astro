@@ -1,0 +1,44 @@
+---
+import { SITE } from "@/config";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+const methods = SITE.sponsor?.methods ?? [];
+---
+
+{
+  methods.length > 0 && (
+    <div class:list={["flex flex-col justify-center gap-4 sm:flex-row", className]}>
+      {methods.map(item => (
+        <div class="sponsorship-card relative justify-center overflow-hidden rounded-xl border bg-white">
+          <div class="sponsorship-card-icon absolute inset-0 flex items-center justify-center text-4xl opacity-80 transition-opacity">
+            <span>{item.icon === "wechat" ? "💬" : item.icon === "alipay" ? "💰" : "☕"}</span>
+          </div>
+          <img
+            class="sponsorship-card-img mx-auto my-0 max-w-60 transition-all"
+            src={item.image}
+            alt={item.name}
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .sponsorship-card .sponsorship-card-img {
+    opacity: 0.3;
+    filter: blur(4px);
+  }
+  .sponsorship-card:hover .sponsorship-card-icon {
+    opacity: 0;
+  }
+  .sponsorship-card:hover .sponsorship-card-img {
+    opacity: 1;
+    filter: blur(0);
+  }
+</style>
