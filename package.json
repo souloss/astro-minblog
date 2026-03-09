@@ -58,6 +58,7 @@
     "stylus": "^0.64.0",
     "tsx": "^4.19.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1"
+    "typescript-eslint": "^8.56.1",
+    "wrangler": "^4.71.0"
   }
 }
