@@ -1,0 +1,168 @@
+---
+title: "p5.js Creative Coding"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "Explore creative coding with the P5Sketch component — interactive mouse followers, particle systems, and generative art powered by p5.js."
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import P5Sketch from '@/components/media/P5Sketch.astro';
+
+p5.js is a JavaScript library for creative coding. The `P5Sketch` component lets you write p5 sketches that automatically adapt to the blog's light/dark theme using the `getColor()` and `isDark()` helpers.
+
+## Interactive Mouse Follower
+
+Move your mouse over the canvas to see circles follow your cursor with a trailing effect. The sketch reads theme colors in real time.
+
+<P5Sketch
+  sketch={`
+    var trail = [];
+    p.setup = function() {
+      p.createCanvas(500, 300);
+      p.noStroke();
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var fg = getColor('--foreground');
+      var accent = getColor('--accent');
+      p.background(bg);
+      trail.push({ x: p.mouseX, y: p.mouseY });
+      if (trail.length > 30) trail.shift();
+      for (var i = 0; i < trail.length; i++) {
+        var size = p.map(i, 0, trail.length, 4, 30);
+        var alpha = p.map(i, 0, trail.length, 40, 220);
+        p.fill(accent + (p.hex(Math.floor(alpha), 2)));
+        p.ellipse(trail[i].x, trail[i].y, size, size);
+      }
+      p.fill(fg);
+      p.textAlign(p.CENTER);
+      p.textSize(12);
+      p.text('Move your mouse here', 250, 20);
+    };
+  `}
+/>
+
+## Particle System
+
+A simple particle system where particles drift upward from the bottom, fade out, and respawn. Demonstrates how `isDark()` can flip the visual tone of the entire sketch.
+
+<P5Sketch
+  sketch={`
+    var particles = [];
+    var NUM = 60;
+    p.setup = function() {
+      p.createCanvas(500, 300);
+      p.noStroke();
+      for (var i = 0; i < NUM; i++) {
+        particles.push({
+          x: p.random(p.width),
+          y: p.random(p.height),
+          vx: p.random(-0.5, 0.5),
+          vy: p.random(-1.5, -0.3),
+          size: p.random(3, 8),
+          life: p.random(100, 255)
+        });
+      }
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var accent = getColor('--accent');
+      p.background(bg);
+      for (var i = 0; i < particles.length; i++) {
+        var pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life -= 1.5;
+        if (pt.life <= 0 || pt.y < -10) {
+          pt.x = p.random(p.width);
+          pt.y = p.height + 10;
+          pt.life = p.random(150, 255);
+          pt.vx = p.random(-0.5, 0.5);
+          pt.vy = p.random(-1.5, -0.3);
+          pt.size = p.random(3, 8);
+        }
+        var alpha = p.hex(Math.floor(pt.life), 2);
+        p.fill(accent + alpha);
+        p.ellipse(pt.x, pt.y, pt.size, pt.size);
+      }
+    };
+  `}
+/>
+
+## Generative Art — Grid Pattern
+
+A procedural grid of shapes that varies subtly on each frame, creating an ever-shifting mosaic effect.
+
+<P5Sketch
+  sketch={`
+    var cols, rows, cellSize;
+    p.setup = function() {
+      p.createCanvas(500, 300);
+      cellSize = 30;
+      cols = Math.floor(p.width / cellSize);
+      rows = Math.floor(p.height / cellSize);
+      p.frameRate(4);
+      p.noStroke();
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var fg = getColor('--foreground');
+      var accent = getColor('--accent');
+      p.background(bg);
+      for (var i = 0; i < cols; i++) {
+        for (var j = 0; j < rows; j++) {
+          var x = i * cellSize + cellSize / 2;
+          var y = j * cellSize + cellSize / 2;
+          var n = p.noise(i * 0.3, j * 0.3, p.frameCount * 0.05);
+          if (n > 0.6) {
+            p.fill(accent);
+            p.ellipse(x, y, cellSize * 0.7, cellSize * 0.7);
+          } else if (n > 0.35) {
+            p.fill(fg + '33');
+            p.rect(x - cellSize * 0.3, y - cellSize * 0.3, cellSize * 0.6, cellSize * 0.6);
+          } else {
+            p.fill(fg + '15');
+            p.ellipse(x, y, cellSize * 0.3, cellSize * 0.3);
+          }
+        }
+      }
+    };
+  `}
+/>
+
+## Usage & Helpers
+
+The `P5Sketch` component accepts a `sketch` prop — a string of JavaScript code that receives three arguments:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `p` | `p5 instance` | The p5.js instance (use `p.setup`, `p.draw`, `p.createCanvas`, etc.) |
+| `getColor(varName)` | `function` | Returns the computed CSS color for a custom property (e.g., `getColor('--foreground')`) |
+| `isDark()` | `function` | Returns `true` if the current theme is dark mode |
+
+### Writing Sketch Code
+
+Sketches run in **instance mode** — all p5 functions are accessed via the `p` object:
+
+```javascript
+p.setup = function() {
+  p.createCanvas(400, 300);
+};
+p.draw = function() {
+  var bg = getColor('--background');
+  p.background(bg);
+  p.fill(getColor('--accent'));
+  p.ellipse(p.mouseX, p.mouseY, 20, 20);
+};
+```
+
+> [!TIP]
+> Use `var` instead of `let`/`const` inside sketch code, since the code is evaluated via `new Function()` and `var` provides the expected scoping behavior.
+
+> [!NOTE]
+> Sketches automatically re-render when the theme changes, so colors stay in sync with light/dark mode transitions.

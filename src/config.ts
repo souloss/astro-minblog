@@ -1,26 +1,58 @@
 export const SITE = {
-  website: "https://demo-astromin.souloss.cn/", // replace this with your deployed domain
+  website: "https://demo-astromin.souloss.cn/",
   author: "Souloss",
   profile: "https://souloss.cn/",
   desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
   title: "Souloss",
   ogImage: "astro-minblog-og.jpg",
-  lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
-  scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
-  showArchives: true,
-  showBackButton: true, // show back button in post detail
-  startDate: "2020-01-01", // site start date for calculating running days
+  scheduledPostMargin: 15 * 60 * 1000,
+  showBackButton: true,
+  startDate: "2020-01-01",
   editPost: {
     enabled: true,
     text: "Edit page",
     url: "https://github.com/souloss/astro-minblog/edit/main/",
   },
   dynamicOgImage: true,
-  dir: "ltr", // "rtl" | "auto"
-  lang: "zh" as string, // html lang code. Default "zh" (Chinese)
-  timezone: "Asia/Shanghai", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  dir: "ltr" as const,
+  lang: "zh" as string,
+  timezone: "Asia/Shanghai",
+
+  features: {
+    tags: true,
+    categories: true,
+    series: true,
+    archives: true,
+    friends: true,
+    projects: true,
+    search: true,
+    darkMode: true,
+    ai: true,
+    waline: true,
+    sponsor: true,
+  },
+
+  nav: {
+    items: [
+      { key: "home", enabled: true },
+      { key: "posts", enabled: true },
+      { key: "tags", enabled: true },
+      { key: "categories", enabled: true },
+      { key: "series", enabled: true },
+      { key: "projects", enabled: true },
+      { key: "about", enabled: true },
+      { key: "friends", enabled: true },
+      { key: "archives", enabled: true },
+    ] as { key: string; enabled: boolean }[],
+  },
+
+  projects: [
+    { repo: "souloss/astro-minblog", featured: true },
+    { repo: "withastro/astro" },
+  ] as { repo: string; featured?: boolean; description?: string }[],
+
   umami: {
     enabled: false,
     websiteId: "",
@@ -28,34 +60,33 @@ export const SITE = {
   },
   waline: {
     enabled: true,
-    serverURL: "https://walinejs.souloss.cn/", // Enter your Waline server URL here (e.g. https://your-waline-server.vercel.app)
+    serverURL: "https://walinejs.souloss.cn/",
     emoji: [
       "https://unpkg.com/@waline/emojis@1.2.0/weibo",
       "https://unpkg.com/@waline/emojis@1.2.0/bilibili",
       "https://unpkg.com/@waline/emojis@1.2.0/tieba",
     ],
     lang: "zh-CN",
-    pageview: true, // Enable page view count
-    reaction: true, // Enable reaction
-    // Advanced configuration options
-    login: "enable", // "enable" | "disable" | "force"
-    wordLimit: [0, 1000], // Comment word limit [min, max]
-    imageUploader: false, // Disable image upload for security
-    requiredMeta: ["nick", "mail"], // Required fields
-    copyright: true, // Show copyright notice
-    recaptchaV3Key: "", // reCAPTCHA v3 key (optional)
-    turnstileKey: "", // Cloudflare Turnstile key (optional)
+    pageview: true,
+    reaction: true,
+    login: "enable",
+    wordLimit: [0, 1000],
+    imageUploader: false,
+    requiredMeta: ["nick", "mail"],
+    copyright: true,
+    recaptchaV3Key: "",
+    turnstileKey: "",
   },
   ai: {
     enabled: true,
-    apiEndpoint: "", // OpenAI-compatible API endpoint (e.g. "https://api.openai.com/v1/chat/completions")
-    apiKey: "", // API key — set here or via AI_API_KEY env var at build time
-    model: "gpt-4o-mini", // Model name for the chat endpoint
+    apiEndpoint: "",
+    apiKey: "",
+    model: "gpt-4o-mini",
     maxTokens: 1024,
     systemPrompt:
       "你是一个技术博客的 AI 助手，帮助读者了解博客内容、技术主题。回答简洁、准确，使用与用户相同的语言。",
-    mockMode: true, // Falls back to mock when apiEndpoint is empty
-    vectorSearch: true, // Enable vector-based context retrieval from local index
+    mockMode: true,
+    vectorSearch: true,
   },
   sponsor: {
     enabled: true,
@@ -73,5 +104,13 @@ export const SITE = {
   copyright: {
     license: "CC BY-NC-SA 4.0",
     licenseUrl: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  },
+
+  // Backward-compatible aliases
+  get lightAndDarkMode() {
+    return this.features.darkMode;
+  },
+  get showArchives() {
+    return this.features.archives;
   },
 } as const;

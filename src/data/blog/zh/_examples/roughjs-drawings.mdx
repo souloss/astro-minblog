@@ -1,0 +1,73 @@
+---
+title: "Rough.js 手绘风格图形"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "使用 RoughDrawing 组件创建手绘风格的图形，基于 Rough.js，自动适配主题配色。"
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import RoughDrawing from '@/components/media/RoughDrawing.astro';
+
+Rough.js 以手绘涂鸦的风格渲染图形。`RoughDrawing` 组件允许你通过 JSON 配置定义形状，所有颜色自动跟随当前主题变化。
+
+## 基础图形
+
+矩形、圆形、椭圆和直线——绘图的基本构建块。
+
+<RoughDrawing
+  config='{"width":500,"height":250,"shapes":[{"type":"rectangle","x":30,"y":30,"width":120,"height":80,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"circle","x":250,"y":100,"r":55,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":2}},{"type":"ellipse","x":410,"y":100,"width":120,"height":70,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}},{"type":"line","x1":30,"y1":200,"x2":480,"y2":200,"options":{"stroke":"var(--foreground)","roughness":1.5,"strokeWidth":2}}]}'
+/>
+
+每个形状支持不同的 `fillStyle` 填充样式：`hachure`（默认阴影线）、`cross-hatch`（交叉阴影线）、`zigzag`（锯齿线）、`solid`（实心）和 `dots`（点阵）。`roughness` 参数控制手绘效果的粗糙程度——值越大越像手绘。
+
+## 简易流程图
+
+结合多个 Rough.js 图形可以创建非正式的手绘风格流程图，比起严谨的方框箭头图更加亲和。
+
+<RoughDrawing
+  config='{"width":520,"height":320,"shapes":[{"type":"rectangle","x":180,"y":10,"width":140,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"solid","roughness":1.2}},{"type":"line","x1":250,"y1":60,"x2":250,"y2":90,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"rectangle","x":150,"y":90,"width":180,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"line","x1":250,"y1":140,"x2":120,"y2":180,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"line","x1":250,"y1":140,"x2":400,"y2":180,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"rectangle","x":30,"y":180,"width":160,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}},{"type":"rectangle","x":320,"y":180,"width":160,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":1.8}},{"type":"line","x1":120,"y1":230,"x2":120,"y2":270,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"line","x1":400,"y1":230,"x2":400,"y2":270,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"circle","x":120,"y":290,"r":22,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"dots","roughness":1.5}},{"type":"circle","x":400,"y":290,"r":22,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"dots","roughness":1.5}}]}'
+/>
+
+## 柱状图可视化
+
+一个手绘风格的柱状图，展示前端框架使用率对比——证明 Rough.js 同样能用轻松友好的方式呈现数据。
+
+<RoughDrawing
+  config='{"width":480,"height":300,"shapes":[{"type":"line","x1":60,"y1":20,"x2":60,"y2":260,"options":{"stroke":"var(--foreground)","roughness":0.8,"strokeWidth":1.5}},{"type":"line","x1":60,"y1":260,"x2":460,"y2":260,"options":{"stroke":"var(--foreground)","roughness":0.8,"strokeWidth":1.5}},{"type":"rectangle","x":90,"y":60,"width":60,"height":200,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"rectangle","x":180,"y":100,"width":60,"height":160,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":1.5}},{"type":"rectangle","x":270,"y":140,"width":60,"height":120,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.5}},{"type":"rectangle","x":360,"y":170,"width":60,"height":90,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"dots","roughness":1.5}}]}'
+/>
+
+上面的柱状图使用不同的填充样式区分类别。实际使用中可以添加文本标签——但即便没有标签，视觉层次也很清晰。
+
+## 配置参考
+
+`RoughDrawing` 组件接受一个 `config` 属性——JSON 字符串，结构如下：
+
+| 字段 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `width` | `number` | `400` | SVG 画布宽度 |
+| `height` | `number` | `200` | SVG 画布高度 |
+| `shapes` | `array` | `[]` | 图形定义数组 |
+
+### 图形类型
+
+| 类型 | 必填字段 | 说明 |
+|------|----------|------|
+| `rectangle` | `x`, `y`, `width`, `height` | 矩形 |
+| `circle` | `x`, `y`, `r` | 圆形（x,y 为圆心，r 为半径） |
+| `ellipse` | `x`, `y`, `width`, `height` | 椭圆形 |
+| `line` | `x1`, `y1`, `x2`, `y2` | 直线段 |
+
+### 图形选项
+
+每个图形支持 `options` 对象：
+
+- `stroke` — 描边颜色（使用 `var(--foreground)` 以适配主题）
+- `fill` — 填充颜色（使用 `var(--accent)` 以使用强调色）
+- `fillStyle` — `hachure`、`cross-hatch`、`zigzag`、`solid`、`dots`
+- `roughness` — 粗糙度等级（0 = 平滑，3+ = 非常粗糙）
+- `strokeWidth` — 描边宽度（像素）

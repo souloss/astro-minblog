@@ -1,0 +1,70 @@
+---
+title: "Two.js 动画效果"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "使用 TwoAnimation 组件创建流畅的 SVG 动画，基于 Two.js——一个适用于现代浏览器的 2D 绘图 API。"
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import TwoAnimation from '@/components/media/TwoAnimation.astro';
+
+Two.js 是一个渲染器无关的 2D 绘图 API。`TwoAnimation` 组件让你通过简单的 JSON 配置创建动画形状，支持自动播放实现持续运动效果。
+
+## 旋转图形
+
+带有旋转动画的形状。`animate` 属性驱动指定时长内的持续旋转。
+
+<TwoAnimation
+  config='{"width":400,"height":300,"autoplay":true,"shapes":[{"type":"rectangle","x":100,"y":150,"width":80,"height":80,"fill":true,"fillColor":"#3b82f6","stroke":"#1e40af","animate":{"rotation":360,"duration":3000}},{"type":"rectangle","x":200,"y":150,"width":60,"height":60,"fill":true,"fillColor":"#8b5cf6","stroke":"#5b21b6","animate":{"rotation":360,"duration":2000}},{"type":"rectangle","x":300,"y":150,"width":100,"height":40,"fill":true,"fillColor":"#ec4899","stroke":"#9d174d","animate":{"rotation":360,"duration":4000}}]}'
+/>
+
+每个矩形以不同速度旋转，形成迷人的异步韵律。`duration` 的单位是毫秒——值越小旋转越快。
+
+## 同心圆
+
+一组嵌套圆形，构成类似靶心的图案。静态形状（没有 `animate` 属性）渲染一次后保持不动。
+
+<TwoAnimation
+  config='{"width":400,"height":300,"autoplay":false,"shapes":[{"type":"circle","x":200,"y":150,"r":100,"fill":true,"fillColor":"#fecaca","stroke":"#ef4444"},{"type":"circle","x":200,"y":150,"r":75,"fill":true,"fillColor":"#fed7aa","stroke":"#f97316"},{"type":"circle","x":200,"y":150,"r":50,"fill":true,"fillColor":"#fef08a","stroke":"#eab308"},{"type":"circle","x":200,"y":150,"r":25,"fill":true,"fillColor":"#bbf7d0","stroke":"#22c55e"}]}'
+/>
+
+## 几何图案
+
+由圆形、矩形、椭圆和直线混合组成的装饰性几何排列。
+
+<TwoAnimation
+  config='{"width":500,"height":350,"autoplay":true,"shapes":[{"type":"circle","x":250,"y":175,"r":50,"fill":true,"fillColor":"#dbeafe","stroke":"#3b82f6","animate":{"rotation":360,"duration":6000}},{"type":"rectangle","x":120,"y":80,"width":70,"height":70,"fill":true,"fillColor":"#dcfce7","stroke":"#22c55e","animate":{"rotation":360,"duration":4000}},{"type":"rectangle","x":380,"y":80,"width":70,"height":70,"fill":true,"fillColor":"#fce7f3","stroke":"#ec4899","animate":{"rotation":360,"duration":4000}},{"type":"ellipse","x":120,"y":270,"width":100,"height":50,"fill":true,"fillColor":"#fef3c7","stroke":"#f59e0b"},{"type":"ellipse","x":380,"y":270,"width":100,"height":50,"fill":true,"fillColor":"#e0e7ff","stroke":"#6366f1"},{"type":"line","x":170,"y":110,"width":330,"height":110},{"type":"line","x":170,"y":240,"width":330,"height":240}]}'
+/>
+
+## 配置参考
+
+`TwoAnimation` 组件接受一个 `config` 属性——JSON 字符串，结构如下：
+
+| 字段 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `width` | `number` | `400` | 画布宽度 |
+| `height` | `number` | `300` | 画布高度 |
+| `autoplay` | `boolean` | `false` | 是否启用动画循环 |
+| `shapes` | `array` | `[]` | 图形定义数组 |
+
+### 图形属性
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `type` | `string` | `circle`、`rectangle`、`ellipse` 或 `line` |
+| `x`, `y` | `number` | 位置（圆形/椭圆/矩形为中心点，线段为起始点） |
+| `r` | `number` | 半径（仅圆形） |
+| `width`, `height` | `number` | 尺寸（矩形/椭圆）或终点（线段） |
+| `fill` | `boolean` | 是否填充 |
+| `fillColor` | `string` | 填充颜色 |
+| `stroke` | `string` | 描边颜色 |
+| `animate` | `object` | 动画配置：`{ rotation, duration }` |
+
+### 动画说明
+
+当 `autoplay` 为 `true` 时，具有 `animate` 属性的形状将持续旋转。`rotation` 字段为角度值，`duration` 为一个循环的时长（毫秒）。

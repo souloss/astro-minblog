@@ -1,0 +1,121 @@
+---
+title: "Reveal.js Slide Presentations"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "Create beautiful slide presentations directly in your blog posts using the RevealSlides component powered by Reveal.js."
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import RevealSlides from '@/components/media/RevealSlides.astro';
+
+Reveal.js is a powerful HTML presentation framework. With the `RevealSlides` component, you can embed interactive slide decks directly in your blog posts — no external tools needed.
+
+## Basic Presentation
+
+A simple presentation introducing modern web development concepts. Use arrow keys or swipe to navigate between slides.
+
+<RevealSlides
+  slides={`
+    <section>
+      <h2>Modern Web Development</h2>
+      <p>Building for the future, today</p>
+    </section>
+    <section>
+      <h2>The JAMstack Era</h2>
+      <ul>
+        <li>JavaScript — Dynamic interactions</li>
+        <li>APIs — Server-side operations</li>
+        <li>Markup — Pre-rendered content</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Why Static Site Generators?</h2>
+      <ul>
+        <li>⚡ Blazing fast performance</li>
+        <li>🔒 Enhanced security</li>
+        <li>📈 Easy to scale</li>
+        <li>💰 Low hosting costs</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Astro — The Content Framework</h2>
+      <p>Ship less JavaScript, build faster websites.</p>
+      <p><em>Zero JS by default. Islands architecture.</em></p>
+    </section>
+  `}
+/>
+
+## Technical Presentation with Code
+
+A more advanced deck featuring code snippets — ideal for technical talks or tutorials.
+
+<RevealSlides
+  slides={`
+    <section>
+      <h2>TypeScript Best Practices</h2>
+      <p>Writing safer, more maintainable code</p>
+    </section>
+    <section>
+      <h2>Use Strict Types</h2>
+      <pre><code data-trim class="language-typescript">
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+}
+
+function getUser(id: string): User | undefined {
+  return users.find(u => u.id === id);
+}
+      </code></pre>
+    </section>
+    <section>
+      <h2>Prefer Discriminated Unions</h2>
+      <pre><code data-trim class="language-typescript">
+type Result&lt;T&gt; =
+  | { ok: true; value: T }
+  | { ok: false; error: string };
+
+function divide(a: number, b: number): Result&lt;number&gt; {
+  if (b === 0) return { ok: false, error: 'Division by zero' };
+  return { ok: true, value: a / b };
+}
+      </code></pre>
+    </section>
+    <section>
+      <h2>Key Takeaways</h2>
+      <ol>
+        <li>Enable <code>strict: true</code></li>
+        <li>Avoid <code>any</code> — use <code>unknown</code></li>
+        <li>Leverage type narrowing</li>
+        <li>Use generics for reusable code</li>
+      </ol>
+    </section>
+  `}
+/>
+
+## Usage & Props
+
+The `RevealSlides` component accepts the following props:
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `slides` | `string` | (required) | HTML string containing `<section>` elements for each slide |
+| `theme` | `string` | `white` / `night` | Reveal.js theme name (auto-switches for light/dark mode) |
+| `width` | `number` | `960` | Presentation width in pixels |
+| `height` | `number` | `540` | Presentation height in pixels |
+
+Each `<section>` element represents one slide. You can nest `<section>` tags for vertical slide navigation. The component automatically switches between light and dark themes when the blog theme changes.
+
+### Slide Content Tips
+
+- Use standard HTML tags: `<h2>`, `<p>`, `<ul>`, `<pre><code>`, etc.
+- Add `data-trim` to `<code>` blocks to auto-trim whitespace
+- Embed images with `<img>` tags
+- Slides support Reveal.js fragments with `class="fragment"`

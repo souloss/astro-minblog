@@ -1,0 +1,732 @@
+---
+title: 新特性与组件展示
+pubDatetime: 2026-03-09T00:00:00.000Z
+author: Souloss
+description: 本文全面展示博客新增的所有特性、组件和样式增强，包括代码块增强、UI 组件、社交组件等。
+tags:
+  - 测试
+  - 组件
+  - 功能展示
+category: 博客/测试
+featured: true
+draft: false
+---
+
+import GithubCard from "@/components/ui/GithubCard.astro";
+import Timeline from "@/components/ui/Timeline.astro";
+import Collapse from "@/components/ui/Collapse.astro";
+import Sponsorship from "@/components/social/Sponsorship.astro";
+import Alert from "@/components/ui/Alert.astro";
+import Mermaid from "@/components/media/Mermaid.astro";
+import RoughDrawing from "@/components/media/RoughDrawing.astro";
+import TwoAnimation from "@/components/media/TwoAnimation.astro";
+import P5Sketch from "@/components/media/P5Sketch.astro";
+import RevealSlides from "@/components/media/RevealSlides.astro";
+
+本文用于测试和展示博客近期新增的所有特性与组件，包括代码块增强（文件名、语言标签、复制按钮、折叠）、UI 组件（Timeline、Collapse、GithubCard）、社交组件（Sponsorship、Copyright）以及各种 Remark/Rehype 插件效果。
+
+---
+
+## 一、代码块增强
+
+### 1.1 文件名标签
+
+使用 `title="文件名"` 或 `file="文件名"` 元数据为代码块添加文件名标签：
+
+```typescript title="src/utils/helper.ts"
+export function calculateSum(numbers: number[]): number {
+  return numbers.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+```css file="src/styles/theme.css"
+:root {
+  --primary: #0f766e;
+  --background: #f7f3eb;
+  --foreground: #152334;
+}
+```
+
+### 1.2 语言标签和复制按钮
+
+每个代码块右上角会自动显示语言标签，悬浮时切换为复制按钮：
+
+```python
+def fibonacci(n: int) -> list[int]:
+    if n <= 0:
+        return []
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i - 1] + fib[i - 2])
+    return fib
+
+print(fibonacci(10))
+```
+
+```rust
+fn main() {
+    let greeting = "Hello, World!";
+    println!("{}", greeting);
+
+    let numbers: Vec<i32> = (1..=10).collect();
+    let sum: i32 = numbers.iter().sum();
+    println!("Sum: {}", sum);
+}
+```
+
+### 1.3 长代码块自动折叠
+
+超过 15 行的代码块会自动折叠，点击底部按钮展开/收起：
+
+```typescript title="src/plugins/shiki-transformers.ts"
+interface HastElement {
+  type: "element";
+  tagName: string;
+  properties: Record<string, unknown>;
+  children: (HastElement | HastText)[];
+}
+
+interface HastText {
+  type: "text";
+  value: string;
+}
+
+function el(
+  tag: string,
+  props: Record<string, unknown>,
+  children: (HastElement | HastText)[] | string = []
+): HastElement {
+  return {
+    type: "element",
+    tagName: tag,
+    properties: props,
+    children:
+      typeof children === "string"
+        ? [{ type: "text" as const, value: children }]
+        : children,
+  };
+}
+
+function parseMetaString(str = ""): Record<string, string | true> {
+  return Object.fromEntries(
+    str.split(" ").reduce(
+      (acc: [string, string | true][], cur) => {
+        const matched = cur.match(/(.+)?=("(.+)"|'(.+)')$/);
+        if (matched === null) return acc;
+        const key = matched[1];
+        const value = matched[3] || matched[4] || true;
+        acc.push([key, value]);
+        return acc;
+      },
+      [] as [string, string | true][]
+    )
+  );
+}
+```
+
+### 1.4 行高亮
+
+使用 `// [!code highlight]` 标记高亮行：
+
+```javascript
+function greet(name) {
+  const message = `Hello, ${name}!`; // [!code highlight]
+  console.log(message);
+  return message; // [!code highlight]
+}
+```
+
+### 1.5 差异对比
+
+使用 `// [!code ++]` 和 `// [!code --]` 标记差异：
+
+```javascript
+function config() {
+  return {
+    theme: "light", // [!code --]
+    theme: "dark", // [!code ++]
+    lang: "en", // [!code --]
+    lang: "zh", // [!code ++]
+  };
+}
+```
+
+### 1.6 词高亮
+
+使用 `// [!code word:关键词]` 高亮特定关键词：
+
+```typescript
+// [!code word:astro]
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  site: "https://astro.build",
+  integrations: [],
+});
+```
+
+---
+
+## 二、UI 组件
+
+### 2.1 GitHub 仓库卡片
+
+使用 `<GithubCard>` 组件展示 GitHub 仓库信息，自动获取 star、fork 数量等数据：
+
+<GithubCard repo="withastro/astro" />
+
+<GithubCard repo="tailwindlabs/tailwindcss" />
+
+<GithubCard repo="souloss/astro-minblog" />
+
+### 2.2 时间线
+
+使用 `<Timeline>` 组件展示按时间排列的事件：
+
+<Timeline
+  events={[
+    { date: "2026-03", content: "新增代码块增强功能（文件名、复制、折叠）" },
+    { date: "2026-02", content: "迁移 UI 组件（Timeline、Collapse、GithubCard）" },
+    { date: "2026-01", content: "集成 Remark/Rehype 插件生态" },
+    { date: "2025-12", content: "基于 Astro v5 重构博客架构" },
+    { date: "2025-10", content: "项目启动，确定技术栈" },
+  ]}
+/>
+
+### 2.3 折叠面板
+
+使用 `<Collapse>` 组件隐藏详细内容，点击展开查看：
+
+<Collapse title="点击展开：Astro 项目结构说明">
+  一个典型的 Astro 项目目录结构如下：
+
+  - `src/pages/` — 路由页面
+  - `src/layouts/` — 页面布局模板
+  - `src/components/` — 可复用组件
+  - `src/data/` — 内容集合（博客文章等）
+  - `src/styles/` — 全局样式
+  - `src/plugins/` — 自定义 Remark/Rehype 插件
+  - `public/` — 静态资源
+</Collapse>
+
+<Collapse title="点击展开：为什么选择 Astro？">
+  Astro 的核心优势：
+
+  1. **零 JS 默认** — 静态页面不发送任何 JavaScript
+  2. **岛屿架构** — 仅在需要交互的地方加载 JS
+  3. **内容优先** — 原生支持 Markdown/MDX
+  4. **框架无关** — 可以混用 React、Vue、Svelte 等
+  5. **极致性能** — Lighthouse 接近满分
+</Collapse>
+
+---
+
+## 三、GitHub Alerts
+
+使用标准 GitHub Alert 语法（由 `remark-github-alerts` 插件支持）：
+
+> [!NOTE]
+> 这是一条提示信息，用于强调用户应该知道的重要细节。
+
+> [!TIP]
+> 这是一条建议信息，帮助用户更好地完成任务。
+
+> [!IMPORTANT]
+> 这是一条重要信息，用户必须知道的关键内容。
+
+> [!WARNING]
+> 这是一条警告信息，需要用户立即注意以避免问题。
+
+> [!CAUTION]
+> 这是一条谨慎信息，提醒用户某些操作可能带来的风险。
+
+---
+
+## 四、数学公式
+
+行内公式：$E = mc^2$，以及 $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$。
+
+块级公式：
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+$$
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
+$$
+
+---
+
+## 五、Emoji 表情
+
+支持 `:emoji_code:` 语法：
+
+- :rocket: 火箭 — 项目启动
+- :sparkles: 闪光 — 新功能
+- :bug: 虫子 — Bug 修复
+- :memo: 备忘 — 文档更新
+- :art: 调色板 — UI 优化
+
+---
+
+## 六、表格（响应式滚动）
+
+以下宽表格在小屏幕上会自动支持水平滚动（由 `rehype-table-scroll` 插件实现）：
+
+| 功能 | 描述 | 插件/实现 | 类型 | 状态 |
+|------|------|-----------|------|------|
+| 文件名标签 | 代码块显示文件名 | Shiki Transformer | 构建时 | 已完成 |
+| 复制按钮 | 一键复制代码 | Shiki Transformer | 构建时 | 已完成 |
+| 代码折叠 | 长代码自动折叠 | Shiki Transformer | 构建时 | 已完成 |
+| 阅读时间 | 自动计算阅读时长 | Remark Plugin | 构建时 | 已完成 |
+| 图片缩放 | 图片添加 zoomable 类 | Remark Plugin | 构建时 | 已完成 |
+| 外链属性 | 外部链接安全属性 | Rehype Plugin | 构建时 | 已完成 |
+| 表格滚动 | 宽表格水平滚动 | Rehype Plugin | 构建时 | 已完成 |
+| 标题锚点 | 标题自动添加锚链 | Rehype Plugin | 构建时 | 已完成 |
+
+---
+
+## 七、外部链接
+
+外部链接会自动添加 `target="_blank"` 和 `rel="nofollow noopener noreferrer"` 属性（由 `rehype-external-links` 插件实现）：
+
+- [Astro 官网](https://astro.build/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [GitHub](https://github.com/)
+- [Cloudflare Pages](https://pages.cloudflare.com/)
+
+---
+
+## 八、键盘快捷键
+
+使用 `<kbd>` 标签展示快捷键：
+
+- <kbd>Ctrl</kbd> + <kbd>C</kbd> — 复制
+- <kbd>Ctrl</kbd> + <kbd>V</kbd> — 粘贴
+- <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> — 命令面板
+
+---
+
+## 九、混合语言代码示例
+
+```json file="package.json"
+{
+  "name": "astro-minblog",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  }
+}
+```
+
+```yaml title="deploy.yml"
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pnpm install
+      - run: pnpm build
+```
+
+```bash title="setup.sh"
+#!/bin/bash
+pnpm create astro@latest
+cd my-blog
+pnpm add tailwindcss @tailwindcss/typography
+pnpm dev
+```
+
+## 十、Mermaid 图表
+
+Mermaid 是一个基于 JavaScript 的图表绘制工具，支持流程图、时序图、类图、状态图等多种图表类型。
+
+### 10.1 流程图 (Flowchart)
+
+流程图用于展示工作流程或决策过程：
+
+<Mermaid
+  code={`flowchart TD
+    A[开始] --> B{是否登录?}
+    B -->|是| C[进入首页]
+    B -->|否| D[跳转登录页]
+    D --> E[输入用户名密码]
+    E --> F{验证通过?}
+    F -->|是| C
+    F -->|否| G[显示错误提示]
+    G --> E`}
+/>
+
+#### 横向流程图
+
+<Mermaid
+  code={`flowchart LR
+    A[用户请求] --> B[负载均衡]
+    B --> C[服务器 A]
+    B --> D[服务器 B]
+    C --> E[数据库]
+    D --> E
+    E --> F[缓存层]
+    F --> G[响应返回]`}
+/>
+
+#### 子图示例
+
+<Mermaid
+  code={`flowchart TB
+    subgraph 前端
+        A[Vue 组件]
+        B[状态管理]
+        C[路由]
+    end
+    subgraph 后端
+        D[API 网关]
+        E[微服务 A]
+        F[微服务 B]
+    end
+    subgraph 数据层
+        G[(PostgreSQL)]
+        H[(Redis)]
+    end
+    A --> B --> C --> D
+    D --> E & F
+    E & F --> G & H`}
+/>
+
+---
+
+### 10.2 时序图 (Sequence Diagram)
+
+时序图用于展示对象之间的交互顺序：
+
+<Mermaid
+  code={`sequenceDiagram
+    participant 用户
+    participant 前端
+    participant API
+    participant 数据库
+    用户->>前端: 点击登录按钮
+    前端->>API: POST /auth/login
+    API->>数据库: 查询用户信息
+    数据库-->>API: 返回用户数据
+    API->>API: 验证密码
+    API-->>前端: 返回 JWT Token
+    前端-->>用户: 登录成功`}
+/>
+
+#### 带循环和条件的时序图
+
+<Mermaid
+  code={`sequenceDiagram
+    loop 每分钟
+        客户端->>服务端: 心跳检测
+        服务端-->>客户端: 心跳响应
+    end
+    客户端->>服务端: 请求数据
+    alt 成功
+        服务端-->>客户端: 返回数据
+    else 失败
+        服务端-->>客户端: 返回错误
+        客户端->>客户端: 重试逻辑
+    end`}
+/>
+
+---
+
+### 10.3 类图 (Class Diagram)
+
+类图用于展示面向对象设计中的类结构：
+
+<Mermaid
+  code={`classDiagram
+    class Animal {
+        +String name
+        +int age
+        +makeSound()
+    }
+    class Dog {
+        +String breed
+        +bark()
+        +fetch()
+    }
+    class Cat {
+        +String color
+        +meow()
+        +scratch()
+    }
+    Animal <|-- Dog
+    Animal <|-- Cat
+    class Owner {
+        +String name
+        +adopt(Animal)
+    }
+    Owner "1" --> "*" Animal : owns`}
+/>
+
+---
+
+### 10.4 状态图 (State Diagram)
+
+状态图用于展示对象的生命周期状态变化：
+
+<Mermaid
+  code={`stateDiagram-v2
+    [*] --> 待审核
+    待审核 --> 审核中: 提交审核
+    审核中 --> 已通过: 审核通过
+    审核中 --> 已拒绝: 审核拒绝
+    已拒绝 --> 待审核: 修改后重新提交
+    已通过 --> 已发布: 发布
+    已发布 --> [*]
+    state 审核中 {
+        [*] --> 初审
+        初审 --> 复审
+        复审 --> [*]
+    }`}
+/>
+
+---
+
+### 10.5 实体关系图 (ER Diagram)
+
+ER 图用于展示数据库实体之间的关系：
+
+<Mermaid
+  code={`erDiagram
+    USER ||--o{ ORDER : places
+    USER {
+        int id PK
+        string username
+        string email
+        datetime created_at
+    }
+    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER {
+        int id PK
+        int user_id FK
+        datetime order_date
+        string status
+    }
+    PRODUCT ||--o{ ORDER_ITEM : included_in
+    PRODUCT {
+        int id PK
+        string name
+        float price
+        int stock
+    }
+    ORDER_ITEM {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+    }`}
+/>
+
+---
+
+### 10.6 甘特图 (Gantt Chart)
+
+甘特图用于项目进度管理：
+
+<Mermaid
+  code={`gantt
+    title 项目开发计划
+    dateFormat  YYYY-MM-DD
+    section 需求分析
+        需求调研     :a1, 2024-01-01, 7d
+        需求文档     :a2, after a1, 5d
+    section 设计阶段
+        架构设计     :b1, after a2, 7d
+        UI设计       :b2, after a2, 10d
+    section 开发阶段
+        后端开发     :c1, after b1, 21d
+        前端开发     :c2, after b2, 21d
+    section 测试部署
+        单元测试     :d1, after c1, 7d
+        集成测试     :d2, after c2, 5d
+        部署上线     :milestone, after d2, 0d`}
+/>
+
+---
+
+### 10.7 饼图 (Pie Chart)
+
+饼图用于展示数据占比：
+
+<Mermaid
+  code={`pie showData
+    title 技术栈使用占比
+    "TypeScript" : 35
+    "Python" : 25
+    "Go" : 20
+    "Rust" : 12
+    "Other" : 8`}
+/>
+
+---
+
+### 10.8 Git 图 (Git Graph)
+
+Git 图用于展示分支和合并历史：
+
+<Mermaid
+  code={`gitGraph
+    commit id: "初始提交"
+    commit id: "添加基础功能"
+    branch develop
+    checkout develop
+    commit id: "开发中"
+    commit id: "新功能A"
+    branch feature/auth
+    checkout feature/auth
+    commit id: "添加认证"
+    checkout develop
+    merge feature/auth id: "合并认证"
+    commit id: "新功能B"
+    checkout main
+    merge develop id: "发布v1.0" tag: "v1.0"
+    branch hotfix
+    checkout hotfix
+    commit id: "修复Bug"
+    checkout main
+    merge hotfix id: "发布v1.0.1" tag: "v1.0.1"`}
+/>
+
+---
+
+### 10.9 用户旅程图 (User Journey)
+
+用户旅程图用于展示用户体验流程：
+
+<Mermaid
+  code={`journey
+    title 用户购物体验
+    section 浏览商品
+        打开首页: 5: 用户
+        搜索商品: 4: 用户
+        查看详情: 4: 用户
+    section 购买流程
+        加入购物车: 4: 用户
+        结算付款: 3: 用户, 系统
+        确认订单: 5: 用户
+    section 收货评价
+        等待发货: 2: 用户
+        确认收货: 5: 用户
+        评价商品: 4: 用户`}
+/>
+
+---
+
+### 10.10 思维导图 (Mindmap)
+
+思维导图用于展示层级结构：
+
+<Mermaid
+  code={`mindmap
+  root((技术栈))
+    前端
+      Vue.js
+      React
+      Angular
+      TypeScript
+    后端
+      Node.js
+      Python
+      Go
+      Rust
+    数据库
+      MySQL
+      PostgreSQL
+      MongoDB
+      Redis
+    DevOps
+      Docker
+      Kubernetes
+      CI/CD
+      监控告警`}
+/>
+
+---
+
+## 十一、可视化组件
+
+除了 Mermaid 图表，astro-minblog 还支持多种可视化库，丰富内容展示形式。
+
+### 11.1 Rough.js — 手绘风格图形
+
+创建自动适配主题的手绘涂鸦风格图形：
+
+<RoughDrawing
+  config='{"width":450,"height":150,"shapes":[{"type":"rectangle","x":20,"y":25,"width":110,"height":70,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"circle","x":220,"y":70,"r":45,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":2}},{"type":"ellipse","x":370,"y":70,"width":100,"height":60,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}}]}'
+/>
+
+### 11.2 Two.js — SVG 动画
+
+带有可配置旋转速度和自动播放的动画图形：
+
+<TwoAnimation
+  config='{"width":400,"height":200,"autoplay":true,"shapes":[{"type":"rectangle","x":100,"y":100,"width":60,"height":60,"fill":true,"fillColor":"#3b82f6","stroke":"#1e40af","animate":{"rotation":360,"duration":3000}},{"type":"circle","x":200,"y":100,"r":35,"fill":true,"fillColor":"#8b5cf6","stroke":"#5b21b6","animate":{"rotation":360,"duration":2000}},{"type":"rectangle","x":300,"y":100,"width":80,"height":40,"fill":true,"fillColor":"#ec4899","stroke":"#9d174d","animate":{"rotation":360,"duration":4000}}]}'
+/>
+
+### 11.3 p5.js — 创意编程
+
+支持主题感知颜色的交互式画布。将鼠标移到下方画布上试试：
+
+<P5Sketch
+  sketch={`
+    var trail = [];
+    p.setup = function() {
+      p.createCanvas(400, 200);
+      p.noStroke();
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var accent = getColor('--accent');
+      p.background(bg);
+      trail.push({ x: p.mouseX, y: p.mouseY });
+      if (trail.length > 20) trail.shift();
+      for (var i = 0; i < trail.length; i++) {
+        var size = p.map(i, 0, trail.length, 4, 24);
+        var alpha = p.map(i, 0, trail.length, 40, 220);
+        p.fill(accent + (p.hex(Math.floor(alpha), 2)));
+        p.ellipse(trail[i].x, trail[i].y, size, size);
+      }
+    };
+  `}
+/>
+
+### 11.4 Reveal.js — 幻灯片演示
+
+在文章中直接嵌入交互式幻灯片：
+
+<RevealSlides
+  slides={`
+    <section>
+      <h2>嵌入式幻灯片</h2>
+      <p>使用方向键导航</p>
+    </section>
+    <section>
+      <h2>丰富的内容</h2>
+      <ul>
+        <li>代码片段</li>
+        <li>图片和媒体</li>
+        <li>动画效果</li>
+      </ul>
+    </section>
+    <section>
+      <h2>主题感知</h2>
+      <p>自动在亮色和暗色主题之间切换</p>
+    </section>
+  `}
+/>
+
+---
+

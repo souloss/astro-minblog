@@ -1,0 +1,139 @@
+---
+import VizContainer from "./VizContainer.astro";
+
+interface Props {
+  src?: string;
+  sceneData?: string;
+  height?: string;
+}
+
+const { src, sceneData, height = "500px" } = Astro.props;
+
+let embedUrl = "";
+
+if (src) {
+  embedUrl = src;
+} else if (sceneData) {
+  const encoded = Buffer.from(sceneData).toString("base64");
+  embedUrl = `https://excalidraw.com/#json=${encoded}`;
+}
+---
+
+<VizContainer minHeight={height} enableZoom={false}>
+  <div
+    class="excalidraw-wrapper"
+    data-excalidraw-src={embedUrl || undefined}
+    style={`height: ${height};`}
+  >
+    {embedUrl ? (
+      <iframe
+        class="excalidraw-iframe"
+        title="Excalidraw whiteboard"
+        loading="lazy"
+        allow="fullscreen"
+        sandbox="allow-scripts allow-same-origin allow-popups"
+      />
+    ) : (
+      <div class="excalidraw-placeholder">
+        <svg class="size-10 text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M7 7l4 4-4 4" />
+          <line x1="13" y1="15" x2="17" y2="15" />
+        </svg>
+        <span class="text-foreground-soft text-sm">No Excalidraw scene provided</span>
+      </div>
+    )}
+  </div>
+  {embedUrl && (
+    <div class="mt-2 flex justify-end px-1">
+      <a
+        href={embedUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="excalidraw-link text-foreground-soft hover:text-accent flex items-center gap-1 text-xs transition-colors"
+      >
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg>
+        <span>Open in Excalidraw</span>
+      </a>
+    </div>
+  )}
+</VizContainer>
+
+<script>
+  function getIsDark(): boolean {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
+
+  function applyThemeToUrl(baseUrl: string, isDark: boolean): string {
+    if (!baseUrl) return "";
+    try {
+      const url = new URL(baseUrl);
+      url.searchParams.set("theme", isDark ? "dark" : "light");
+      return url.toString();
+    } catch {
+      const sep = baseUrl.includes("?") ? "&" : "?";
+      return `${baseUrl}${sep}theme=${isDark ? "dark" : "light"}`;
+    }
+  }
+
+  function initExcalidraw() {
+    const isDark = getIsDark();
+
+    document.querySelectorAll<HTMLElement>(".excalidraw-wrapper").forEach(wrapper => {
+      const iframe = wrapper.querySelector<HTMLIFrameElement>(".excalidraw-iframe");
+      const baseSrc = wrapper.dataset.excalidrawSrc;
+      if (!iframe || !baseSrc) return;
+
+      if (!iframe.src || iframe.src === "about:blank") {
+        iframe.src = applyThemeToUrl(baseSrc, isDark);
+      }
+    });
+  }
+
+  function updateExcalidrawThemes() {
+    const isDark = getIsDark();
+
+    document.querySelectorAll<HTMLElement>(".excalidraw-wrapper").forEach(wrapper => {
+      const iframe = wrapper.querySelector<HTMLIFrameElement>(".excalidraw-iframe");
+      const baseSrc = wrapper.dataset.excalidrawSrc;
+      if (!iframe || !baseSrc) return;
+
+      iframe.src = applyThemeToUrl(baseSrc, isDark);
+    });
+  }
+
+  window.addEventListener("themechange", updateExcalidrawThemes);
+
+  initExcalidraw();
+  document.addEventListener("astro:page-load", initExcalidraw);
+</script>
+
+<style>
+  .excalidraw-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .excalidraw-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--viz-bg);
+  }
+
+  .excalidraw-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+  }
+</style>

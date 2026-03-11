@@ -7,6 +7,7 @@ import IconUser from "@/assets/icons/IconUser.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSeries from "@/assets/icons/IconSeries.svg";
+import IconProject from "@/assets/icons/IconProject.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import { SITE } from "@/config";
 import { t } from "@/utils/i18n";
@@ -22,32 +23,38 @@ interface Props {
 const { lang = "zh" } = Astro.props;
 
 const base = `/${lang}`;
-const navItems = [
-  { href: `${base}/`, label: t("nav.home", lang), icon: IconHome },
-  { href: `${base}/posts`, label: t("nav.posts", lang), icon: IconArticle },
-  { href: `${base}/tags`, label: t("nav.tags", lang), icon: IconTag },
-  {
-    href: `${base}/categories`,
-    label: t("nav.categories", lang),
-    icon: IconTag,
-  },
-  {
-    href: `${base}/series`,
-    label: t("nav.series", lang),
-    icon: IconSeries,
-  },
-  { href: `${base}/about`, label: t("nav.about", lang), icon: IconUser },
-  { href: `${base}/friends`, label: t("nav.friends", lang), icon: IconUser },
-  ...(SITE.showArchives
-    ? [
-        {
-          href: `${base}/archives`,
-          label: t("nav.archives", lang),
-          icon: IconArchive,
-        },
-      ]
-    : []),
-];
+
+const iconMap: Record<string, any> = {
+  home: IconHome,
+  posts: IconArticle,
+  tags: IconTag,
+  categories: IconTag,
+  series: IconSeries,
+  projects: IconProject,
+  about: IconUser,
+  friends: IconUser,
+  archives: IconArchive,
+};
+
+const hrefMap: Record<string, string> = {
+  home: `${base}/`,
+  posts: `${base}/posts`,
+  tags: `${base}/tags`,
+  categories: `${base}/categories`,
+  series: `${base}/series`,
+  projects: `${base}/projects`,
+  about: `${base}/about`,
+  friends: `${base}/friends`,
+  archives: `${base}/archives`,
+};
+
+const navItems = SITE.nav.items
+  .filter(i => i.enabled)
+  .map(i => ({
+    href: hrefMap[i.key] ?? `${base}/${i.key}`,
+    label: t(`nav.${i.key}` as any, lang),
+    icon: iconMap[i.key] ?? IconArticle,
+  }));
 ---
 
 <a

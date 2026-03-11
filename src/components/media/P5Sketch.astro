@@ -1,0 +1,201 @@
+---
+import { randomUUID } from "node:crypto";
+import VizContainer from "./VizContainer.astro";
+
+interface Props {
+  sketch: string;
+}
+
+const { sketch } = Astro.props;
+const uniqueId = `p5-${randomUUID()}`;
+---
+
+<VizContainer minHeight="200px">
+  <div class="p5-wrapper" data-p5-id={uniqueId} data-viz-type="p5">
+    <div class="p5-output" id={`${uniqueId}-output`}>
+      <div class="p5-placeholder">
+        <svg class="size-8 animate-pulse text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="3" stroke-dasharray="3 2" />
+          <rect x="13" y="5" width="6" height="6" rx="1" stroke-dasharray="3 2" opacity="0.7" />
+          <path d="M5 18l4-6 3 4 4-7 5 9" stroke-dasharray="4 2" opacity="0.5" />
+        </svg>
+      </div>
+    </div>
+    <script
+      is:inline
+      type="application/json"
+      class="p5-sketch-code"
+      set:html={JSON.stringify(sketch)}
+    />
+  </div>
+</VizContainer>
+
+<script>
+  interface P5Window extends Window {
+    p5: new (sketch: (p: unknown) => void, node: HTMLElement) => P5Instance;
+    __p5Loaded?: boolean;
+  }
+
+  interface P5Instance {
+    remove: () => void;
+  }
+
+  const activeP5 = new Map<string, P5Instance>();
+
+  function loadP5Script(): Promise<void> {
+    const w = window as unknown as P5Window;
+    if (w.__p5Loaded && w.p5) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+      if (document.querySelector('script[src*="p5.min.js"]')) {
+        const check = setInterval(() => {
+          if (w.p5) {
+            w.__p5Loaded = true;
+            clearInterval(check);
+            resolve();
+          }
+        }, 50);
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js";
+      script.onload = () => {
+        w.__p5Loaded = true;
+        resolve();
+      };
+      script.onerror = () => reject(new Error("Failed to load p5.js"));
+      document.head.appendChild(script);
+    });
+  }
+
+  function getColor(varName: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  function isDark(): boolean {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
+
+  async function renderSketch(wrapper: HTMLElement) {
+    const id = wrapper.getAttribute("data-p5-id");
+    if (!id) return;
+
+    const codeScript = wrapper.querySelector("script.p5-sketch-code");
+    const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
+    if (!output || !codeScript) return;
+
+    const sketchCode = JSON.parse(codeScript.textContent || '""');
+    if (!sketchCode) return;
+
+    const prev = activeP5.get(id);
+    if (prev) {
+      prev.remove();
+      activeP5.delete(id);
+    }
+
+    output.innerHTML = "";
+
+    await loadP5Script();
+
+    const w = window as unknown as P5Window;
+    const P5 = w.p5;
+    if (!P5) return;
+
+    try {
+      const sketchFn = new Function("p", "getColor", "isDark", sketchCode);
+
+      const instance = new P5((p: unknown) => {
+        sketchFn(p, getColor, isDark);
+      }, output);
+
+      activeP5.set(id, instance);
+    } catch (error) {
+      output.innerHTML = `<p class="p5-error">Sketch error: ${error instanceof Error ? error.message : "unknown"}</p>`;
+    }
+  }
+
+  function initP5Sketches() {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          obs.unobserve(el);
+          renderSketch(el);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    document.querySelectorAll<HTMLElement>(".p5-wrapper").forEach(wrapper => {
+      const id = wrapper.getAttribute("data-p5-id");
+      if (id && activeP5.has(id)) return;
+      const output = wrapper.querySelector(".p5-output");
+      const hasCanvas = output && output.querySelector("canvas");
+      if (!hasCanvas) observer.observe(wrapper);
+    });
+  }
+
+  async function reRenderAllP5() {
+    const wrappers = document.querySelectorAll<HTMLElement>(".p5-wrapper");
+    for (const wrapper of wrappers) {
+      await renderSketch(wrapper);
+    }
+  }
+
+  window.addEventListener("themechange", () => {
+    reRenderAllP5();
+  });
+
+  function init() {
+    initP5Sketches();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  document.addEventListener("astro:page-load", init);
+</script>
+
+<style>
+  .p5-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .p5-output {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+
+  .p5-output :global(canvas) {
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  .p5-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
+  }
+
+  .p5-error {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  :global(html[data-theme="dark"]) .p5-error {
+    color: #f87171;
+  }
+</style>

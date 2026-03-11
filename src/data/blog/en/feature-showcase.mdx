@@ -1,0 +1,655 @@
+---
+title: Feature & Component Showcase
+pubDatetime: 2026-03-09T00:00:00.000Z
+author: Souloss
+description: A comprehensive showcase of all new features, components, and style enhancements including code block improvements, UI components, and social components.
+tags:
+  - test
+  - components
+  - showcase
+category: Blog/Test
+featured: true
+draft: false
+---
+
+import GithubCard from "@/components/ui/GithubCard.astro";
+import Timeline from "@/components/ui/Timeline.astro";
+import Collapse from "@/components/ui/Collapse.astro";
+import Alert from "@/components/ui/Alert.astro";
+import Mermaid from "@/components/media/Mermaid.astro";
+import RoughDrawing from "@/components/media/RoughDrawing.astro";
+import TwoAnimation from "@/components/media/TwoAnimation.astro";
+import P5Sketch from "@/components/media/P5Sketch.astro";
+import RevealSlides from "@/components/media/RevealSlides.astro";
+
+This post serves as a comprehensive test and showcase for all recently added features and components, including enhanced code blocks (filename, language label, copy button, collapse), UI components (Timeline, Collapse, GithubCard), social components (Sponsorship, Copyright), and various Remark/Rehype plugin effects.
+
+---
+
+## 1. Code Block Enhancements
+
+### 1.1 Filename Label
+
+Add a filename label using `title="filename"` or `file="filename"` meta:
+
+```typescript title="src/utils/helper.ts"
+export function calculateSum(numbers: number[]): number {
+  return numbers.reduce((acc, curr) => acc + curr, 0);
+}
+```
+
+```css file="src/styles/theme.css"
+:root {
+  --primary: #0f766e;
+  --background: #f7f3eb;
+  --foreground: #152334;
+}
+```
+
+### 1.2 Language Label & Copy Button
+
+Each code block shows a language label in the top-right corner, which switches to a copy button on hover:
+
+```python
+def fibonacci(n: int) -> list[int]:
+    if n <= 0:
+        return []
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i - 1] + fib[i - 2])
+    return fib
+
+print(fibonacci(10))
+```
+
+### 1.3 Auto-collapse for Long Code Blocks
+
+Code blocks exceeding 15 lines automatically collapse with an expand/collapse toggle:
+
+```typescript title="src/plugins/shiki-transformers.ts"
+interface HastElement {
+  type: "element";
+  tagName: string;
+  properties: Record<string, unknown>;
+  children: (HastElement | HastText)[];
+}
+
+interface HastText {
+  type: "text";
+  value: string;
+}
+
+function el(
+  tag: string,
+  props: Record<string, unknown>,
+  children: (HastElement | HastText)[] | string = []
+): HastElement {
+  return {
+    type: "element",
+    tagName: tag,
+    properties: props,
+    children:
+      typeof children === "string"
+        ? [{ type: "text" as const, value: children }]
+        : children,
+  };
+}
+
+function parseMetaString(str = ""): Record<string, string | true> {
+  return Object.fromEntries(
+    str.split(" ").reduce(
+      (acc: [string, string | true][], cur) => {
+        const matched = cur.match(/(.+)?=("(.+)"|'(.+)')$/);
+        if (matched === null) return acc;
+        const key = matched[1];
+        const value = matched[3] || matched[4] || true;
+        acc.push([key, value]);
+        return acc;
+      },
+      [] as [string, string | true][]
+    )
+  );
+}
+```
+
+### 1.4 Line Highlighting
+
+Use `// [!code highlight]` to highlight specific lines:
+
+```javascript
+function greet(name) {
+  const message = `Hello, ${name}!`; // [!code highlight]
+  console.log(message);
+  return message; // [!code highlight]
+}
+```
+
+### 1.5 Diff
+
+Use `// [!code ++]` and `// [!code --]` for diff markers:
+
+```javascript
+function config() {
+  return {
+    theme: "light", // [!code --]
+    theme: "dark", // [!code ++]
+    lang: "en", // [!code --]
+    lang: "zh", // [!code ++]
+  };
+}
+```
+
+---
+
+## 2. UI Components
+
+### 2.1 GitHub Repository Card
+
+Use `<GithubCard>` to display GitHub repo information with auto-fetched stats:
+
+<GithubCard repo="withastro/astro" />
+
+<GithubCard repo="tailwindlabs/tailwindcss" />
+
+### 2.2 Timeline
+
+Use `<Timeline>` for chronologically ordered events:
+
+<Timeline
+  events={[
+    { date: "2026-03", content: "Added code block enhancements (filename, copy, collapse)" },
+    { date: "2026-02", content: "Migrated UI components (Timeline, Collapse, GithubCard)" },
+    { date: "2026-01", content: "Integrated Remark/Rehype plugin ecosystem" },
+    { date: "2025-12", content: "Rebuilt blog architecture on Astro v5" },
+  ]}
+/>
+
+### 2.3 Collapse Panel
+
+Use `<Collapse>` to hide detailed content behind a toggle:
+
+<Collapse title="Click to expand: Astro Project Structure">
+  A typical Astro project directory structure:
+
+  - `src/pages/` — Route pages
+  - `src/layouts/` — Page layout templates
+  - `src/components/` — Reusable components
+  - `src/data/` — Content collections (blog posts, etc.)
+  - `src/styles/` — Global styles
+  - `src/plugins/` — Custom Remark/Rehype plugins
+  - `public/` — Static assets
+</Collapse>
+
+---
+
+## 3. GitHub Alerts
+
+Using standard GitHub Alert syntax (powered by `remark-github-alerts`):
+
+> [!NOTE]
+> This is a note for highlighting important details.
+
+> [!TIP]
+> This is a tip to help users accomplish tasks more effectively.
+
+> [!IMPORTANT]
+> This is critical information that users must know.
+
+> [!WARNING]
+> This is a warning that requires immediate attention.
+
+> [!CAUTION]
+> This is a caution about potential risks of certain actions.
+
+---
+
+## 4. Math Formulas
+
+Inline formula: $E = mc^2$, and $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
+
+Block formula:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+---
+
+## 5. Responsive Tables
+
+Wide tables automatically support horizontal scrolling on small screens:
+
+| Feature | Description | Plugin/Impl | Type | Status |
+|---------|-------------|-------------|------|--------|
+| Filename label | Show filename on code blocks | Shiki Transformer | Build-time | Done |
+| Copy button | One-click code copy | Shiki Transformer | Build-time | Done |
+| Code collapse | Auto-collapse long code | Shiki Transformer | Build-time | Done |
+| Reading time | Auto-calculate read time | Remark Plugin | Build-time | Done |
+| Image zoom | Add zoomable class to images | Remark Plugin | Build-time | Done |
+| External links | Safe attributes for external links | Rehype Plugin | Build-time | Done |
+| Table scroll | Horizontal scroll for wide tables | Rehype Plugin | Build-time | Done |
+| Heading anchors | Auto-add anchor links to headings | Rehype Plugin | Build-time | Done |
+
+---
+
+## 6. Mixed Language Code Examples
+
+```json file="package.json"
+{
+  "name": "astro-minblog",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  }
+}
+```
+
+```yaml title="deploy.yml"
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pnpm install
+      - run: pnpm build
+```
+
+```bash title="setup.sh"
+#!/bin/bash
+pnpm create astro@latest
+cd my-blog
+pnpm add tailwindcss @tailwindcss/typography
+pnpm dev
+```
+
+---
+
+## 7. Mermaid Diagrams
+
+Mermaid is a JavaScript-based diagramming tool that supports flowcharts, sequence diagrams, class diagrams, state diagrams, and more.
+
+### 7.1 Flowchart
+
+Flowcharts display workflows or decision processes:
+
+<Mermaid
+  code={`flowchart TD
+    A[Start] --> B{Logged in?}
+    B -->|Yes| C[Go to Home]
+    B -->|No| D[Redirect to Login]
+    D --> E[Enter Credentials]
+    E --> F{Valid?}
+    F -->|Yes| C
+    F -->|No| G[Show Error]
+    G --> E`}
+/>
+
+#### Horizontal Flowchart
+
+<Mermaid
+  code={`flowchart LR
+    A[User Request] --> B[Load Balancer]
+    B --> C[Server A]
+    B --> D[Server B]
+    C --> E[Database]
+    D --> E
+    E --> F[Cache Layer]
+    F --> G[Response]`}
+/>
+
+#### Subgraph Example
+
+<Mermaid
+  code={`flowchart TB
+    subgraph Frontend
+        A[Vue Components]
+        B[State Management]
+        C[Router]
+    end
+    subgraph Backend
+        D[API Gateway]
+        E[Service A]
+        F[Service B]
+    end
+    subgraph DataLayer
+        G[(PostgreSQL)]
+        H[(Redis)]
+    end
+    A --> B --> C --> D
+    D --> E & F
+    E & F --> G & H`}
+/>
+
+---
+
+### 7.2 Sequence Diagram
+
+Sequence diagrams show interactions between objects:
+
+<Mermaid
+  code={`sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant Database
+    User->>Frontend: Click login
+    Frontend->>API: POST /auth/login
+    API->>Database: Query user
+    Database-->>API: Return user data
+    API->>API: Verify password
+    API-->>Frontend: Return JWT Token
+    Frontend-->>User: Login success`}
+/>
+
+#### With Loops and Conditions
+
+<Mermaid
+  code={`sequenceDiagram
+    loop Every minute
+        Client->>Server: Heartbeat
+        Server-->>Client: Heartbeat ACK
+    end
+    Client->>Server: Request data
+    alt Success
+        Server-->>Client: Return data
+    else Failure
+        Server-->>Client: Return error
+        Client->>Client: Retry logic
+    end`}
+/>
+
+---
+
+### 7.3 Class Diagram
+
+Class diagrams show object-oriented class structures:
+
+<Mermaid
+  code={`classDiagram
+    class Animal {
+        +String name
+        +int age
+        +makeSound()
+    }
+    class Dog {
+        +String breed
+        +bark()
+        +fetch()
+    }
+    class Cat {
+        +String color
+        +meow()
+        +scratch()
+    }
+    Animal <|-- Dog
+    Animal <|-- Cat
+    class Owner {
+        +String name
+        +adopt(Animal)
+    }
+    Owner "1" --> "*" Animal : owns`}
+/>
+
+---
+
+### 7.4 State Diagram
+
+State diagrams show object lifecycle state changes:
+
+<Mermaid
+  code={`stateDiagram-v2
+    [*] --> Pending
+    Pending --> InReview: Submit
+    InReview --> Approved: Accept
+    InReview --> Rejected: Reject
+    Rejected --> Pending: Resubmit
+    Approved --> Published: Publish
+    Published --> [*]
+    state InReview {
+        [*] --> Initial
+        Initial --> Final
+        Final --> [*]
+    }`}
+/>
+
+---
+
+### 7.5 ER Diagram
+
+Entity-Relationship diagrams show database relationships:
+
+<Mermaid
+  code={`erDiagram
+    USER ||--o{ ORDER : places
+    USER {
+        int id PK
+        string username
+        string email
+        datetime created_at
+    }
+    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER {
+        int id PK
+        int user_id FK
+        datetime order_date
+        string status
+    }
+    PRODUCT ||--o{ ORDER_ITEM : included_in
+    PRODUCT {
+        int id PK
+        string name
+        float price
+        int stock
+    }
+    ORDER_ITEM {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+    }`}
+/>
+
+---
+
+### 7.6 Gantt Chart
+
+Gantt charts for project scheduling:
+
+<Mermaid
+  code={`gantt
+    title Project Development Plan
+    dateFormat  YYYY-MM-DD
+    section Analysis
+        Requirements     :a1, 2024-01-01, 7d
+        Documentation    :a2, after a1, 5d
+    section Design
+        Architecture     :b1, after a2, 7d
+        UI Design        :b2, after a2, 10d
+    section Development
+        Backend          :c1, after b1, 21d
+        Frontend         :c2, after b2, 21d
+    section Testing
+        Unit Tests       :d1, after c1, 7d
+        Integration      :d2, after c2, 5d
+        Deploy           :milestone, after d2, 0d`}
+/>
+
+---
+
+### 7.7 Pie Chart
+
+Pie charts show data proportions:
+
+<Mermaid
+  code={`pie showData
+    title Tech Stack Usage
+    "TypeScript" : 35
+    "Python" : 25
+    "Go" : 20
+    "Rust" : 12
+    "Other" : 8`}
+/>
+
+---
+
+### 7.8 Git Graph
+
+Git graphs show branch and merge history:
+
+<Mermaid
+  code={`gitGraph
+    commit id: "Initial commit"
+    commit id: "Add base features"
+    branch develop
+    checkout develop
+    commit id: "Developing"
+    commit id: "Feature A"
+    branch feature/auth
+    checkout feature/auth
+    commit id: "Add auth"
+    checkout develop
+    merge feature/auth id: "Merge auth"
+    commit id: "Feature B"
+    checkout main
+    merge develop id: "Release v1.0" tag: "v1.0"
+    branch hotfix
+    checkout hotfix
+    commit id: "Fix bug"
+    checkout main
+    merge hotfix id: "Release v1.0.1" tag: "v1.0.1"`}
+/>
+
+---
+
+### 7.9 User Journey
+
+User journey diagrams show experience flows:
+
+<Mermaid
+  code={`journey
+    title User Shopping Experience
+    section Browse
+        Open homepage: 5: User
+        Search products: 4: User
+        View details: 4: User
+    section Purchase
+        Add to cart: 4: User
+        Checkout: 3: User, System
+        Confirm order: 5: User
+    section Delivery
+        Wait for shipping: 2: User
+        Receive package: 5: User
+        Leave review: 4: User`}
+/>
+
+---
+
+### 7.10 Mindmap
+
+Mindmaps show hierarchical structures:
+
+<Mermaid
+  code={`mindmap
+  root((Tech Stack))
+    Frontend
+      Vue.js
+      React
+      Angular
+      TypeScript
+    Backend
+      Node.js
+      Python
+      Go
+      Rust
+    Database
+      MySQL
+      PostgreSQL
+      MongoDB
+      Redis
+    DevOps
+      Docker
+      Kubernetes
+      CI/CD
+      Monitoring`}
+/>
+
+---
+
+## 8. Visualization Components
+
+Beyond Mermaid diagrams, astro-minblog supports several additional visualization libraries for richer content.
+
+### 8.1 Rough.js — Hand-Drawn Graphics
+
+Create charming sketchy-style shapes that auto-adapt to the current theme:
+
+<RoughDrawing
+  config='{"width":450,"height":150,"shapes":[{"type":"rectangle","x":20,"y":25,"width":110,"height":70,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"circle","x":220,"y":70,"r":45,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":2}},{"type":"ellipse","x":370,"y":70,"width":100,"height":60,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}}]}'
+/>
+
+### 8.2 Two.js — SVG Animations
+
+Animated shapes with configurable rotation speed and autoplay:
+
+<TwoAnimation
+  config='{"width":400,"height":200,"autoplay":true,"shapes":[{"type":"rectangle","x":100,"y":100,"width":60,"height":60,"fill":true,"fillColor":"#3b82f6","stroke":"#1e40af","animate":{"rotation":360,"duration":3000}},{"type":"circle","x":200,"y":100,"r":35,"fill":true,"fillColor":"#8b5cf6","stroke":"#5b21b6","animate":{"rotation":360,"duration":2000}},{"type":"rectangle","x":300,"y":100,"width":80,"height":40,"fill":true,"fillColor":"#ec4899","stroke":"#9d174d","animate":{"rotation":360,"duration":4000}}]}'
+/>
+
+### 8.3 p5.js — Creative Coding
+
+Interactive canvases with theme-aware colors. Move your mouse over the canvas below:
+
+<P5Sketch
+  sketch={`
+    var trail = [];
+    p.setup = function() {
+      p.createCanvas(400, 200);
+      p.noStroke();
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var accent = getColor('--accent');
+      p.background(bg);
+      trail.push({ x: p.mouseX, y: p.mouseY });
+      if (trail.length > 20) trail.shift();
+      for (var i = 0; i < trail.length; i++) {
+        var size = p.map(i, 0, trail.length, 4, 24);
+        var alpha = p.map(i, 0, trail.length, 40, 220);
+        p.fill(accent + (p.hex(Math.floor(alpha), 2)));
+        p.ellipse(trail[i].x, trail[i].y, size, size);
+      }
+    };
+  `}
+/>
+
+### 8.4 Reveal.js — Slide Presentations
+
+Embed interactive presentations directly in your posts:
+
+<RevealSlides
+  slides={`
+    <section>
+      <h2>Embedded Slides</h2>
+      <p>Navigate with arrow keys</p>
+    </section>
+    <section>
+      <h2>Rich Content</h2>
+      <ul>
+        <li>Code snippets</li>
+        <li>Images & media</li>
+        <li>Animations</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Theme Aware</h2>
+      <p>Automatically switches between light and dark themes</p>
+    </section>
+  `}
+/>
+

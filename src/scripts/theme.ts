@@ -35,22 +35,20 @@ function reflectPreference(): void {
 
   document.querySelector("#theme-btn")?.setAttribute("aria-label", themeValue);
 
-  // Get a reference to the body element
   const body = document.body;
-
-  // Check if the body element exists before using getComputedStyle
   if (body) {
-    // Get the computed styles for the body element
     const computedStyles = window.getComputedStyle(body);
-
-    // Get the background color property
     const bgColor = computedStyles.backgroundColor;
-
-    // Set the background color in <meta theme-color ... />
     document
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", bgColor);
   }
+
+  window.dispatchEvent(
+    new CustomEvent("themechange", {
+      detail: { isDark: themeValue === DARK, theme: themeValue },
+    })
+  );
 }
 
 // Check if View Transitions API is supported

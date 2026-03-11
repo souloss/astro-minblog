@@ -33,8 +33,18 @@ astro-minblog 在 AstroPaper 基础上新增以下功能：
 #### 内容增强
 
 - 📊 **Mermaid 图表** - 原生支持流程图、时序图、甘特图等
+- 🧠 **Markmap 思维导图** - 从 Markdown 大纲语法生成交互式思维导图
 - 🎬 **Bilibili 嵌入** - B站视频一键嵌入
 - 📑 **双 TOC** - 内联与浮动目录并存
+
+#### 可视化组件
+
+- ✏️ **Rough.js 手绘图形** - 手绘风格 SVG 图形，自动适配主题配色
+- 🎞️ **Two.js 动画** - 流畅的 2D SVG 动画，支持配置化图形与自动播放
+- 🎨 **p5.js 创意编程** - 创意编程画布，支持鼠标交互和生成艺术
+- 📽️ **Reveal.js 幻灯片** - 可嵌入的幻灯片演示，自动跟随主题切换
+- 🖌️ **Excalidraw 嵌入** - 白板风格的协作式图表
+- 📦 **VizContainer 容器** - 统一的可视化组件包装器，支持缩放控制和全屏模式
 
 #### 国际化与组织
 
@@ -54,6 +64,10 @@ astro-minblog 在 AstroPaper 基础上新增以下功能：
 - ⏰ **定时发布** - 基于时间的发布控制
 - 🌍 **时区支持** - 全局与单篇文章时区设置
 - 📍 **阅读位置** - 持久化滚动位置记忆
+- 🎨 **主题切换优化** - 改进的亮/暗模式切换，所有组件响应式更新
+- 📖 **系列导航优化** - 重新设计的系列索引和详情页，视觉层次更清晰
+- 🗂️ **项目展示页** - 专用页面展示项目作品集
+- ⚙️ **配置化导航** - 通过 `config.ts` 配置头部导航项
 
 #### 开发者工具
 
@@ -73,6 +87,10 @@ astro-minblog 在 AstroPaper 基础上新增以下功能：
 - [Pagefind](https://pagefind.app/) - 静态全文搜索
 - [Waline](https://waline.js.org/) - 评论系统
 - [Mermaid](https://mermaid.js.org/) - 图表渲染
+- [Rough.js](https://roughjs.com/) - 手绘风格图形
+- [Two.js](https://two.js.org/) - 2D 动画引擎
+- [p5.js](https://p5js.org/) - 创意编程库
+- [Reveal.js](https://revealjs.com/) - 演示文稿框架
 - [Shiki](https://shiki.style/) - 代码高亮
 
 **部署与监控**
@@ -105,7 +123,7 @@ astro-minblog 在 AstroPaper 基础上新增以下功能：
 │   ├── components/
 │   │   ├── ai/          # AI 聊天组件
 │   │   ├── blog/        # 文章组件、目录、评论、版权
-│   │   ├── media/       # Mermaid、Bilibili、音乐播放器、代码运行器
+│   │   ├── media/       # Mermaid、Rough.js、Two.js、p5.js、Reveal.js、Excalidraw
 │   │   ├── nav/         # 页头、页脚、分页、浮动操作
 │   │   ├── social/      # 赞助、社交链接
 │   │   └── ui/          # 卡片、标签、提示框、时间线、折叠
@@ -156,7 +174,7 @@ astro-minblog 将持续迭代，未来计划：
 - 🤖 更多 AI 功能集成
 - 📱 PWA 支持
 - 🎨 更多预设主题
-- 📊 数据可视化组件
+- 📊 基于 D3.js 的高级数据可视化
 
 ---
 

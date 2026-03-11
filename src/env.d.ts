@@ -1,3 +1,8 @@
+interface ThemeChangeDetail {
+  isDark: boolean;
+  theme: string;
+}
+
 interface Window {
   theme?: {
     themeValue: string;
@@ -8,7 +13,10 @@ interface Window {
   };
 }
 
-// View Transitions API type declarations
+interface WindowEventMap {
+  themechange: CustomEvent<ThemeChangeDetail>;
+}
+
 interface ViewTransition {
   finished: Promise<void>;
   ready: Promise<void>;

@@ -1,0 +1,70 @@
+---
+title: "Two.js Animations"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "Create smooth SVG animations using the TwoAnimation component powered by Two.js, a 2D drawing API for modern browsers."
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import TwoAnimation from '@/components/media/TwoAnimation.astro';
+
+Two.js is a renderer-agnostic 2D drawing API. The `TwoAnimation` component lets you create animated shapes using a simple JSON configuration, with optional autoplay for continuous motion.
+
+## Spinning Shapes
+
+Shapes with rotation animations applied. The `animate` property drives continuous rotation over a specified duration.
+
+<TwoAnimation
+  config='{"width":400,"height":300,"autoplay":true,"shapes":[{"type":"rectangle","x":100,"y":150,"width":80,"height":80,"fill":true,"fillColor":"#3b82f6","stroke":"#1e40af","animate":{"rotation":360,"duration":3000}},{"type":"rectangle","x":200,"y":150,"width":60,"height":60,"fill":true,"fillColor":"#8b5cf6","stroke":"#5b21b6","animate":{"rotation":360,"duration":2000}},{"type":"rectangle","x":300,"y":150,"width":100,"height":40,"fill":true,"fillColor":"#ec4899","stroke":"#9d174d","animate":{"rotation":360,"duration":4000}}]}'
+/>
+
+Each rectangle spins at a different speed, creating a mesmerizing asynchronous rhythm. The `duration` value is in milliseconds — lower values spin faster.
+
+## Concentric Circles
+
+A set of nested circles creating a target-like pattern. Static shapes (no `animate` property) render once and stay put.
+
+<TwoAnimation
+  config='{"width":400,"height":300,"autoplay":false,"shapes":[{"type":"circle","x":200,"y":150,"r":100,"fill":true,"fillColor":"#fecaca","stroke":"#ef4444"},{"type":"circle","x":200,"y":150,"r":75,"fill":true,"fillColor":"#fed7aa","stroke":"#f97316"},{"type":"circle","x":200,"y":150,"r":50,"fill":true,"fillColor":"#fef08a","stroke":"#eab308"},{"type":"circle","x":200,"y":150,"r":25,"fill":true,"fillColor":"#bbf7d0","stroke":"#22c55e"}]}'
+/>
+
+## Geometric Pattern
+
+A composition of mixed shapes — circles, rectangles, ellipses, and lines — forming a decorative geometric arrangement.
+
+<TwoAnimation
+  config='{"width":500,"height":350,"autoplay":true,"shapes":[{"type":"circle","x":250,"y":175,"r":50,"fill":true,"fillColor":"#dbeafe","stroke":"#3b82f6","animate":{"rotation":360,"duration":6000}},{"type":"rectangle","x":120,"y":80,"width":70,"height":70,"fill":true,"fillColor":"#dcfce7","stroke":"#22c55e","animate":{"rotation":360,"duration":4000}},{"type":"rectangle","x":380,"y":80,"width":70,"height":70,"fill":true,"fillColor":"#fce7f3","stroke":"#ec4899","animate":{"rotation":360,"duration":4000}},{"type":"ellipse","x":120,"y":270,"width":100,"height":50,"fill":true,"fillColor":"#fef3c7","stroke":"#f59e0b"},{"type":"ellipse","x":380,"y":270,"width":100,"height":50,"fill":true,"fillColor":"#e0e7ff","stroke":"#6366f1"},{"type":"line","x":170,"y":110,"width":330,"height":110},{"type":"line","x":170,"y":240,"width":330,"height":240}]}'
+/>
+
+## Configuration Reference
+
+The `TwoAnimation` component takes a `config` prop — a JSON string with this structure:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `width` | `number` | `400` | Canvas width |
+| `height` | `number` | `300` | Canvas height |
+| `autoplay` | `boolean` | `false` | Enable animation loop |
+| `shapes` | `array` | `[]` | Array of shape definitions |
+
+### Shape Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `string` | `circle`, `rectangle`, `ellipse`, or `line` |
+| `x`, `y` | `number` | Position (center for circle/ellipse/rectangle, start for line) |
+| `r` | `number` | Radius (circle only) |
+| `width`, `height` | `number` | Dimensions (rectangle/ellipse) or end point (line) |
+| `fill` | `boolean` | Whether to fill the shape |
+| `fillColor` | `string` | Fill color |
+| `stroke` | `string` | Stroke color |
+| `animate` | `object` | Animation config: `{ rotation, duration }` |
+
+### Animation
+
+When `autoplay` is `true`, shapes with an `animate` property will continuously rotate. The `rotation` field is in degrees and `duration` is the loop time in milliseconds.

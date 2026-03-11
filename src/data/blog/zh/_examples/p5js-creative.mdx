@@ -1,0 +1,168 @@
+---
+title: "p5.js 创意编程"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "探索 p5.js 创意编程——交互式鼠标跟随、粒子系统和生成艺术，通过 P5Sketch 组件实现。"
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import P5Sketch from '@/components/media/P5Sketch.astro';
+
+p5.js 是一个用于创意编程的 JavaScript 库。`P5Sketch` 组件让你编写的 p5 草图能够通过 `getColor()` 和 `isDark()` 辅助函数自动适配博客的亮/暗主题。
+
+## 交互式鼠标跟随
+
+将鼠标移到画布上方，可以看到圆形跟随光标移动并产生拖尾效果。草图会实时读取主题色彩。
+
+<P5Sketch
+  sketch={`
+    var trail = [];
+    p.setup = function() {
+      p.createCanvas(500, 300);
+      p.noStroke();
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var fg = getColor('--foreground');
+      var accent = getColor('--accent');
+      p.background(bg);
+      trail.push({ x: p.mouseX, y: p.mouseY });
+      if (trail.length > 30) trail.shift();
+      for (var i = 0; i < trail.length; i++) {
+        var size = p.map(i, 0, trail.length, 4, 30);
+        var alpha = p.map(i, 0, trail.length, 40, 220);
+        p.fill(accent + (p.hex(Math.floor(alpha), 2)));
+        p.ellipse(trail[i].x, trail[i].y, size, size);
+      }
+      p.fill(fg);
+      p.textAlign(p.CENTER);
+      p.textSize(12);
+      p.text('在此移动鼠标', 250, 20);
+    };
+  `}
+/>
+
+## 粒子系统
+
+一个简单的粒子系统，粒子从底部向上飘散、淡出，然后重新生成。展示了如何使用 `isDark()` 来翻转整个草图的视觉基调。
+
+<P5Sketch
+  sketch={`
+    var particles = [];
+    var NUM = 60;
+    p.setup = function() {
+      p.createCanvas(500, 300);
+      p.noStroke();
+      for (var i = 0; i < NUM; i++) {
+        particles.push({
+          x: p.random(p.width),
+          y: p.random(p.height),
+          vx: p.random(-0.5, 0.5),
+          vy: p.random(-1.5, -0.3),
+          size: p.random(3, 8),
+          life: p.random(100, 255)
+        });
+      }
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var accent = getColor('--accent');
+      p.background(bg);
+      for (var i = 0; i < particles.length; i++) {
+        var pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life -= 1.5;
+        if (pt.life <= 0 || pt.y < -10) {
+          pt.x = p.random(p.width);
+          pt.y = p.height + 10;
+          pt.life = p.random(150, 255);
+          pt.vx = p.random(-0.5, 0.5);
+          pt.vy = p.random(-1.5, -0.3);
+          pt.size = p.random(3, 8);
+        }
+        var alpha = p.hex(Math.floor(pt.life), 2);
+        p.fill(accent + alpha);
+        p.ellipse(pt.x, pt.y, pt.size, pt.size);
+      }
+    };
+  `}
+/>
+
+## 生成艺术——网格图案
+
+一个程序化的图形网格，每帧呈现微妙变化，创造出不断变幻的马赛克效果。
+
+<P5Sketch
+  sketch={`
+    var cols, rows, cellSize;
+    p.setup = function() {
+      p.createCanvas(500, 300);
+      cellSize = 30;
+      cols = Math.floor(p.width / cellSize);
+      rows = Math.floor(p.height / cellSize);
+      p.frameRate(4);
+      p.noStroke();
+    };
+    p.draw = function() {
+      var bg = getColor('--background');
+      var fg = getColor('--foreground');
+      var accent = getColor('--accent');
+      p.background(bg);
+      for (var i = 0; i < cols; i++) {
+        for (var j = 0; j < rows; j++) {
+          var x = i * cellSize + cellSize / 2;
+          var y = j * cellSize + cellSize / 2;
+          var n = p.noise(i * 0.3, j * 0.3, p.frameCount * 0.05);
+          if (n > 0.6) {
+            p.fill(accent);
+            p.ellipse(x, y, cellSize * 0.7, cellSize * 0.7);
+          } else if (n > 0.35) {
+            p.fill(fg + '33');
+            p.rect(x - cellSize * 0.3, y - cellSize * 0.3, cellSize * 0.6, cellSize * 0.6);
+          } else {
+            p.fill(fg + '15');
+            p.ellipse(x, y, cellSize * 0.3, cellSize * 0.3);
+          }
+        }
+      }
+    };
+  `}
+/>
+
+## 使用说明与辅助函数
+
+`P5Sketch` 组件接受一个 `sketch` 属性——一段 JavaScript 代码字符串，代码可以使用三个参数：
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `p` | `p5 实例` | p5.js 实例对象（使用 `p.setup`、`p.draw`、`p.createCanvas` 等） |
+| `getColor(varName)` | `function` | 返回 CSS 自定义属性的计算颜色值（如 `getColor('--foreground')`） |
+| `isDark()` | `function` | 返回 `true` 表示当前为暗色主题 |
+
+### 编写草图代码
+
+草图运行在**实例模式**下——所有 p5 函数通过 `p` 对象访问：
+
+```javascript
+p.setup = function() {
+  p.createCanvas(400, 300);
+};
+p.draw = function() {
+  var bg = getColor('--background');
+  p.background(bg);
+  p.fill(getColor('--accent'));
+  p.ellipse(p.mouseX, p.mouseY, 20, 20);
+};
+```
+
+> [!TIP]
+> 在草图代码中使用 `var` 而非 `let`/`const`，因为代码通过 `new Function()` 执行，`var` 提供更符合预期的作用域行为。
+
+> [!NOTE]
+> 草图会在主题切换时自动重新渲染，确保颜色始终与亮/暗模式保持同步。

@@ -1,0 +1,214 @@
+---
+interface Props {
+  minHeight?: string;
+  enableZoom?: boolean;
+  enableFullscreen?: boolean;
+  class?: string;
+}
+
+const {
+  minHeight = "200px",
+  enableZoom = true,
+  enableFullscreen = true,
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class:list={["viz-container group relative my-6 overflow-hidden rounded-lg border", className]}
+  style={`min-height: ${minHeight};`}
+  data-viz-zoom={enableZoom ? "true" : undefined}
+  data-viz-fullscreen={enableFullscreen ? "true" : undefined}
+>
+  <div class="viz-viewport w-full origin-center" style="transform: scale(1) translate(0px, 0px);">
+    <slot />
+  </div>
+
+  {(enableZoom || enableFullscreen) && (
+    <div class="viz-controls absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100"
+    >
+      {enableZoom && (
+        <>
+          <button
+            class="viz-btn viz-zoom-in flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+            aria-label="Zoom in"
+            title="Zoom in"
+          >
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button
+            class="viz-btn viz-zoom-out flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+            aria-label="Zoom out"
+            title="Zoom out"
+          >
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button
+            class="viz-btn viz-reset flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+            aria-label="Reset view"
+            title="Reset view"
+          >
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
+            </svg>
+          </button>
+          <div class="mx-0.5 h-4 w-px bg-[var(--viz-border)]"></div>
+        </>
+      )}
+      {enableFullscreen && (
+        <button
+          class="viz-btn viz-fullscreen flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+          aria-label="Toggle fullscreen"
+          title="Toggle fullscreen"
+        >
+          <svg class="viz-fs-enter size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+            <path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+          </svg>
+          <svg class="viz-fs-exit hidden size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+            <path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+          </svg>
+        </button>
+      )}
+    </div>
+  )}
+</div>
+
+<script>
+  function initVizContainers() {
+    document.querySelectorAll<HTMLElement>(".viz-container").forEach(container => {
+      if (container.dataset.vizCtrlInit) return;
+      container.dataset.vizCtrlInit = "true";
+
+      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
+      if (!viewport) return;
+
+      let scale = 1;
+      let translateX = 0;
+      let translateY = 0;
+      const MIN_SCALE = 0.3;
+      const MAX_SCALE = 5;
+      const ZOOM_STEP = 0.2;
+
+      function applyTransform() {
+        viewport!.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+      }
+
+      container.querySelector(".viz-zoom-in")?.addEventListener("click", () => {
+        scale = Math.min(MAX_SCALE, scale + ZOOM_STEP);
+        applyTransform();
+      });
+
+      container.querySelector(".viz-zoom-out")?.addEventListener("click", () => {
+        scale = Math.max(MIN_SCALE, scale - ZOOM_STEP);
+        applyTransform();
+      });
+
+      container.querySelector(".viz-reset")?.addEventListener("click", () => {
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        applyTransform();
+      });
+
+      if (container.dataset.vizZoom === "true") {
+        container.addEventListener("wheel", (e: WheelEvent) => {
+          if (!e.ctrlKey && !e.metaKey) return;
+          e.preventDefault();
+          const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+          scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
+          applyTransform();
+        }, { passive: false });
+
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+
+        container.addEventListener("mousedown", (e: MouseEvent) => {
+          if (!e.shiftKey && e.button !== 1) return;
+          e.preventDefault();
+          isPanning = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          container.style.cursor = "grabbing";
+        });
+
+        window.addEventListener("mousemove", (e: MouseEvent) => {
+          if (!isPanning) return;
+          translateX += (e.clientX - startX) / scale;
+          translateY += (e.clientY - startY) / scale;
+          startX = e.clientX;
+          startY = e.clientY;
+          applyTransform();
+        });
+
+        window.addEventListener("mouseup", () => {
+          if (!isPanning) return;
+          isPanning = false;
+          container.style.cursor = "";
+        });
+      }
+
+      const fsBtn = container.querySelector<HTMLElement>(".viz-fullscreen");
+      if (fsBtn && container.dataset.vizFullscreen === "true") {
+        const enterIcon = fsBtn.querySelector(".viz-fs-enter");
+        const exitIcon = fsBtn.querySelector(".viz-fs-exit");
+
+        fsBtn.addEventListener("click", () => {
+          if (document.fullscreenElement === container) {
+            document.exitFullscreen();
+          } else {
+            container.requestFullscreen().catch(() => {});
+          }
+        });
+
+        container.addEventListener("fullscreenchange", () => {
+          const isFs = document.fullscreenElement === container;
+          enterIcon?.classList.toggle("hidden", isFs);
+          exitIcon?.classList.toggle("hidden", !isFs);
+          if (isFs) {
+            container.style.background = "var(--background)";
+            container.classList.add("p-4");
+          } else {
+            container.style.background = "";
+            container.classList.remove("p-4");
+          }
+        });
+      }
+    });
+  }
+
+  initVizContainers();
+  document.addEventListener("astro:page-load", initVizContainers);
+</script>
+
+<style>
+  .viz-container {
+    background: var(--viz-bg);
+    border-color: var(--viz-border);
+    transition:
+      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .viz-container:fullscreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .viz-container:fullscreen .viz-controls {
+    opacity: 1;
+  }
+
+  @media (pointer: coarse) {
+    .viz-controls {
+      opacity: 0.85;
+    }
+  }
+</style>

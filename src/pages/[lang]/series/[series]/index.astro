@@ -38,6 +38,8 @@ const { lang } = Astro.params as {
   series: string;
 };
 const { seriesInfo } = Astro.props;
+
+const totalStr = String(seriesInfo.totalPosts).padStart(2, "0");
 ---
 
 <Layout
@@ -49,38 +51,55 @@ const { seriesInfo } = Astro.props;
     pageTitle={seriesInfo.name}
     pageDesc={t("series.seriesDesc", lang).replace("{name}", seriesInfo.name)}
   >
-    <div class="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-3">
-      <svg
-        class="size-5 shrink-0 text-accent"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path
-          d="M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"
-        ></path>
-        <path
-          d="M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"
-        ></path>
-        <path d="M5 8h4"></path>
-        <path d="M9 16h4"></path>
-      </svg>
-      <div class="text-sm">
-        <span class="font-medium text-foreground">{seriesInfo.name}</span>
-        <span class="text-foreground-soft">
-          ·
-          {t("series.articles", lang).replace(
-            "{count}",
-            String(seriesInfo.totalPosts)
-          )}
-        </span>
+    {/* Series header panel */}
+    <div class="sd-header">
+      <div class="sd-header__accent" />
+      <div class="sd-header__content">
+        <div class="sd-header__top">
+          <div class="sd-header__icon">
+            <svg
+              class="size-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h10" />
+              <circle cx="20" cy="18" r="2" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="sd-header__title">{seriesInfo.name}</h2>
+            <p class="sd-header__desc">
+              {t("series.seriesDesc", lang).replace("{name}", seriesInfo.name)}
+            </p>
+          </div>
+        </div>
+
+        <div class="sd-header__stats">
+          <span class="sd-header__stat">
+            <span class="font-mono font-bold">{totalStr}</span>
+            <span>{lang === "zh" ? "篇文章" : "articles"}</span>
+          </span>
+          <span class="sd-header__stat">
+            <span class="sd-header__read-count font-mono font-bold" data-series-slug={seriesInfo.slug}>00</span>
+            <span>{lang === "zh" ? "已读" : "read"}</span>
+          </span>
+        </div>
+
+        {/* Progress bar */}
+        <div class="sd-header__track">
+          <div class="sd-header__fill" data-series-bar={seriesInfo.slug} style="width: 0%">
+            <span class="sd-header__pulse" />
+          </div>
+        </div>
       </div>
     </div>
 
-    <ol class="relative space-y-4 border-l-2 border-border/60 pl-6">
+    {/* Timeline */}
+    <div class="sd-timeline">
       {
         seriesInfo.posts.map((post, idx) => {
           const postHref = getLocalizedPostPath(lang, post.id, post.filePath);
@@ -92,50 +111,454 @@ const { seriesInfo } = Astro.props;
             lang === "zh"
               ? datetime.format("YYYY 年 M 月 D 日")
               : datetime.format("MMM D, YYYY");
+          const orderNum = String(idx + 1).padStart(2, "0");
+          const postId = post.id;
 
           return (
-            <li class="group relative">
-              <div class="absolute -left-[calc(1.5rem+1px)] top-1.5 flex size-6 items-center justify-center rounded-full border-2 border-border bg-background text-xs font-bold text-accent transition-colors group-hover:border-accent group-hover:bg-accent group-hover:text-white">
-                {idx + 1}
+            <div class="sd-timeline__item group" data-post-id={postId}>
+              {/* Timeline node */}
+              <div class="sd-timeline__node">
+                <span class="sd-timeline__dot">
+                  <span class="sd-timeline__dot-inner" />
+                </span>
+                {idx < seriesInfo.posts.length - 1 && (
+                  <span class="sd-timeline__line" />
+                )}
               </div>
-              <a
-                href={postHref}
-                class="block rounded-lg border border-border/60 bg-card/50 p-4 transition-all duration-200 hover:border-accent/40 hover:shadow-md"
-              >
-                <h3 class="text-base font-semibold text-foreground transition-colors group-hover:text-accent">
-                  {post.data.title}
-                </h3>
-                <p class="mt-1 line-clamp-2 text-sm text-foreground-soft">
-                  {post.data.description}
-                </p>
-                <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-foreground-soft">
+
+              {/* Card */}
+              <a href={postHref} class="sd-timeline__card">
+                <div class="sd-timeline__card-accent" />
+
+                <div class="sd-timeline__card-header">
+                  <span class="sd-timeline__order">{orderNum}</span>
+                  <h3 class="sd-timeline__card-title">
+                    {post.data.title}
+                  </h3>
+                </div>
+
+                {post.data.description && (
+                  <p class="sd-timeline__card-desc">
+                    {post.data.description}
+                  </p>
+                )}
+
+                <div class="sd-timeline__card-meta">
                   <time datetime={datetime.toISOString()}>{dateStr}</time>
-                  <span>·</span>
+                  <span class="sd-timeline__meta-sep">·</span>
                   <span>
-                    {t("post.readingTime", lang).replace(
-                      "{min}",
-                      String(minutes)
-                    )}
+                    {t("post.readingTime", lang).replace("{min}", String(minutes))}
                   </span>
-                  {post.data.tags.length > 0 && (
+                  {post.data.tags && post.data.tags.length > 0 && (
                     <>
-                      <span>·</span>
-                      <div class="flex flex-wrap gap-1">
+                      <span class="sd-timeline__meta-sep">·</span>
+                      <div class="sd-timeline__tags">
                         {post.data.tags.slice(0, 3).map(tag => (
-                          <span class="rounded bg-muted px-1.5 py-0.5 text-foreground-soft">
-                            {tag}
-                          </span>
+                          <span class="sd-timeline__tag">{tag}</span>
                         ))}
                       </div>
                     </>
                   )}
                 </div>
+
+                {/* Read indicator */}
+                <span class="sd-timeline__read-badge" data-read-badge={postId}>
+                  {lang === "zh" ? "✓ 已读" : "✓ Read"}
+                </span>
               </a>
-            </li>
+            </div>
           );
         })
       }
-    </ol>
+    </div>
   </Main>
   <Footer lang={lang} />
 </Layout>
+
+<style>
+  /* ===== Series Detail Header ===== */
+  .sd-header {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--series-bg-from), var(--series-bg-to));
+    border: 1px solid var(--series-border);
+    box-shadow: 0 0 15px var(--series-glow);
+    transition:
+      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sd-header__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .sd-header__content {
+    padding: 1.5rem;
+  }
+
+  .sd-header__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .sd-header__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 15%, transparent);
+  }
+
+  .sd-header__title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0 0 0.25rem;
+    line-height: 1.3;
+  }
+
+  .sd-header__desc {
+    font-size: 0.8125rem;
+    color: var(--foreground-soft);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .sd-header__stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .sd-header__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sd-header__track {
+    position: relative;
+    height: 3px;
+    width: 100%;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    overflow: visible;
+  }
+
+  .sd-header__fill {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sd-header__pulse {
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--series-pulse);
+    animation: sd-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes sd-pulse {
+    0%, 100% {
+      box-shadow: 0 0 4px 1px var(--series-glow);
+      opacity: 1;
+    }
+    50% {
+      box-shadow: 0 0 10px 4px var(--series-glow);
+      opacity: 0.7;
+    }
+  }
+
+  /* ===== Timeline ===== */
+  .sd-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sd-timeline__item {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+
+  .sd-timeline__node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 2.5rem;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sd-timeline__dot {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid var(--series-border);
+    background: var(--card);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sd-timeline__item:hover .sd-timeline__dot,
+  .sd-timeline__item.is-read .sd-timeline__dot {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--series-glow);
+  }
+
+  .sd-timeline__dot-inner {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--muted);
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sd-timeline__item:hover .sd-timeline__dot-inner,
+  .sd-timeline__item.is-read .sd-timeline__dot-inner {
+    background-color: var(--accent);
+  }
+
+  .sd-timeline__line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(180deg, var(--series-border), color-mix(in srgb, var(--series-border) 30%, transparent));
+    transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ===== Timeline Card ===== */
+  .sd-timeline__card {
+    position: relative;
+    display: block;
+    flex: 1;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin: 0.5rem 0;
+    background: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    box-shadow: 0 0 0 transparent;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+  }
+  .sd-timeline__card:hover {
+    border-color: var(--series-border);
+    box-shadow: 0 0 10px var(--series-glow);
+    transform: translateX(4px);
+  }
+
+  .sd-timeline__card-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sd-timeline__card:hover .sd-timeline__card-accent,
+  .sd-timeline__item.is-read .sd-timeline__card-accent {
+    opacity: 1;
+  }
+
+  .sd-timeline__card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .sd-timeline__order {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+    font-size: 0.6875rem;
+    color: var(--accent);
+    opacity: 0.6;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+  }
+  .sd-timeline__card:hover .sd-timeline__order {
+    opacity: 1;
+  }
+
+  .sd-timeline__card-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+  .sd-timeline__card:hover .sd-timeline__card-title {
+    color: var(--accent);
+  }
+
+  .sd-timeline__card-desc {
+    font-size: 0.8125rem;
+    color: var(--foreground-soft);
+    line-height: 1.5;
+    margin: 0 0 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sd-timeline__card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--foreground-soft);
+  }
+
+  .sd-timeline__meta-sep {
+    opacity: 0.4;
+  }
+
+  .sd-timeline__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .sd-timeline__tag {
+    padding: 0.0625rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    background: var(--muted);
+    color: var(--foreground-soft);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sd-timeline__read-badge {
+    display: none;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .sd-timeline__item.is-read .sd-timeline__read-badge {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sd-header__pulse {
+      animation: none;
+    }
+    .sd-timeline__card:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script define:vars={{ seriesSlug: seriesInfo.slug, totalPosts: seriesInfo.totalPosts }}>
+  function initReadTracking() {
+    const storageKey = `series-read-${seriesSlug}`;
+
+    function getReadPosts() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function markPostsAsRead() {
+      const readPosts = getReadPosts();
+      const items = document.querySelectorAll('.sd-timeline__item[data-post-id]');
+
+      items.forEach(item => {
+        const postId = item.getAttribute('data-post-id');
+        if (readPosts.includes(postId)) {
+          item.classList.add('is-read');
+        }
+      });
+
+      const readCount = readPosts.length;
+      const countEl = document.querySelector(`[data-series-slug="${seriesSlug}"]`);
+      if (countEl) {
+        countEl.textContent = String(readCount).padStart(2, '0');
+      }
+
+      const barEl = document.querySelector(`[data-series-bar="${seriesSlug}"]`);
+      if (barEl) {
+        const pct = totalPosts > 0 ? Math.round((readCount / totalPosts) * 100) : 0;
+        barEl.style.width = `${pct}%`;
+      }
+    }
+
+    function trackClicks() {
+      const links = document.querySelectorAll('.sd-timeline__card');
+      links.forEach(link => {
+        link.addEventListener('click', () => {
+          const item = link.closest('.sd-timeline__item');
+          if (!item) return;
+          const postId = item.getAttribute('data-post-id');
+          if (!postId) return;
+
+          const readPosts = getReadPosts();
+          if (!readPosts.includes(postId)) {
+            readPosts.push(postId);
+            localStorage.setItem(storageKey, JSON.stringify(readPosts));
+          }
+        });
+      });
+    }
+
+    markPostsAsRead();
+    trackClicks();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReadTracking);
+  } else {
+    initReadTracking();
+  }
+
+  document.addEventListener('astro:after-swap', initReadTracking);
+</script>

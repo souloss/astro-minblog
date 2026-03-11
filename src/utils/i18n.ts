@@ -9,6 +9,9 @@ type TranslationKey =
   | "nav.friends"
   | "nav.archives"
   | "nav.search"
+  | "nav.projects"
+  | "projects.title"
+  | "projects.desc"
   | "post.featured"
   | "post.recentPosts"
   | "post.allPosts"
@@ -85,6 +88,9 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "nav.friends": "Friends",
     "nav.archives": "Archives",
     "nav.search": "Search",
+    "nav.projects": "Projects",
+    "projects.title": "Projects",
+    "projects.desc": "Open source projects and tools.",
     "post.featured": "Featured",
     "post.recentPosts": "Recent Posts",
     "post.allPosts": "All Posts",
@@ -161,6 +167,9 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "nav.friends": "友链",
     "nav.archives": "归档",
     "nav.search": "搜索",
+    "nav.projects": "项目",
+    "projects.title": "项目",
+    "projects.desc": "开源项目与工具展示。",
     "post.featured": "精选文章",
     "post.recentPosts": "最近文章",
     "post.allPosts": "全部文章",

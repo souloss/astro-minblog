@@ -1,9 +1,7 @@
 ---
 import { randomUUID } from "node:crypto";
+import VizContainer from "./VizContainer.astro";
 
-/**
- * Mermaid diagram component - 统一字体颜色版
- */
 interface Props {
   code: string;
 }
@@ -12,153 +10,222 @@ const { code } = Astro.props;
 const uniqueId = `mermaid-${randomUUID()}`;
 ---
 
-<div class="mermaid-wrapper my-6" data-mermaid-id={uniqueId}>
-  <div class="mermaid-output overflow-x-auto" id={`${uniqueId}-output`}></div>
-  <script
-    is:inline
-    type="application/json"
-    class="mermaid-code"
-    set:html={JSON.stringify(code)}
-  />
-</div>
+<VizContainer minHeight="120px">
+  <div class="mermaid-wrapper" data-mermaid-id={uniqueId} data-viz-type="mermaid">
+    <div class="mermaid-output" id={`${uniqueId}-output`}>
+      <div class="mermaid-placeholder">
+        <svg class="size-8 animate-pulse text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 3h18v18H3z" stroke-dasharray="4 2" /><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke-dasharray="2 2" opacity="0.5" />
+        </svg>
+      </div>
+    </div>
+    <script
+      is:inline
+      type="application/json"
+      class="mermaid-code"
+      set:html={JSON.stringify(code)}
+    />
+  </div>
+</VizContainer>
 
 <script>
   import mermaid from "mermaid";
 
-  const isDark =
-    document.documentElement.classList.contains("dark") ||
-    document.documentElement.dataset.theme === "dark" ||
-    (window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
+  function getIsDark(): boolean {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
 
-  // 统一使用相同的文字颜色，确保一致性
-  const darkConfig = {
-    theme: "base",
-    themeVariables: {
-      // 通用设置
+  function getMermaidConfig(isDark: boolean) {
+    const base = {
       fontSize: "14px",
       fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+    };
 
-      // 流程图 - 节点样式（关键！）
-      primaryColor: "#1e293b",
-      primaryTextColor: "#f8fafc", // 节点文字
-      primaryBorderColor: "#6366f1",
-      lineColor: "#94a3b8",
-      background: "transparent",
+    if (isDark) {
+      return {
+        ...base,
+        primaryColor: "#1e293b",
+        primaryTextColor: "#f8fafc",
+        primaryBorderColor: "#6366f1",
+        lineColor: "#94a3b8",
+        background: "transparent",
+        nodeBkg: "#1e293b",
+        nodeBorder: "#6366f1",
+        nodeTextColor: "#f8fafc",
+        clusterBkg: "#1e293b",
+        clusterBorder: "#6366f1",
+        edgeLabelBackground: "#1e293b",
+        actorBorder: "#6366f1",
+        actorBkg: "#1e293b",
+        actorTextColor: "#f8fafc",
+        actorLineColor: "#94a3b8",
+        signalColor: "#94a3b8",
+        signalTextColor: "#f8fafc",
+        sequenceNumberColor: "#f8fafc",
+        noteBkg: "#1e293b",
+        noteBorder: "#6366f1",
+        noteTextColor: "#f8fafc",
+      };
+    }
 
-      // 流程图 - 额外变量
-      nodeBkg: "#1e293b",
-      nodeBorder: "#6366f1",
-      nodeTextColor: "#f8fafc", // 节点文字（确保）
-      clusterBkg: "#1e293b",
-      clusterBorder: "#6366f1",
-      edgeLabelBackground: "#1e293b",
-
-      // 时序图 - 参与者样式
-      actorBorder: "#6366f1",
-      actorBkg: "#1e293b",
-      actorTextColor: "#f8fafc", // 参与者文字
-      actorLineColor: "#94a3b8",
-
-      // 时序图 - 消息样式
-      signalColor: "#94a3b8",
-      signalTextColor: "#f8fafc", // 消息文字
-      sequenceNumberColor: "#f8fafc", // 序号
-
-      // 标签背景
-      noteBkg: "#1e293b",
-      noteBorder: "#6366f1",
-      noteTextColor: "#f8fafc",
-    },
-  };
-
-  const lightConfig = {
-    theme: "base",
-    themeVariables: {
-      fontSize: "14px",
-      fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
-
-      // 流程图 - 节点样式
+    return {
+      ...base,
       primaryColor: "#eff6ff",
-      primaryTextColor: "#1f2937", // 深色文字
+      primaryTextColor: "#1f2937",
       primaryBorderColor: "#3b82f6",
       lineColor: "#374151",
       background: "#ffffff",
-
-      // 流程图 - 额外变量
       nodeBkg: "#eff6ff",
       nodeBorder: "#3b82f6",
-      nodeTextColor: "#1f2937", // 深色文字
+      nodeTextColor: "#1f2937",
       clusterBkg: "#eff6ff",
       clusterBorder: "#3b82f6",
       edgeLabelBackground: "#ffffff",
-
-      // 时序图 - 参与者样式
       actorBorder: "#3b82f6",
       actorBkg: "#f0f9ff",
-      actorTextColor: "#1f2937", // 深色文字
+      actorTextColor: "#1f2937",
       actorLineColor: "#374151",
-
-      // 时序图 - 消息样式
       signalColor: "#374151",
-      signalTextColor: "#1f2937", // 深色文字
+      signalTextColor: "#1f2937",
       sequenceNumberColor: "#1f2937",
-
-      // 标签
       noteBkg: "#f0f9ff",
       noteBorder: "#3b82f6",
       noteTextColor: "#1f2937",
-    },
-  };
+    };
+  }
 
-  mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "loose",
-    theme: "base" as const,
-    themeVariables: (isDark ? darkConfig : lightConfig).themeVariables,
-  });
+  let renderCounter = 0;
 
-  async function renderAllDiagrams() {
-    const wrappers = document.querySelectorAll(".mermaid-wrapper");
+  function initMermaid(isDark: boolean) {
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "loose",
+      theme: "base" as const,
+      themeVariables: getMermaidConfig(isDark),
+    });
+  }
 
-    for (const wrapper of wrappers) {
-      const id = wrapper.getAttribute("data-mermaid-id");
-      const codeScript = wrapper.querySelector("script.mermaid-code");
-      const output = document.getElementById(`${id}-output`);
+  async function renderDiagram(wrapper: HTMLElement, isDark: boolean) {
+    const id = wrapper.getAttribute("data-mermaid-id");
+    const codeScript = wrapper.querySelector("script.mermaid-code");
+    const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
 
-      if (output && codeScript) {
-        const code = JSON.parse(codeScript.textContent || '""');
+    if (!output || !codeScript) return;
 
-        if (code && !output.innerHTML.trim()) {
-          try {
-            const { svg } = await mermaid.render(`${id}-svg`, code);
-            output.innerHTML = svg;
-          } catch (error) {
-            void error;
-            output.innerHTML = `<p class="mermaid-error">图表渲染错误: ${error instanceof Error ? error.message : "未知错误"}</p>`;
-          }
-        }
-      }
+    const code = JSON.parse(codeScript.textContent || '""');
+    if (!code) return;
+
+    initMermaid(isDark);
+
+    try {
+      renderCounter++;
+      const svgId = `${id}-svg-${renderCounter}`;
+      const { svg } = await mermaid.render(svgId, code);
+      output.innerHTML = svg;
+    } catch (error) {
+      output.innerHTML = `<p class="mermaid-error">Render error: ${error instanceof Error ? error.message : "unknown"}</p>`;
     }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", renderAllDiagrams);
-  } else {
-    renderAllDiagrams();
+  async function renderPreBlock(pre: HTMLElement, isDark: boolean) {
+    const code = pre.textContent || "";
+    const uniqueId = `mermaid-pre-${Math.random().toString(36).slice(2, 11)}`;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "mermaid-wrapper";
+    wrapper.setAttribute("data-mermaid-id", uniqueId);
+    wrapper.setAttribute("data-viz-type", "mermaid");
+
+    const output = document.createElement("div");
+    output.className = "mermaid-output";
+    output.id = `${uniqueId}-output`;
+
+    const codeScript = document.createElement("script");
+    codeScript.type = "application/json";
+    codeScript.className = "mermaid-code";
+    codeScript.textContent = JSON.stringify(code);
+
+    wrapper.appendChild(output);
+    wrapper.appendChild(codeScript);
+    pre.parentNode?.replaceChild(wrapper, pre);
+
+    initMermaid(isDark);
+
+    try {
+      renderCounter++;
+      const svgId = `${uniqueId}-svg-${renderCounter}`;
+      const { svg } = await mermaid.render(svgId, code);
+      output.innerHTML = svg;
+    } catch (error) {
+      output.innerHTML = `<p class="mermaid-error">Render error: ${error instanceof Error ? error.message : "unknown"}</p>`;
+    }
   }
 
-  document.addEventListener("astro:page-load", renderAllDiagrams);
+  async function renderAllVisible() {
+    const isDark = getIsDark();
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+
+          const el = entry.target as HTMLElement;
+          obs.unobserve(el);
+
+          if (el.matches("pre.mermaid")) {
+            renderPreBlock(el, isDark);
+          } else if (el.matches(".mermaid-wrapper")) {
+            renderDiagram(el, isDark);
+          }
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    document.querySelectorAll<HTMLElement>(".mermaid-wrapper").forEach(wrapper => {
+      const output = wrapper.querySelector(".mermaid-output");
+      const hasContent = output && output.querySelector("svg");
+      if (!hasContent) observer.observe(wrapper);
+    });
+
+    document.querySelectorAll<HTMLElement>("pre.mermaid").forEach(pre => {
+      observer.observe(pre);
+    });
+  }
+
+  async function reRenderAll() {
+    const isDark = getIsDark();
+    initMermaid(isDark);
+
+    const wrappers = document.querySelectorAll<HTMLElement>(".mermaid-wrapper");
+    for (const wrapper of wrappers) {
+      await renderDiagram(wrapper, isDark);
+    }
+  }
+
+  window.addEventListener("themechange", () => {
+    reRenderAll();
+  });
+
+  function init() {
+    renderAllVisible();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  document.addEventListener("astro:page-load", init);
 </script>
+
 <style>
   .mermaid-wrapper {
     display: flex;
     justify-content: center;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
     width: 100%;
+    padding: 1rem;
   }
 
   .mermaid-output {
@@ -173,8 +240,12 @@ const uniqueId = `mermaid-${randomUUID()}`;
     height: auto;
   }
 
-  .mermaid-output :global(text) {
-    font-size: 14px !important;
+  .mermaid-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
   }
 
   .mermaid-error {
@@ -183,15 +254,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
     padding: 1rem;
   }
 
-  /* 暗色模式 */
-  :global(html[data-theme="dark"]) .mermaid-wrapper,
-  :global(html.dark) .mermaid-wrapper {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(100, 116, 139, 0.3);
-  }
-
-  :global(html[data-theme="dark"]) .mermaid-error,
-  :global(html.dark) .mermaid-error {
+  :global(html[data-theme="dark"]) .mermaid-error {
     color: #f87171;
   }
 </style>

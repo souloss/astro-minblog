@@ -1,0 +1,121 @@
+---
+title: "Reveal.js 幻灯片演示"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "使用 RevealSlides 组件在博客文章中创建精美的幻灯片演示，基于 Reveal.js 框架。"
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import RevealSlides from '@/components/media/RevealSlides.astro';
+
+Reveal.js 是一个强大的 HTML 演示框架。通过 `RevealSlides` 组件，你可以直接在博客文章中嵌入交互式幻灯片——无需任何外部工具。
+
+## 基础演示
+
+一个介绍现代 Web 开发概念的简单演示。使用方向键或滑动手势在幻灯片之间切换。
+
+<RevealSlides
+  slides={`
+    <section>
+      <h2>现代 Web 开发</h2>
+      <p>面向未来的开发方式</p>
+    </section>
+    <section>
+      <h2>JAMstack 时代</h2>
+      <ul>
+        <li>JavaScript — 动态交互</li>
+        <li>APIs — 服务端操作</li>
+        <li>Markup — 预渲染内容</li>
+      </ul>
+    </section>
+    <section>
+      <h2>为什么选择静态站点生成器？</h2>
+      <ul>
+        <li>⚡ 极致性能</li>
+        <li>🔒 安全性更高</li>
+        <li>📈 轻松扩展</li>
+        <li>💰 低成本托管</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Astro — 内容优先框架</h2>
+      <p>默认零 JavaScript，构建更快的网站。</p>
+      <p><em>岛屿架构，按需加载。</em></p>
+    </section>
+  `}
+/>
+
+## 技术演示（含代码）
+
+一个包含代码片段的进阶幻灯片——非常适合技术分享或教程。
+
+<RevealSlides
+  slides={`
+    <section>
+      <h2>TypeScript 最佳实践</h2>
+      <p>编写更安全、更易维护的代码</p>
+    </section>
+    <section>
+      <h2>使用严格类型</h2>
+      <pre><code data-trim class="language-typescript">
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+}
+
+function getUser(id: string): User | undefined {
+  return users.find(u => u.id === id);
+}
+      </code></pre>
+    </section>
+    <section>
+      <h2>优先使用可辨识联合类型</h2>
+      <pre><code data-trim class="language-typescript">
+type Result&lt;T&gt; =
+  | { ok: true; value: T }
+  | { ok: false; error: string };
+
+function divide(a: number, b: number): Result&lt;number&gt; {
+  if (b === 0) return { ok: false, error: '除数不能为零' };
+  return { ok: true, value: a / b };
+}
+      </code></pre>
+    </section>
+    <section>
+      <h2>核心要点</h2>
+      <ol>
+        <li>开启 <code>strict: true</code></li>
+        <li>避免 <code>any</code>，使用 <code>unknown</code></li>
+        <li>善用类型收窄</li>
+        <li>使用泛型编写可复用代码</li>
+      </ol>
+    </section>
+  `}
+/>
+
+## 使用说明与属性
+
+`RevealSlides` 组件支持以下属性：
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `slides` | `string` | （必填） | 包含 `<section>` 元素的 HTML 字符串，每个 `<section>` 代表一张幻灯片 |
+| `theme` | `string` | `white` / `night` | Reveal.js 主题名称（自动随博客亮/暗模式切换） |
+| `width` | `number` | `960` | 演示文稿宽度（像素） |
+| `height` | `number` | `540` | 演示文稿高度（像素） |
+
+每个 `<section>` 元素代表一张幻灯片。支持嵌套 `<section>` 以实现垂直导航。组件会在博客主题切换时自动适配亮色/暗色主题。
+
+### 幻灯片内容提示
+
+- 使用标准 HTML 标签：`<h2>`、`<p>`、`<ul>`、`<pre><code>` 等
+- 在 `<code>` 块上添加 `data-trim` 可自动去除首尾空白
+- 使用 `<img>` 标签嵌入图片
+- 使用 `class="fragment"` 支持 Reveal.js 的渐显效果

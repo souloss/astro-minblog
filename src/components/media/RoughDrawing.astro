@@ -1,0 +1,231 @@
+---
+import { randomUUID } from "node:crypto";
+import VizContainer from "./VizContainer.astro";
+
+interface Props {
+  config: string;
+}
+
+const { config } = Astro.props;
+const uniqueId = `rough-${randomUUID()}`;
+---
+
+<VizContainer minHeight="200px">
+  <div class="rough-wrapper" data-rough-id={uniqueId} data-viz-type="rough">
+    <div class="rough-output" id={`${uniqueId}-output`}>
+      <div class="rough-placeholder">
+        <svg class="size-8 animate-pulse text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2" />
+          <circle cx="12" cy="12" r="4" stroke-dasharray="3 2" opacity="0.5" />
+        </svg>
+      </div>
+    </div>
+    <script
+      is:inline
+      type="application/json"
+      class="rough-config"
+      set:html={JSON.stringify(config)}
+    />
+  </div>
+</VizContainer>
+
+<script>
+  function getColor(varName: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  function resolveColor(value: string | undefined): string {
+    if (!value) return getColor("--foreground");
+    if (value.startsWith("var(") && value.endsWith(")")) {
+      const varName = value.slice(4, -1).trim();
+      return getColor(varName);
+    }
+    return value;
+  }
+
+  async function loadRough(): Promise<RoughStatic> {
+    const w = window as unknown as Record<string, unknown>;
+    if (w.__roughModule) return w.__roughModule as RoughStatic;
+
+    // @ts-ignore CDN dynamic import
+    const mod = await import("https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.esm.js");
+    w.__roughModule = mod.default;
+    return mod.default as RoughStatic;
+  }
+
+  type RoughStatic = {
+    svg(el: SVGSVGElement): {
+      rectangle(x: number, y: number, w: number, h: number, opts?: Record<string, unknown>): SVGGElement;
+      circle(x: number, y: number, d: number, opts?: Record<string, unknown>): SVGGElement;
+      ellipse(x: number, y: number, w: number, h: number, opts?: Record<string, unknown>): SVGGElement;
+      line(x1: number, y1: number, x2: number, y2: number, opts?: Record<string, unknown>): SVGGElement;
+    };
+  };
+
+  async function renderDrawing(wrapper: HTMLElement) {
+    const id = wrapper.getAttribute("data-rough-id");
+    const configScript = wrapper.querySelector("script.rough-config");
+    const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
+    if (!output || !configScript) return;
+
+    const configStr = JSON.parse(configScript.textContent || '""');
+    if (!configStr) return;
+
+    let parsed: {
+      width?: number;
+      height?: number;
+      shapes?: Array<Record<string, unknown>>;
+    };
+    try {
+      parsed = JSON.parse(configStr);
+    } catch {
+      output.innerHTML = `<p class="rough-error">Invalid config JSON</p>`;
+      return;
+    }
+
+    const width = parsed.width ?? 400;
+    const height = parsed.height ?? 200;
+    const shapes = parsed.shapes ?? [];
+
+    const rough = await loadRough();
+
+    output.innerHTML = "";
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("width", String(width));
+    svg.setAttribute("height", String(height));
+    svg.style.maxWidth = "100%";
+    svg.style.height = "auto";
+    output.appendChild(svg);
+
+    const rc = rough.svg(svg);
+    const fg = getColor("--foreground");
+
+    for (const shape of shapes) {
+      const opts = { ...(shape.options as Record<string, unknown> || {}) };
+      if (opts.fill) opts.fill = resolveColor(opts.fill as string);
+      if (opts.stroke) {
+        opts.stroke = resolveColor(opts.stroke as string);
+      } else {
+        opts.stroke = fg;
+      }
+
+      let node: SVGGElement | null = null;
+      switch (shape.type) {
+        case "rectangle":
+          node = rc.rectangle(
+            shape.x as number ?? 0,
+            shape.y as number ?? 0,
+            shape.width as number ?? 100,
+            shape.height as number ?? 50,
+            opts
+          );
+          break;
+        case "circle":
+          node = rc.circle(
+            shape.x as number ?? 50,
+            shape.y as number ?? 50,
+            (shape.r as number ?? 25) * 2,
+            opts
+          );
+          break;
+        case "ellipse":
+          node = rc.ellipse(
+            shape.x as number ?? 50,
+            shape.y as number ?? 50,
+            shape.width as number ?? 80,
+            shape.height as number ?? 40,
+            opts
+          );
+          break;
+        case "line":
+          node = rc.line(
+            shape.x1 as number ?? 0,
+            shape.y1 as number ?? 0,
+            shape.x2 as number ?? 100,
+            shape.y2 as number ?? 100,
+            opts
+          );
+          break;
+      }
+      if (node) svg.appendChild(node);
+    }
+  }
+
+  function initRoughDrawings() {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          obs.unobserve(el);
+          renderDrawing(el);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    document.querySelectorAll<HTMLElement>(".rough-wrapper").forEach(wrapper => {
+      const output = wrapper.querySelector(".rough-output");
+      const hasContent = output && output.querySelector("svg:not(.size-8)");
+      if (!hasContent) observer.observe(wrapper);
+    });
+  }
+
+  async function reRenderAllRough() {
+    const wrappers = document.querySelectorAll<HTMLElement>(".rough-wrapper");
+    for (const wrapper of wrappers) {
+      await renderDrawing(wrapper);
+    }
+  }
+
+  window.addEventListener("themechange", () => {
+    reRenderAllRough();
+  });
+
+  function init() {
+    initRoughDrawings();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  document.addEventListener("astro:page-load", init);
+</script>
+
+<style>
+  .rough-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .rough-output {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .rough-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
+  }
+
+  .rough-error {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  :global(html[data-theme="dark"]) .rough-error {
+    color: #f87171;
+  }
+</style>

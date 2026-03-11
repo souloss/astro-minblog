@@ -1,0 +1,303 @@
+---
+import { randomUUID } from "node:crypto";
+import VizContainer from "./VizContainer.astro";
+
+interface Props {
+  config: string;
+}
+
+const { config } = Astro.props;
+const uniqueId = `two-${randomUUID()}`;
+---
+
+<VizContainer minHeight="200px">
+  <div class="two-wrapper" data-two-id={uniqueId} data-viz-type="two">
+    <div class="two-output" id={`${uniqueId}-output`}>
+      <div class="two-placeholder">
+        <svg class="size-8 animate-pulse text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="12,2 22,20 2,20" stroke-dasharray="4 2" />
+          <circle cx="12" cy="14" r="3" stroke-dasharray="3 2" opacity="0.5" />
+        </svg>
+      </div>
+    </div>
+    <script
+      is:inline
+      type="application/json"
+      class="two-config"
+      set:html={JSON.stringify(config)}
+    />
+  </div>
+</VizContainer>
+
+<script>
+  interface TwoShape {
+    type: string;
+    x?: number;
+    y?: number;
+    r?: number;
+    width?: number;
+    height?: number;
+    fill?: boolean;
+    stroke?: string;
+    fillColor?: string;
+    animate?: { rotation?: number; duration?: number; scale?: number };
+  }
+
+  interface TwoConfig {
+    width?: number;
+    height?: number;
+    shapes?: TwoShape[];
+    autoplay?: boolean;
+  }
+
+  type TwoInstance = {
+    scene: { children: Array<{ rotation: number }> };
+    update: () => void;
+    clear: () => void;
+    makeCircle: (x: number, y: number, r: number) => TwoShapeObj;
+    makeRectangle: (x: number, y: number, w: number, h: number) => TwoShapeObj;
+    makeEllipse: (x: number, y: number, w: number, h: number) => TwoShapeObj;
+    makeLine: (x1: number, y1: number, x2: number, y2: number) => TwoShapeObj;
+  };
+
+  type TwoShapeObj = {
+    fill: string;
+    stroke: string;
+    linewidth: number;
+    noFill: () => void;
+    noStroke: () => void;
+  };
+
+  type TwoConstructor = new (params: Record<string, unknown>) => TwoInstance;
+
+  function getColor(varName: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  async function loadTwo(): Promise<TwoConstructor> {
+    const w = window as unknown as Record<string, unknown>;
+    if (w.__twoModule) return w.__twoModule as TwoConstructor;
+
+    // @ts-ignore CDN dynamic import
+    const mod = await import("https://cdn.jsdelivr.net/npm/two.js@0.8.14/build/two.module.js");
+    const Two = mod.default as TwoConstructor;
+    w.__twoModule = Two;
+    return Two;
+  }
+
+  interface ActiveTwoInstance {
+    two: TwoInstance;
+    config: TwoConfig;
+    animationId: number | null;
+  }
+
+  const activeInstances = new Map<string, ActiveTwoInstance>();
+
+  async function renderAnimation(wrapper: HTMLElement) {
+    const id = wrapper.getAttribute("data-two-id");
+    if (!id) return;
+
+    const configScript = wrapper.querySelector("script.two-config");
+    const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
+    if (!output || !configScript) return;
+
+    const configStr = JSON.parse(configScript.textContent || '""');
+    if (!configStr) return;
+
+    let parsed: TwoConfig;
+    try {
+      parsed = JSON.parse(configStr);
+    } catch {
+      output.innerHTML = `<p class="two-error">Invalid config JSON</p>`;
+      return;
+    }
+
+    const prev = activeInstances.get(id);
+    if (prev?.animationId) cancelAnimationFrame(prev.animationId);
+
+    const width = parsed.width ?? 400;
+    const height = parsed.height ?? 300;
+    const shapes = parsed.shapes ?? [];
+
+    const Two = await loadTwo();
+
+    output.innerHTML = "";
+
+    const two = new Two({
+      type: "svg",
+      width,
+      height,
+      autostart: false,
+    }) as TwoInstance;
+
+    (two as unknown as { appendTo: (el: HTMLElement) => void }).appendTo(output);
+
+    const svgEl = output.querySelector("svg");
+    if (svgEl) {
+      svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svgEl.style.maxWidth = "100%";
+      svgEl.style.height = "auto";
+    }
+
+    const fg = getColor("--foreground");
+    const accent = getColor("--accent");
+    const shapeRefs: Array<{ shape: TwoShapeObj; def: TwoShape }> = [];
+
+    for (const def of shapes) {
+      let shape: TwoShapeObj | null = null;
+
+      switch (def.type) {
+        case "circle":
+          shape = two.makeCircle(def.x ?? 0, def.y ?? 0, def.r ?? 30);
+          break;
+        case "rectangle":
+          shape = two.makeRectangle(def.x ?? 0, def.y ?? 0, def.width ?? 60, def.height ?? 60);
+          break;
+        case "ellipse":
+          shape = two.makeEllipse(def.x ?? 0, def.y ?? 0, def.width ?? 80, def.height ?? 40);
+          break;
+        case "line":
+          shape = two.makeLine(
+            def.x ?? 0, def.y ?? 0,
+            def.width ?? 100, def.height ?? 0
+          );
+          break;
+      }
+
+      if (!shape) continue;
+
+      shape.stroke = def.stroke ?? fg;
+      shape.linewidth = 2;
+
+      if (def.fill) {
+        shape.fill = def.fillColor ?? accent;
+      } else {
+        shape.noFill();
+      }
+
+      shapeRefs.push({ shape, def });
+    }
+
+    two.update();
+
+    if (parsed.autoplay) {
+      const animatable = shapeRefs.filter(s => s.def.animate);
+      if (animatable.length > 0) {
+        const startTime = performance.now();
+
+        function animate() {
+          const now = performance.now();
+          for (const { def } of animatable) {
+            const anim = def.animate!;
+            const duration = anim.duration ?? 2000;
+            const progress = ((now - startTime) % duration) / duration;
+
+            const sceneChild = two.scene.children[shapeRefs.indexOf(
+              animatable.find(a => a.def === def)!
+            )];
+            if (!sceneChild) continue;
+
+            if (anim.rotation) {
+              sceneChild.rotation = (anim.rotation * Math.PI / 180) * progress;
+            }
+          }
+          two.update();
+          const frameId = requestAnimationFrame(animate);
+          const instance = activeInstances.get(id!);
+          if (instance) instance.animationId = frameId;
+        }
+
+        const frameId = requestAnimationFrame(animate);
+        activeInstances.set(id, { two, config: parsed, animationId: frameId });
+      } else {
+        activeInstances.set(id, { two, config: parsed, animationId: null });
+      }
+    } else {
+      activeInstances.set(id, { two, config: parsed, animationId: null });
+    }
+  }
+
+  function initTwoAnimations() {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          obs.unobserve(el);
+          renderAnimation(el);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    document.querySelectorAll<HTMLElement>(".two-wrapper").forEach(wrapper => {
+      const id = wrapper.getAttribute("data-two-id");
+      if (id && activeInstances.has(id)) return;
+      const output = wrapper.querySelector(".two-output");
+      const hasContent = output && output.querySelector("svg");
+      if (!hasContent) observer.observe(wrapper);
+    });
+  }
+
+  async function reRenderAllTwo() {
+    const wrappers = document.querySelectorAll<HTMLElement>(".two-wrapper");
+    for (const wrapper of wrappers) {
+      await renderAnimation(wrapper);
+    }
+  }
+
+  window.addEventListener("themechange", () => {
+    reRenderAllTwo();
+  });
+
+  function init() {
+    initTwoAnimations();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  document.addEventListener("astro:page-load", init);
+</script>
+
+<style>
+  .two-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .two-output {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .two-output :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .two-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
+  }
+
+  .two-error {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  :global(html[data-theme="dark"]) .two-error {
+    color: #f87171;
+  }
+</style>

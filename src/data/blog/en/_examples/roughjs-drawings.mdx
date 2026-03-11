@@ -1,0 +1,73 @@
+---
+title: "Rough.js Hand-Drawn Style Graphics"
+pubDatetime: 2026-03-12T00:00:00.000Z
+author: Souloss
+description: "Create charming hand-drawn style graphics using the RoughDrawing component powered by Rough.js, with theme-aware colors."
+tags:
+  - tutorial
+  - examples
+  - visualization
+category: Examples
+draft: false
+---
+
+import RoughDrawing from '@/components/media/RoughDrawing.astro';
+
+Rough.js renders graphics with a hand-drawn, sketchy appearance. The `RoughDrawing` component lets you define shapes via JSON configuration, and all colors automatically adapt to the current theme.
+
+## Basic Shapes
+
+Rectangles, circles, ellipses, and lines — the fundamental building blocks of any drawing.
+
+<RoughDrawing
+  config='{"width":500,"height":250,"shapes":[{"type":"rectangle","x":30,"y":30,"width":120,"height":80,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"circle","x":250,"y":100,"r":55,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":2}},{"type":"ellipse","x":410,"y":100,"width":120,"height":70,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}},{"type":"line","x1":30,"y1":200,"x2":480,"y2":200,"options":{"stroke":"var(--foreground)","roughness":1.5,"strokeWidth":2}}]}'
+/>
+
+Each shape supports different `fillStyle` values: `hachure` (default), `cross-hatch`, `zigzag`, `solid`, and `dots`. The `roughness` parameter controls how sketchy the shape looks — higher values produce more hand-drawn effects.
+
+## Simple Flowchart
+
+Rough.js shapes can be combined to create informal, hand-drawn diagrams that feel more approachable than rigid box-and-arrow charts.
+
+<RoughDrawing
+  config='{"width":520,"height":320,"shapes":[{"type":"rectangle","x":180,"y":10,"width":140,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"solid","roughness":1.2}},{"type":"line","x1":250,"y1":60,"x2":250,"y2":90,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"rectangle","x":150,"y":90,"width":180,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"line","x1":250,"y1":140,"x2":120,"y2":180,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"line","x1":250,"y1":140,"x2":400,"y2":180,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"rectangle","x":30,"y":180,"width":160,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}},{"type":"rectangle","x":320,"y":180,"width":160,"height":50,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":1.8}},{"type":"line","x1":120,"y1":230,"x2":120,"y2":270,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"line","x1":400,"y1":230,"x2":400,"y2":270,"options":{"stroke":"var(--foreground)","roughness":1}},{"type":"circle","x":120,"y":290,"r":22,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"dots","roughness":1.5}},{"type":"circle","x":400,"y":290,"r":22,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"dots","roughness":1.5}}]}'
+/>
+
+## Bar Chart Visualization
+
+A hand-drawn bar chart comparing frontend framework popularity — demonstrating that Rough.js can convey data in a friendly, informal style.
+
+<RoughDrawing
+  config='{"width":480,"height":300,"shapes":[{"type":"line","x1":60,"y1":20,"x2":60,"y2":260,"options":{"stroke":"var(--foreground)","roughness":0.8,"strokeWidth":1.5}},{"type":"line","x1":60,"y1":260,"x2":460,"y2":260,"options":{"stroke":"var(--foreground)","roughness":0.8,"strokeWidth":1.5}},{"type":"rectangle","x":90,"y":60,"width":60,"height":200,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"rectangle","x":180,"y":100,"width":60,"height":160,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":1.5}},{"type":"rectangle","x":270,"y":140,"width":60,"height":120,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.5}},{"type":"rectangle","x":360,"y":170,"width":60,"height":90,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"dots","roughness":1.5}}]}'
+/>
+
+The bars above use different fill styles to distinguish categories. In a real scenario you would add text labels — but even without them, the visual hierarchy is clear.
+
+## Configuration Reference
+
+The `RoughDrawing` component accepts a single `config` prop — a JSON string with the following structure:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `width` | `number` | `400` | SVG canvas width |
+| `height` | `number` | `200` | SVG canvas height |
+| `shapes` | `array` | `[]` | Array of shape definitions |
+
+### Shape Types
+
+| Type | Required Fields | Description |
+|------|----------------|-------------|
+| `rectangle` | `x`, `y`, `width`, `height` | Rectangular shape |
+| `circle` | `x`, `y`, `r` | Circle (x,y = center, r = radius) |
+| `ellipse` | `x`, `y`, `width`, `height` | Elliptical shape |
+| `line` | `x1`, `y1`, `x2`, `y2` | Straight line segment |
+
+### Shape Options
+
+Each shape supports an `options` object:
+
+- `stroke` — Stroke color (use `var(--foreground)` for theme-aware colors)
+- `fill` — Fill color (use `var(--accent)` for theme accent)
+- `fillStyle` — `hachure`, `cross-hatch`, `zigzag`, `solid`, `dots`
+- `roughness` — Sketchiness level (0 = smooth, 3+ = very rough)
+- `strokeWidth` — Stroke width in pixels

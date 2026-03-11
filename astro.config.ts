@@ -13,6 +13,8 @@ import { remarkAddZoomable } from "./src/plugins/remark-add-zoomable";
 import { rehypeExternalLinks } from "./src/plugins/rehype-external-links";
 import { rehypeTableScroll } from "./src/plugins/rehype-table-scroll";
 import { rehypeAutolinkHeadings } from "./src/plugins/rehype-autolink-headings";
+import { remarkMermaidCodeblock } from "./src/plugins/remark-mermaid-codeblock";
+import { remarkMarkmapCodeblock } from "./src/plugins/remark-markmap-codeblock";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -70,6 +72,8 @@ export default defineConfig({
       remarkReadingTime,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       [remarkAddZoomable as any, { className: "zoomable" }],
+      remarkMermaidCodeblock,
+      remarkMarkmapCodeblock,
     ],
     rehypePlugins: [
       rehypeKatex,

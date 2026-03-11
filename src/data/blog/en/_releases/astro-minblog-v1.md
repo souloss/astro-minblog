@@ -42,8 +42,18 @@ astro-minblog adds the following features on top of AstroPaper:
 #### Content Enhancement
 
 - 📊 **Mermaid Diagrams** - Native support for flowcharts, sequence diagrams, Gantt charts, etc.
+- 🧠 **Markmap Mind Maps** - Interactive mind maps from Markdown outline syntax
 - 🎬 **Bilibili Embeds** - One-click Bilibili video embedding
 - 📑 **Dual TOC** - Inline and floating table of contents
+
+#### Visualization Components
+
+- ✏️ **Rough.js Drawings** - Hand-drawn style SVG graphics with theme-aware colors
+- 🎞️ **Two.js Animations** - Smooth 2D SVG animations with configurable shapes and autoplay
+- 🎨 **p5.js Sketches** - Creative coding canvas with mouse interaction and generative art
+- 📽️ **Reveal.js Slides** - Embeddable slide presentations with auto theme switching
+- 🖌️ **Excalidraw Embeds** - Whiteboard-style collaborative diagrams
+- 📦 **VizContainer** - Unified wrapper with zoom controls and fullscreen support for all visual components
 
 #### i18n & Organization
 
@@ -63,6 +73,10 @@ astro-minblog adds the following features on top of AstroPaper:
 - ⏰ **Scheduled Posts** - Time-based publication control
 - 🌍 **Timezone Support** - Global and per-post timezone settings
 - 📍 **Reading Position** - Persistent scroll position memory
+- 🎨 **Theme Switching** - Improved light/dark mode transitions with all components reactively updating
+- 📖 **Series Navigation** - Redesigned series index and detail pages with better visual hierarchy
+- 🗂️ **Projects Page** - Dedicated page to showcase project portfolio
+- ⚙️ **Config-Driven Navigation** - Header navigation items configurable via `config.ts`
 
 #### Developer Tools
 
@@ -82,6 +96,10 @@ astro-minblog adds the following features on top of AstroPaper:
 - [Pagefind](https://pagefind.app/) - Static full-text search
 - [Waline](https://waline.js.org/) - Comment system
 - [Mermaid](https://mermaid.js.org/) - Diagram rendering
+- [Rough.js](https://roughjs.com/) - Hand-drawn style graphics
+- [Two.js](https://two.js.org/) - 2D animation engine
+- [p5.js](https://p5js.org/) - Creative coding library
+- [Reveal.js](https://revealjs.com/) - Presentation framework
 - [Shiki](https://shiki.style/) - Code highlighting
 
 **Deployment & Analytics**
@@ -114,7 +132,7 @@ astro-minblog adds the following features on top of AstroPaper:
 │   ├── components/
 │   │   ├── ai/          # AI chat widget
 │   │   ├── blog/        # Post components, TOC, comments, copyright
-│   │   ├── media/       # Mermaid, Bilibili, music player, code runner
+│   │   ├── media/       # Mermaid, Rough.js, Two.js, p5.js, Reveal.js, Excalidraw
 │   │   ├── nav/         # Header, footer, pagination, floating actions
 │   │   ├── social/      # Sponsorship, social links
 │   │   └── ui/          # Cards, tags, alerts, timeline, collapse
@@ -165,7 +183,7 @@ astro-minblog will continue to evolve. Future plans include:
 - 🤖 More AI feature integrations
 - 📱 PWA support
 - 🎨 More preset themes
-- 📊 Data visualization components
+- 📊 Advanced data visualization with D3.js integration
 
 ---
 

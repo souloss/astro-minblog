@@ -1,0 +1,127 @@
+---
+import VizContainer from "./VizContainer.astro";
+
+interface Props {
+  slides: string;
+  theme?: string;
+  width?: number;
+  height?: number;
+}
+
+const {
+  slides,
+  theme,
+  width = 960,
+  height = 540,
+} = Astro.props;
+
+const lightTheme = theme ?? "white";
+const darkTheme = theme ?? "night";
+
+const cdnBase = "https://cdn.jsdelivr.net/npm/reveal.js@5.2.1";
+
+const srcdocHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="${cdnBase}/dist/reveal.css">
+  <link id="reveal-theme" rel="stylesheet" href="${cdnBase}/dist/theme/__THEME__.css">
+  <style>body{margin:0;overflow:hidden} .reveal{font-size:24px}</style>
+</head>
+<body>
+  <div class="reveal"><div class="slides">${slides}</div></div>
+  <script src="${cdnBase}/dist/reveal.js"><\/script>
+  <script>
+    Reveal.initialize({embedded:true,controls:true,progress:true,hash:false,width:${width},height:${height}});
+    window.addEventListener('message',function(e){
+      if(e.data&&e.data.type==='theme'){
+        document.getElementById('reveal-theme').href='${cdnBase}/dist/theme/'+e.data.theme+'.css';
+      }
+    });
+  <\/script>
+</body>
+</html>`;
+---
+
+<VizContainer minHeight="200px" enableZoom={false}>
+  <div
+    class="reveal-slides-wrapper"
+    data-light-theme={lightTheme}
+    data-dark-theme={darkTheme}
+  >
+    <iframe
+      class="reveal-iframe"
+      title="Slide presentation"
+      loading="lazy"
+      allow="fullscreen"
+      sandbox="allow-scripts allow-same-origin"
+    />
+    <script
+      is:inline
+      type="application/json"
+      class="reveal-srcdoc"
+      set:html={JSON.stringify(srcdocHtml)}
+    />
+  </div>
+</VizContainer>
+
+<script>
+  function getIsDark(): boolean {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
+
+  function initRevealSlides() {
+    document.querySelectorAll<HTMLElement>(".reveal-slides-wrapper").forEach(wrapper => {
+      if (wrapper.dataset.revealInit) return;
+      wrapper.dataset.revealInit = "true";
+
+      const iframe = wrapper.querySelector<HTMLIFrameElement>(".reveal-iframe");
+      const srcdocScript = wrapper.querySelector<HTMLScriptElement>("script.reveal-srcdoc");
+      if (!iframe || !srcdocScript) return;
+
+      const template = JSON.parse(srcdocScript.textContent || '""') as string;
+      const isDark = getIsDark();
+      const currentTheme = isDark
+        ? (wrapper.dataset.darkTheme || "night")
+        : (wrapper.dataset.lightTheme || "white");
+
+      iframe.srcdoc = template.replace("__THEME__", currentTheme);
+    });
+  }
+
+  function updateRevealThemes() {
+    const isDark = getIsDark();
+
+    document.querySelectorAll<HTMLElement>(".reveal-slides-wrapper").forEach(wrapper => {
+      const iframe = wrapper.querySelector<HTMLIFrameElement>(".reveal-iframe");
+      if (!iframe?.contentWindow) return;
+
+      const theme = isDark
+        ? (wrapper.dataset.darkTheme || "night")
+        : (wrapper.dataset.lightTheme || "white");
+
+      iframe.contentWindow.postMessage({ type: "theme", theme }, "*");
+    });
+  }
+
+  window.addEventListener("themechange", updateRevealThemes);
+
+  initRevealSlides();
+  document.addEventListener("astro:page-load", initRevealSlides);
+</script>
+
+<style>
+  .reveal-slides-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .reveal-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--viz-bg);
+  }
+</style>
