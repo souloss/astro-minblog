@@ -1,8 +1,26 @@
 {
   "name": "@astro-minimax/core",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "Core theme package for astro-minimax — layouts, components, styles, utilities and plugins.",
+  "author": "Souloss",
+  "license": "MIT",
+  "keywords": [
+    "astro",
+    "astro-theme",
+    "blog",
+    "minimalist",
+    "tailwindcss"
+  ],
+  "homepage": "https://github.com/souloss/astro-minimax#readme",
+  "bugs": {
+    "url": "https://github.com/souloss/astro-minimax/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/souloss/astro-minimax",
+    "directory": "packages/core"
+  },
   "exports": {
     "./layouts/*.astro": "./src/layouts/*.astro",
     "./components/*.astro": "./src/components/*.astro",
@@ -19,11 +37,5 @@
   "peerDependencies": {
     "astro": "^5.0.0",
     "tailwindcss": "^4.0.0"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/souloss/astro-minimax",
-    "directory": "packages/core"
   }
 }

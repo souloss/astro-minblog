@@ -20,8 +20,8 @@
     "og": "tsx scripts/generate-og.ts"
   },
   "dependencies": {
-    "@astro-minimax/core": "workspace:*",
-    "@astro-minimax/viz": "workspace:*",
+    "@astro-minimax/core": "^0.1.0",
+    "@astro-minimax/viz": "^0.1.0",
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
