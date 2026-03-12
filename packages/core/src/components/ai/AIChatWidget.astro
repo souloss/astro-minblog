@@ -224,7 +224,7 @@ const aiConfig = {
       }
 
       // ===== Real API streaming via SSE =====
-      async function streamRealResponse(question, lang) {
+      async function streamRealResponse(_question, lang) {
         const msgEl = appendMessage("assistant", "");
         const textEl = msgEl.querySelector(".rounded-lg.bg-muted\\/40");
         if (!textEl) return;

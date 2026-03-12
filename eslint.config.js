@@ -15,5 +15,5 @@ export default [
   },
   { rules: { "no-console": "error" } },
   { files: ["tools/**"], rules: { "no-console": "off" } },
-  { ignores: ["dist/**", ".astro", "public/pagefind/**"] },
+  { ignores: ["dist/**", ".astro/**", "public/pagefind/**", "demo/dist/**", "demo/.astro/**", "packages/**/dist/**", "packages/**/.astro/**"] },
 ];

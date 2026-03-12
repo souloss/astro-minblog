@@ -28,8 +28,8 @@ const uniqueId = id || `markmap-${randomUUID()}`;
 ---
 
 <div class="markmap-wrap" id={uniqueId}>
-  <script type="application/json" class="markmap-root" set:html={JSON.stringify(content)} />
-  <script type="application/json" class="markmap-options" set:html={JSON.stringify(options)} />
+  <script is:inline type="application/json" class="markmap-root" set:html={JSON.stringify(content)} />
+  <script is:inline type="application/json" class="markmap-options" set:html={JSON.stringify(options)} />
 </div>
 
 <style is:global>

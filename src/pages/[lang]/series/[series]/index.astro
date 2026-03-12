@@ -495,7 +495,7 @@ const totalStr = String(seriesInfo.totalPosts).padStart(2, "0");
   }
 </style>
 
-<script define:vars={{ seriesSlug: seriesInfo.slug, totalPosts: seriesInfo.totalPosts }}>
+<script is:inline define:vars={{ seriesSlug: seriesInfo.slug, totalPosts: seriesInfo.totalPosts }}>
   function initReadTracking() {
     const storageKey = `series-read-${seriesSlug}`;
 

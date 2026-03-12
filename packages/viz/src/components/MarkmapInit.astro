@@ -13,9 +13,9 @@
 
 <script>
   // Debounce utility
-  function debounce(fn: Function, delay: number) {
+  function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number) {
     let timer: ReturnType<typeof setTimeout>;
-    return function(this: any, ...args: any[]) {
+    return function(this: unknown, ...args: T) {
       clearTimeout(timer);
       timer = setTimeout(() => fn.apply(this, args), delay);
     };
@@ -32,7 +32,7 @@
 
   // Check if markmap library is loaded (loaded via CDN by remark-markmap)
   function isMarkmapLoaded(): boolean {
-    return typeof (window as any).markmap !== 'undefined';
+    return typeof (window as { markmap?: unknown }).markmap !== 'undefined';
   }
 
   // Render a single markmap container
@@ -51,8 +51,10 @@
     }
 
     try {
-      const { Markmap, Toolbar, deriveOptions } = (window as any).markmap;
-      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const markmapLib = (window as any).markmap;
+      if (!markmapLib) return;
+      const { Markmap, Toolbar, deriveOptions } = markmapLib;
       // Parse the root data
       const root = JSON.parse(rootScript.textContent || '{}');
       
@@ -114,6 +116,7 @@
 
       container.dataset.rendered = 'true';
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Markmap render error:', error);
       container.innerHTML = '<p class="markmap-error">Failed to render mind map</p>';
     }

@@ -1,6 +1,6 @@
 import { SITE } from "@/config";
 
-type TranslationKey =
+export type TranslationKey =
   | "nav.home"
   | "nav.posts"
   | "nav.tags"

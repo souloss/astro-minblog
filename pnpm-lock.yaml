@@ -96,6 +96,9 @@ importers:
       '@types/lodash.kebabcase':
         specifier: ^4.1.9
         version: 4.1.9
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
       '@typescript-eslint/parser':
         specifier: ^8.56.1
         version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)

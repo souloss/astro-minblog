@@ -6,10 +6,6 @@ type VizInitFn = (
 const registry = new Map<string, VizInitFn>();
 let observer: IntersectionObserver | null = null;
 
-function getIsDark(): boolean {
-  return document.documentElement.getAttribute("data-theme") === "dark";
-}
-
 function ensureObserver(): IntersectionObserver {
   if (observer) return observer;
 
@@ -30,7 +26,9 @@ function ensureObserver(): IntersectionObserver {
         el.dataset.vizInitialized = "true";
         observer!.unobserve(el);
 
-        Promise.resolve(initFn(el, getIsDark())).catch(err => {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        Promise.resolve(initFn(el, isDark)).catch(err => {
+          // eslint-disable-next-line no-console
           console.error(`[viz-loader] Failed to init "${type}":`, err);
         });
       }

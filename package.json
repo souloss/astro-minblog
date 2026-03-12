@@ -37,13 +37,13 @@
     "remark-collapse": "^0.1.2",
     "remark-emoji": "^5.0.2",
     "remark-github-alerts": "^0.1.1",
+    "remark-markmap": "^1.1.5",
     "remark-math": "^6.0.0",
     "remark-toc": "^9.0.0",
     "satori": "^0.18.4",
     "sharp": "^0.34.5",
     "slugify": "^1.6.6",
-    "tailwindcss": "^4.2.1",
-    "remark-markmap": "^1.1.5"
+    "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
@@ -51,6 +51,7 @@
     "@shikijs/transformers": "^3.23.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/lodash.kebabcase": "^4.1.9",
+    "@types/mdast": "^4.0.4",
     "@typescript-eslint/parser": "^8.56.1",
     "eslint": "^9.39.3",
     "eslint-plugin-astro": "^1.6.0",

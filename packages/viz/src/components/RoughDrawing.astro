@@ -47,7 +47,7 @@ const uniqueId = `rough-${randomUUID()}`;
     const w = window as unknown as Record<string, unknown>;
     if (w.__roughModule) return w.__roughModule as RoughStatic;
 
-    // @ts-ignore CDN dynamic import
+    // @ts-expect-error CDN dynamic import
     const mod = await import("https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.esm.js");
     w.__roughModule = mod.default;
     return mod.default as RoughStatic;

@@ -10,21 +10,17 @@ import IconSeries from "../../assets/icons/IconSeries.svg";
 import IconProject from "../../assets/icons/IconProject.svg";
 import IconMenuDeep from "../../assets/icons/IconMenuDeep.svg";
 import { SITE } from "@/config";
-import { t } from "../../utils/i18n";
+import { t, type TranslationKey } from "../../utils/i18n";
 import { isPathActive } from "../../utils/pathUtils";
 
 const { pathname } = Astro.url;
 const isActive = (path: string) => isPathActive(path, pathname);
 
-interface Props {
-  lang?: string;
-}
-
 const { lang = "zh" } = Astro.props;
 
 const base = `/${lang}`;
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, typeof IconHome> = {
   home: IconHome,
   posts: IconArticle,
   tags: IconTag,
@@ -52,7 +48,7 @@ const navItems = SITE.nav.items
   .filter(i => i.enabled)
   .map(i => ({
     href: hrefMap[i.key] ?? `${base}/${i.key}`,
-    label: t(`nav.${i.key}` as any, lang),
+    label: t(`nav.${i.key}` as TranslationKey, lang),
     icon: iconMap[i.key] ?? IconArticle,
   }));
 ---
