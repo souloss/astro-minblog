@@ -1,6 +1,6 @@
 ---
 name: "\U0001F41E Bug report"
-about: Report a bug or unexpected behavior in astro-minblog
+about: Report a bug or unexpected behavior in astro-minimax
 title: "[BUG]: "
 labels: bug
 assignees: ""

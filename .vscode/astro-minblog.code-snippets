@@ -15,7 +15,7 @@
       "description: $8",
       "---"
     ],
-    "description": "Adds the frontmatter block for the astro-minblog blog post"
+    "description": "Adds the frontmatter block for the astro-minimax blog post"
   },
   "Blog Template": {
     "scope": "markdown",
@@ -29,6 +29,6 @@
       "",
       "## ${3: heading 1}"
     ],
-    "description": "Adds the template for the astro-minblog blog post. You will need to add frontmatter first."
+    "description": "Adds the template for the astro-minimax blog post. You will need to add frontmatter first."
   }
 }

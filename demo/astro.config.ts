@@ -13,8 +13,8 @@ import { remarkReadingTime } from "@astro-minimax/core/plugins/remark-reading-ti
 import { rehypeExternalLinks } from "@astro-minimax/core/plugins/rehype-external-links";
 import { rehypeTableScroll } from "@astro-minimax/core/plugins/rehype-table-scroll";
 import { rehypeAutolinkHeadings } from "@astro-minimax/core/plugins/rehype-autolink-headings";
-import { remarkMermaidCodeblock } from "@astro-minimax/viz/plugins/remark-mermaid-codeblock";
-import { remarkMarkmapCodeblock } from "@astro-minimax/viz/plugins/remark-markmap-codeblock";
+
+import remarkMarkmap from "remark-markmap";
 import {
   updateStyle,
   addTitle,
@@ -34,7 +34,7 @@ import path from "path";
 const asTransformer = (t: any) => t;
 
 const shikiConfig = {
-  themes: { light: "github-light", dark: "night-owl" },
+  themes: { light: "github-light" as const, dark: "night-owl" as const },
   defaultColor: false as const,
   wrap: false,
   transformers: [
@@ -63,8 +63,11 @@ export default defineConfig({
       remarkGithubAlerts,
       remarkEmoji,
       remarkReadingTime,
-      remarkMermaidCodeblock,
-      remarkMarkmapCodeblock,
+      [remarkMarkmap, {
+        darkThemeSelector: () => document.documentElement.matches('[data-theme="dark"]') ||
+                                 document.documentElement.classList.contains('dark') ||
+                                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      }],
     ],
     rehypePlugins: [
       rehypeKatex,

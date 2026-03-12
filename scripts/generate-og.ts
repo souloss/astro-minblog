@@ -8,7 +8,7 @@ import sharp from "sharp";
 
 const rootDir = process.cwd();
 const inputDir = path.join(rootDir, ".codex-temp", "og");
-const outputJpg = path.join(rootDir, "public", "astro-minblog-og.jpg");
+const outputJpg = path.join(rootDir, "public", "astro-minimax-og.jpg");
 const outputPng = path.join(rootDir, ".codex-temp", "og-result.png");
 
 // ─── 画布 ────────────────────────────────────────────────────────────────────

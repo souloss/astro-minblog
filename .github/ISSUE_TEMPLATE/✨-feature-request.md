@@ -1,6 +1,6 @@
 ---
 name: "✨ Feature Request"
-about: Suggest an idea for improving astro-minblog
+about: Suggest an idea for improving astro-minimax
 title: "[Feature Request]: "
 labels: enhancement
 assignees: ""

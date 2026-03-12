@@ -1,5 +1,27 @@
+---
+/**
+ * Markmap initialization script for client-side rendering.
+ * Handles rendering of markmap diagrams on View Transitions navigation.
+ * 
+ * IMPORTANT: Include this component when the page contains ```markmap code blocks.
+ * The remark-markmap plugin transforms them into .markmap-wrap elements with CDN scripts.
+ * 
+ * This script re-renders markmap diagrams on View Transitions navigation,
+ * fixing the issue where diagrams don't appear on first navigation.
+ */
+---
+
 <script>
-  // Handle dynamic theme switching for markmap
+  // Debounce utility
+  function debounce(fn: Function, delay: number) {
+    let timer: ReturnType<typeof setTimeout>;
+    return function(this: any, ...args: any[]) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  // Theme handling for markmap
   function updateMarkmapTheme(isDark: boolean) {
     if (isDark) {
       document.documentElement.classList.add('markmap-dark');
@@ -8,31 +30,190 @@
     }
   }
 
+  // Check if markmap library is loaded (loaded via CDN by remark-markmap)
+  function isMarkmapLoaded(): boolean {
+    return typeof (window as any).markmap !== 'undefined';
+  }
+
+  // Render a single markmap container
+  async function renderMarkmapContainer(container: HTMLElement) {
+    // Skip if already rendered
+    if (container.dataset.rendered === 'true') return;
+    
+    const rootScript = container.querySelector<HTMLScriptElement>('script[type="application/json"]');
+    if (!rootScript) return;
+
+    // Wait for markmap library to be available
+    if (!isMarkmapLoaded()) {
+      // Try again after a short delay if library not loaded yet
+      setTimeout(() => renderMarkmapContainer(container), 100);
+      return;
+    }
+
+    try {
+      const { Markmap, Toolbar, deriveOptions } = (window as any).markmap;
+      
+      // Parse the root data
+      const root = JSON.parse(rootScript.textContent || '{}');
+      
+      // Get options from second script if present
+      const scripts = container.querySelectorAll<HTMLScriptElement>('script[type="application/json"]');
+      const options = scripts[1] ? JSON.parse(scripts[1].textContent || '{}') : {};
+
+      // Create SVG element
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', 'auto');
+      container.innerHTML = '';
+      container.appendChild(svg);
+
+      // Create markmap
+      const markmap = Markmap.create(svg, deriveOptions(options), root);
+
+      // Add toolbar if available
+      if (Toolbar) {
+        const toolbar = Toolbar.create(markmap);
+        toolbar.setBrand(false);
+        
+        // Add fullscreen button
+        toolbar.register({
+          id: "fullScreen",
+          title: "Full Screen View",
+          content: Toolbar.icon("M4 9v-4h4v2h-2v2zM4 11v4h4v-2h-2v-2zM16 9v-4h-4v2h2v2zM16 11v4h-4v-2h2v-2z"),
+          onClick: () => {
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            } else {
+              container.requestFullscreen();
+            }
+          }
+        });
+
+        container.addEventListener("fullscreenchange", () => {
+          container.classList.toggle("fullscreen", !!document.fullscreenElement);
+        });
+
+        toolbar.setItems([...toolbar.items, "fullScreen"]);
+        container.appendChild(toolbar.el);
+      }
+
+      // Handle resize
+      const resizeObserver = new ResizeObserver(
+        debounce(() => {
+          svg.style.height = markmap.state.rect.y2 + 'px';
+          markmap.fit();
+        }, 100)
+      );
+      resizeObserver.observe(container);
+
+      // Initial fit
+      requestAnimationFrame(() => {
+        svg.style.height = markmap.state.rect.y2 + 'px';
+        markmap.fit();
+      });
+
+      container.dataset.rendered = 'true';
+    } catch (error) {
+      console.error('Markmap render error:', error);
+      container.innerHTML = '<p class="markmap-error">Failed to render mind map</p>';
+    }
+  }
+
+  // Render all markmap containers on the page
+  function renderAllMarkmaps() {
+    document.querySelectorAll<HTMLElement>('.markmap-wrap').forEach(container => {
+      // Check if SVG already exists (already rendered by inline script)
+      const svg = container.querySelector('svg');
+      if (svg && svg.children.length > 0) {
+        // Already rendered by remark-markmap's inline script
+        container.dataset.rendered = 'true';
+        return;
+      }
+      
+      // Use IntersectionObserver for lazy rendering
+      const observer = new IntersectionObserver(
+        (entries, obs) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              obs.unobserve(entry.target);
+              renderMarkmapContainer(entry.target as HTMLElement);
+            }
+          }
+        },
+        { rootMargin: '200px' }
+      );
+      observer.observe(container);
+    });
+  }
+
   // Listen for theme changes
   window.addEventListener('themechange', ((e: CustomEvent<{ isDark: boolean }>) => {
     updateMarkmapTheme(e.detail.isDark);
   }) as EventListener);
 
-  // Also handle Astro page transitions
-  document.addEventListener('astro:page-load', () => {
-    // Check current theme state
+  // Initialize on page load
+  function init() {
+    // Update theme
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
                    document.documentElement.classList.contains('dark');
     updateMarkmapTheme(isDark);
-  });
+    
+    // Render any un-rendered markmaps (for View Transitions)
+    renderAllMarkmaps();
+  }
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Handle View Transitions - this is the key fix!
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style is:global>
-  /* Additional styles to match blog theme */
+  /* Markmap wrapper styles */
   .markmap-wrap {
+    position: relative;
+    height: max-content;
+    width: 100%;
+    min-height: 300px;
     margin: 1.5rem 0;
     border-radius: 0.5rem;
     border: 1px solid var(--border, #e5e7eb);
     overflow: hidden;
   }
 
+  .markmap-wrap.fullscreen {
+    background: #ffffff;
+  }
+
   :global(html[data-theme="dark"]) .markmap-wrap {
     border-color: var(--border, #374151);
+  }
+
+  :global(html.markmap-dark) .markmap-wrap.fullscreen {
+    background: #1a1a1a;
+  }
+
+  .markmap-wrap > svg {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .markmap-wrap.fullscreen > svg {
+    height: 100% !important;
+  }
+
+  /* Toolbar positioning */
+  .mm-toolbar {
+    position: absolute;
+    right: 0.5em;
+    bottom: 0.5em;
   }
 
   /* Ensure markmap text colors work with theme */
@@ -40,5 +221,11 @@
     --markmap-text-color: var(--foreground, #eee);
     --markmap-code-bg: var(--muted, #1a1b26);
     --markmap-circle-open-bg: var(--card, #444);
+  }
+
+  .markmap-error {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
   }
 </style>

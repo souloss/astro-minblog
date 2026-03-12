@@ -5,7 +5,13 @@ interface ThemeChangeDetail {
 }
 
 interface Window {
-  theme: "light" | "dark";
+  theme?: {
+    themeValue: string;
+    setPreference: () => void;
+    reflectPreference: () => void;
+    getTheme: () => string;
+    setTheme: (val: string) => void;
+  };
 }
 
 interface WindowEventMap {

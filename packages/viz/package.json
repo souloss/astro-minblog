@@ -6,6 +6,7 @@
   "exports": {
     "./components/*.astro": "./src/components/*.astro",
     "./plugins/remark-mermaid-codeblock": "./src/plugins/remark-mermaid-codeblock.ts",
+    "./plugins/remark-markmap-codeblock": "./src/plugins/remark-markmap-codeblock.ts",
     "./plugins": "./src/plugins/index.ts",
     "./scripts/*": "./src/scripts/*.ts"
   },
@@ -16,6 +17,8 @@
     "astro": "^5.0.0"
   },
   "dependencies": {
+    "markmap-lib": "^0.18.11",
+    "markmap-view": "^0.18.10",
     "remark-markmap": "^1.1.5",
     "unist-util-visit": "^5.0.0"
   },
