@@ -1,2 +1,1 @@
-export { remarkMermaidCodeblock } from "./remark-mermaid-codeblock.js";
-export { remarkMarkmapCodeblock } from "./remark-markmap-codeblock.js";
+export { remarkMermaidCodeblock } from "./remark-mermaid-codeblock.ts";

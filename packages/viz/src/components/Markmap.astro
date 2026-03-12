@@ -1,69 +1,71 @@
 ---
+/**
+ * Markmap component for direct use in Astro templates.
+ * 
+ * IMPORTANT: For markdown code blocks, use ```markmap syntax directly.
+ * The remark-markmap plugin will automatically transform it.
+ * 
+ * This component is for programmatic use in .astro files.
+ */
+
 import { randomUUID } from "node:crypto";
-import VizContainer from "./VizContainer.astro";
 
 interface Props {
+  /** Markdown content for the mindmap */
   content: string;
+  /** Optional ID for the wrapper element */
+  id?: string;
+  /** Markmap options (colorFreezeLevel, etc.) */
+  options?: Record<string, unknown>;
 }
 
-const { content } = Astro.props;
-const uniqueId = `markmap-${randomUUID()}`;
+const { content, id, options = {} } = Astro.props;
+const uniqueId = id || `markmap-${randomUUID()}`;
+
+// remark-markmap expects JSON scripts with root and options
+// We need to transform markdown to tree structure first
+// For simplicity, we output the markdown and let the client-side handle it
 ---
 
-<VizContainer minHeight="200px">
-  <div class="markmap-wrapper" data-markmap-id={uniqueId} data-viz-type="markmap">
-    <svg id={`${uniqueId}-svg`} class="markmap-svg" style="width: 100%; min-height: 200px;"></svg>
-    <div class="markmap-placeholder">
-      <svg class="size-8 animate-pulse text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="12" cy="12" r="3" /><line x1="12" y1="3" x2="12" y2="9" /><line x1="12" y1="15" x2="12" y2="21" />
-        <line x1="3" y1="12" x2="9" y2="12" /><line x1="15" y1="12" x2="21" y2="12" />
-      </svg>
-    </div>
-    <script
-      is:inline
-      type="application/json"
-      class="markmap-content"
-      set:html={JSON.stringify(content)}
-    />
-  </div>
-</VizContainer>
-
-<script>
-  import "../scripts/markmap-renderer.ts";
-</script>
+<div class="markmap-wrap" id={uniqueId}>
+  <script type="application/json" class="markmap-root" set:html={JSON.stringify(content)} />
+  <script type="application/json" class="markmap-options" set:html={JSON.stringify(options)} />
+</div>
 
 <style is:global>
-  .markmap-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 1rem;
+  /* Markmap wrapper styles - matching remark-markmap */
+  .markmap-wrap {
     position: relative;
-  }
-
-  .markmap-svg {
+    height: max-content;
     width: 100%;
-    min-height: 200px;
-    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 300px;
+    margin: 1.5rem 0;
   }
 
-  .markmap-placeholder {
+  .markmap-wrap.fullscreen {
+    background: #ffffff;
+  }
+
+  :global(html[data-theme="dark"]) .markmap-wrap.fullscreen,
+  :global(html.markmap-dark) .markmap-wrap.fullscreen {
+    background: #1a1a1a;
+  }
+
+  .markmap-wrap > svg {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .markmap-wrap.fullscreen > svg {
+    height: 100% !important;
+  }
+
+  /* Toolbar positioning */
+  .mm-toolbar {
     position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-  }
-
-  .markmap-error {
-    color: #ef4444;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  :global(html[data-theme="dark"]) .markmap-error {
-    color: #f87171;
+    right: 0.5em;
+    bottom: 0.5em;
   }
 </style>

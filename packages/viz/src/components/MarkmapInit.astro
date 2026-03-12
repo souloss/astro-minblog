@@ -1,11 +1,44 @@
----
-/**
- * Script-only component that ensures the Markmap rendering script is loaded.
- * Include in PostDetails when the post body contains ```markmap code blocks.
- * The script handles pre.markmap elements created by remark-markmap-codeblock.
- */
----
-
 <script>
-  import "../scripts/markmap-renderer.ts";
+  // Handle dynamic theme switching for markmap
+  function updateMarkmapTheme(isDark: boolean) {
+    if (isDark) {
+      document.documentElement.classList.add('markmap-dark');
+    } else {
+      document.documentElement.classList.remove('markmap-dark');
+    }
+  }
+
+  // Listen for theme changes
+  window.addEventListener('themechange', ((e: CustomEvent<{ isDark: boolean }>) => {
+    updateMarkmapTheme(e.detail.isDark);
+  }) as EventListener);
+
+  // Also handle Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    // Check current theme state
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+                   document.documentElement.classList.contains('dark');
+    updateMarkmapTheme(isDark);
+  });
 </script>
+
+<style is:global>
+  /* Additional styles to match blog theme */
+  .markmap-wrap {
+    margin: 1.5rem 0;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border, #e5e7eb);
+    overflow: hidden;
+  }
+
+  :global(html[data-theme="dark"]) .markmap-wrap {
+    border-color: var(--border, #374151);
+  }
+
+  /* Ensure markmap text colors work with theme */
+  :global(html.markmap-dark) .markmap {
+    --markmap-text-color: var(--foreground, #eee);
+    --markmap-code-bg: var(--muted, #1a1b26);
+    --markmap-circle-open-bg: var(--card, #444);
+  }
+</style>

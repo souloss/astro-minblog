@@ -14,7 +14,7 @@ import { rehypeExternalLinks } from "@astro-minimax/core/plugins/rehype-external
 import { rehypeTableScroll } from "@astro-minimax/core/plugins/rehype-table-scroll";
 import { rehypeAutolinkHeadings } from "@astro-minimax/core/plugins/rehype-autolink-headings";
 import { remarkMermaidCodeblock } from "@astro-minimax/viz/plugins/remark-mermaid-codeblock";
-import { remarkMarkmapCodeblock } from "@astro-minimax/viz/plugins/remark-markmap-codeblock";
+import remarkMarkmap from "remark-markmap";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -74,7 +74,12 @@ export default defineConfig({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       [remarkAddZoomable as any, { className: "zoomable" }],
       remarkMermaidCodeblock,
-      remarkMarkmapCodeblock,
+      // remark-markmap with dark theme support
+      [remarkMarkmap, {
+        darkThemeSelector: () => document.documentElement.matches('[data-theme="dark"]') ||
+                                 document.documentElement.classList.contains('dark') ||
+                                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      }],
     ],
     rehypePlugins: [
       rehypeKatex,

@@ -80,112 +80,7 @@ const {
 </div>
 
 <script>
-  function initVizContainers() {
-    document.querySelectorAll<HTMLElement>(".viz-container").forEach(container => {
-      if (container.dataset.vizCtrlInit) return;
-      container.dataset.vizCtrlInit = "true";
-
-      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
-      if (!viewport) return;
-
-      let scale = 1;
-      let translateX = 0;
-      let translateY = 0;
-      const MIN_SCALE = 0.3;
-      const MAX_SCALE = 5;
-      const ZOOM_STEP = 0.2;
-
-      function applyTransform() {
-        viewport!.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-      }
-
-      container.querySelector(".viz-zoom-in")?.addEventListener("click", () => {
-        scale = Math.min(MAX_SCALE, scale + ZOOM_STEP);
-        applyTransform();
-      });
-
-      container.querySelector(".viz-zoom-out")?.addEventListener("click", () => {
-        scale = Math.max(MIN_SCALE, scale - ZOOM_STEP);
-        applyTransform();
-      });
-
-      container.querySelector(".viz-reset")?.addEventListener("click", () => {
-        scale = 1;
-        translateX = 0;
-        translateY = 0;
-        applyTransform();
-      });
-
-      if (container.dataset.vizZoom === "true") {
-        container.addEventListener("wheel", (e: WheelEvent) => {
-          if (!e.ctrlKey && !e.metaKey) return;
-          e.preventDefault();
-          const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-          scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
-          applyTransform();
-        }, { passive: false });
-
-        let isPanning = false;
-        let startX = 0;
-        let startY = 0;
-
-        container.addEventListener("mousedown", (e: MouseEvent) => {
-          if (!e.shiftKey && e.button !== 1) return;
-          e.preventDefault();
-          isPanning = true;
-          startX = e.clientX;
-          startY = e.clientY;
-          container.style.cursor = "grabbing";
-        });
-
-        window.addEventListener("mousemove", (e: MouseEvent) => {
-          if (!isPanning) return;
-          translateX += (e.clientX - startX) / scale;
-          translateY += (e.clientY - startY) / scale;
-          startX = e.clientX;
-          startY = e.clientY;
-          applyTransform();
-        });
-
-        window.addEventListener("mouseup", () => {
-          if (!isPanning) return;
-          isPanning = false;
-          container.style.cursor = "";
-        });
-      }
-
-      const fsBtn = container.querySelector<HTMLElement>(".viz-fullscreen");
-      if (fsBtn && container.dataset.vizFullscreen === "true") {
-        const enterIcon = fsBtn.querySelector(".viz-fs-enter");
-        const exitIcon = fsBtn.querySelector(".viz-fs-exit");
-
-        fsBtn.addEventListener("click", () => {
-          if (document.fullscreenElement === container) {
-            document.exitFullscreen();
-          } else {
-            container.requestFullscreen().catch(() => {});
-          }
-        });
-
-        container.addEventListener("fullscreenchange", () => {
-          const isFs = document.fullscreenElement === container;
-          enterIcon?.classList.toggle("hidden", isFs);
-          exitIcon?.classList.toggle("hidden", !isFs);
-          if (isFs) {
-            container.style.background = "var(--background)";
-            container.classList.add("p-4");
-          } else {
-            container.style.background = "";
-            container.classList.remove("p-4");
-          }
-        });
-      }
-    });
-  }
-
-  initVizContainers();
-  document.addEventListener("astro:page-load", initVizContainers);
-  window.addEventListener("viz:init", initVizContainers);
+  import "../scripts/viz-container-init.ts";
 </script>
 
 <style is:global>
@@ -198,13 +93,32 @@ const {
   }
 
   .viz-container:fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .viz-container:fullscreen .viz-viewport {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .viz-container:fullscreen .viz-viewport > * {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
   }
 
   .viz-container:fullscreen .viz-controls {
     opacity: 1;
+    pointer-events: auto;
   }
 
   @media (pointer: coarse) {

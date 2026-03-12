@@ -42,7 +42,8 @@
     "satori": "^0.18.4",
     "sharp": "^0.34.5",
     "slugify": "^1.6.6",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "remark-markmap": "^1.1.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
