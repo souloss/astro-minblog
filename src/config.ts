@@ -56,7 +56,7 @@ export const SITE = {
   umami: {
     enabled: true,
     websiteId: "1419a8ae-a14b-4bb7-8c39-ee5fe00a8a88",
-    src: "https://umami.souloss.cn/",
+    src: "https://umami.souloss.cn/script.js",
   },
   waline: {
     enabled: true,

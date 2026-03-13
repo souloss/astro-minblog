@@ -12,8 +12,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(tailwindcss@4.2.1)
       '@astro-minimax/viz':
-        specifier: ^0.1.1
-        version: 0.1.1(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(markmap-common@0.18.9)
+        specifier: ^0.1.4
+        version: 0.1.4(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(markmap-common@0.18.9)
       '@astrojs/mdx':
         specifier: ^4.3.13
         version: 4.3.13(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
@@ -238,8 +238,8 @@ packages:
       astro: ^5.0.0
       tailwindcss: ^4.0.0
 
-  '@astro-minimax/viz@0.1.1':
-    resolution: {integrity: sha512-3R1rEpCD0b7znUJCPVLt8jKC43L32GmSpn9lNdWhiHaZcKhkGlxDTm/GIhEO3gxH6V/c81QDhRKXscEz4whSHg==}
+  '@astro-minimax/viz@0.1.4':
+    resolution: {integrity: sha512-ORvEvkGKTh4hOAvFWrq2T5sCMpyNr6Mt1jRVToMhKxoGvl1mrubv7/qX/zzoCritzfR2YG4X4ryWD4agrZiy7A==}
     peerDependencies:
       astro: ^5.0.0
 
@@ -4424,7 +4424,7 @@ snapshots:
       astro: 5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       tailwindcss: 4.2.1
 
-  '@astro-minimax/viz@0.1.1(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(markmap-common@0.18.9)':
+  '@astro-minimax/viz@0.1.4(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(markmap-common@0.18.9)':
     dependencies:
       astro: 5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       markmap-lib: 0.18.12(markmap-common@0.18.9)

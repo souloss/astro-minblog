@@ -26,14 +26,11 @@ const {
   loop = false,
   preload = true,
 } = Astro.props;
-
-const uid = `asciinema-${Math.random().toString(36).slice(2, 11)}`;
 ---
 
 <VizContainer minHeight="200px" enableZoom={false}>
   <div
     class="asciinema-wrapper"
-    id={uid}
     data-src={src}
     data-cols={cols}
     data-rows={rows}
@@ -66,7 +63,10 @@ const uid = `asciinema-${Math.random().toString(36).slice(2, 11)}`;
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = `${CDN_BASE}/asciinema-player.css`;
-      link.onload = () => { cssLoaded = true; resolve(); };
+      link.onload = () => {
+        cssLoaded = true;
+        resolve();
+      };
       link.onerror = reject;
       document.head.appendChild(link);
     });
@@ -77,82 +77,98 @@ const uid = `asciinema-${Math.random().toString(36).slice(2, 11)}`;
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = `${CDN_BASE}/asciinema-player.min.js`;
-      script.onload = () => { jsLoaded = true; resolve(); };
+      script.onload = () => {
+        jsLoaded = true;
+        resolve();
+      };
       script.onerror = reject;
       document.head.appendChild(script);
     });
   }
 
   interface AsciinemaPlayerAPI {
-    create: (src: string, container: HTMLElement, opts: Record<string, unknown>) => { dispose: () => void };
+    create: (
+      src: string,
+      container: HTMLElement,
+      opts: Record<string, unknown>
+    ) => { dispose: () => void };
   }
 
-  const initialized = new Set<string>();
+  let observer: IntersectionObserver | null = null;
 
-  async function renderPlayer(wrapper: HTMLElement) {
-    const id = wrapper.id;
-    if (!id || initialized.has(id)) return;
+  function ensureObserver(): IntersectionObserver {
+    if (observer) return observer;
 
-    await Promise.all([loadCSS(), loadJS()]);
-
-    const AsciinemaPlayer = (window as unknown as Record<string, unknown>).AsciinemaPlayer as AsciinemaPlayerAPI | undefined;
-    if (!AsciinemaPlayer) return;
-
-    const placeholder = wrapper.querySelector(".asciinema-placeholder");
-    if (placeholder) placeholder.remove();
-
-    // Use custom theme "minimax" — colors are set via CSS variables
-    // and switch automatically with data-theme, no player rebuild needed
-    AsciinemaPlayer.create(
-      wrapper.dataset.src || "",
-      wrapper,
-      {
-        cols: Number(wrapper.dataset.cols) || 80,
-        rows: Number(wrapper.dataset.rows) || 24,
-        speed: Number(wrapper.dataset.speed) || 1,
-        idleTimeLimit: Number(wrapper.dataset.idleTimeLimit) || 2,
-        theme: "minimax",
-        fit: wrapper.dataset.fit || "width",
-        autoPlay: wrapper.dataset.autoPlay === "true",
-        loop: wrapper.dataset.loop === "true",
-        preload: wrapper.dataset.preload !== "false",
-        poster: wrapper.dataset.poster || undefined,
-      }
-    );
-
-    initialized.add(id);
-  }
-
-  function initAsciinemaPlayers() {
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       (entries, obs) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
+
           const el = entry.target as HTMLElement;
+          // Check if already initialized (prevents double render)
+          if (el.dataset.asciinemaInit) continue;
+
+          // Mark as initializing immediately to prevent race conditions
+          el.dataset.asciinemaInit = "true";
           obs.unobserve(el);
+
           renderPlayer(el);
         }
       },
       { rootMargin: "200px" }
     );
 
-    document.querySelectorAll<HTMLElement>(".asciinema-wrapper").forEach(wrapper => {
-      if (initialized.has(wrapper.id)) return;
-      observer.observe(wrapper);
+    return observer;
+  }
+
+  async function renderPlayer(wrapper: HTMLElement) {
+    await Promise.all([loadCSS(), loadJS()]);
+
+    const AsciinemaPlayer = (window as unknown as Record<string, unknown>)
+      .AsciinemaPlayer as AsciinemaPlayerAPI | undefined;
+    if (!AsciinemaPlayer) return;
+
+    const placeholder = wrapper.querySelector(".asciinema-placeholder");
+    if (placeholder) placeholder.remove();
+
+    AsciinemaPlayer.create(wrapper.dataset.src || "", wrapper, {
+      cols: Number(wrapper.dataset.cols) || 80,
+      rows: Number(wrapper.dataset.rows) || 24,
+      speed: Number(wrapper.dataset.speed) || 1,
+      idleTimeLimit: Number(wrapper.dataset.idleTimeLimit) || 2,
+      theme: "minimax",
+      fit: wrapper.dataset.fit || "width",
+      autoPlay: wrapper.dataset.autoPlay === "true",
+      loop: wrapper.dataset.loop === "true",
+      preload: wrapper.dataset.preload !== "false",
+      poster: wrapper.dataset.poster || undefined,
     });
   }
 
-  let initCalled = false;
+  function initAsciinemaPlayers() {
+    const obs = ensureObserver();
 
-  function init() {
-    if (initCalled) return;
-    initCalled = true;
-    initAsciinemaPlayers();
+    // Only observe elements that haven't been initialized
+    document
+      .querySelectorAll<HTMLElement>(
+        ".asciinema-wrapper:not([data-asciinema-init])"
+      )
+      .forEach((wrapper) => {
+        obs.observe(wrapper);
+      });
   }
 
-  // Use astro:page-load as the single entry point for both initial load and navigation
-  // It fires on initial page load AND after View Transitions navigation
-  document.addEventListener("astro:page-load", init);
+  // Handle both initial load and View Transitions navigation
+  document.addEventListener("astro:page-load", initAsciinemaPlayers);
+
+  // Fallback for first load when View Transitions might not have fired yet
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAsciinemaPlayers);
+  } else {
+    initAsciinemaPlayers();
+  }
+</script>
+
 <style is:global>
   .asciinema-wrapper {
     width: 100%;
