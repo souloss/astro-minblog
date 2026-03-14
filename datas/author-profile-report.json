@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "lastUpdated": "2026-03-13T19:29:51.300Z",
+    "model": "rule-based-template",
+    "generatedBy": "rule-based"
+  },
+  "report": {
+    "hero": {
+      "title": "AI 视角下的 博主",
+      "summary": "一位专注于教程/配置、教程/博客、教程/工程化领域的博主，持续输出高质量内容。",
+      "intro": "博客已发布 18 篇文章，涵盖 5 个主题标签。"
+    },
+    "identities": [
+      {
+        "name": "技术博主",
+        "description": "持续分享技术经验与实践心得。",
+        "evidence": "已发布 18 篇文章。"
+      },
+      {
+        "name": "内容创作者",
+        "description": "注重内容质量与读者体验。",
+        "evidence": "近期文章《\"Getting Started: Two Integration Methods\"》体现了专业的写作风格。"
+      }
+    ],
+    "strengths": [
+      {
+        "title": "内容深度",
+        "points": [
+          "文章结构清晰，逻辑性强",
+          "注重实践，配合代码示例",
+          "持续更新，覆盖多个技术领域"
+        ]
+      },
+      {
+        "title": "表达风格",
+        "points": [
+          "语言简洁明了",
+          "注重可读性",
+          "善于总结提炼"
+        ]
+      }
+    ],
+    "styles": [
+      {
+        "trait": "技术导向",
+        "description": "专注于技术内容的深度讲解与实践分享。"
+      },
+      {
+        "trait": "结构化表达",
+        "description": "文章结构清晰，便于读者理解和学习。"
+      }
+    ],
+    "proofs": {
+      "posts": [
+        {
+          "title": "\"Getting Started: Two Integration Methods\"",
+          "url": "https://example.com/en/getting-started",
+          "reason": "astro-minimax provides two integration methods for setting u",
+          "date": "2026-03-12T00:00:00.000Z"
+        },
+        {
+          "title": "\"快速开始：两种使用方式\"",
+          "url": "https://example.com/zh/getting-started",
+          "reason": "介绍astro-minimax的两种使用方式：GitHub模板和NPM包集成，适合不同场景。",
+          "date": "2026-03-12T00:00:00.000Z"
+        },
+        {
+          "title": "How to add LaTeX Equations in Astro blog posts",
+          "url": "https://example.com/en/how-to-add-latex-equations-in-blog-posts",
+          "reason": "Guide on integrating LaTeX equations into Astro blog posts u",
+          "date": "2024-09-08T20:58:52.737Z"
+        },
+        {
+          "title": "如何在 Astro 博客文章中添加 LaTeX 公式",
+          "url": "https://example.com/zh/how-to-add-latex-equations-in-blog-posts",
+          "reason": "介绍在Astro博客中添加LaTeX公式的方法，包括安装插件和配置Astro。",
+          "date": "2024-09-08T20:58:52.737Z"
+        },
+        {
+          "title": "How to use Git Hooks to set Created and Modified Dates",
+          "url": "https://example.com/en/setting-dates-via-git-hooks",
+          "reason": "利用Git钩子自动化更新Astro-minimax主题中文章的创建和修改日期。",
+          "date": "2024-01-03T20:40:08Z"
+        }
+      ]
+    },
+    "disclaimer": "该页面由 AI 归纳与规则模板联合生成，旨在帮助访客快速建立认知，可能存在概括偏差，请以原始文章信息为准。"
+  }
+}

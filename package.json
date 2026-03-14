@@ -18,7 +18,9 @@
     "tools:cover": "tsx tools/generate-cover.ts",
     "tools:tags": "tsx tools/generate-tags.ts",
     "ai:process": "tsx tools/ai-process.ts",
-    "og": "tsx tools/generate-og.ts"
+    "context:build": "tsx tools/build-author-context.ts",
+    "voice:build": "tsx tools/build-voice-profile.ts",
+    "profile:generate": "tsx tools/generate-author-profile.ts"
   },
   "dependencies": {
     "@astro-minimax/core": "^0.1.0",
@@ -48,6 +50,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "@cloudflare/ai-types": "^0.0.7",
+    "@cloudflare/workers-types": "^4.20260313.1",
     "@pagefind/default-ui": "^1.4.0",
     "@shikijs/transformers": "^3.23.0",
     "@tailwindcss/typography": "^0.5.19",

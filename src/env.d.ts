@@ -29,3 +29,10 @@ interface Document {
     callback: () => void | Promise<void>
   ) => ViewTransition;
 }
+
+// Cloudflare Workers AI Types
+type Ai = import('@cloudflare/ai').Ai;
+
+interface Env {
+  souloss: Ai;
+}

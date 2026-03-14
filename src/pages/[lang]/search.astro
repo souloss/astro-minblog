@@ -245,7 +245,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     // Category filter
     const categoryFilter = document.getElementById(
       "category-filter"
-    ) as HTMLSelectElement;
+    ) as unknown as HTMLSelectElement | null;
     categoryFilter?.addEventListener("change", e => {
       state.category = (e.target as HTMLSelectElement).value;
       applyFilters();
@@ -254,7 +254,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     // Language filter
     const langFilter = document.getElementById(
       "lang-filter"
-    ) as HTMLSelectElement;
+    ) as unknown as HTMLSelectElement | null;
     langFilter?.addEventListener("change", e => {
       state.lang = (e.target as HTMLSelectElement).value;
       applyFilters();
@@ -263,7 +263,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     // Sort filter
     const sortFilter = document.getElementById(
       "sort-filter"
-    ) as HTMLSelectElement;
+    ) as unknown as HTMLSelectElement | null;
     sortFilter?.addEventListener("change", e => {
       state.sort = (e.target as HTMLSelectElement).value;
       applyFilters();
@@ -370,11 +370,11 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       if (type === "category") {
         state.category = "";
         (
-          document.getElementById("category-filter") as HTMLSelectElement
+          document.getElementById("category-filter") as unknown as HTMLSelectElement
         ).value = "";
       } else if (type === "lang") {
         state.lang = "";
-        (document.getElementById("lang-filter") as HTMLSelectElement).value =
+        (document.getElementById("lang-filter") as unknown as HTMLSelectElement).value =
           "";
       } else if (type === "tag") {
         state.tags.delete(value);
@@ -394,10 +394,10 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     state.tags.clear();
 
     // Reset UI elements
-    (document.getElementById("category-filter") as HTMLSelectElement).value =
+    (document.getElementById("category-filter") as unknown as HTMLSelectElement).value =
       "";
-    (document.getElementById("lang-filter") as HTMLSelectElement).value = "";
-    (document.getElementById("sort-filter") as HTMLSelectElement).value =
+    (document.getElementById("lang-filter") as unknown as HTMLSelectElement).value = "";
+    (document.getElementById("sort-filter") as unknown as HTMLSelectElement).value =
       "relevance";
 
     document.querySelectorAll(".tag-filter-btn.active").forEach(btn => {

@@ -109,7 +109,7 @@ export async function chatCompletion(
     body.response_format = { type: "json_object" };
   }
 
-  let response: Response;
+  let response: Awaited<ReturnType<typeof fetch>>;
   try {
     const dispatcher = getProxyDispatcher();
     response = await fetch(url, {

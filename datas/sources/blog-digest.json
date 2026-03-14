@@ -1,0 +1,232 @@
+{
+  "generatedAt": "2026-03-13T19:29:49.686Z",
+  "count": 18,
+  "posts": [
+    {
+      "id": "en/getting-started",
+      "title": "\"Getting Started: Two Integration Methods\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Blog/Tutorial",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "astro-minimax provides two integration methods for setting up a blog: GitHub Template for beginners and NPM Packages for content-system separation.",
+      "url": "https://example.com/en/getting-started"
+    },
+    {
+      "id": "zh/getting-started",
+      "title": "\"快速开始：两种使用方式\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "介绍astro-minimax的两种使用方式：GitHub模板和NPM包集成，适合不同场景。",
+      "url": "https://example.com/zh/getting-started"
+    },
+    {
+      "id": "en/how-to-add-latex-equations-in-blog-posts",
+      "title": "How to add LaTeX Equations in Astro blog posts",
+      "date": "2024-09-08T20:58:52.737Z",
+      "lang": "en",
+      "category": "教程/前端",
+      "tags": [
+        "docs"
+      ],
+      "summary": "Guide on integrating LaTeX equations into Astro blog posts using remark and rehype plugins.",
+      "url": "https://example.com/en/how-to-add-latex-equations-in-blog-posts"
+    },
+    {
+      "id": "zh/how-to-add-latex-equations-in-blog-posts",
+      "title": "如何在 Astro 博客文章中添加 LaTeX 公式",
+      "date": "2024-09-08T20:58:52.737Z",
+      "lang": "zh",
+      "category": "教程/前端",
+      "tags": [
+        "docs"
+      ],
+      "summary": "介绍在Astro博客中添加LaTeX公式的方法，包括安装插件和配置Astro。",
+      "url": "https://example.com/zh/how-to-add-latex-equations-in-blog-posts"
+    },
+    {
+      "id": "en/setting-dates-via-git-hooks",
+      "title": "How to use Git Hooks to set Created and Modified Dates",
+      "date": "2024-01-03T20:40:08Z",
+      "lang": "en",
+      "category": "教程/工程化",
+      "tags": [
+        "docs",
+        "FAQ"
+      ],
+      "summary": "利用Git钩子自动化更新Astro-minimax主题中文章的创建和修改日期。",
+      "url": "https://example.com/en/setting-dates-via-git-hooks"
+    },
+    {
+      "id": "zh/setting-dates-via-git-hooks",
+      "title": "如何使用 Git 钩子设置创建和修改日期",
+      "date": "2024-01-03T20:40:08Z",
+      "lang": "zh",
+      "category": "教程/工程化",
+      "tags": [
+        "docs",
+        "FAQ"
+      ],
+      "summary": "使用pre-commit Git钩子自动填充博客主题frontmatter中的创建和修改日期。",
+      "url": "https://example.com/zh/setting-dates-via-git-hooks"
+    },
+    {
+      "id": "en/how-to-update-dependencies",
+      "title": "How to update dependencies of astro-minimax",
+      "date": "2023-07-20T15:33:05.569Z",
+      "lang": "en",
+      "category": "教程/工程化",
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
+      "url": "https://example.com/en/how-to-update-dependencies"
+    },
+    {
+      "id": "zh/how-to-update-dependencies",
+      "title": "如何更新 astro-minimax 的依赖",
+      "date": "2023-07-20T15:33:05.569Z",
+      "lang": "zh",
+      "category": "教程/工程化",
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
+      "url": "https://example.com/zh/how-to-update-dependencies"
+    },
+    {
+      "id": "en/dynamic-og-images",
+      "title": "Dynamic OG image generation in astro-minimax blog posts",
+      "date": "2022-12-28T04:59:04.866Z",
+      "lang": "en",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "summary": "Astro-minimax v1.4.0 introduces dynamic OG image generation for blog posts, enhancing social media engagement.",
+      "url": "https://example.com/en/dynamic-og-images"
+    },
+    {
+      "id": "zh/dynamic-og-images",
+      "title": "在 astro-minimax 中动态生成 OG 图片",
+      "date": "2022-12-28T04:59:04.866Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "summary": "astro-minimax v1.4.0 引入动态OG图片生成，提升社交媒体分享效果。",
+      "url": "https://example.com/zh/dynamic-og-images"
+    },
+    {
+      "id": "en/predefined-color-schemes",
+      "title": "Predefined color schemes",
+      "date": "2022-09-26T12:13:24Z",
+      "lang": "en",
+      "category": "教程/配置",
+      "tags": [
+        "color-schemes"
+      ],
+      "summary": "介绍为astro-minimax博客主题预定义的颜色方案，包括浅色和深色模式。",
+      "url": "https://example.com/en/predefined-color-schemes"
+    },
+    {
+      "id": "zh/predefined-color-schemes",
+      "title": "预定义配色方案",
+      "date": "2022-09-26T12:13:24Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "color-schemes"
+      ],
+      "summary": "为astro-minimax博客主题设计预定义配色方案，提供浅色和深色配色方案的CSS配置。",
+      "url": "https://example.com/zh/predefined-color-schemes"
+    },
+    {
+      "id": "en/customizing-astro-minimax-theme-color-schemes",
+      "title": "Customizing astro-minimax theme color schemes",
+      "date": "2022-09-25T15:20:35Z",
+      "lang": "en",
+      "category": "教程/配置",
+      "tags": [
+        "color-schemes",
+        "docs"
+      ],
+      "summary": "文章介绍了如何为astro-minimax主题启用/禁用和自定义网站的颜色方案。",
+      "url": "https://example.com/en/customizing-astro-minimax-theme-color-schemes"
+    },
+    {
+      "id": "zh/customizing-astro-minimax-theme-color-schemes",
+      "title": "自定义 astro-minimax 主题配色方案",
+      "date": "2022-09-25T15:20:35Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "color-schemes",
+        "docs"
+      ],
+      "summary": "教程介绍如何在astro-minimax主题中启用/禁用明暗模式，并自定义网站配色方案。",
+      "url": "https://example.com/zh/customizing-astro-minimax-theme-color-schemes"
+    },
+    {
+      "id": "en/adding-new-post",
+      "title": "Adding new posts in astro-minimax theme",
+      "date": "2022-09-23T15:22:00Z",
+      "lang": "en",
+      "category": "教程/博客",
+      "tags": [
+        "docs"
+      ],
+      "summary": "A guide to creating new posts in astro-minimax theme, including directory organization and frontmatter properties.",
+      "url": "https://example.com/en/adding-new-post"
+    },
+    {
+      "id": "zh/adding-new-post",
+      "title": "在 astro-minimax 主题中添加新文章",
+      "date": "2022-09-23T15:22:00Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs"
+      ],
+      "summary": "介绍在astro-minimax主题中创建新文章的规则、技巧和提示。",
+      "url": "https://example.com/zh/adding-new-post"
+    },
+    {
+      "id": "en/how-to-configure-astro-minimax-theme",
+      "title": "How to configure astro-minimax theme",
+      "date": "2022-09-23T04:58:53Z",
+      "lang": "en",
+      "category": "教程/配置",
+      "tags": [
+        "configuration",
+        "docs"
+      ],
+      "summary": "Configure astro-minimax theme by customizing the SITE object in src/config.ts for SEO and personalization.",
+      "url": "https://example.com/en/how-to-configure-astro-minimax-theme"
+    },
+    {
+      "id": "zh/how-to-configure-astro-minimax-theme",
+      "title": "如何配置 astro-minimax 主题",
+      "date": "2022-09-23T04:58:53Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "configuration",
+        "docs"
+      ],
+      "summary": "介绍如何配置astro-minimax主题，包括SITE配置、布局宽度和Logo或标题设置。",
+      "url": "https://example.com/zh/how-to-configure-astro-minimax-theme"
+    }
+  ]
+}

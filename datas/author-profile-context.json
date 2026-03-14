@@ -1,0 +1,268 @@
+{
+  "generatedAt": "2026-03-13T19:29:51.297Z",
+  "siteUrl": "https://example.com",
+  "sourceInfo": {
+    "totalPosts": 18,
+    "zhPosts": 9,
+    "enPosts": 9,
+    "selectedPosts": 12
+  },
+  "profile": {
+    "name": "博主",
+    "siteUrl": "https://example.com"
+  },
+  "posts": [
+    {
+      "title": "\"Getting Started: Two Integration Methods\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "categories": [
+        "Blog/Tutorial"
+      ],
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "astro-minimax provides two integration methods for setting up a blog: GitHub Template for beginners and NPM Packages for content-system separation.",
+      "keyPoints": [
+        "astro-minimax two integration methods",
+        "GitHub Template for one-time setup",
+        "NPM Packages for content-system separation",
+        "Manual updates for GitHub Template",
+        "Automatic updates with NPM Packages",
+        "Consistent blog content directory structure"
+      ],
+      "url": "https://example.com/en/getting-started"
+    },
+    {
+      "title": "\"快速开始：两种使用方式\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "categories": [
+        "教程/博客"
+      ],
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "介绍astro-minimax的两种使用方式：GitHub模板和NPM包集成，适合不同场景。",
+      "keyPoints": [
+        "astro-minimax两种使用方式",
+        "GitHub Template适合一次性创建",
+        "NPM包集成适合内容与系统分离",
+        "手动合并上游更新",
+        "使用pnpm update持续获取更新"
+      ],
+      "url": "https://example.com/zh/getting-started"
+    },
+    {
+      "title": "How to add LaTeX Equations in Astro blog posts",
+      "date": "2024-09-08T20:58:52.737Z",
+      "categories": [
+        "教程/前端"
+      ],
+      "tags": [
+        "docs"
+      ],
+      "summary": "Guide on integrating LaTeX equations into Astro blog posts using remark and rehype plugins.",
+      "keyPoints": [
+        "Install rehype-katex, remark-math, katex plugins",
+        "Update Astro config to use plugins",
+        "Import KaTeX CSS in main layout",
+        "Add katex text-color in typography CSS",
+        "Write inline and block LaTeX equations"
+      ],
+      "url": "https://example.com/en/how-to-add-latex-equations-in-blog-posts"
+    },
+    {
+      "title": "如何在 Astro 博客文章中添加 LaTeX 公式",
+      "date": "2024-09-08T20:58:52.737Z",
+      "categories": [
+        "教程/前端"
+      ],
+      "tags": [
+        "docs"
+      ],
+      "summary": "介绍在Astro博客中添加LaTeX公式的方法，包括安装插件和配置Astro。",
+      "keyPoints": [
+        "Astro博客添加LaTeX公式支持",
+        "安装remark-math、rehype-katex、katex插件",
+        "配置Astro使用这些插件",
+        "导入KaTeX CSS样式",
+        "为katex设置文本颜色"
+      ],
+      "url": "https://example.com/zh/how-to-add-latex-equations-in-blog-posts"
+    },
+    {
+      "title": "How to use Git Hooks to set Created and Modified Dates",
+      "date": "2024-01-03T20:40:08Z",
+      "categories": [
+        "教程/工程化"
+      ],
+      "tags": [
+        "docs",
+        "FAQ"
+      ],
+      "summary": "利用Git钩子自动化更新Astro-minimax主题中文章的创建和修改日期。",
+      "keyPoints": [
+        "Git Hooks自动化更新文章日期",
+        "使用Husky管理Git钩子",
+        "pre-commit钩子更新修改日期",
+        "为新文件添加创建日期",
+        "IDE代码片段填充frontmatter",
+        "修改Astro配置允许空日期"
+      ],
+      "url": "https://example.com/en/setting-dates-via-git-hooks"
+    },
+    {
+      "title": "如何使用 Git 钩子设置创建和修改日期",
+      "date": "2024-01-03T20:40:08Z",
+      "categories": [
+        "教程/工程化"
+      ],
+      "tags": [
+        "docs",
+        "FAQ"
+      ],
+      "summary": "使用pre-commit Git钩子自动填充博客主题frontmatter中的创建和修改日期。",
+      "keyPoints": [
+        "使用Git钩子自动化日期更新",
+        "Husky包自动安装pre-commit钩子",
+        "为修改文件更新修改日期",
+        "为新文件添加创建日期",
+        "修改Astro配置允许空日期"
+      ],
+      "url": "https://example.com/zh/setting-dates-via-git-hooks"
+    },
+    {
+      "title": "How to update dependencies of astro-minimax",
+      "date": "2023-07-20T15:33:05.569Z",
+      "categories": [
+        "教程/工程化"
+      ],
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
+      "keyPoints": [
+        "更新项目依赖的重要性",
+        "使用npm-check-updates工具更新依赖",
+        "更新Astro-minimax模板的步骤",
+        "处理Git合并冲突"
+      ],
+      "url": "https://example.com/en/how-to-update-dependencies"
+    },
+    {
+      "title": "如何更新 astro-minimax 的依赖",
+      "date": "2023-07-20T15:33:05.569Z",
+      "categories": [
+        "教程/工程化"
+      ],
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
+      "keyPoints": [
+        "更新项目依赖的重要性",
+        "使用npm-check-updates更新依赖",
+        "更新补丁、次版本和主版本依赖",
+        "更新astro-minimax模板的技巧",
+        "使用git更新模板时注意合并冲突"
+      ],
+      "url": "https://example.com/zh/how-to-update-dependencies"
+    },
+    {
+      "title": "Dynamic OG image generation in astro-minimax blog posts",
+      "date": "2022-12-28T04:59:04.866Z",
+      "categories": [
+        "教程/博客"
+      ],
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "summary": "Astro-minimax v1.4.0 introduces dynamic OG image generation for blog posts, enhancing social media engagement.",
+      "keyPoints": [
+        "Astro-minimax v1.4.0 adds dynamic OG image generation",
+        "Uses Vercel's Satori package for image creation",
+        "Dynamic images include post title, author, and site title",
+        "Increased build time with more blog posts",
+        "Limitations with RTL languages and emoji support"
+      ],
+      "url": "https://example.com/en/dynamic-og-images"
+    },
+    {
+      "title": "在 astro-minimax 中动态生成 OG 图片",
+      "date": "2022-12-28T04:59:04.866Z",
+      "categories": [
+        "教程/博客"
+      ],
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "summary": "astro-minimax v1.4.0 引入动态OG图片生成，提升社交媒体分享效果。",
+      "keyPoints": [
+        "astro-minimax v1.4.0支持动态OG图片生成",
+        "使用Vercel Satori包构建时生成OG图片",
+        "OG图片包含文章标题、作者和网站标题",
+        "动态OG图片增加构建时间",
+        "不支持RTL语言和emoji问题"
+      ],
+      "url": "https://example.com/zh/dynamic-og-images"
+    },
+    {
+      "title": "Predefined color schemes",
+      "date": "2022-09-26T12:13:24Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "color-schemes"
+      ],
+      "summary": "介绍为astro-minimax博客主题预定义的颜色方案，包括浅色和深色模式。",
+      "keyPoints": [
+        "astro-minimax博客主题颜色方案",
+        "浅色模式使用:root和html[data-theme='light']",
+        "深色模式使用html[data-theme='dark']",
+        "提供多种预定义颜色方案",
+        "每种方案提供详细CSS代码"
+      ],
+      "url": "https://example.com/en/predefined-color-schemes"
+    },
+    {
+      "title": "预定义配色方案",
+      "date": "2022-09-26T12:13:24Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "color-schemes"
+      ],
+      "summary": "为astro-minimax博客主题设计预定义配色方案，提供浅色和深色配色方案的CSS配置。",
+      "keyPoints": [
+        "astro-minimax博客主题预定义配色方案",
+        "浅色配色方案使用CSS选择器定义",
+        "深色配色方案定义为html[data-theme='dark']",
+        "提供多种配色方案的CSS代码"
+      ],
+      "url": "https://example.com/zh/predefined-color-schemes"
+    }
+  ],
+  "topTags": [
+    "docs",
+    "configuration",
+    "FAQ",
+    "color-schemes",
+    "release"
+  ],
+  "topCategories": [
+    "教程/配置",
+    "教程/博客",
+    "教程/工程化",
+    "教程/前端",
+    "Blog/Tutorial"
+  ],
+  "contentStats": {
+    "totalPosts": 18,
+    "avgPostPerMonth": 0
+  }
+}

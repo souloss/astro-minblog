@@ -1,0 +1,136 @@
+{
+  "$schema": "voice-profile-v1",
+  "generatedAt": "2026-03-13T19:29:50.414Z",
+  "overall_tone": {
+    "description": "技术博客风格，注重实践与可操作性，语言简洁明了",
+    "primary_persona": "技术博主",
+    "communication_style": "先给结论，再补细节"
+  },
+  "blog_title_style": {
+    "total": 18,
+    "patterns": {
+      "usesVerticalBar": 0,
+      "usesColon": 2,
+      "usesMiddleDot": 0,
+      "usesQuestion": 0,
+      "usesEmoji": 0,
+      "usesEnglish": 16,
+      "usesYear": 0,
+      "usesSeriesFormat": 0
+    },
+    "style": {
+      "vertical_bar_rate": 0,
+      "colon_rate": 11,
+      "question_rate": 0,
+      "english_mix_rate": 89,
+      "year_in_title_rate": 0
+    }
+  },
+  "content_style": {
+    "avgLength": 6241,
+    "codeBlockRate": 100,
+    "linkRate": 89,
+    "imageRate": 56,
+    "headingRate": 100,
+    "listRate": 67,
+    "quoteRate": 67
+  },
+  "expression_habits": {
+    "frequent_expressions": [
+      {
+        "word": "然后",
+        "count": 9
+      },
+      {
+        "word": "分享",
+        "count": 8
+      },
+      {
+        "word": "推荐",
+        "count": 6
+      },
+      {
+        "word": "重要",
+        "count": 6
+      },
+      {
+        "word": "但是",
+        "count": 4
+      },
+      {
+        "word": "注意",
+        "count": 4
+      },
+      {
+        "word": "不过",
+        "count": 2
+      },
+      {
+        "word": "所以",
+        "count": 2
+      },
+      {
+        "word": "关键",
+        "count": 1
+      }
+    ],
+    "style_notes": [
+      "标题常用竖线分隔格式：「主题 | 标题」",
+      "技术类标题直接用英文术语，不强行翻译",
+      "生活类标题偏感性，常用问句或感叹",
+      "喜欢用「折腾」「踩坑」等口语化表达描述技术探索",
+      "分享经验时常用「攻略」「指南」「记」等实用性标题词"
+    ]
+  },
+  "category_styles": {
+    "教程/博客": {
+      "count": 5,
+      "avgLength": 5935
+    },
+    "教程/配置": {
+      "count": 6,
+      "avgLength": 8072
+    },
+    "Blog/Tutorial": {
+      "count": 1,
+      "avgLength": 3218
+    },
+    "教程/前端": {
+      "count": 2,
+      "avgLength": 3718
+    },
+    "教程/工程化": {
+      "count": 4,
+      "avgLength": 5894
+    }
+  },
+  "style_modes": {
+    "technical": {
+      "description": "技术类文章",
+      "traits": [
+        "直接给方案",
+        "会提到具体工具和版本",
+        "不回避踩过的坑",
+        "代码片段简洁"
+      ]
+    },
+    "tutorial": {
+      "description": "教程类文章",
+      "traits": [
+        "步骤清晰",
+        "配合截图或代码",
+        "注意事项突出",
+        "有总结部分"
+      ]
+    },
+    "lifestyle": {
+      "description": "生活类文章",
+      "traits": [
+        "语气更随意",
+        "偶尔自嘲",
+        "不说教",
+        "分享真实体验"
+      ]
+    }
+  }
+}

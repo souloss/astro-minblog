@@ -17,14 +17,13 @@
  *   pnpm ai:process --lang=zh         只处理指定语言的文章
  */
 
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import crypto from "node:crypto";
 import {
   getAllPosts,
-  BLOG_PATH,
   type PostMeta,
-} from "./lib/posts.js";
+  } from "./lib/posts.js";
 import { extractFrontmatter } from "./lib/frontmatter.js";
 import { chatCompletion, hasAPIKey, getConfig } from "./lib/ai-provider.js";
 
@@ -117,7 +116,7 @@ function createCacheManager(cacheFile: string) {
           articles: {},
         };
       }
-      return cache;
+      return cache!;
     },
 
     getCache(): Cache | null {
@@ -259,7 +258,6 @@ async function callAIWithRetry(
   userPrompt: string,
   options?: { maxTokens?: number }
 ): Promise<string> {
-  const config = getConfig();
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= RATE_LIMIT_MAX_RETRIES; attempt++) {
@@ -565,7 +563,7 @@ async function processQueue(
         await cacheManager.writeEntry(
           article.id,
           {
-            data,
+            data: data as unknown as Record<string, unknown>,
             contentHash: article.contentHash,
             processedAt: new Date().toISOString(),
           },
