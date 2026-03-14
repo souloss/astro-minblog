@@ -1,0 +1,75 @@
+---
+import type { GetStaticPaths } from "astro";
+import Header from "../../components/nav/Header.astro";
+import Footer from "../../components/nav/Footer.astro";
+import Breadcrumb from "../../components/nav/Breadcrumb.astro";
+import Layout from "../../layouts/Layout.astro";
+import Sponsorship from "../../components/social/Sponsorship.astro";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../../utils/i18n";
+
+export const getStaticPaths = (() => [
+  { params: { lang: "zh" } },
+  { params: { lang: "en" } },
+]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+const hasSponsor = SITE.sponsor?.enabled;
+---
+
+<Layout lang={lang} title={`${t("nav.about", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Breadcrumb />
+  <main id="main-content" class="app-layout">
+    <section id="about" class="app-prose mb-28 max-w-app prose-img:border-0">
+      <h1 class="text-2xl tracking-wider sm:text-3xl">
+        {t("nav.about", lang)}
+      </h1>
+      {
+        lang === "zh" ? (
+          <Fragment>
+            <p>
+              astro-minimax 是一个极简、无障碍且 SEO 友好的博客主题，基于{" "}
+              <a href="https://astro.build/">Astro</a> 和{" "}
+              <a href="https://tailwindcss.com/">Tailwind CSS</a> 构建。
+            </p>
+            <p>
+              astro-minimax 为博客（甚至作品集）提供了坚实的基础——完整的
+              Markdown 支持、内置暗色模式，以及开箱即用的简洁布局。
+            </p>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <p>
+              astro-minimax is a minimal, accessible and SEO-friendly blog theme
+              built with <a href="https://astro.build/">Astro</a> and{" "}
+              <a href="https://tailwindcss.com/">Tailwind CSS</a>.
+            </p>
+            <p>
+              astro-minimax provides a solid foundation for blogs, or even
+              portfolios — with full markdown support, built-in dark mode, and a
+              clean layout that works out-of-the-box.
+            </p>
+          </Fragment>
+        )
+      }
+
+      {
+        hasSponsor && (
+          <div id="sponsorship" class="mt-12">
+            <h2 class="text-xl tracking-wider sm:text-2xl">
+              {lang === "zh" ? "赞赏支持" : "Support & Sponsorship"}
+            </h2>
+            <p class="text-foreground-soft">
+              {lang === "zh"
+                ? "如果你觉得我的内容对你有帮助，欢迎请我喝杯咖啡 :)"
+                : "If you find my content helpful, feel free to buy me a coffee :)"}
+            </p>
+            <Sponsorship class="mt-4" />
+          </div>
+        )
+      }
+    </section>
+  </main>
+  <Footer lang={lang} />
+</Layout>

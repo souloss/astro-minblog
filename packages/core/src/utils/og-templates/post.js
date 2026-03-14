@@ -1,6 +1,6 @@
 import satori from "satori";
 // import { html } from "satori-html";
-import { SITE } from "@/config";
+import { SITE } from "virtual:astro-minimax/config";
 import loadGoogleFonts from "../loadGoogleFont";
 
 // const markup = html`<div

@@ -1,14 +1,19 @@
 # build output
 dist/
+apps/*/dist
 build-output.txt
 build.log
 build-result.txt
 
 # generated types
 .astro/
+apps/*/.astro
 
 # dependencies
 node_modules/
+apps/*/node_modules
+packages/*/node_modules
+packages/*/dist
 
 # logs
 npm-debug.log*
@@ -28,4 +33,4 @@ pnpm-debug.log*
 
 # pagefind
 
-public/pagefind
+pagefind

@@ -22,8 +22,13 @@
     "directory": "packages/core"
   },
   "exports": {
+    ".": "./src/integration.ts",
+    "./integration": "./src/integration.ts",
+    "./pages/*": "./src/pages/*",
     "./layouts/*.astro": "./src/layouts/*.astro",
-    "./components/*.astro": "./src/components/*.astro",
+    "./components/*": "./src/components/*",
+    "./styles/source.css": "./src/styles/source.css",
+    "./styles/theme.css": "./src/styles/theme.css",
     "./styles/*.css": "./src/styles/*.css",
     "./assets/icons/*.svg": "./src/assets/icons/*.svg",
     "./utils/*": "./src/utils/*.ts",
@@ -36,6 +41,24 @@
   ],
   "peerDependencies": {
     "astro": "^5.0.0",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.0",
+    "@astrojs/rss": "^4.0.0",
+    "@pagefind/default-ui": "^1.0.0",
+    "satori": "^0.18.0",
+    "dayjs": "^1.11.0",
+    "slugify": "^1.6.0",
+    "lodash.kebabcase": "^4.1.0",
+    "@resvg/resvg-js": "^2.6.0",
+    "@fontsource/ibm-plex-mono": "^5.0.0"
+  },
+  "devDependencies": {
+    "astro": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "satori": { "optional": true },
+    "@resvg/resvg-js": { "optional": true },
+    "@fontsource/ibm-plex-mono": { "optional": true },
+    "@pagefind/default-ui": { "optional": true }
   }
 }

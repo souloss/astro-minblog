@@ -1,0 +1,144 @@
+---
+import { getCollection } from "astro:content";
+import Main from "../../../layouts/Main.astro";
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/nav/Header.astro";
+import Footer from "../../../components/nav/Footer.astro";
+import Card from "../../../components/ui/Card.astro";
+import getPostsByGroupCondition from "../../../utils/getPostsByGroupCondition";
+import getPostsByLang from "../../../utils/getPostsByLang";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../../../utils/i18n";
+
+export async function getStaticPaths() {
+  if (!SITE.showArchives) return [];
+  return [{ params: { lang: "zh" } }, { params: { lang: "en" } }];
+}
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const langPosts = getPostsByLang(posts, lang);
+
+const months =
+  lang === "zh"
+    ? [
+        "一月",
+        "二月",
+        "三月",
+        "四月",
+        "五月",
+        "六月",
+        "七月",
+        "八月",
+        "九月",
+        "十月",
+        "十一月",
+        "十二月",
+      ]
+    : [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+const totalPosts = langPosts.length;
+const years = getPostsByGroupCondition(langPosts, post =>
+  post.data.pubDatetime.getFullYear()
+);
+const yearCount = Object.keys(years).length;
+---
+
+<Layout lang={lang} title={`${t("nav.archives", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("nav.archives", lang)}
+    pageDesc={t("main.allArchived", lang)}
+    data-lang={lang}
+  >
+    <div class="text-muted-foreground mb-8 flex flex-wrap gap-6 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-foreground">{totalPosts}</span>
+        <span>{t("archives.posts", lang)}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-foreground">{yearCount}</span>
+        <span>{t("archives.years", lang)}</span>
+      </div>
+    </div>
+
+    <div class="relative">
+      <div
+        class="absolute top-0 bottom-0 left-0 w-px bg-border md:left-1/2 md:-ml-px"
+      >
+      </div>
+      {
+        Object.entries(
+          getPostsByGroupCondition(langPosts, post =>
+            post.data.pubDatetime.getFullYear()
+          )
+        )
+          .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+          .map(([year, yearGroup]) => (
+            <div class="relative">
+              <div class="mb-8 flex items-center md:justify-center">
+                <div class="relative z-10 flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-bold text-background shadow-lg">
+                  <span>{year}</span>
+                  <span class="rounded-full bg-background/20 px-2 py-0.5 text-xs">
+                    {yearGroup.length}
+                  </span>
+                </div>
+              </div>
+              <div class="ml-6 border-l-2 border-border pl-6 md:ml-0 md:border-l-0 md:pl-0">
+                {Object.entries(
+                  getPostsByGroupCondition(
+                    yearGroup,
+                    post => post.data.pubDatetime.getMonth() + 1
+                  )
+                )
+                  .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
+                  .map(([month, monthGroup]) => (
+                    <div class="relative mb-8">
+                      <div class="mb-4 flex items-center gap-2">
+                        <div class="absolute left-0 h-3 w-3 -translate-x-1.5 rounded-full bg-accent/50 md:relative md:left-0 md:translate-x-0" />
+                        <h3 class="ml-4 text-lg font-semibold text-foreground md:ml-0">
+                          {months[Number(month) - 1]}
+                          <span class="text-muted-foreground ml-2 text-sm font-normal">
+                            ({monthGroup.length} {t("archives.posts", lang)})
+                          </span>
+                        </h3>
+                      </div>
+                      <ul class="ml-6 grid grid-cols-1 gap-3 md:ml-4">
+                        {monthGroup
+                          .sort(
+                            (a, b) =>
+                              Math.floor(
+                                new Date(b.data.pubDatetime).getTime() / 1000
+                              ) -
+                              Math.floor(
+                                new Date(a.data.pubDatetime).getTime() / 1000
+                              )
+                          )
+                          .map(data => (
+                              <Card lang={lang} compact {...data} />
+                          ))}
+                      </ul>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))
+      }
+    </div>
+  </Main>
+  <Footer lang={lang} />
+</Layout>

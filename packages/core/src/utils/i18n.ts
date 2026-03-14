@@ -1,4 +1,4 @@
-import { SITE } from "@/config";
+import { SITE } from "virtual:astro-minimax/config";
 
 export type TranslationKey =
   | "nav.home"

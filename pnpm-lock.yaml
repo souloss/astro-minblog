@@ -7,6 +7,21 @@ settings:
 importers:
 
   .:
+    devDependencies:
+      prettier:
+        specifier: ^3.8.1
+        version: 3.8.1
+      prettier-plugin-astro:
+        specifier: ^0.14.1
+        version: 0.14.1
+      prettier-plugin-tailwindcss:
+        specifier: ^0.7.2
+        version: 0.7.2(prettier-plugin-astro@0.14.1)(prettier@3.8.1)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  apps/blog:
     dependencies:
       '@ai-sdk/openai-compatible':
         specifier: ^2.0.35
@@ -14,12 +29,15 @@ importers:
       '@ai-sdk/react':
         specifier: ^3.0.118
         version: 3.0.118(react@19.2.4)(zod@3.25.76)
+      '@astro-minimax/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@astro-minimax/core':
-        specifier: ^0.1.0
-        version: 0.1.0(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(tailwindcss@4.2.1)
+        specifier: workspace:*
+        version: link:../../packages/core
       '@astro-minimax/viz':
-        specifier: ^0.1.4
-        version: 0.1.4(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(markmap-common@0.18.9)
+        specifier: workspace:*
+        version: link:../../packages/viz
       '@astrojs/mdx':
         specifier: ^4.3.13
         version: 4.3.13(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
@@ -132,15 +150,6 @@ importers:
       pagefind:
         specifier: ^1.4.0
         version: 1.4.0
-      prettier:
-        specifier: ^3.8.1
-        version: 3.8.1
-      prettier-plugin-astro:
-        specifier: ^0.14.1
-        version: 0.14.1
-      prettier-plugin-tailwindcss:
-        specifier: ^0.7.2
-        version: 0.7.2(prettier-plugin-astro@0.14.1)(prettier@3.8.1)
       puppeteer-core:
         specifier: ^24.38.0
         version: 24.38.0
@@ -150,9 +159,6 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.21.0
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
       typescript-eslint:
         specifier: ^8.56.1
         version: 8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
@@ -166,66 +172,68 @@ importers:
         specifier: ^4.71.0
         version: 4.71.0(@cloudflare/workers-types@4.20260313.1)
 
-  demo:
+  packages/ai:
     dependencies:
-      '@astro-minimax/core':
-        specifier: workspace:*
-        version: link:../packages/core
-      '@astro-minimax/viz':
-        specifier: workspace:*
-        version: link:../packages/viz
-      '@astrojs/mdx':
-        specifier: ^4.3.13
-        version: 4.3.13(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
-      '@astrojs/sitemap':
-        specifier: ^3.7.0
-        version: 3.7.0
-      '@tailwindcss/vite':
-        specifier: ^4.2.1
-        version: 4.2.1(vite@6.4.1(jiti@2.6.1)(lightningcss@1.31.1)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.2))
-      astro:
-        specifier: ^5.18.0
-        version: 5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      rehype-katex:
-        specifier: ^7.0.1
-        version: 7.0.1
-      remark-emoji:
-        specifier: ^5.0.2
-        version: 5.0.2
-      remark-github-alerts:
-        specifier: ^0.1.1
-        version: 0.1.1(@types/mdast@4.0.4)(unified@11.0.5)
-      remark-math:
-        specifier: ^6.0.0
-        version: 6.0.0
-      remark-toc:
-        specifier: ^9.0.0
-        version: 9.0.0
-      tailwindcss:
-        specifier: ^4.2.1
-        version: 4.2.1
+      '@ai-sdk/openai-compatible':
+        specifier: ^2.0.35
+        version: 2.0.35(zod@3.25.76)
+      '@ai-sdk/react':
+        specifier: ^3.0.0
+        version: 3.0.118(react@19.2.4)(zod@3.25.76)
+      ai:
+        specifier: ^6.0.116
+        version: 6.0.116(zod@3.25.76)
+      preact:
+        specifier: ^10.0.0
+        version: 10.29.0
+      workers-ai-provider:
+        specifier: ^0.2.0
+        version: 0.2.2
     devDependencies:
-      '@astrojs/check':
-        specifier: ^0.9.6
-        version: 0.9.6(prettier-plugin-astro@0.14.1)(prettier@3.8.1)(typescript@5.9.3)
-      '@shikijs/rehype':
-        specifier: ^4.0.1
-        version: 4.0.1
-      '@shikijs/transformers':
-        specifier: ^3.23.0
-        version: 3.23.0
+      '@cloudflare/workers-types':
+        specifier: ^4.0.0
+        version: 4.20260313.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
 
   packages/core:
     dependencies:
+      '@astrojs/rss':
+        specifier: ^4.0.0
+        version: 4.0.15
+      '@fontsource/ibm-plex-mono':
+        specifier: ^5.0.0
+        version: 5.2.7
+      '@pagefind/default-ui':
+        specifier: ^1.0.0
+        version: 1.4.0
+      '@resvg/resvg-js':
+        specifier: ^2.6.0
+        version: 2.6.2
+      '@tailwindcss/typography':
+        specifier: ^0.5.0
+        version: 0.5.19(tailwindcss@4.2.1)
       astro:
         specifier: ^5.0.0
         version: 5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      dayjs:
+        specifier: ^1.11.0
+        version: 1.11.19
+      lodash.kebabcase:
+        specifier: ^4.1.0
+        version: 4.1.1
+      satori:
+        specifier: ^0.18.0
+        version: 0.18.4
+      slugify:
+        specifier: ^1.6.0
+        version: 1.6.6
       tailwindcss:
         specifier: ^4.0.0
         version: 4.2.1
+
+  packages/create-astro-minimax: {}
 
   packages/viz:
     dependencies:
@@ -238,6 +246,9 @@ importers:
       markmap-view:
         specifier: ^0.18.10
         version: 0.18.12(markmap-common@0.18.9)
+      mermaid:
+        specifier: ^11.0.0
+        version: 11.12.3
       remark-markmap:
         specifier: ^1.1.5
         version: 1.1.5
@@ -280,17 +291,6 @@ packages:
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
-
-  '@astro-minimax/core@0.1.0':
-    resolution: {integrity: sha512-vvwpXfj0R09xeMYI/kT4euqg8m7HRT2TRofnXPz0Mm2lwo/PCFL0eL/dldEuxADl2UGlW7YqwXsIHOpPTWSE8A==}
-    peerDependencies:
-      astro: ^5.0.0
-      tailwindcss: ^4.0.0
-
-  '@astro-minimax/viz@0.1.4':
-    resolution: {integrity: sha512-ORvEvkGKTh4hOAvFWrq2T5sCMpyNr6Mt1jRVToMhKxoGvl1mrubv7/qX/zzoCritzfR2YG4X4ryWD4agrZiy7A==}
-    peerDependencies:
-      astro: ^5.0.0
 
   '@astrojs/check@0.9.6':
     resolution: {integrity: sha512-jlaEu5SxvSgmfGIFfNgcn5/f+29H61NJzEMfAZ82Xopr4XBchXB1GVlcJsE+elUlsYSbXlptZLX+JMG3b/wZEA==}
@@ -4819,6 +4819,9 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
+  workers-ai-provider@0.2.2:
+    resolution: {integrity: sha512-jtgM4rZIE6euSQxdXc9B61zDdXPf2T9W038rvvr/wQLeopndImPaGO1tuh9wqwY6kTM/02/yYVruBC/UtIdSvA==}
+
   wrangler@4.71.0:
     resolution: {integrity: sha512-j6pSGAncOLNQDRzqtp0EqzYj52CldDP7uz/C9cxVrIgqa5p+cc0b4pIwnapZZAGv9E1Loa3tmPD0aXonH7KTkw==}
     engines: {node: '>=20.0.0'}
@@ -4987,21 +4990,6 @@ snapshots:
     dependencies:
       package-manager-detector: 1.6.0
       tinyexec: 1.0.2
-
-  '@astro-minimax/core@0.1.0(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(tailwindcss@4.2.1)':
-    dependencies:
-      astro: 5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      tailwindcss: 4.2.1
-
-  '@astro-minimax/viz@0.1.4(astro@5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(markmap-common@0.18.9)':
-    dependencies:
-      astro: 5.18.0(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(stylus@0.64.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      markmap-lib: 0.18.12(markmap-common@0.18.9)
-      markmap-view: 0.18.12(markmap-common@0.18.9)
-      remark-markmap: 1.1.5
-      unist-util-visit: 5.1.0
-    transitivePeerDependencies:
-      - markmap-common
 
   '@astrojs/check@0.9.6(prettier-plugin-astro@0.14.1)(prettier@3.8.1)(typescript@5.9.3)':
     dependencies:
@@ -6229,13 +6217,6 @@ snapshots:
     dependencies:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.2.1
-
-  '@tailwindcss/vite@4.2.1(vite@6.4.1(jiti@2.6.1)(lightningcss@1.31.1)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.2))':
-    dependencies:
-      '@tailwindcss/node': 4.2.1
-      '@tailwindcss/oxide': 4.2.1
-      tailwindcss: 4.2.1
-      vite: 6.4.1(jiti@2.6.1)(lightningcss@1.31.1)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.2)
 
   '@tailwindcss/vite@4.2.1(vite@7.3.1(jiti@2.6.1)(lightningcss@1.31.1)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
@@ -9992,6 +9973,10 @@ snapshots:
       '@cloudflare/workerd-linux-64': 1.20260301.1
       '@cloudflare/workerd-linux-arm64': 1.20260301.1
       '@cloudflare/workerd-windows-64': 1.20260301.1
+
+  workers-ai-provider@0.2.2:
+    dependencies:
+      '@cloudflare/workers-types': 4.20260313.1
 
   wrangler@4.71.0(@cloudflare/workers-types@4.20260313.1):
     dependencies:

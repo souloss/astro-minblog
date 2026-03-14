@@ -1,19 +1,43 @@
 ---
-import { SOCIALS } from "@/constants";
-import LinkButton from "../../components/ui/LinkButton.astro";
+import { SOCIALS } from "virtual:astro-minimax/constants";
+import LinkButton from "../ui/LinkButton.astro";
+import IconGitHub from "../../assets/icons/IconGitHub.svg";
+import IconMail from "../../assets/icons/IconMail.svg";
+import IconBrandX from "../../assets/icons/IconBrandX.svg";
+import IconLinkedin from "../../assets/icons/IconLinkedin.svg";
+import IconFacebook from "../../assets/icons/IconFacebook.svg";
+import IconTelegram from "../../assets/icons/IconTelegram.svg";
+import IconWhatsapp from "../../assets/icons/IconWhatsapp.svg";
+import IconPinterest from "../../assets/icons/IconPinterest.svg";
+import IconRss from "../../assets/icons/IconRss.svg";
+
+const iconMap: Record<string, any> = {
+  github: IconGitHub,
+  mail: IconMail,
+  x: IconBrandX,
+  linkedin: IconLinkedin,
+  facebook: IconFacebook,
+  telegram: IconTelegram,
+  whatsapp: IconWhatsapp,
+  pinterest: IconPinterest,
+  rss: IconRss,
+};
 ---
 
 <div class="flex flex-wrap items-center gap-1">
   {
-    SOCIALS.map(social => (
-      <LinkButton
-        href={social.href}
-        class="p-2 hover:rotate-6 sm:p-1"
-        title={social.linkTitle}
-      >
-        <social.icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
-        <span class="sr-only">{social.linkTitle}</span>
-      </LinkButton>
-    ))
+    SOCIALS.map(social => {
+      const Icon = iconMap[social.icon];
+      return Icon ? (
+        <LinkButton
+          href={social.href}
+          class="p-2 hover:rotate-6 sm:p-1"
+          title={social.linkTitle}
+        >
+          <Icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
+          <span class="sr-only">{social.linkTitle}</span>
+        </LinkButton>
+      ) : null;
+    })
   }
 </div>

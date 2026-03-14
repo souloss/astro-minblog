@@ -42,7 +42,7 @@ const langLabel = id.startsWith("en/") ? "English" : "中文";
 import dayjs from "dayjs";
 import utcPlugin from "dayjs/plugin/utc";
 import timezonePlugin from "dayjs/plugin/timezone";
-import { SITE } from "@/config";
+import { SITE } from "virtual:astro-minimax/config";
 
 dayjs.extend(utcPlugin);
 dayjs.extend(timezonePlugin);

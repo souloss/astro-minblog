@@ -10,8 +10,8 @@ const MOCK_RESPONSES: Array<{ patterns: RegExp[]; zh: string; en: string }> = [
     zh: `Astro 是一个现代化的静态站点生成器，核心优势是"岛屿架构"——默认零 JS，只在交互组件上加载脚本。本博客基于 Astro 构建。
 
 推荐阅读：
-- [快速上手：两种集成方式](/zh/getting-started) — 了解如何搭建 astro-minimax 博客
-- [如何配置主题](/zh/how-to-configure-astro-minimax-theme) — 自定义你的博客外观
+- [快速上手：两种集成方式](/zh/posts/getting-started) — 了解如何搭建 astro-minimax 博客
+- [如何配置主题](/zh/posts/how-to-configure-astro-minimax-theme) — 自定义你的博客外观
 
 外部资源：
 - [Astro 官方文档](https://docs.astro.build) — 深入学习 Astro 框架
@@ -19,8 +19,8 @@ const MOCK_RESPONSES: Array<{ patterns: RegExp[]; zh: string; en: string }> = [
     en: `Astro is a modern static site generator with an "Islands Architecture" — zero JS by default, loading scripts only for interactive components. This blog is built with Astro.
 
 Recommended reading:
-- [Getting Started: Two Integration Methods](/en/getting-started) — Learn how to set up an astro-minimax blog
-- [How to Configure the Theme](/en/how-to-configure-astro-minimax-theme) — Customize your blog
+- [Getting Started: Two Integration Methods](/en/posts/getting-started) — Learn how to set up an astro-minimax blog
+- [How to Configure the Theme](/en/posts/how-to-configure-astro-minimax-theme) — Customize your blog
 
 External resources:
 - [Astro Documentation](https://docs.astro.build) — Learn Astro in depth
@@ -31,25 +31,25 @@ External resources:
     zh: `以下是一些热门文章推荐：
 
 **入门系列：**
-- [快速上手：两种集成方式](/zh/getting-started) — 搭建你的第一个博客
-- [如何添加新文章](/zh/adding-new-post) — 内容创作指南
-- [预定义配色方案](/zh/predefined-color-schemes) — 选一个你喜欢的主题色
+- [快速上手：两种集成方式](/zh/posts/getting-started) — 搭建你的第一个博客
+- [如何添加新文章](/zh/posts/adding-new-post) — 内容创作指南
+- [预定义配色方案](/zh/posts/predefined-color-schemes) — 选一个你喜欢的主题色
 
 **技术深度：**
-- [如何在博客中使用 LaTeX 公式](/zh/how-to-add-latex-equations-in-blog-posts) — 数学公式支持
-- [动态 OG 图片生成](/zh/dynamic-og-images) — 自动生成社交分享图
+- [如何在博客中使用 LaTeX 公式](/zh/posts/how-to-add-latex-equations-in-blog-posts) — 数学公式支持
+- [动态 OG 图片生成](/zh/posts/dynamic-og-images) — 自动生成社交分享图
 
 你对哪个方向的内容更感兴趣？我可以做更精准的推荐。`,
     en: `Here are some recommended articles:
 
 **Getting Started:**
-- [Getting Started: Two Integration Methods](/en/getting-started) — Build your first blog
-- [Adding New Posts](/en/adding-new-post) — Content creation guide
-- [Predefined Color Schemes](/en/predefined-color-schemes) — Pick your favorite theme color
+- [Getting Started: Two Integration Methods](/en/posts/getting-started) — Build your first blog
+- [Adding New Posts](/en/posts/adding-new-post) — Content creation guide
+- [Predefined Color Schemes](/en/posts/predefined-color-schemes) — Pick your favorite theme color
 
 **Technical Deep Dives:**
-- [LaTeX Equations in Blog Posts](/en/how-to-add-latex-equations-in-blog-posts) — Math formula support
-- [Dynamic OG Images](/en/dynamic-og-images) — Auto-generate social share images
+- [LaTeX Equations in Blog Posts](/en/posts/how-to-add-latex-equations-in-blog-posts) — Math formula support
+- [Dynamic OG Images](/en/posts/dynamic-og-images) — Auto-generate social share images
 
 What direction interests you more? I can provide more specific recommendations.`,
   },
@@ -57,20 +57,20 @@ What direction interests you more? I can provide more specific recommendations.`
     patterns: [/博客|blog|功能|feature/i],
     zh: `这个博客基于 **astro-minimax** 主题，功能丰富：
 
-核心功能：Markdown/MDX、代码高亮、[数学公式(KaTeX)](/zh/how-to-add-latex-equations-in-blog-posts)、[Mermaid 图表](/zh/mermaid-diagrams)、标签分类、全文搜索(Pagefind)、[Waline 评论](https://waline.js.org)、深色模式。
+核心功能：Markdown/MDX、代码高亮、[数学公式(KaTeX)](/zh/posts/how-to-add-latex-equations-in-blog-posts)、[Mermaid 图表](/zh/posts/mermaid-diagrams)、标签分类、全文搜索(Pagefind)、[Waline 评论](https://waline.js.org)、深色模式。
 
 了解更多：
-- [配置指南](/zh/how-to-configure-astro-minimax-theme) — 完整配置选项
-- [Markdown 扩展语法](/zh/markdown-extended) — 所有支持的语法特性
+- [配置指南](/zh/posts/how-to-configure-astro-minimax-theme) — 完整配置选项
+- [Markdown 扩展语法](/zh/posts/markdown-extended) — 所有支持的语法特性
 
 开源地址：[souloss/astro-minimax](https://github.com/souloss/astro-minimax)`,
     en: `This blog uses the **astro-minimax** theme with rich features:
 
-Core features: Markdown/MDX, syntax highlighting, [math equations (KaTeX)](/en/how-to-add-latex-equations-in-blog-posts), [Mermaid diagrams](/en/mermaid-diagrams), tags & categories, full-text search (Pagefind), [Waline comments](https://waline.js.org), dark mode.
+Core features: Markdown/MDX, syntax highlighting, [math equations (KaTeX)](/en/posts/how-to-add-latex-equations-in-blog-posts), [Mermaid diagrams](/en/posts/mermaid-diagrams), tags & categories, full-text search (Pagefind), [Waline comments](https://waline.js.org), dark mode.
 
 Learn more:
-- [Configuration Guide](/en/how-to-configure-astro-minimax-theme) — Full config options
-- [Extended Markdown](/en/markdown-extended) — All supported syntax features
+- [Configuration Guide](/en/posts/how-to-configure-astro-minimax-theme) — Full config options
+- [Extended Markdown](/en/posts/markdown-extended) — All supported syntax features
 
 Open source: [souloss/astro-minimax](https://github.com/souloss/astro-minimax)`,
   },
@@ -79,15 +79,15 @@ Open source: [souloss/astro-minimax](https://github.com/souloss/astro-minimax)`,
     zh: `博客支持亮色和暗色主题，右下角按钮即可切换，也会自动检测系统偏好。
 
 配色方案可以在配置中自定义，目前提供多种预设：
-- [预定义配色方案](/zh/predefined-color-schemes) — 查看所有可用配色
-- [自定义主题色](/zh/customizing-astro-minimax-theme-color-schemes) — 创建你自己的配色
+- [预定义配色方案](/zh/posts/predefined-color-schemes) — 查看所有可用配色
+- [自定义主题色](/zh/posts/customizing-astro-minimax-theme-color-schemes) — 创建你自己的配色
 
 参考 [Tailwind CSS 调色板](https://tailwindcss.com/docs/customizing-colors) 获取灵感。`,
     en: `The blog supports light and dark themes — toggle with the bottom-right button or auto-detect system preference.
 
 Color schemes are customizable:
-- [Predefined Color Schemes](/en/predefined-color-schemes) — See all available schemes
-- [Custom Theme Colors](/en/customizing-astro-minimax-theme-color-schemes) — Create your own
+- [Predefined Color Schemes](/en/posts/predefined-color-schemes) — See all available schemes
+- [Custom Theme Colors](/en/posts/customizing-astro-minimax-theme-color-schemes) — Create your own
 
 Check [Tailwind CSS Color Palette](https://tailwindcss.com/docs/customizing-colors) for inspiration.`,
   },
@@ -98,7 +98,7 @@ Check [Tailwind CSS Color Palette](https://tailwindcss.com/docs/customizing-colo
 1. **GitHub 模板**（推荐新手）— 一键 Fork，开箱即用
 2. **NPM 包集成** — 适合内容与系统分离的进阶用法
 
-详细步骤请看 [快速上手](/zh/getting-started)。
+详细步骤请看 [快速上手](/zh/posts/getting-started)。
 
 部署推荐 [Cloudflare Pages](https://pages.cloudflare.com)（免费、全球 CDN），也支持 [Vercel](https://vercel.com) 和 [Netlify](https://netlify.com)。`,
     en: `Setting up a similar blog is easy! Two methods:
@@ -106,26 +106,26 @@ Check [Tailwind CSS Color Palette](https://tailwindcss.com/docs/customizing-colo
 1. **GitHub Template** (recommended for beginners) — One-click fork, ready to use
 2. **NPM Package Integration** — For advanced content/system separation
 
-See [Getting Started](/en/getting-started) for detailed steps.
+See [Getting Started](/en/posts/getting-started) for detailed steps.
 
 Deploy with [Cloudflare Pages](https://pages.cloudflare.com) (free, global CDN), or [Vercel](https://vercel.com) / [Netlify](https://netlify.com).`,
   },
   {
     patterns: [/rust/i],
     zh: `博客中有一系列 Rust 文章：
-- [Rust 入门介绍](/zh/rust-series-01-introduction) — 语言基础
-- [所有权系统](/zh/rust-series-02-ownership) — Rust 核心概念
-- [错误处理](/zh/rust-series-03-error-handling) — Result 和 Option
-- [并发编程](/zh/rust-series-04-concurrency) — 安全的多线程
+- [Rust 入门介绍](/zh/posts/rust-series-01-introduction) — 语言基础
+- [所有权系统](/zh/posts/rust-series-02-ownership) — Rust 核心概念
+- [错误处理](/zh/posts/rust-series-03-error-handling) — Result 和 Option
+- [并发编程](/zh/posts/rust-series-04-concurrency) — 安全的多线程
 
 外部学习资源：
 - [The Rust Book](https://doc.rust-lang.org/book/) — 官方教程
 - [Rust by Example](https://doc.rust-lang.org/rust-by-example/) — 实例学习`,
     en: `The blog has a Rust series:
-- [Rust Introduction](/en/rust-series-01-introduction) — Language basics
-- [Ownership System](/en/rust-series-02-ownership) — Core Rust concept
-- [Error Handling](/en/rust-series-03-error-handling) — Result and Option
-- [Concurrency](/en/rust-series-04-concurrency) — Safe multithreading
+- [Rust Introduction](/en/posts/rust-series-01-introduction) — Language basics
+- [Ownership System](/en/posts/rust-series-02-ownership) — Core Rust concept
+- [Error Handling](/en/posts/rust-series-03-error-handling) — Result and Option
+- [Concurrency](/en/posts/rust-series-04-concurrency) — Safe multithreading
 
 External resources:
 - [The Rust Book](https://doc.rust-lang.org/book/) — Official tutorial
@@ -167,20 +167,20 @@ Learn more:
     patterns: [/markdown|mdx|语法|syntax|公式|latex|mermaid|图表/i],
     zh: `博客支持丰富的内容语法：
 
-- [Markdown 基础语法](/zh/markdown-basics) — 标题、列表、表格等
-- [Markdown 扩展语法](/zh/markdown-extended) — 脚注、高亮、折叠等
-- [LaTeX 数学公式](/zh/how-to-add-latex-equations-in-blog-posts) — KaTeX 渲染
-- [Mermaid 图表](/zh/mermaid-diagrams) — 流程图、时序图
-- [Markmap 思维导图](/zh/markmap-mindmaps) — 交互式思维导图
+- [Markdown 基础语法](/zh/posts/markdown-basics) — 标题、列表、表格等
+- [Markdown 扩展语法](/zh/posts/markdown-extended) — 脚注、高亮、折叠等
+- [LaTeX 数学公式](/zh/posts/how-to-add-latex-equations-in-blog-posts) — KaTeX 渲染
+- [Mermaid 图表](/zh/posts/mermaid-diagrams) — 流程图、时序图
+- [Markmap 思维导图](/zh/posts/markmap-mindmaps) — 交互式思维导图
 
 外部参考：[GitHub Flavored Markdown](https://github.github.com/gfm/)`,
     en: `The blog supports rich content syntax:
 
-- [Markdown Basics](/en/markdown-basics) — Headings, lists, tables
-- [Extended Markdown](/en/markdown-extended) — Footnotes, highlights, collapsible
-- [LaTeX Equations](/en/how-to-add-latex-equations-in-blog-posts) — KaTeX rendering
-- [Mermaid Diagrams](/en/mermaid-diagrams) — Flowcharts, sequence diagrams
-- [Markmap Mind Maps](/en/markmap-mindmaps) — Interactive mind maps
+- [Markdown Basics](/en/posts/markdown-basics) — Headings, lists, tables
+- [Extended Markdown](/en/posts/markdown-extended) — Footnotes, highlights, collapsible
+- [LaTeX Equations](/en/posts/how-to-add-latex-equations-in-blog-posts) — KaTeX rendering
+- [Mermaid Diagrams](/en/posts/mermaid-diagrams) — Flowcharts, sequence diagrams
+- [Markmap Mind Maps](/en/posts/markmap-mindmaps) — Interactive mind maps
 
 Reference: [GitHub Flavored Markdown](https://github.github.com/gfm/)`,
   },

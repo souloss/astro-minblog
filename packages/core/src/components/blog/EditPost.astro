@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import IconEdit from "../../assets/icons/IconEdit.svg";
-import { SITE } from "@/config";
+import { SITE } from "virtual:astro-minimax/config";
 
 type Props = {
   hideEditPost?: CollectionEntry<"blog">["data"]["hideEditPost"];

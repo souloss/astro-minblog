@@ -38,11 +38,14 @@
       "types": "./dist/stream/index.d.ts",
       "import": "./dist/stream/index.js"
     },
-    "./components/*": "./src/components/*"
+    "./components/*": "./src/components/*",
+    "./styles/source.css": "./src/styles/source.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist/",
     "src/components/",
+    "src/styles/",
     "README.md"
   ],
   "sideEffects": false,
@@ -68,6 +71,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.0.0",
+    "astro": "^5.0.0",
     "typescript": "^5.9.3"
   },
   "engines": {

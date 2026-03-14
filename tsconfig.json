@@ -1,50 +1,9 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": [
-    "dist",
-    "public/pagefind",
-    "demo/dist",
-    "demo/.astro",
-    "packages/*/dist",
-    "packages/*/.astro",
-    "node_modules"
-  ],
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@astro-minimax/ai": ["./packages/ai/src/index.ts"],
-      "@astro-minimax/ai/providers": ["./packages/ai/src/providers/index.ts"],
-      "@astro-minimax/ai/middleware": ["./packages/ai/src/middleware/index.ts"],
-      "@astro-minimax/ai/search": ["./packages/ai/src/search/index.ts"],
-      "@astro-minimax/ai/intelligence": ["./packages/ai/src/intelligence/index.ts"],
-      "@astro-minimax/ai/prompt": ["./packages/ai/src/prompt/index.ts"],
-      "@astro-minimax/ai/data": ["./packages/ai/src/data/index.ts"],
-      "@astro-minimax/ai/stream": ["./packages/ai/src/stream/index.ts"],
-      "@astro-minimax/ai/components/*": ["./packages/ai/src/components/*"],
-      "@astro-minimax/core/layouts/*": ["./packages/core/src/layouts/*"],
-      "@astro-minimax/core/components/*": ["./packages/core/src/components/*"],
-      "@astro-minimax/core/utils/*": ["./packages/core/src/utils/*"],
-      "@astro-minimax/core/styles/*": ["./packages/core/src/styles/*"],
-      "@astro-minimax/core/plugins/*": ["./packages/core/src/plugins/*"],
-      "@astro-minimax/core/scripts/*": ["./packages/core/src/scripts/*"],
-      "@astro-minimax/core/assets/*": ["./packages/core/src/assets/*"],
-      "@astro-minimax/core/types": ["./packages/core/src/types.ts"],
-      "@astro-minimax/viz/plugins/*": ["./packages/viz/src/plugins/*"],
-      "@astro-minimax/viz/components/*": ["./packages/viz/src/components/*"],
-      "@astro-minimax/viz/scripts/*": ["./packages/viz/src/scripts/*"],
-      "@/components/media/*": ["./packages/viz/src/components/*"],
-      "@/components/*": ["./packages/core/src/components/*"],
-      "@/layouts/*": ["./packages/core/src/layouts/*"],
-      "@/utils/*": ["./packages/core/src/utils/*"],
-      "@/styles/*": ["./packages/core/src/styles/*"],
-      "@/plugins/*": ["./packages/core/src/plugins/*"],
-      "@/scripts/*": ["./packages/core/src/scripts/*"],
-      "@/assets/icons/*": ["./packages/core/src/assets/icons/*"],
-      "@/*": ["./src/*"]
-    },
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "types": ["@cloudflare/workers-types"]
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "skipLibCheck": true
   }
 }
