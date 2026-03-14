@@ -1,0 +1,30 @@
+name: Deploy Blog
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter astro-minimax-blog build
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          workingDirectory: apps/blog
+          command: pages deploy dist --project-name=astro-minimax
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

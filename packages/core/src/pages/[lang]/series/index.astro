@@ -1,0 +1,404 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import Main from "../../../layouts/Main.astro";
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/nav/Header.astro";
+import Footer from "../../../components/nav/Footer.astro";
+import { getPostsByLang } from "../../../utils/getPostsByLang";
+import { getSeriesFromPosts } from "../../../utils/getSeriesData";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../../../utils/i18n";
+
+export const getStaticPaths = (() => [
+  { params: { lang: "zh" } },
+  { params: { lang: "en" } },
+]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+
+const posts = await getCollection("blog");
+const langPosts = getPostsByLang(posts, lang);
+const seriesList = getSeriesFromPosts(langPosts);
+
+import dayjs from "dayjs";
+import utcPlugin from "dayjs/plugin/utc";
+import timezonePlugin from "dayjs/plugin/timezone";
+
+dayjs.extend(utcPlugin);
+dayjs.extend(timezonePlugin);
+---
+
+<Layout lang={lang} title={`${t("series.title", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main pageTitle={t("series.title", lang)} pageDesc={t("series.desc", lang)}>
+    {
+      seriesList.length > 0 ? (
+        <div class="series-grid">
+          {seriesList.map(series => {
+            const dateStr =
+              lang === "zh"
+                ? dayjs(series.latestDate)
+                    .tz(SITE.timezone)
+                    .format("YYYY 年 M 月 D 日")
+                : dayjs(series.latestDate)
+                    .tz(SITE.timezone)
+                    .format("MMM D, YYYY");
+
+            const countStr = String(series.totalPosts).padStart(2, "0");
+            const barWidth = Math.min(series.totalPosts * 12.5, 100);
+
+            return (
+              <a
+                href={`/${lang}/series/${encodeURIComponent(series.slug)}/`}
+                class="series-card group"
+              >
+                {/* Top accent line */}
+                <div class="series-card__accent" />
+
+                <div class="series-card__header">
+                  <div class="series-card__icon">
+                    <svg
+                      class="size-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M4 6h16M4 12h16M4 18h10" />
+                      <circle cx="20" cy="18" r="2" fill="currentColor" stroke="none" />
+                    </svg>
+                  </div>
+                  <h2 class="series-card__title">
+                    {series.name}
+                  </h2>
+                </div>
+
+                {series.description && (
+                  <p class="series-card__desc">{series.description}</p>
+                )}
+
+                <div class="series-card__stats">
+                  <span class="series-card__badge">
+                    <span class="font-mono font-semibold">{countStr}</span>
+                    <span>{lang === "zh" ? "篇文章" : "articles"}</span>
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div class="series-card__track">
+                  <div
+                    class="series-card__fill"
+                    style={`width: ${barWidth}%`}
+                  >
+                    <span class="series-card__pulse" />
+                  </div>
+                </div>
+
+                {/* Post preview */}
+                <ul class="series-card__posts">
+                  {series.posts.slice(0, 3).map((post, idx) => (
+                    <li class="series-card__post-item">
+                      <span class="series-card__post-num">{String(idx + 1).padStart(2, "0")}</span>
+                      <span class="truncate">{post.data.title}</span>
+                    </li>
+                  ))}
+                  {series.totalPosts > 3 && (
+                    <li class="series-card__post-more">
+                      +{series.totalPosts - 3} {lang === "zh" ? "篇更多" : "more"}…
+                    </li>
+                  )}
+                </ul>
+
+                {/* Footer */}
+                <div class="series-card__footer">
+                  <div class="series-card__date">
+                    <span class="series-card__pulse-dot" />
+                    <span>{t("series.latestUpdate", lang)}: {dateStr}</span>
+                  </div>
+                  <svg
+                    class="series-card__arrow"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="M12 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="series-empty">
+          <svg class="series-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <p>{t("series.noSeries", lang)}</p>
+        </div>
+      )
+    }
+  </Main>
+  <Footer lang={lang} />
+</Layout>
+
+<style>
+  .series-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .series-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .series-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--series-bg-from), var(--series-bg-to));
+    border: 1px solid var(--series-border);
+    box-shadow: 0 0 0 var(--series-glow);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+  }
+  .series-card:hover {
+    box-shadow: 0 0 10px var(--series-glow);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .series-card__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .series-card:hover .series-card__accent {
+    opacity: 1;
+  }
+
+  .series-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .series-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    flex-shrink: 0;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .series-card:hover .series-card__icon {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .series-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    transition: color 0.2s;
+    line-height: 1.4;
+  }
+  .series-card:hover .series-card__title {
+    color: var(--accent);
+  }
+
+  .series-card__desc {
+    font-size: 0.8125rem;
+    color: var(--foreground-soft);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .series-card__stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .series-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .series-card:hover .series-card__badge {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .series-card__track {
+    position: relative;
+    height: 3px;
+    width: 100%;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    margin-bottom: 0.875rem;
+    overflow: visible;
+  }
+  .series-card__fill {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .series-card__pulse {
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--series-pulse);
+    animation: card-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes card-pulse {
+    0%, 100% {
+      box-shadow: 0 0 4px 1px var(--series-glow);
+      opacity: 1;
+    }
+    50% {
+      box-shadow: 0 0 10px 4px var(--series-glow);
+      opacity: 0.7;
+    }
+  }
+
+  .series-card__posts {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .series-card__post-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--foreground-soft);
+    padding: 0.125rem 0;
+  }
+  .series-card__post-num {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+    font-size: 0.6875rem;
+    opacity: 0.45;
+    flex-shrink: 0;
+    width: 1.25rem;
+    text-align: right;
+  }
+  .series-card__post-more {
+    font-size: 0.75rem;
+    color: var(--foreground-soft);
+    opacity: 0.6;
+    padding-left: 1.75rem;
+  }
+
+  .series-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  }
+
+  .series-card__date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--foreground-soft);
+  }
+
+  .series-card__pulse-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--series-pulse);
+    animation: dot-pulse 2.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 3px var(--series-glow); }
+    50% { opacity: 0.4; box-shadow: 0 0 6px var(--series-glow); }
+  }
+
+  .series-card__arrow {
+    width: 1rem;
+    height: 1rem;
+    color: var(--foreground-soft);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .series-card:hover .series-card__arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  .series-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem 1rem;
+    color: var(--foreground-soft);
+    text-align: center;
+    font-style: italic;
+  }
+  .series-empty__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    opacity: 0.4;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .series-card__pulse,
+    .series-card__pulse-dot {
+      animation: none;
+    }
+    .series-card:hover {
+      transform: none;
+    }
+  }
+</style>

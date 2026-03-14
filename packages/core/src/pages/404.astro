@@ -1,0 +1,65 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/nav/Header.astro";
+import Footer from "../components/nav/Footer.astro";
+import LinkButton from "../components/ui/LinkButton.astro";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../utils/i18n";
+---
+
+<Layout title={`404 | ${SITE.title}`}>
+  <Header lang={SITE.lang} />
+
+  <main
+    id="main-content"
+    class="app-layout flex flex-1 items-center justify-center"
+  >
+    <div class="mb-14 flex flex-col items-center justify-center" id="not-found">
+      <h1 class="text-9xl font-bold text-accent">404</h1>
+      <span aria-hidden="true">¯\_(ツ)_/¯</span>
+      <p
+        class="mt-4 text-2xl sm:text-3xl"
+        data-zh={t("common.notFound", "zh")}
+        data-en={t("common.notFound", "en")}
+      >
+        {t("common.notFound", SITE.lang)}
+      </p>
+      <p
+        class="text-muted-foreground mt-2"
+        data-zh={t("common.notFoundDesc", "zh")}
+        data-en={t("common.notFoundDesc", "en")}
+      >
+        {t("common.notFoundDesc", SITE.lang)}
+      </p>
+      <LinkButton
+        href="/"
+        class="my-6 text-lg underline decoration-dashed underline-offset-8"
+        id="go-home-link"
+      >
+        <span
+          data-zh={t("common.goHome", "zh")}
+          data-en={t("common.goHome", "en")}
+        >
+          {t("common.goHome", SITE.lang)}
+        </span>
+      </LinkButton>
+    </div>
+  </main>
+
+  <Footer lang={SITE.lang} />
+</Layout>
+
+<script is:inline>
+  (function () {
+    const path = window.location.pathname;
+    const lang = path.startsWith("/en/") ? "en" : "zh";
+    const container = document.getElementById("not-found");
+    if (!container) return;
+    const elements = container.querySelectorAll("[data-" + lang + "]");
+    elements.forEach(function (el) {
+      el.textContent = el.getAttribute("data-" + lang) || el.textContent;
+    });
+    const homeLink = document.getElementById("go-home-link");
+    if (homeLink) homeLink.setAttribute("href", "/" + lang + "/");
+  })();
+</script>

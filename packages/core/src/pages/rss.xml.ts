@@ -1,0 +1,22 @@
+import rss from "@astrojs/rss";
+import { getCollection } from "astro:content";
+import { getLocalizedPostPath } from "../utils/getPath";
+import { getPostLang } from "../utils/getPostsByLang";
+import getSortedPosts from "../utils/getSortedPosts";
+import { SITE } from "virtual:astro-minimax/config";
+
+export async function GET() {
+  const posts = await getCollection("blog");
+  const sortedPosts = getSortedPosts(posts);
+  return rss({
+    title: SITE.title,
+    description: SITE.desc,
+    site: SITE.website,
+    items: sortedPosts.map(post => ({
+      link: getLocalizedPostPath(getPostLang(post), post.id),
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: new Date(post.data.modDatetime ?? post.data.pubDatetime),
+    })),
+  });
+}

@@ -1,0 +1,15 @@
+{
+  "name": "create-astro-minimax",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Create a new astro-minimax blog project",
+  "license": "MIT",
+  "bin": "./index.js",
+  "files": [
+    "index.js",
+    "template/"
+  ],
+  "devDependencies": {
+    "astro": "^5.0.0"
+  }
+}

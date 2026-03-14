@@ -1,0 +1,98 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Main from "../../../layouts/Main.astro";
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/nav/Header.astro";
+import Footer from "../../../components/nav/Footer.astro";
+import Card from "../../../components/ui/Card.astro";
+import Pagination from "../../../components/nav/Pagination.astro";
+import {
+  getCategoryTree,
+  getAllCategoryPaths,
+} from "../../../utils/getUniqueCategories";
+import getPostsByCategory from "../../../utils/getPostsByCategory";
+import { getPostsByLang } from "../../../utils/getPostsByLang";
+import {
+  getCategoryPathSegments,
+  getCategoryUrl,
+} from "../../../utils/getCategoryPath";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../../../utils/i18n";
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const result: Array<{
+    params: { lang: string; path: string };
+    props: { category: string; page: Page<CollectionEntry<"blog">> };
+  }> = [];
+
+  for (const lang of ["zh", "en"] as const) {
+    const langPosts = getPostsByLang(posts, lang);
+    const tree = getCategoryTree(langPosts);
+    const allCategoryPaths = getAllCategoryPaths(tree);
+
+    for (const category of allCategoryPaths) {
+      const categoryPosts = getPostsByCategory(langPosts, category);
+      const totalPages = Math.ceil(
+        categoryPosts.length / SITE.postPerPage
+      ) || 1;
+
+      for (let page = 1; page <= totalPages; page++) {
+        const start = (page - 1) * SITE.postPerPage;
+        const pageData = categoryPosts.slice(start, start + SITE.postPerPage);
+        const pathSegments = getCategoryPathSegments(category, page);
+        const pathParam = pathSegments.join("/");
+
+        result.push({
+          params: { lang, path: pathParam },
+          props: {
+            category,
+            page: {
+              data: pageData,
+              currentPage: page,
+              lastPage: totalPages,
+              url: {
+                prev: page > 1 ? getCategoryUrl(lang, category, page - 1) : undefined,
+                next:
+                  page < totalPages
+                    ? getCategoryUrl(lang, category, page + 1)
+                    : undefined,
+              },
+            } as Page<CollectionEntry<"blog">>,
+          },
+        });
+      }
+    }
+  }
+
+  return result;
+}) satisfies GetStaticPaths;
+
+type Props = { category: string; page: Page<CollectionEntry<"blog">> };
+const { category, page } = Astro.props as Props;
+const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
+---
+
+<Layout
+  lang={lang}
+  title={`${t("search.category", lang)}: ${category} | ${SITE.title}`}
+>
+  <Header lang={lang} />
+  <Main
+    pageTitle={[`${t("search.category", lang)}:`, category]}
+    titleTransition={category}
+    pageDesc={t("main.categoryDesc", lang).replace("{category}", category)}
+  >
+    <ul class="grid grid-cols-1 gap-5">
+      {page.data.map((post) => (
+        <Card lang={lang} {...post} />
+      ))}
+    </ul>
+  </Main>
+
+  <Pagination page={page} lang={lang} />
+
+  <Footer lang={lang} noMarginTop={page.lastPage > 1} />
+</Layout>

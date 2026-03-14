@@ -1,0 +1,90 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import Main from "../../../layouts/Main.astro";
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/nav/Header.astro";
+import Footer from "../../../components/nav/Footer.astro";
+import { getCategoryTree } from "../../../utils/getUniqueCategories";
+import type { CategoryTreeNode } from "../../../utils/getUniqueCategories";
+import { getPostsByLang } from "../../../utils/getPostsByLang";
+import { getCategoryUrl } from "../../../utils/getCategoryPath";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../../../utils/i18n";
+
+export const getStaticPaths = (() => [
+  { params: { lang: "zh" } },
+  { params: { lang: "en" } },
+]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+
+const posts = await getCollection("blog");
+const langPosts = getPostsByLang(posts, lang);
+const tree = getCategoryTree(langPosts);
+
+function countAll(node: CategoryTreeNode): number {
+  return node.count + node.children.reduce((s, c) => s + countAll(c), 0);
+}
+---
+
+<Layout lang={lang} title={`${t("nav.categories", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("nav.categories", lang)}
+    pageDesc={t("main.allArticles", lang)}
+    data-lang={lang}
+  >
+    <div class="space-y-2">
+      {
+        tree.map(node => (
+          <div class="rounded-lg border border-border p-4">
+            <a
+              href={getCategoryUrl(lang, node.fullPath)}
+              class="group flex items-center gap-2 text-base font-semibold text-foreground transition-colors hover:text-accent"
+            >
+              <svg
+                class="size-5 shrink-0 text-accent"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              </svg>
+              <span>{node.name}</span>
+              <span class="text-muted-foreground ml-auto rounded-full bg-muted px-2 py-0.5 text-xs font-normal">
+                {countAll(node)}
+              </span>
+            </a>
+
+            {node.children.length > 0 && (
+              <div class="mt-3 ml-7 flex flex-wrap gap-2">
+                {node.children.map(child => (
+                  <a
+                    href={getCategoryUrl(lang, child.fullPath)}
+                    class="text-muted-foreground flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-3 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent"
+                  >
+                    <span>{child.name}</span>
+                    <span class="text-xs opacity-60">({countAll(child)})</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        ))
+      }
+
+      {
+        tree.length === 0 && (
+          <p class="text-muted-foreground italic">
+            {t("main.noCategories", lang)}
+          </p>
+        )
+      }
+    </div>
+  </Main>
+  <Footer lang={lang} />
+</Layout>

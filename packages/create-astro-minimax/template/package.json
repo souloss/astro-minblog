@@ -1,0 +1,40 @@
+{
+  "name": "my-blog",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build && pagefind --site dist",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astro-minimax/core": "^0.1.0",
+    "@astro-minimax/viz": "^0.1.4",
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/rss": "^4.0.15",
+    "@astrojs/sitemap": "^3.7.0",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@tailwindcss/vite": "^4.2.1",
+    "@tailwindcss/typography": "^0.5.19",
+    "astro": "^5.18.0",
+    "dayjs": "^1.11.19",
+    "lodash.kebabcase": "^4.1.1",
+    "mermaid": "^11.12.3",
+    "rehype-katex": "^7.0.1",
+    "remark-collapse": "^0.1.2",
+    "remark-emoji": "^5.0.2",
+    "remark-github-alerts": "^0.1.1",
+    "remark-markmap": "^1.1.5",
+    "remark-math": "^6.0.0",
+    "remark-toc": "^9.0.0",
+    "slugify": "^1.6.6",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@pagefind/default-ui": "^1.4.0",
+    "@shikijs/transformers": "^3.23.0",
+    "pagefind": "^1.4.0",
+    "typescript": "^5.9.3"
+  }
+}

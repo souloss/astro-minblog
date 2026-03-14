@@ -1,8 +1,5 @@
 /**
  * @astro-minimax/core - Type definitions
- *
- * Consumer projects must provide a `src/config.ts` that exports a `SITE` object
- * conforming to the `SiteConfig` interface below.
  */
 
 export interface NavItem {
@@ -30,8 +27,26 @@ export interface FeaturesConfig {
   sponsor?: boolean;
 }
 
+export interface UmamiConfig {
+  enabled?: boolean;
+  websiteId: string;
+  src: string;
+}
+
 export interface WalineConfig {
+  enabled?: boolean;
   serverURL: string;
+  emoji?: string[];
+  lang?: string;
+  pageview?: boolean;
+  reaction?: boolean;
+  login?: string;
+  wordLimit?: number[];
+  imageUploader?: boolean;
+  requiredMeta?: string[];
+  copyright?: boolean;
+  recaptchaV3Key?: string;
+  turnstileKey?: string;
 }
 
 export interface AiConfig {
@@ -40,30 +55,40 @@ export interface AiConfig {
   apiEndpoint?: string;
   model?: string;
   maxTokens?: number;
-  systemPromptOverride?: string;
+  systemPrompt?: string;
   welcomeMessage?: string;
   placeholder?: string;
 }
 
-export interface SponsorItem {
-  platform: string;
-  qrcode: string;
-  hint: string;
+export interface SponsorMethod {
+  name: string;
+  icon: string;
+  image: string;
+}
+
+export interface SponsorEntry {
+  name: string;
+  platform?: string;
+  amount: number;
+  date: string;
 }
 
 export interface SponsorConfig {
-  items: SponsorItem[];
+  enabled?: boolean;
+  methods?: SponsorMethod[];
+  sponsors?: SponsorEntry[];
 }
 
 export interface CopyrightConfig {
   license: string;
-  url: string;
+  licenseUrl?: string;
+  url?: string;
 }
 
-export interface UmamiConfig {
-  enabled?: boolean;
-  websiteId: string;
-  src: string;
+export interface ProjectConfig {
+  repo: string;
+  featured?: boolean;
+  description?: string;
 }
 
 export interface SiteConfig {
@@ -77,18 +102,36 @@ export interface SiteConfig {
   postPerPage?: number;
   scheduledPostMargin?: number;
   showBackButton?: boolean;
-  showArchives?: boolean;
   startDate?: string;
   editPost?: EditPostConfig;
   dynamicOgImage?: boolean;
   dir?: "ltr" | "rtl";
   lang?: string;
   timezone?: string;
+  blogPath?: string;
   features?: FeaturesConfig;
   nav?: { items: NavItem[] };
+  projects?: ProjectConfig[];
   umami?: UmamiConfig;
   waline?: WalineConfig;
   ai?: AiConfig;
   sponsor?: SponsorConfig;
   copyright?: CopyrightConfig;
+
+  lightAndDarkMode?: boolean;
+  showArchives?: boolean;
+}
+
+export interface SocialLink {
+  name: string;
+  href: string;
+  linkTitle: string;
+  icon: string;
+}
+
+export interface FriendLink {
+  name: string;
+  url: string;
+  avatar?: string;
+  description?: string;
 }

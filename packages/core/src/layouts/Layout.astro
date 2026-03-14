@@ -1,10 +1,10 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
-import { SITE } from "@/config";
+import { SITE } from "virtual:astro-minimax/config";
 import FloatingActions from "../components/nav/FloatingActions.astro";
-import AIChatWidget from "@astro-minimax/ai/components/AIChatWidget.astro";
-import "../styles/global.css";
+import AIChatWidget from "virtual:astro-minimax/ai-widget";
+import "virtual:astro-minimax/styles";
 
 type Props = {
   title?: string;

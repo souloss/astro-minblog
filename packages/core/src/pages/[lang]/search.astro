@@ -1,0 +1,480 @@
+---
+import "@pagefind/default-ui/css/ui.css";
+import Main from "../../layouts/Main.astro";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/nav/Header.astro";
+import Footer from "../../components/nav/Footer.astro";
+import { SITE } from "virtual:astro-minimax/config";
+import { getCollection } from "astro:content";
+import getUniqueTags from "../../utils/getUniqueTags";
+import getUniqueCategories from "../../utils/getUniqueCategories";
+import { t } from "../../utils/i18n";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (() => [
+  { params: { lang: "zh" } },
+  { params: { lang: "en" } },
+]) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+
+const posts = await getCollection("blog");
+const tags = getUniqueTags(posts);
+const categories = getUniqueCategories(posts);
+
+const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
+---
+
+<Layout lang={lang} title={`${t("search.title", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("search.title", lang)}
+    pageDesc={t("main.searchDesc", lang)}
+    data-lang={lang}
+  >
+    <div id="search-container" class="space-y-6">
+      <!-- Advanced Filters Panel -->
+      <div
+        id="search-filters"
+        class="space-y-4 rounded-lg border border-border bg-muted/30 p-4"
+      >
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-foreground">
+            Advanced Filters
+          </h3>
+          <button
+            id="reset-filters"
+            class="text-muted-foreground text-xs transition-colors hover:text-accent"
+            aria-label="Reset all filters"
+          >
+            Reset Filters
+          </button>
+        </div>
+
+        <!-- Filter Grid -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <!-- Category Filter -->
+          <div class="space-y-2">
+            <label
+              for="category-filter"
+              class="text-muted-foreground text-xs font-medium"
+            >
+              Category
+            </label>
+            <select
+              id="category-filter"
+              class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+            >
+              <option value="">All Categories</option>
+              {
+                categories.map(({ category }) => (
+                  <option value={category}>{category}</option>
+                ))
+              }
+            </select>
+          </div>
+
+          <!-- Language Filter -->
+          <div class="space-y-2">
+            <label
+              for="lang-filter"
+              class="text-muted-foreground text-xs font-medium"
+            >
+              Language
+            </label>
+            <select
+              id="lang-filter"
+              class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+            >
+              <option value="">All Languages</option>
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <!-- Sort Options -->
+          <div class="space-y-2">
+            <label
+              for="sort-filter"
+              class="text-muted-foreground text-xs font-medium"
+            >
+              Sort By
+            </label>
+            <select
+              id="sort-filter"
+              class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+            >
+              <option value="relevance">Relevance</option>
+              <option value="date-desc">Date (Newest)</option>
+              <option value="date-asc">Date (Oldest)</option>
+              <option value="title-asc">Title (A-Z)</option>
+              <option value="title-desc">Title (Z-A)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tags Filter -->
+        <div class="space-y-2">
+          <label class="text-muted-foreground text-xs font-medium">Tags</label>
+          <div id="tags-container" class="flex flex-wrap gap-2">
+            {
+              tags.slice(0, 15).map(({ tag, tagName }) => (
+                <button
+                  type="button"
+                  data-tag={tag}
+                  class="tag-filter-btn text-muted-foreground rounded-full border border-border bg-background px-3 py-1 text-xs transition-all hover:border-accent hover:text-accent"
+                >
+                  {tagName}
+                </button>
+              ))
+            }
+            {
+              tags.length > 15 && (
+                <span class="text-muted-foreground self-center text-xs">
+                  +{tags.length - 15} more
+                </span>
+              )
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagefind Search -->
+      <div id="pagefind-search" transition:persist data-backurl={backUrl}></div>
+
+      <!-- Active Filters Display -->
+      <div id="active-filters" class="hidden flex-wrap gap-2">
+        <span class="text-muted-foreground text-xs">Active filters:</span>
+      </div>
+    </div>
+  </Main>
+  <Footer />
+</Layout>
+
+<script>
+  interface SearchResult {
+    url: string;
+    meta: {
+      title?: string;
+      category?: string;
+      tags?: string[];
+      lang?: string;
+      pubDatetime?: string;
+    };
+  }
+
+  interface SearchInstance {
+    triggerSearch: (term: string) => void;
+    clear: () => void;
+  }
+
+  // State management
+  const state = {
+    category: "",
+    lang: "",
+    sort: "relevance",
+    tags: new Set<string>(),
+    searchInstance: null as SearchInstance | null,
+    currentResults: [] as SearchResult[],
+  };
+
+  function initSearch() {
+    const pageFindSearch: HTMLElement | null =
+      document.querySelector("#pagefind-search");
+    if (!pageFindSearch) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const onIdle =
+      window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 1));
+
+    onIdle(async () => {
+      const { PagefindUI } = await import("@pagefind/default-ui");
+
+      // Display warning in dev mode
+      if (import.meta.env.DEV) {
+        pageFindSearch.innerHTML = `
+          <div class="bg-muted/75 rounded p-4 space-y-4 mb-4">
+            <p><strong>DEV mode Warning! </strong>You need to build the project at least once to see the search results during development.</p>
+            <code class="block bg-black text-white px-2 py-1 rounded">pnpm run build</code>
+          </div>
+        `;
+      }
+
+      // Init pagefind ui
+      const search = new PagefindUI({
+        element: "#pagefind-search",
+        showImages: false,
+        showSubResults: true,
+        processTerm: function (term: string) {
+          params.set("q", term);
+          history.replaceState(history.state, "", "?" + params.toString());
+
+          const backUrl = pageFindSearch?.dataset?.backurl;
+          sessionStorage.setItem("backUrl", backUrl + "?" + params.toString());
+
+          return term;
+        },
+      });
+
+      state.searchInstance = search;
+
+      // If search param exists, trigger search
+      const query = params.get("q");
+      if (query) {
+        search.triggerSearch(query);
+      }
+
+      // Reset search param if search input is cleared
+      const searchInput = document.querySelector(".pagefind-ui__search-input");
+      const clearButton = document.querySelector(".pagefind-ui__search-clear");
+      searchInput?.addEventListener("input", resetSearchParam);
+      clearButton?.addEventListener("click", resetSearchParam);
+
+      function resetSearchParam(e: Event) {
+        if ((e.target as HTMLInputElement)?.value.trim() === "") {
+          history.replaceState(history.state, "", window.location.pathname);
+        }
+      }
+    });
+
+    // Initialize filter event listeners
+    initFilterListeners();
+  }
+
+  function initFilterListeners() {
+    // Category filter
+    const categoryFilter = document.getElementById(
+      "category-filter"
+    ) as unknown as HTMLSelectElement | null;
+    categoryFilter?.addEventListener("change", e => {
+      state.category = (e.target as HTMLSelectElement).value;
+      applyFilters();
+    });
+
+    // Language filter
+    const langFilter = document.getElementById(
+      "lang-filter"
+    ) as unknown as HTMLSelectElement | null;
+    langFilter?.addEventListener("change", e => {
+      state.lang = (e.target as HTMLSelectElement).value;
+      applyFilters();
+    });
+
+    // Sort filter
+    const sortFilter = document.getElementById(
+      "sort-filter"
+    ) as unknown as HTMLSelectElement | null;
+    sortFilter?.addEventListener("change", e => {
+      state.sort = (e.target as HTMLSelectElement).value;
+      applyFilters();
+    });
+
+    // Tag filters
+    const tagButtons = document.querySelectorAll(".tag-filter-btn");
+    tagButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tag = (btn as HTMLElement).dataset.tag;
+        if (tag) {
+          if (state.tags.has(tag)) {
+            state.tags.delete(tag);
+            btn.classList.remove("active");
+          } else {
+            state.tags.add(tag);
+            btn.classList.add("active");
+          }
+          applyFilters();
+        }
+      });
+    });
+
+    // Reset filters button
+    const resetBtn = document.getElementById("reset-filters");
+    resetBtn?.addEventListener("click", resetFilters);
+  }
+
+  function applyFilters() {
+    // Build filter query for Pagefind
+    const filterParts: string[] = [];
+
+    if (state.category) {
+      filterParts.push(`category:${state.category}`);
+    }
+
+    if (state.lang) {
+      filterParts.push(`lang:${state.lang}`);
+    }
+
+    if (state.tags.size > 0) {
+      state.tags.forEach(tag => {
+        filterParts.push(`tag:${tag}`);
+      });
+    }
+
+    // Update active filters display
+    updateActiveFiltersDisplay();
+
+    // Apply filters to search (if a search term exists)
+    const searchInput = document.querySelector(
+      ".pagefind-ui__search-input"
+    ) as HTMLInputElement;
+    if (searchInput?.value && filterParts.length > 0) {
+      const searchTerm = `${searchInput.value} ${filterParts.join(" ")}`;
+      state.searchInstance?.triggerSearch(searchTerm);
+    }
+  }
+
+  function updateActiveFiltersDisplay() {
+    const container = document.getElementById("active-filters");
+    if (!container) return;
+
+    const hasFilters = state.category || state.lang || state.tags.size > 0;
+
+    if (hasFilters) {
+      container.classList.remove("hidden");
+      container.classList.add("flex");
+
+      // Clear existing filter tags (except the label)
+      const existingTags = container.querySelectorAll(".filter-tag");
+      existingTags.forEach(tag => tag.remove());
+
+      // Add category tag
+      if (state.category) {
+        addFilterTag("category", state.category, container);
+      }
+
+      // Add language tag
+      if (state.lang) {
+        const langLabel = state.lang === "zh" ? "中文" : "English";
+        addFilterTag("lang", langLabel, container);
+      }
+
+      // Add tag filters
+      state.tags.forEach(tag => {
+        addFilterTag("tag", tag, container);
+      });
+    } else {
+      container.classList.add("hidden");
+      container.classList.remove("flex");
+    }
+  }
+
+  function addFilterTag(type: string, value: string, container: HTMLElement) {
+    const tag = document.createElement("span");
+    tag.className =
+      "filter-tag inline-flex items-center gap-1 rounded-full bg-accent/20 px-2 py-0.5 text-xs text-accent";
+    tag.innerHTML = `
+      ${value}
+      <button type="button" class="hover:text-foreground" aria-label="Remove ${value} filter">×</button>
+    `;
+    tag.querySelector("button")?.addEventListener("click", () => {
+      if (type === "category") {
+        state.category = "";
+        (
+          document.getElementById("category-filter") as unknown as HTMLSelectElement
+        ).value = "";
+      } else if (type === "lang") {
+        state.lang = "";
+        (document.getElementById("lang-filter") as unknown as HTMLSelectElement).value =
+          "";
+      } else if (type === "tag") {
+        state.tags.delete(value);
+        document
+          .querySelector(`[data-tag="${value}"]`)
+          ?.classList.remove("active");
+      }
+      applyFilters();
+    });
+    container.appendChild(tag);
+  }
+
+  function resetFilters() {
+    state.category = "";
+    state.lang = "";
+    state.sort = "relevance";
+    state.tags.clear();
+
+    // Reset UI elements
+    (document.getElementById("category-filter") as unknown as HTMLSelectElement).value =
+      "";
+    (document.getElementById("lang-filter") as unknown as HTMLSelectElement).value = "";
+    (document.getElementById("sort-filter") as unknown as HTMLSelectElement).value =
+      "relevance";
+
+    document.querySelectorAll(".tag-filter-btn.active").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    updateActiveFiltersDisplay();
+  }
+
+  document.addEventListener("astro:after-swap", () => {
+    const pagefindSearch = document.querySelector("#pagefind-search");
+    if (pagefindSearch && pagefindSearch.querySelector("form")) return;
+    initSearch();
+  });
+
+  initSearch();
+</script>
+
+<style is:global>
+  #search-container {
+    --pagefind-ui-font: var(--font-app);
+    --pagefind-ui-text: var(--foreground);
+    --pagefind-ui-background: var(--background);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-tag: var(--background);
+    --pagefind-ui-border-radius: 0.375rem;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-image-border-radius: 8px;
+    --pagefind-ui-image-box-ratio: 3 / 2;
+  }
+
+  #search-filters {
+    transition: background-color 0.3s ease-out;
+  }
+
+  .tag-filter-btn.active {
+    background-color: var(--accent);
+    color: var(--background);
+    border-color: var(--accent);
+  }
+
+  #pagefind-search form::before {
+    background-color: var(--foreground);
+  }
+
+  #pagefind-search input {
+    font-weight: 400;
+    border: 1px solid var(--border);
+  }
+
+  #pagefind-search input:focus-visible {
+    outline: 1px solid var(--accent);
+  }
+
+  #pagefind-search .pagefind-ui__result-title a {
+    color: var(--accent);
+    outline-offset: 1px;
+    outline-color: var(--accent);
+    text-decoration-style: dashed;
+    text-underline-offset: 4px;
+  }
+
+  #pagefind-search .pagefind-ui__result-title a:focus-visible,
+  #pagefind-search .pagefind-ui__search-clear:focus-visible {
+    text-decoration-line: none;
+    outline-width: 2px;
+    outline-style: dashed;
+  }
+
+  #pagefind-search .pagefind-ui__result:last-of-type {
+    border-bottom: 0;
+  }
+
+  #pagefind-search
+    .pagefind-ui__result-nested
+    .pagefind-ui__result-link:before {
+    font-family: system-ui;
+  }
+</style>

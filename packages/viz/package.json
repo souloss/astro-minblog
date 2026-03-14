@@ -23,17 +23,22 @@
     "directory": "packages/viz"
   },
   "exports": {
+    ".": "./src/integration.ts",
+    "./integration": "./src/integration.ts",
     "./components/*.astro": "./src/components/*.astro",
     "./plugins/remark-mermaid-codeblock": "./src/plugins/remark-mermaid-codeblock.ts",
     "./plugins/remark-markmap-codeblock": "./src/plugins/remark-markmap-codeblock.ts",
     "./plugins": "./src/plugins/index.ts",
-    "./scripts/*": "./src/scripts/*.ts"
+    "./styles/source.css": "./src/styles/source.css",
+    "./scripts/*": "./src/scripts/*.ts",
+    "./package.json": "./package.json"
   },
   "files": [
     "src/"
   ],
   "peerDependencies": {
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "mermaid": "^11.0.0"
   },
   "dependencies": {
     "markmap-lib": "^0.18.11",

@@ -1,0 +1,22 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "public/pagefind", "node_modules"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@astro-minimax/ai": ["../../packages/ai/src/index.ts"],
+      "@astro-minimax/ai/*": ["../../packages/ai/src/*"],
+      "@astro-minimax/core/layouts/*": ["../../packages/core/src/layouts/*"],
+      "@astro-minimax/core/components/*": ["../../packages/core/src/components/*"],
+      "@astro-minimax/core/utils/*": ["../../packages/core/src/utils/*"],
+      "@astro-minimax/core/plugins/*": ["../../packages/core/src/plugins/*"],
+      "@astro-minimax/core/types": ["../../packages/core/src/types.ts"],
+      "@astro-minimax/viz/components/*": ["../../packages/viz/src/components/*"],
+      "@/*": ["./src/*"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "types": ["@cloudflare/workers-types"]
+  }
+}

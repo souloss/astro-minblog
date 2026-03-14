@@ -38,11 +38,14 @@
       "types": "./dist/stream/index.d.ts",
       "import": "./dist/stream/index.js"
     },
-    "./components/*": "./src/components/*"
+    "./components/*": "./src/components/*",
+    "./styles/source.css": "./src/styles/source.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist/",
     "src/components/",
+    "src/styles/",
     "README.md"
   ],
   "sideEffects": false,
