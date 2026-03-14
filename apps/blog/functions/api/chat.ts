@@ -41,6 +41,33 @@ function getMessageText(message: UIMessage): string {
   return '';
 }
 
+function hasContent(message: UIMessage): boolean {
+  const text = getMessageText(message);
+  if (text.trim()) return true;
+  if (Array.isArray(message.parts)) {
+    return message.parts.some(p => p.type !== 'text');
+  }
+  return false;
+}
+
+function filterValidMessages(messages: UIMessage[]): UIMessage[] {
+  const filtered: UIMessage[] = [];
+  let lastRole: string | null = null;
+
+  for (const msg of messages) {
+    if (!hasContent(msg)) continue;
+    if (msg.role === lastRole) continue;
+    filtered.push(msg);
+    lastRole = msg.role;
+  }
+
+  if (filtered.length > 0 && filtered[filtered.length - 1].role !== 'user') {
+    filtered.pop();
+  }
+
+  return filtered;
+}
+
 function streamPreflightResponse(text: string): Response {
   const encoder = new TextEncoder();
   const lines = [
@@ -93,7 +120,12 @@ export const onRequest: PagesFunction<FunctionEnv> = async (context) => {
     return new Response(JSON.stringify({ error: '请求格式错误' }), { status: 400 });
   }
 
-  const messages = (body.messages ?? []).slice(-MAX_HISTORY_MESSAGES);
+  const rawMessages = (body.messages ?? []).slice(-MAX_HISTORY_MESSAGES);
+  if (!rawMessages.length) {
+    return new Response(JSON.stringify({ error: '消息不能为空' }), { status: 400 });
+  }
+
+  const messages = filterValidMessages(rawMessages);
   if (!messages.length) {
     return new Response(JSON.stringify({ error: '消息不能为空' }), { status: 400 });
   }
@@ -117,7 +149,7 @@ export const onRequest: PagesFunction<FunctionEnv> = async (context) => {
   cleanupCache(now);
 
   const cachedContext = cacheKey ? getCachedContext(cacheKey) : undefined;
-  const userTurnCount = messages.filter(m => m.role === 'user').length;
+  const userTurnCount = messages.filter((m: UIMessage) => m.role === 'user').length;
   const reuseContext = shouldReuseSearchContext({ latestText, cachedContext, userTurnCount, now });
 
   let searchQuery = buildLocalSearchQuery(latestText) || latestText;
