@@ -24,7 +24,7 @@ function createOpenAIConfigFromEnv(env: ProviderManagerEnv): OpenAIProviderConfi
   return {
     id: 'openai-default',
     type: 'openai',
-    weight: DEFAULT_WEIGHT,
+    weight: DEFAULT_WEIGHT - 10, // Lower priority than Workers AI (fallback)
     baseURL: env.AI_BASE_URL as string,
     apiKey: env.AI_API_KEY as string,
     model: (env.AI_MODEL as string) || DEFAULT_MODEL,
@@ -42,7 +42,7 @@ function createWorkersAIConfigFromEnv(env: ProviderManagerEnv): WorkersAIProvide
   return {
     id: 'workers-ai-default',
     type: 'workers',
-    weight: DEFAULT_WEIGHT - 10, // Slightly lower priority than OpenAI by default
+    weight: DEFAULT_WEIGHT, // Highest priority (free tier available)
     bindingName,
     model: (env.AI_MODEL as string) || '@cf/zai-org/glm-4.7-flash',
     keywordModel: env.AI_KEYWORD_MODEL as string | undefined,
