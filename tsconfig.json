@@ -28,6 +28,6 @@
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["@cloudflare/workers-types", "@cloudflare/ai-types"]
+    "types": ["@cloudflare/workers-types"]
   }
 }

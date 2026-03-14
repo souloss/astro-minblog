@@ -84,9 +84,6 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.6
         version: 0.9.6(prettier-plugin-astro@0.14.1)(prettier@3.8.1)(typescript@5.9.3)
-      '@cloudflare/ai-types':
-        specifier: ^0.0.7
-        version: 0.0.7
       '@cloudflare/workers-types':
         specifier: ^4.20260313.1
         version: 4.20260313.1
@@ -344,9 +341,6 @@ packages:
 
   '@chevrotain/utils@11.1.2':
     resolution: {integrity: sha512-4mudFAQ6H+MqBTfqLmU7G1ZwRzCLfJEooL/fsF6rCX5eePMbGhoy5n4g+G4vlh2muDcsCTJtL+uKbOzWxs5LHA==}
-
-  '@cloudflare/ai-types@0.0.7':
-    resolution: {integrity: sha512-u7fVBdUd16dxaPhaQUVuzRrw8wvKBIEaCFZ1OvF2NgiH3z4C496jDFJg/xa5VbiKiBXodvHoZaqDqJfdKET+cA==}
 
   '@cloudflare/kv-asset-handler@0.4.2':
     resolution: {integrity: sha512-SIOD2DxrRRwQ+jgzlXCqoEFiKOFqaPjhnNTGKXSRLvp1HiOvapLaFG2kEr9dYQTYe8rKrd9uvDUzmAITeNyaHQ==}
@@ -4604,8 +4598,6 @@ snapshots:
   '@chevrotain/types@11.1.2': {}
 
   '@chevrotain/utils@11.1.2': {}
-
-  '@cloudflare/ai-types@0.0.7': {}
 
   '@cloudflare/kv-asset-handler@0.4.2': {}
 

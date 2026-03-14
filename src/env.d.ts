@@ -31,8 +31,7 @@ interface Document {
 }
 
 // Cloudflare Workers AI Types
-type Ai = import('@cloudflare/ai').Ai;
-
+// The Ai type is provided by @cloudflare/workers-types
 interface Env {
   souloss: Ai;
 }
