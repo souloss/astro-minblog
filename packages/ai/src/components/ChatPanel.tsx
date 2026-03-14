@@ -308,7 +308,7 @@ export function ChatPanel({ open, onClose, config }: ChatPanelProps) {
           </div>
           <span class="text-[13px] font-semibold text-foreground">AI Assistant</span>
           <span class={`rounded-full px-1.5 py-px text-[10px] font-medium ${isMockMode ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400' : 'bg-green-500/15 text-green-600 dark:text-green-400'}`}>
-            {isMockMode ? 'Demo' : 'Live'}
+            {isMockMode ? 'Mock' : 'Live'}
           </span>
         </div>
         <div class="flex items-center gap-0.5">

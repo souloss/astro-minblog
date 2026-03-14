@@ -79,7 +79,7 @@ export const SITE = {
   },
   ai: {
     enabled: true,
-    mockMode: true,
+    mockMode: false,
     apiEndpoint: "/api/chat",
     model: "@cf/zai-org/glm-4.7-flash",
     welcomeMessage: undefined as string | undefined,
