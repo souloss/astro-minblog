@@ -35,10 +35,14 @@ export interface WalineConfig {
 }
 
 export interface AiConfig {
-  apiKey?: string;
-  baseURL?: string;
+  enabled?: boolean;
+  mockMode?: boolean;
+  apiEndpoint?: string;
   model?: string;
-  systemPrompt?: string;
+  maxTokens?: number;
+  systemPromptOverride?: string;
+  welcomeMessage?: string;
+  placeholder?: string;
 }
 
 export interface SponsorItem {

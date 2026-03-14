@@ -1,10 +1,27 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "public/pagefind", "demo/dist", "demo/.astro", "packages/*/dist", "packages/*/.astro", "node_modules"],
+  "exclude": [
+    "dist",
+    "public/pagefind",
+    "demo/dist",
+    "demo/.astro",
+    "packages/*/dist",
+    "packages/*/.astro",
+    "node_modules"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@astro-minimax/ai": ["./packages/ai/src/index.ts"],
+      "@astro-minimax/ai/providers": ["./packages/ai/src/providers/index.ts"],
+      "@astro-minimax/ai/middleware": ["./packages/ai/src/middleware/index.ts"],
+      "@astro-minimax/ai/search": ["./packages/ai/src/search/index.ts"],
+      "@astro-minimax/ai/intelligence": ["./packages/ai/src/intelligence/index.ts"],
+      "@astro-minimax/ai/prompt": ["./packages/ai/src/prompt/index.ts"],
+      "@astro-minimax/ai/data": ["./packages/ai/src/data/index.ts"],
+      "@astro-minimax/ai/stream": ["./packages/ai/src/stream/index.ts"],
+      "@astro-minimax/ai/components/*": ["./packages/ai/src/components/*"],
       "@astro-minimax/core/layouts/*": ["./packages/core/src/layouts/*"],
       "@astro-minimax/core/components/*": ["./packages/core/src/components/*"],
       "@astro-minimax/core/utils/*": ["./packages/core/src/utils/*"],
@@ -27,7 +44,7 @@
       "@/*": ["./src/*"]
     },
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
+    "jsxImportSource": "preact",
     "types": ["@cloudflare/workers-types"]
   }
 }

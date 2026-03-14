@@ -125,6 +125,16 @@ const aiEnabled = SITE.ai?.enabled ?? false;
 
 <script>
   function initFloatingActions() {
+    // Connect AI FAB button to the Preact island toggle function
+    const aiFab = document.getElementById("ai-chat-toggle-fab");
+    if (aiFab) {
+      aiFab.addEventListener("click", () => {
+        if (typeof (window as Window & typeof globalThis & { __aiChatToggle?: () => void }).__aiChatToggle === 'function') {
+          (window as Window & typeof globalThis & { __aiChatToggle?: () => void }).__aiChatToggle!();
+        }
+      });
+    }
+
     const backToTopBtn = document.getElementById("back-to-top-btn");
     const readingModeBtn = document.getElementById("reading-mode-btn");
     const fontControls = document.getElementById("font-controls");

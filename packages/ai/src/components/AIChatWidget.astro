@@ -1,0 +1,28 @@
+---
+import { SITE } from "@/config";
+import AIChatContainer from "./AIChatContainer";
+
+interface Props {
+  lang?: string;
+}
+
+const { lang = SITE.lang ?? "zh" } = Astro.props;
+const aiEnabled = SITE.ai?.enabled ?? false;
+
+// Only pass safe, non-sensitive fields to the client
+const aiConfig = {
+  enabled: aiEnabled,
+  mockMode: SITE.ai?.mockMode ?? true,
+  apiEndpoint: SITE.ai?.apiEndpoint || "/api/chat",
+  welcomeMessage: SITE.ai?.welcomeMessage,
+  placeholder: SITE.ai?.placeholder,
+  lang,
+};
+---
+
+{aiEnabled && (
+  <AIChatContainer
+    client:idle
+    config={aiConfig}
+  />
+)}

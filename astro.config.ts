@@ -2,6 +2,7 @@ import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
+import preact from "@astrojs/preact";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import remarkMath from "remark-math";
@@ -42,6 +43,7 @@ export default defineConfig({
     defaultStrategy: 'hover',
   },
   integrations: [
+    preact({ compat: true }),
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
@@ -111,6 +113,8 @@ export default defineConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: [
+        { find: "@astro-minimax/ai/components", replacement: path.resolve("./packages/ai/src/components") },
+        { find: "@astro-minimax/ai", replacement: path.resolve("./packages/ai/src/index.ts") },
         // Map @/ aliases to packages/core for components that moved there
         // More specific aliases must come before the general @/ fallback
         // Media components live in @astro-minimax/viz, not core

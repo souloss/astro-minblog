@@ -79,14 +79,11 @@ export const SITE = {
   },
   ai: {
     enabled: true,
-    apiEndpoint: "",
-    apiKey: "",
-    model: "gpt-4o-mini",
-    maxTokens: 1024,
-    systemPrompt:
-      "你是一个技术博客的 AI 助手，帮助读者了解博客内容、技术主题。回答简洁、准确，使用与用户相同的语言。",
     mockMode: true,
-    vectorSearch: true,
+    apiEndpoint: "/api/chat",
+    model: "@cf/zai-org/glm-4.7-flash",
+    welcomeMessage: undefined as string | undefined,
+    placeholder: undefined as string | undefined,
   },
   sponsor: {
     enabled: true,

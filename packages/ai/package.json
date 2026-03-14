@@ -1,0 +1,76 @@
+{
+  "name": "@astro-minimax/ai",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Vendor-agnostic AI integration package with full RAG pipeline for astro-minimax blogs.",
+  "author": "Souloss",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/providers/index.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware/index.d.ts",
+      "import": "./dist/middleware/index.js"
+    },
+    "./search": {
+      "types": "./dist/search/index.d.ts",
+      "import": "./dist/search/index.js"
+    },
+    "./intelligence": {
+      "types": "./dist/intelligence/index.d.ts",
+      "import": "./dist/intelligence/index.js"
+    },
+    "./prompt": {
+      "types": "./dist/prompt/index.d.ts",
+      "import": "./dist/prompt/index.js"
+    },
+    "./data": {
+      "types": "./dist/data/index.d.ts",
+      "import": "./dist/data/index.js"
+    },
+    "./stream": {
+      "types": "./dist/stream/index.d.ts",
+      "import": "./dist/stream/index.js"
+    },
+    "./components/*": "./src/components/*"
+  },
+  "files": [
+    "dist/",
+    "src/components/",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:watch": "tsc -p tsconfig.build.json --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^2.0.35",
+    "ai": "^6.0.116",
+    "workers-ai-provider": "^0.2.0"
+  },
+  "peerDependencies": {
+    "@ai-sdk/react": "^3.0.0",
+    "@cloudflare/workers-types": "^4.0.0",
+    "preact": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@ai-sdk/react": { "optional": true },
+    "preact": { "optional": true }
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
