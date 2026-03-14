@@ -5,5 +5,6 @@
     "moduleResolution": "bundler",
     "target": "ESNext",
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["packages/create-astro-minimax/template"]
 }
