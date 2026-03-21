@@ -71,6 +71,8 @@ export type TranslationKey =
   | "series.currentReading"
   | "series.progress"
   | "post.updated"
+  | "post.updatedBadge"
+  | "post.updatedTooltip"
   | "post.readingTime"
   | "post.wordCount"
   | "common.notFoundDesc"
@@ -244,6 +246,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "series.currentReading": "Currently reading",
     "series.progress": "Article {current} of {total}",
     "post.updated": "Updated:",
+    "post.updatedBadge": "Updated",
+    "post.updatedTooltip": "Updated: {date}",
     "post.readingTime": "{min} min read",
     "post.wordCount": "{count} words",
     "common.notFoundDesc": "The page you are looking for doesn't exist.",
@@ -416,6 +420,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "series.currentReading": "正在阅读",
     "series.progress": "第 {current} 篇，共 {total} 篇",
     "post.updated": "更新于：",
+    "post.updatedBadge": "已更新",
+    "post.updatedTooltip": "更新于 {date}",
     "post.readingTime": "{min} 分钟阅读",
     "post.wordCount": "{count} 字",
     "common.notFoundDesc": "你访问的页面不存在。",

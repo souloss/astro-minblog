@@ -47,10 +47,16 @@ function getPostItemData(post: CollectionEntry<"blog">): PostItemData & { href: 
   
   const isModified = modDatetime && modDatetime > pubDatetime;
   const datetime = dayjs(isModified ? modDatetime : pubDatetime).tz(timezone || SITE.timezone);
-  const dateStr = lang === "zh" ? datetime.format("YYYY 年 M 月 D 日") : datetime.format("MMM D, YYYY");
+  const dateStr = lang === "zh" ? datetime.format("YYYY 年 M 月 D 日") : datetime.format("D MMM, YYYY");
+  
+  // 更新时间显示字符串
+  const modDateStr = isModified && modDatetime
+    ? dayjs(modDatetime).tz(timezone || SITE.timezone).format(lang === "zh" ? "YYYY 年 M 月 D 日" : "D MMM, YYYY")
+    : "";
   
   return {
     title, description, href, dateStr, dateIso: datetime.toISOString(),
+    isModified: !!isModified, modDateStr,
     category, tags: tags || [], readingMinutes, coverSrc,
     langLabel: id.startsWith("en/") ? "English" : "中文",
     viewTransitionName: slugifyStr(title.replaceAll(".", "-")),
@@ -73,6 +79,7 @@ const author = authorName;
 
 const i18n = {
   minutes: isZh ? '分钟' : 'min',
+  updatedTooltip: isZh ? '更新于 {date}' : 'Updated: {date}',
 };
 
 // 辅助函数
@@ -89,16 +96,25 @@ const icons = {
 
 // 生成元信息区域 HTML
 function renderMeta(p, compact = false) {
+  // 生成更新绿点
+  const updatedDot = p.isModified ? `
+    <span class="updated-dot relative inline-flex items-center justify-center size-2 cursor-help" title="${i18n.updatedTooltip.replace('{date}', p.modDateStr)}">
+      <span class="absolute inset-0 rounded-full bg-accent animate-pulse-dot"></span>
+      <span class="absolute inset-0 rounded-full bg-accent/30 animate-glow-dot"></span>
+    </span>
+  ` : '';
+  
   if (compact) {
-    // 紧凑模式：只显示日期和阅读时长
+    // 紧凑模式：日期、更新绿点、阅读时长
     return `
       <time class="flex items-center gap-1.5">${icons.date}<span>${p.dateStr}</span></time>
+      ${updatedDot}
       <span class="flex items-center gap-1.5">${icons.clock}<span>${min(p.readingMinutes)}</span></span>
       ${p.category ? `<a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors" onclick="event.stopPropagation()">${p.category}</a>` : ''}
     `;
   }
   
-  // 完整模式：作者、日期、阅读时长、分类、标签
+  // 完整模式：作者、日期、更新绿点、阅读时长、分类、标签
   return `
     <a href="/${lang}/about/" class="meta-link flex items-center gap-1.5 hover:text-accent transition-colors" onclick="event.stopPropagation()">
       ${icons.author}
@@ -108,6 +124,7 @@ function renderMeta(p, compact = false) {
       ${icons.date}
       <span>${p.dateStr}</span>
     </time>
+    ${updatedDot}
     <span class="flex items-center gap-1.5">
       ${icons.clock}
       <span>${min(p.readingMinutes)}</span>
@@ -397,6 +414,54 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
 
 [data-post-href]:active {
   transform: scale(0.995);
+}
+
+/* ============================================
+   更新绿点动画 - 更优雅的实现
+   ============================================ */
+
+.updated-dot {
+  margin-left: 4px;
+}
+
+@keyframes pulse-once {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes glow-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-once 1.5s ease-out;
+  animation-delay: 0.3s;
+}
+
+.animate-glow-dot {
+  animation: glow-pulse 2.5s ease-out infinite;
+  animation-delay: 1s;
 }
 </style>
 

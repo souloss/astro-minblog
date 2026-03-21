@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { ImageMetadata } from "astro";
+import dayjs from "dayjs";
 import { slugifyStr } from "../../utils/slugify";
 import { getLocalizedPostPath } from "../../utils/getPath";
 import { getReadingTime } from "../../utils/getReadingTime";
@@ -11,6 +12,8 @@ export interface PostItemData {
   href: string;
   dateStr: string;
   dateIso: string;
+  isModified?: boolean;
+  modDateStr?: string;
   category: string | undefined;
   tags: string[];
   readingMinutes: number;
@@ -26,7 +29,7 @@ export function getAnimationDelay(index: number): string {
 export function formatPostData(
   post: CollectionEntry<"blog">,
   lang: string,
-  datetime: ReturnType<typeof import("dayjs").Dayjs>
+  datetime: dayjs.Dayjs
 ): PostItemData {
   const { id, data, body, filePath } = post;
   const { title, description, category, ogImage, tags } = data;

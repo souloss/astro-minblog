@@ -6,6 +6,12 @@
  */
 import { SITE } from "virtual:astro-minimax/config";
 import { t } from "../../utils/i18n";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type MetaMode = "full" | "compact" | "article";
 
@@ -20,6 +26,10 @@ interface Props {
   dateStr?: string;
   /** ISO 日期格式 */
   dateIso?: string;
+  /** 更新时间（可选） */
+  modDatetime?: string | Date | null;
+  /** 时区 */
+  timezone?: string;
   /** 阅读时长（分钟） */
   readingMinutes?: number;
   /** 字数 */
@@ -38,6 +48,8 @@ const {
   author = SITE.author,
   dateStr,
   dateIso,
+  modDatetime,
+  timezone: postTimezone,
   readingMinutes,
   wordCount,
   category,
@@ -48,6 +60,14 @@ const {
 const isZh = lang === "zh";
 const minutesText = isZh ? "分钟" : "min";
 const wordsText = isZh ? "字" : "words";
+
+// 判断是否有更新
+const isModified = modDatetime && dateIso && new Date(modDatetime) > new Date(dateIso);
+
+// 格式化更新时间
+const modDateDisplay = isModified
+  ? dayjs(modDatetime).tz(postTimezone || SITE.timezone).format(isZh ? "YYYY 年 M 月 D 日" : "D MMM, YYYY")
+  : "";
 
 // 生成分类 URL
 const categoryUrl = category ? `/${lang}/categories/${encodeURIComponent(category)}/` : null;
@@ -82,6 +102,17 @@ const tagUrl = (tag: string) => `/${lang}/tags/${encodeURIComponent(tag)}/`;
       </svg>
       <span>{dateStr}</span>
     </time>
+  )}
+
+  {/* 更新标记绿点 */}
+  {isModified && (
+    <span
+      class="updated-dot relative inline-flex items-center justify-center size-2 cursor-help"
+      title={t("post.updatedTooltip", lang).replace("{date}", modDateDisplay)}
+    >
+      <span class="absolute inset-0 rounded-full bg-accent animate-pulse-dot"></span>
+      <span class="absolute inset-0 rounded-full bg-accent/30 animate-glow-dot"></span>
+    </span>
   )}
 
   {/* 阅读时长 */}
@@ -150,5 +181,50 @@ const tagUrl = (tag: string) => `/${lang}/tags/${encodeURIComponent(tag)}/`;
   .post-meta--article > *:not(:last-child)::after {
     content: "";
     margin-left: 1rem;
+  }
+
+  /* 更新绿点动画 - 更优雅的实现 */
+  .updated-dot {
+    margin-left: 4px;
+  }
+
+  @keyframes pulse-once {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.3);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    70% {
+      transform: scale(2);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  .animate-pulse-dot {
+    animation: pulse-once 1.5s ease-out;
+    animation-delay: 0.3s;
+  }
+
+  .animate-glow-dot {
+    animation: glow-pulse 2.5s ease-out infinite;
+    animation-delay: 1s;
   }
 </style>
