@@ -161,10 +161,11 @@ function render(mode) {
         <li class="group h-full w-full">
           <article 
             class="post-card relative flex h-full w-full flex-col overflow-hidden
-                   border border-border/50 bg-card/60 backdrop-blur-md cursor-pointer
+                   border border-border bg-card/70 backdrop-blur-md cursor-pointer
+                   shadow-sm shadow-shadow-elevated/30
                    transition-all duration-300 ease-out
-                   hover:border-accent/30 hover:bg-card-hover 
-                   hover:shadow-xl hover:shadow-shadow-elevated/10 hover:-translate-y-0.5
+                   hover:border-accent/40 hover:bg-card-hover 
+                   hover:shadow-xl hover:shadow-shadow-elevated/15 hover:-translate-y-0.5
                    focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
             data-post-href="${p.href}"
           >
@@ -213,10 +214,11 @@ function render(mode) {
         <li class="group h-full">
           <article 
             class="post-card grid-card relative flex h-full flex-col overflow-hidden
-                   border border-border/50 bg-card/60 backdrop-blur-md cursor-pointer
+                   border border-border bg-card/70 backdrop-blur-md cursor-pointer
+                   shadow-sm shadow-shadow-elevated/30
                    transition-all duration-300 ease-out
-                   hover:border-accent/30 hover:bg-card-hover 
-                   hover:shadow-lg hover:shadow-shadow-elevated/10 hover:-translate-y-0.5
+                   hover:border-accent/40 hover:bg-card-hover 
+                   hover:shadow-lg hover:shadow-shadow-elevated/15 hover:-translate-y-0.5
                    focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
             data-post-href="${p.href}"
           >
@@ -258,7 +260,7 @@ function render(mode) {
     // ============================================
     if (mode === 'list') {
       return `
-        <li class="group border-b border-border/50 hover:bg-card/30 transition-colors duration-200">
+        <li class="group border-b border-border hover:bg-card/40 transition-colors duration-200">
           <article 
             class="post-card relative flex items-start gap-3 sm:gap-4 py-4 px-2 cursor-pointer"
             data-post-href="${p.href}"

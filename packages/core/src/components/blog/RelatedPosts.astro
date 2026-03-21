@@ -37,7 +37,9 @@ const {
         {posts.map(post => (
           <a
             href={getLocalizedPostPath(lang, post.id)}
-            class="group flex flex-col rounded-lg border border-border bg-background/50 p-4 transition-all duration-200 hover:border-accent/50 hover:bg-muted/30 hover:shadow-sm"
+            class="group flex flex-col rounded-xl border border-border bg-card/70 p-4 backdrop-blur-md
+                   shadow-sm shadow-shadow-elevated/30
+                   transition-all duration-200 hover:border-accent/40 hover:bg-card-hover hover:shadow-md"
           >
             <h4 class="line-clamp-2 text-sm font-medium text-foreground transition-colors group-hover:text-accent">
               {post.data.title}

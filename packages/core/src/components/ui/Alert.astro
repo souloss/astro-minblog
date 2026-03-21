@@ -1,6 +1,7 @@
 ---
 /**
  * GitHub-style Alert component for MDX
+ * Supports WCAG AA accessibility with proper ARIA attributes
  */
 interface Props {
   type: "note" | "tip" | "important" | "warning" | "caution";
@@ -18,9 +19,17 @@ const defaultTitles: Record<string, string> = {
 };
 
 const displayTitle = title || defaultTitles[type] || "Note";
+
+// Warning and caution are more urgent, use role="alert"
+// Others use role="status" for less urgent announcements
+const isUrgent = type === "warning" || type === "caution";
 ---
 
-<div class:list={["markdown-alert", `markdown-alert-${type}`]}>
+<div 
+  class:list={["markdown-alert", `markdown-alert-${type}`]}
+  role={isUrgent ? "alert" : "status"}
+  aria-live={isUrgent ? "assertive" : "polite"}
+>
   <p class="markdown-alert-title">
     {displayTitle}
   </p>
