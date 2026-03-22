@@ -48,101 +48,149 @@ const enabled = SITE.waline?.enabled;
         requiredMeta: SITE.waline?.requiredMeta ?? [],
         copyright: SITE.waline?.copyright ?? true
       }}>
-        import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+        // Timeout fallback - hide loading after 15s max
+        const LOADING_TIMEOUT = 15000;
+        let timeoutId = null;
         
+        function hideLoading() {
+          const loading = document.getElementById('waline-loading');
+          if (loading) {
+            loading.style.display = 'none';
+          }
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+        }
+        
+        function showError(message) {
+          const loading = document.getElementById('waline-loading');
+          if (loading) {
+            loading.innerHTML = '<div class="text-center text-muted-foreground">' + message + '</div>';
+          }
+        }
+        
+        // Set timeout to force hide loading
+        timeoutId = setTimeout(function() {
+          console.warn('[Waline] Loading timeout, hiding indicator');
+          hideLoading();
+        }, LOADING_TIMEOUT);
+        
+        // Dynamically import Waline client
         let walineInstance = null;
+        let initFunc = null;
         
         function loadWaline() {
           const container = document.getElementById('waline');
           const loading = document.getElementById('waline-loading');
           
-          if (container && serverURL) {
-            try {
-              // Clean up previous instance
-              if (walineInstance) {
-                // Handle both sync errors and Promise rejections from destroy()
-                // Waline's internal Vue components may reject with AbortError during cleanup
-                const result = walineInstance.destroy();
-                if (result && typeof result.catch === 'function') {
-                  result.catch(() => {
-                    // Suppress internal Vue AbortError during cleanup
-                  });
-                }
-                walineInstance = null;
+          if (!container) {
+            console.error('[Waline] Container #waline not found');
+            return;
+          }
+          
+          if (!serverURL) {
+            console.error('[Waline] serverURL is not configured');
+            showError('评论系统未配置 serverURL');
+            return;
+          }
+          
+          try {
+            // Clean up previous instance
+            if (walineInstance) {
+              const result = walineInstance.destroy();
+              if (result && typeof result.catch === 'function') {
+                result.catch(function() {});
               }
-              
-              walineInstance = init({
-                el: '#waline',
-                serverURL: serverURL,
-                emoji: emoji,
-                lang: lang,
-                reaction: reaction,
-                pageview: pageview,
-                login: login,
-                wordLimit: wordLimit,
-                imageUploader: imageUploader,
-                requiredMeta: requiredMeta,
-                copyright: copyright,
-                dark: 'html[data-theme="dark"]',
-                path: window.location.pathname.replace(/\/$/, ''), // Ensure path consistency
-                locale: {
-                  placeholder: '欢迎评论，支持 Markdown 语法。\n请遵守社区规范，友善发言。',
-                  sofa: '快来抢沙发吧~',
-                  submit: '发布评论',
-                  reply: '回复',
-                  cancelReply: '取消回复',
-                  comment: '评论',
-                  refresh: '刷新',
-                  more: '加载更多...',
-                  preview: '预览',
-                  emoji: '表情',
-                  uploadImage: '上传图片',
-                  seconds: '秒前',
-                  minutes: '分钟前',
-                  hours: '小时前',
-                  days: '天前',
-                  now: '刚刚',
-                  uploading: '上传中',
-                  login: '登录',
-                  logout: '退出',
-                  admin: '博主',
-                  sticky: '置顶',
-                  word: '字',
-                  wordHint: '评论字数应在 $0 到 $1 字之间！\n当前字数：$2',
-                  anonymous: '匿名',
-                  level0: '潜水',
-                  level1: '冒泡',
-                  level2: '吐槽',
-                  level3: '活跃',
-                  level4: '话痨',
-                  level5: '传说',
-                },
-              });
-              
-              // Hide loading indicator after successful load
-              if (loading) {
-                loading.style.display = 'none';
-              }
-            } catch (e) {
-              // eslint-disable-next-line no-console
-              console.error('Failed to load Waline:', e);
-              if (loading) {
-                loading.innerHTML = '<div class="text-center text-muted-foreground">评论加载失败，请刷新重试</div>';
-              }
+              walineInstance = null;
             }
+            
+            if (!initFunc) {
+              console.error('[Waline] init function not available');
+              showError('评论组件加载失败，请刷新重试');
+              return;
+            }
+            
+            walineInstance = initFunc({
+              el: '#waline',
+              serverURL: serverURL,
+              emoji: emoji,
+              lang: lang,
+              reaction: reaction,
+              pageview: pageview,
+              login: login,
+              wordLimit: wordLimit,
+              imageUploader: imageUploader,
+              requiredMeta: requiredMeta,
+              copyright: copyright,
+              dark: 'html[data-theme="dark"]',
+              path: window.location.pathname.replace(/\/$/, ''),
+              locale: {
+                placeholder: '欢迎评论，支持 Markdown 语法。\n请遵守社区规范，友善发言。',
+                sofa: '快来抢沙发吧~',
+                submit: '发布评论',
+                reply: '回复',
+                cancelReply: '取消回复',
+                comment: '评论',
+                refresh: '刷新',
+                more: '加载更多...',
+                preview: '预览',
+                emoji: '表情',
+                uploadImage: '上传图片',
+                seconds: '秒前',
+                minutes: '分钟前',
+                hours: '小时前',
+                days: '天前',
+                now: '刚刚',
+                uploading: '上传中',
+                login: '登录',
+                logout: '退出',
+                admin: '博主',
+                sticky: '置顶',
+                word: '字',
+                wordHint: '评论字数应在 $0 到 $1 字之间！\n当前字数：$2',
+                anonymous: '匿名',
+                level0: '潜水',
+                level1: '冒泡',
+                level2: '吐槽',
+                level3: '活跃',
+                level4: '话痨',
+                level5: '传说',
+              },
+            });
+            
+            // Hide loading indicator after successful load
+            hideLoading();
+            console.log('[Waline] Initialized successfully');
+          } catch (e) {
+            console.error('[Waline] Failed to initialize:', e);
+            showError('评论加载失败，请刷新重试');
           }
         }
 
-        // Handle initial load
-        loadWaline();
+        // Import Waline and initialize
+        import('https://unpkg.com/@waline/client@v3/dist/waline.js')
+          .then(function(module) {
+            initFunc = module.init;
+            if (!initFunc) {
+              console.error('[Waline] init not found in module');
+              showError('评论组件加载异常');
+              return;
+            }
+            loadWaline();
+          })
+          .catch(function(err) {
+            console.error('[Waline] Failed to load module:', err);
+            showError('评论组件加载失败，请检查网络');
+          });
 
         // Handle View Transitions (if using ClientRouter)
         document.addEventListener('astro:page-load', loadWaline);
         
         // Suppress Waline AbortError (external service unavailability)
-        const suppressWalineErrors = (event: ErrorEvent) => {
-          if (event.message?.includes('AbortError') && 
-              (event.filename?.includes('waline') || event.message?.includes('waline'))) {
+        var suppressWalineErrors = function(event) {
+          if (event.message && event.message.includes('AbortError') && 
+              (event.filename && event.filename.includes('waline') || event.message.includes('waline'))) {
             event.preventDefault();
             return true;
           }
@@ -151,14 +199,11 @@ const enabled = SITE.waline?.enabled;
         window.addEventListener('error', suppressWalineErrors);
         
         // Cleanup before page swap to prevent AbortError
-        document.addEventListener('astro:before-swap', () => {
+        document.addEventListener('astro:before-swap', function() {
           if (walineInstance) {
-            // Handle both sync errors and Promise rejections from destroy()
-            const result = walineInstance.destroy();
+            var result = walineInstance.destroy();
             if (result && typeof result.catch === 'function') {
-              result.catch(() => {
-                // Ignore errors during cleanup - component may already be unmounted
-              });
+              result.catch(function() {});
             }
             walineInstance = null;
           }
@@ -170,34 +215,21 @@ const enabled = SITE.waline?.enabled;
         /* ===========================================
          * WALINE COMMENT SYSTEM STYLES
          * Comprehensive theming for light/dark modes
+         * Optimized for accessibility and all theme presets
          * =========================================== */
-        
-        .comments-section {
-          animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
         
         /* ===========================================
          * ROOT VARIABLES (Common)
+         * Using project's design tokens for consistency
          * =========================================== */
         :root {
-          /* Theme Colors */
+          /* Theme Colors - inherit from project's theme system */
           --waline-theme-color: var(--accent) !important;
           --waline-active-color: var(--accent) !important;
           
           /* Typography */
           --waline-font-size: 0.9375rem !important;
-          --waline-border-radius: 0.5rem !important;
+          --waline-border-radius: var(--radius-lg, 0.5rem) !important;
           
           /* Avatar */
           --waline-avatar-size: 2.75rem !important;
@@ -205,16 +237,20 @@ const enabled = SITE.waline?.enabled;
           
           /* Box Shadow */
           --waline-box-shadow: none !important;
+          
+          /* Transitions - use project tokens */
+          --waline-transition-fast: var(--transition-fast, 150ms);
+          --waline-transition-base: var(--transition-base, 200ms);
         }
         
         /* ===========================================
          * LIGHT MODE THEME
          * =========================================== */
         html:not([data-theme="dark"]) {
-          /* Primary Backgrounds - use --card for consistency */
+          /* Primary Backgrounds */
           --waline-bg-color: var(--card) !important;
           --waline-bg-color-light: var(--muted) !important;
-          --waline-bg-color-hover: rgba(0, 0, 0, 0.05) !important;
+          --waline-bg-color-hover: var(--accent-soft) !important;
           
           /* Text Colors */
           --waline-color: var(--foreground) !important;
@@ -229,7 +265,7 @@ const enabled = SITE.waline?.enabled;
           --waline-bq-color: var(--muted) !important;
           --waline-info-bg-color: var(--muted) !important;
           --waline-info-color: var(--foreground-soft) !important;
-          --waline-code-bg-color: #1e1e1e !important;
+          --waline-code-bg-color: var(--surface-strong, #1e1e1e) !important;
           
           /* White/Grey overrides */
           --waline-white: var(--card) !important;
@@ -241,10 +277,10 @@ const enabled = SITE.waline?.enabled;
          * DARK MODE THEME
          * =========================================== */
         html[data-theme="dark"] {
-          /* Primary Backgrounds - use --card for consistency */
+          /* Primary Backgrounds */
           --waline-bg-color: var(--card) !important;
           --waline-bg-color-light: var(--muted) !important;
-          --waline-bg-color-hover: rgba(255, 255, 255, 0.05) !important;
+          --waline-bg-color-hover: var(--accent-soft) !important;
           
           /* Text Colors */
           --waline-color: var(--foreground) !important;
@@ -259,12 +295,52 @@ const enabled = SITE.waline?.enabled;
           --waline-bq-color: var(--muted) !important;
           --waline-info-bg-color: var(--muted) !important;
           --waline-info-color: var(--foreground-soft) !important;
-          --waline-code-bg-color: #0d1117 !important;
+          --waline-code-bg-color: var(--surface-strong, #0d1117) !important;
           
           /* White/Grey overrides */
           --waline-white: var(--card) !important;
           --waline-light-grey: var(--foreground-soft) !important;
           --waline-dark-grey: var(--foreground) !important;
+        }
+        
+        /* ===========================================
+         * ANIMATIONS (with reduced-motion support)
+         * =========================================== */
+        
+        .comments-section {
+          animation: fadeIn var(--waline-transition-base, 0.2s) ease-out;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+          .comments-section {
+            animation: none;
+          }
+          
+          #waline .wl-btn,
+          #waline .wl-card,
+          #waline .wl-reaction-img,
+          #waline .wl-page-button,
+          #waline .wl-editor,
+          #waline .wl-input {
+            transition: none !important;
+          }
+          
+          #waline .wl-btn:hover,
+          #waline .wl-reaction-img:hover {
+            transform: none !important;
+          }
         }
         
         /* ===========================================
@@ -274,19 +350,19 @@ const enabled = SITE.waline?.enabled;
           padding-top: 0.5rem;
         }
         
-        /* Main panel - ensure consistent background */
+        /* Main panel */
         #waline .wl-panel {
           background-color: var(--card) !important;
           border-color: var(--border) !important;
         }
         
-        /* Header area */
+        /* Header area - nickname, email, website inputs */
         #waline .wl-header {
           background-color: transparent !important;
         }
         
         #waline .wl-header-item {
-          background-color: var(--muted) !important;
+          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
           border-color: var(--border) !important;
         }
         
@@ -302,10 +378,12 @@ const enabled = SITE.waline?.enabled;
         #waline .wl-editor,
         #waline .wl-input {
           min-height: 120px !important;
-          background-color: var(--card) !important;
+          background-color: var(--surface-strong, rgba(255, 255, 255, 0.92)) !important;
           border-color: var(--border) !important;
-          border-radius: 0.5rem !important;
-          transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+          border-radius: var(--radius-lg, 0.5rem) !important;
+          transition: 
+            border-color var(--waline-transition-fast, 0.15s) ease,
+            box-shadow var(--waline-transition-fast, 0.15s) ease !important;
         }
         
         #waline .wl-input {
@@ -316,33 +394,51 @@ const enabled = SITE.waline?.enabled;
         #waline .wl-input:focus {
           border-color: var(--accent) !important;
           box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent) !important;
+          outline: none;
+        }
+        
+        /* Focus-visible for keyboard navigation */
+        #waline .wl-editor:focus-visible,
+        #waline .wl-input:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         
         /* Textarea */
         #waline textarea {
-          background-color: var(--card) !important;
+          background-color: var(--surface-strong, rgba(255, 255, 255, 0.92)) !important;
           color: var(--foreground) !important;
         }
         
         /* ===========================================
          * BUTTON STYLES
+         * Secondary buttons: light background, not gray
          * =========================================== */
         #waline .wl-btn {
-          transition: all 0.2s ease !important;
-          border-radius: 0.375rem !important;
-          background-color: var(--muted) !important;
+          transition: 
+            background-color var(--waline-transition-fast, 0.15s) ease,
+            border-color var(--waline-transition-fast, 0.15s) ease !important;
+          border-radius: var(--radius-md, 0.375rem) !important;
+          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
+          border: 1px solid var(--border) !important;
           color: var(--foreground) !important;
+          cursor: pointer;
         }
         
         #waline .wl-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          background-color: var(--bg-color-hover) !important;
+          background-color: var(--accent-soft) !important;
+          border-color: var(--accent) !important;
+        }
+        
+        #waline .wl-btn:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         
         #waline .wl-primary-btn {
           font-weight: 500 !important;
           background-color: var(--accent) !important;
+          border-color: var(--accent) !important;
           color: var(--background) !important;
         }
         
@@ -355,14 +451,14 @@ const enabled = SITE.waline?.enabled;
          * COMMENT CARD STYLES
          * =========================================== */
         #waline .wl-card {
-          border-radius: 0.5rem !important;
+          border-radius: var(--radius-lg, 0.5rem) !important;
           background-color: var(--card) !important;
           border-color: var(--border) !important;
-          transition: box-shadow 0.2s ease !important;
+          transition: background-color var(--waline-transition-fast, 0.15s) ease !important;
         }
         
         #waline .wl-card:hover {
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          background-color: var(--card-hover) !important;
         }
         
         /* Comment content area */
@@ -384,19 +480,23 @@ const enabled = SITE.waline?.enabled;
         
         /* ===========================================
          * REACTION STYLES
+         * Fixed: Replaced scale with brightness for stability
          * =========================================== */
         #waline .wl-reaction {
           background-color: transparent !important;
         }
         
         #waline .wl-reaction-img {
-          transition: transform 0.2s ease !important;
-          background-color: var(--muted) !important;
-          border-radius: 0.5rem !important;
+          transition: filter var(--waline-transition-fast, 0.15s) ease !important;
+          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
+          border: 1px solid var(--border) !important;
+          border-radius: var(--radius-lg, 0.5rem) !important;
+          cursor: pointer;
         }
         
         #waline .wl-reaction-img:hover {
-          transform: scale(1.1);
+          filter: brightness(1.1);
+          border-color: var(--accent) !important;
         }
         
         #waline .wl-reaction-title {
@@ -408,28 +508,31 @@ const enabled = SITE.waline?.enabled;
          * =========================================== */
         #waline .wl-quote {
           border-left-color: var(--accent) !important;
-          background-color: var(--muted) !important;
+          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
           color: var(--foreground) !important;
         }
         
         #waline .wl-content pre,
         #waline .wl-content code {
           background-color: var(--waline-code-bg-color) !important;
-          border-radius: 0.25rem !important;
+          border-radius: var(--radius-sm, 0.25rem) !important;
         }
         
         /* ===========================================
          * EMOJI PICKER
          * =========================================== */
         #waline .wl-emoji-popup {
-          border-radius: 0.5rem !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-          background-color: var(--card) !important;
+          border-radius: var(--radius-lg, 0.5rem) !important;
+          box-shadow: 
+            0 4px 12px rgba(0, 0, 0, 0.15),
+            0 0 0 1px var(--border) !important;
+          background-color: var(--surface-strong, rgba(255, 255, 255, 0.92)) !important;
           border-color: var(--border) !important;
         }
         
         #waline .wl-tab-wrapper button {
           color: var(--foreground) !important;
+          cursor: pointer;
         }
         
         #waline .wl-tab-wrapper button.active {
@@ -441,8 +544,9 @@ const enabled = SITE.waline?.enabled;
          * REPLY FORM
          * =========================================== */
         #waline .wl-reply-wrapper {
-          border-radius: 0.5rem !important;
-          background-color: var(--muted) !important;
+          border-radius: var(--radius-lg, 0.5rem) !important;
+          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
+          border: 1px solid var(--border) !important;
         }
         
         #waline .wl-reply {
@@ -453,20 +557,31 @@ const enabled = SITE.waline?.enabled;
          * PAGINATION
          * =========================================== */
         #waline .wl-page-button {
-          border-radius: 0.25rem !important;
-          transition: background-color 0.2s ease !important;
-          background-color: var(--muted) !important;
+          border-radius: var(--radius-sm, 0.25rem) !important;
+          transition: 
+            background-color var(--waline-transition-fast, 0.15s) ease,
+            color var(--waline-transition-fast, 0.15s) ease !important;
+          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
+          border: 1px solid var(--border) !important;
           color: var(--foreground) !important;
+          cursor: pointer;
         }
         
         #waline .wl-page-button:hover {
           background-color: var(--accent) !important;
+          border-color: var(--accent) !important;
           color: var(--background) !important;
         }
         
         #waline .wl-page-button.active {
           background-color: var(--accent) !important;
+          border-color: var(--accent) !important;
           color: var(--background) !important;
+        }
+        
+        #waline .wl-page-button:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         
         /* ===========================================
@@ -492,7 +607,7 @@ const enabled = SITE.waline?.enabled;
          * LOADING ANIMATION
          * =========================================== */
         #waline-loading {
-          transition: opacity 0.3s ease;
+          transition: opacity var(--waline-transition-base, 0.2s) ease;
         }
         
         /* ===========================================
@@ -514,10 +629,17 @@ const enabled = SITE.waline?.enabled;
          * =========================================== */
         #waline .wl-comment-actions button {
           color: var(--foreground-soft) !important;
+          cursor: pointer;
+          transition: color var(--waline-transition-fast, 0.15s) ease !important;
         }
         
         #waline .wl-comment-actions button:hover {
           color: var(--accent) !important;
+        }
+        
+        #waline .wl-comment-actions button:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         
         /* ===========================================
