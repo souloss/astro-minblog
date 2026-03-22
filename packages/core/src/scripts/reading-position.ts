@@ -1,3 +1,5 @@
+import { getGlobalEventManager, rafThrottle } from "../utils/performance";
+
 const STORAGE_KEY = "reading-positions";
 const MAX_ENTRIES = 50;
 
@@ -43,14 +45,9 @@ function initReadingPosition() {
     });
   }
 
-  let rafId: number | null = null;
-  document.addEventListener("scroll", () => {
-    if (rafId) return;
-    rafId = requestAnimationFrame(() => {
-      savePosition(path, window.scrollY);
-      rafId = null;
-    });
-  });
+  const manager = getGlobalEventManager();
+  const throttledSave = rafThrottle(() => savePosition(path, window.scrollY));
+  manager.add(document, "scroll", throttledSave, { passive: true });
 }
 
 document.addEventListener("astro:page-load", initReadingPosition);

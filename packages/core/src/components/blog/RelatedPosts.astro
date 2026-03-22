@@ -37,9 +37,9 @@ const {
         {posts.map(post => (
           <a
             href={getLocalizedPostPath(lang, post.id)}
-            class="group flex flex-col rounded-xl border border-border bg-card/70 p-4 backdrop-blur-md
-                   shadow-sm shadow-shadow-elevated/30
-                   transition-all duration-200 hover:border-accent/40 hover:bg-card-hover hover:shadow-md"
+            class="group flex flex-col rounded-2xl border border-border/80 bg-card/80 p-4 backdrop-blur-xl
+                   shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
+                   transition-all duration-200 hover:border-accent/40 hover:bg-card/90 hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)]"
           >
             <h4 class="line-clamp-2 text-sm font-medium text-foreground transition-colors group-hover:text-accent">
               {post.data.title}

@@ -7,6 +7,7 @@
     "dev:astro": "astro dev",
     "dev:ai": "pnpm exec astro-ai-dev",
     "build": "astro check && astro build && pagefind --site dist",
+    "clean": "rm -rf dist .astro node_modules/.vite node_modules/.cache",
     "preview": "wrangler pages dev dist",
     "preview:astro": "astro preview",
     "lint": "eslint .",
@@ -28,9 +29,9 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "^2.0.35",
     "@ai-sdk/react": "^3.0.118",
-    "@astro-minimax/ai": "^0.8.3",
-    "@astro-minimax/core": "^0.8.3",
-    "@astro-minimax/notify": "^0.8.3",
+    "@astro-minimax/ai": "^0.9.0",
+    "@astro-minimax/core": "^0.9.0",
+    "@astro-minimax/notify": "^0.9.0",
     "@astrojs/mdx": "^5.0.0",
     "@astrojs/preact": "^5.0.0",
     "@astrojs/rss": "^4.0.17",
@@ -57,7 +58,7 @@
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
-    "@astro-minimax/cli": "^0.8.3",
+    "@astro-minimax/cli": "^0.9.0",
     "@astrojs/check": "^0.9.7",
     "@cloudflare/workers-types": "^4.20260313.1",
     "@pagefind/default-ui": "^1.4.0",

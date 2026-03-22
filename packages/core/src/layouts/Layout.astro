@@ -531,9 +531,7 @@ const structuredData = pubDatetime
     </script>
     <script is:inline>
       if ("serviceWorker" in navigator) {
-        fetch("/sw.js", { method: "HEAD" }).then(function(r) {
-          if (r.ok) navigator.serviceWorker.register("/sw.js");
-        }).catch(function() {});
+        navigator.serviceWorker.register("/sw.js").catch(function() {});
       }
     </script>
   </body>

@@ -24,23 +24,6 @@ const packageRoot = join(__dirname, '..');
 const srcDir = join(packageRoot, 'src');
 const distDir = join(packageRoot, 'dist');
 
-// Entry points for the main package
-const ENTRY_POINTS = [
-  'index.ts',
-  'providers/index.ts',
-  'middleware/index.ts',
-  'search/index.ts',
-  'intelligence/index.ts',
-  'prompt/index.ts',
-  'data/index.ts',
-  'fact-registry/index.ts',
-  'stream/index.ts',
-  'server/index.ts',
-  'server/dev-server.ts',  // CLI bin entry point
-  'components/ChatPanel.tsx',
-  'components/AIChatContainer.tsx',
-];
-
 /**
  * Post-process the compiled JS to ensure proper imports.
  * - Add missing h/Fragment imports from preact for JSX
@@ -111,19 +94,24 @@ async function buildPackage() {
   await rm(distDir, { recursive: true, force: true });
   await mkdir(distDir, { recursive: true });
 
-  // Build all entry points with esbuild
+  // Get ALL .ts/.tsx files to compile (not just entry points)
+  // WHY: With bundle: false, each imported file must be compiled separately.
+  // Previously we only compiled ENTRY_POINTS, causing missing files like utils/i18n.js
   console.log('\n[1/3] Compiling JavaScript with esbuild...');
   
-  for (const entry of ENTRY_POINTS) {
-    const srcPath = join(srcDir, entry);
-    const outPath = join(distDir, entry.replace(/\.tsx?$/, '.js'));
-    const isJsxFile = entry.endsWith('.tsx');
-    const isComponent = entry.startsWith('components/');
+  const allSourceFiles = await getAllFiles(srcDir);
+  
+  for (const srcPath of allSourceFiles) {
+    const relativePath = relative(srcDir, srcPath);
+    const outPath = join(distDir, relativePath.replace(/\.tsx?$/, '.js'));
+    const isJsxFile = srcPath.endsWith('.tsx');
+    const isComponent = relativePath.startsWith('components/');
+    
+    // Skip .d.ts files
+    if (srcPath.endsWith('.d.ts')) continue;
     
     // Ensure output directory exists
     await mkdir(dirname(outPath), { recursive: true });
-    
-    console.log(`  ${entry} -> ${relative(packageRoot, outPath)}`);
     
     // For components, we need to bundle them to resolve relative imports
     // For other files, we just compile without bundling

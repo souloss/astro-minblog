@@ -45,17 +45,25 @@ export interface WalineConfig {
   turnstileKey?: string;
 }
 
+/**
+ * AI chat configuration (client-side).
+ * 
+ * Note: Server-side AI configuration (model, apiKey, etc.) is handled via
+ * environment variables (AI_MODEL, AI_API_KEY, etc.) in the @astro-minimax/ai package.
+ * 
+ * @see packages/ai/README.md for server-side configuration
+ */
 export interface AiConfig {
+  /** Enable AI chat widget */
   enabled?: boolean;
+  /** Use mock responses instead of real API (for demos) */
   mockMode?: boolean;
+  /** API endpoint for chat requests (default: "/api/chat") */
   apiEndpoint?: string;
-  apiKey?: string;
-  model?: string;
-  maxTokens?: number;
-  systemPrompt?: string;
+  /** Custom welcome message (auto-generated if not provided) */
   welcomeMessage?: string;
+  /** Custom input placeholder text */
   placeholder?: string;
-  vectorSearch?: boolean;
 }
 
 export interface SponsorMethod {

@@ -366,99 +366,125 @@ const nextPost =
 </Layout>
 
 <script is:inline data-astro-rerun>
-  function initStickyHeader() {
-    const header = document.getElementById("sticky-header");
-    const progressBar = document.getElementById("progress-bar");
-    const tocToggle = document.getElementById("sticky-toc-toggle");
-    const stickyBackToTopBtn = document.getElementById("sticky-back-to-top");
+  (function() {
+    let scrollHandler = null;
+    let tocClickHandler = null;
+    let afterSwapHandler = null;
 
-    if (!header || !progressBar) return;
+    function initStickyHeader() {
+      const header = document.getElementById("sticky-header");
+      const progressBar = document.getElementById("progress-bar");
+      const tocToggle = document.getElementById("sticky-toc-toggle");
+      const stickyBackToTopBtn = document.getElementById("sticky-back-to-top");
 
-    function applyStickyBackToTopVisibility() {
-      const enabled = document.documentElement.getAttribute('data-sticky-backtotop') !== 'false';
-      if (header) {
-        if (enabled) {
-          header.style.removeProperty('display');
-        } else {
-          header.style.display = 'none';
-        }
-      }
-    }
+      if (!header || !progressBar) return;
 
-    applyStickyBackToTopVisibility();
-
-    const originalSetItem = localStorage.setItem.bind(localStorage);
-    localStorage.setItem = function(key, value) {
-      originalSetItem(key, value);
-      if (key === 'astro-minimax-settings') {
-        setTimeout(applyStickyBackToTopVisibility, 0);
-      }
-    };
-
-    // Handle scroll
-    document.addEventListener("scroll", () => {
-      const winScroll =
-        document.body.scrollTop || document.documentElement.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-
-      // Update progress bar
-      progressBar.style.width = scrolled + "%";
-
-      // Show/hide header based on scroll position (e.g. past 300px)
-      if (winScroll > 300) {
-        header.classList.remove("-translate-y-full", "opacity-0");
-      } else {
-        header.classList.add("-translate-y-full", "opacity-0");
-      }
-    });
-
-    // Handle TOC toggle
-    if (tocToggle) {
-      tocToggle.addEventListener("click", () => {
-        // Scroll to InlineTOC and open it
-        const inlineToc = document.querySelector("[data-inline-toc]");
-        if (inlineToc) {
-          inlineToc.scrollIntoView({ behavior: "smooth", block: "center" });
-          const toggleBtn = inlineToc.querySelector("[data-toc-toggle]");
-          if (
-            toggleBtn &&
-            toggleBtn.getAttribute("aria-expanded") === "false"
-          ) {
-            toggleBtn.click();
+      function applyStickyBackToTopVisibility() {
+        const enabled = document.documentElement.getAttribute('data-sticky-backtotop') !== 'false';
+        if (header) {
+          if (enabled) {
+            header.style.removeProperty('display');
+          } else {
+            header.style.display = 'none';
           }
         }
-      });
+      }
+
+      applyStickyBackToTopVisibility();
+
+      const originalSetItem = localStorage.setItem.bind(localStorage);
+      localStorage.setItem = function(key, value) {
+        originalSetItem(key, value);
+        if (key === 'astro-minimax-settings') {
+          setTimeout(applyStickyBackToTopVisibility, 0);
+        }
+      };
+
+      let rafId = null;
+      scrollHandler = function() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(function() {
+          const winScroll =
+            document.body.scrollTop || document.documentElement.scrollTop;
+          const height =
+            document.documentElement.scrollHeight -
+            document.documentElement.clientHeight;
+          const scrolled = (winScroll / height) * 100;
+
+          progressBar.style.width = scrolled + "%";
+
+          if (winScroll > 300) {
+            header.classList.remove("-translate-y-full", "opacity-0");
+          } else {
+            header.classList.add("-translate-y-full", "opacity-0");
+          }
+          rafId = null;
+        });
+      };
+
+      document.addEventListener("scroll", scrollHandler, { passive: true });
+
+      if (tocToggle) {
+        tocClickHandler = function() {
+          const inlineToc = document.querySelector("[data-inline-toc]");
+          if (inlineToc) {
+            inlineToc.scrollIntoView({ behavior: "smooth", block: "center" });
+            const toggleBtn = inlineToc.querySelector("[data-toc-toggle]");
+            if (
+              toggleBtn &&
+              toggleBtn.getAttribute("aria-expanded") === "false"
+            ) {
+              toggleBtn.click();
+            }
+          }
+        };
+        tocToggle.addEventListener("click", tocClickHandler);
+      }
     }
-  }
-  initStickyHeader();
 
-  /** Attaches links to headings in the document,
-   *  allowing sharing of sections easily */
-  function addHeadingLinks() {
-    const headings = Array.from(
-      document.querySelectorAll("h2, h3, h4, h5, h6")
-    );
-    for (const heading of headings) {
-      heading.classList.add("group");
-      const link = document.createElement("a");
-      link.className =
-        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
-      link.href = "#" + heading.id;
+    function addHeadingLinks() {
+      const headings = Array.from(
+        document.querySelectorAll("h2, h3, h4, h5, h6")
+      );
+      for (const heading of headings) {
+        heading.classList.add("group");
+        const link = document.createElement("a");
+        link.className =
+          "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
+        link.href = "#" + heading.id;
 
-      const span = document.createElement("span");
-      span.ariaHidden = "true";
-      span.innerText = "#";
-      link.appendChild(span);
-      heading.appendChild(link);
+        const span = document.createElement("span");
+        span.ariaHidden = "true";
+        span.innerText = "#";
+        link.appendChild(span);
+        heading.appendChild(link);
+      }
     }
-  }
-  addHeadingLinks();
 
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
-  );
+    function cleanup() {
+      if (scrollHandler) {
+        document.removeEventListener("scroll", scrollHandler);
+        scrollHandler = null;
+      }
+      if (tocClickHandler) {
+        const tocToggle = document.getElementById("sticky-toc-toggle");
+        if (tocToggle) tocToggle.removeEventListener("click", tocClickHandler);
+        tocClickHandler = null;
+      }
+      if (afterSwapHandler) {
+        document.removeEventListener("astro:after-swap", afterSwapHandler);
+        afterSwapHandler = null;
+      }
+    }
+
+    document.addEventListener("astro:before-swap", cleanup);
+
+    afterSwapHandler = function() {
+      window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+    };
+    document.addEventListener("astro:after-swap", afterSwapHandler);
+
+    initStickyHeader();
+    addHeadingLinks();
+  })();
 </script>

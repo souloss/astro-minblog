@@ -1,6 +1,6 @@
 {
   "name": "@astro-minimax/notify",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "type": "module",
   "description": "Multi-channel notification package for astro-minimax blogs — supports Telegram, Email (Resend), and more.",
   "author": "Souloss",
@@ -38,7 +38,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "build:watch": "tsc -p tsconfig.build.json --watch",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.build.json",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },

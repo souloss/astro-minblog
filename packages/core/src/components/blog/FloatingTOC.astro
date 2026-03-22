@@ -131,6 +131,8 @@ const nestedHeadings = buildNestedHeadings(headings);
 </style>
 
 <script>
+  import { getGlobalEventManager, rafThrottle } from "../../utils/performance";
+
   function initFloatingTOC() {
     const tocContainer = document.querySelector("[data-floating-toc]");
     if (!tocContainer) return;
@@ -140,7 +142,6 @@ const nestedHeadings = buildNestedHeadings(headings);
     const tocItems = tocContainer.querySelectorAll(".toc-item");
     const indicator = tocContainer.querySelector<HTMLElement>(".toc-progress");
 
-    // Intersection Observer
     const observerOptions = {
       root: null,
       rootMargin: "-100px 0px -66% 0px",
@@ -171,8 +172,10 @@ const nestedHeadings = buildNestedHeadings(headings);
       observer.observe(element);
     });
 
+    const manager = getGlobalEventManager();
+    manager.trackObserver(observer, 'intersection');
+
     function setActive(activeSlug: string) {
-      // 1. Update Active Links
       tocLinks.forEach(link => {
         const isActive = link.dataset.tocSlug === activeSlug;
         if (isActive) {
@@ -184,23 +187,17 @@ const nestedHeadings = buildNestedHeadings(headings);
         }
       });
 
-      // 2. Update Active Items (for sublist expansion)
       tocItems.forEach(item => {
         const slug = item.getAttribute("data-slug");
         const hasActiveChild = item.querySelector(`.toc-link.active`);
 
-        // If this item is active OR has an active child, mark as active
         if (slug === activeSlug || hasActiveChild) {
           item.classList.add("active");
         } else {
-          // Only remove if it's not the parent of the active item
-          // Actually, we re-evaluate all.
-          // Simpler: Just remove active from all, then add to the one matching activeSlug's parent h2
           item.classList.remove("active");
         }
       });
 
-      // Re-apply active to parent of currently active link
       if (activeSlug && tocContainer) {
         const activeLink = tocContainer.querySelector(
           `.toc-link[data-toc-slug="${activeSlug}"]`
@@ -223,8 +220,7 @@ const nestedHeadings = buildNestedHeadings(headings);
       }
     }
 
-    // Scroll Progress Update (Continuous)
-    document.addEventListener("scroll", () => {
+    const updateIndicator = rafThrottle(() => {
       if (indicator) {
         const winScroll =
           document.body.scrollTop || document.documentElement.scrollTop;
@@ -236,9 +232,10 @@ const nestedHeadings = buildNestedHeadings(headings);
       }
     });
 
-    // Smooth Scroll Click Handler
+    manager.add(document, "scroll", updateIndicator, { passive: true });
+
     tocLinks.forEach(link => {
-      link.addEventListener("click", e => {
+      manager.add(link, "click", (e: Event) => {
         e.preventDefault();
         const slug = link.dataset.tocSlug;
         if (slug) {
@@ -257,11 +254,6 @@ const nestedHeadings = buildNestedHeadings(headings);
           }
         }
       });
-    });
-
-    // Cleanup
-    document.addEventListener("astro:before-swap", () => {
-      observer.disconnect();
     });
   }
 

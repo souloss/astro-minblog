@@ -134,10 +134,10 @@ Shortcut scripts are also available: `pnpm run ai:process`, `pnpm run profile:bu
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [`@astro-minimax/core`](packages/core/) | 0.8.1 | Core theme: layouts, components, styles, route injection, virtual modules, visualizations |
-| [`@astro-minimax/ai`](packages/ai/) | 0.8.1 | AI integration: multi-provider failover, RAG, source priority, privacy protection |
-| [`@astro-minimax/notify`](packages/notify/) | 0.8.1 | Notifications: Telegram Bot, Email (Resend), Webhook |
-| [`@astro-minimax/cli`](packages/cli/) | 0.8.1 | CLI tools: scaffolding, AI processing, profile building, quality evaluation |
+| [`@astro-minimax/core`](packages/core/) | 0.9.0 | Core theme: layouts, components, styles, route injection, virtual modules, visualizations |
+| [`@astro-minimax/ai`](packages/ai/) | 0.9.0 | AI integration: multi-provider failover, RAG, source priority, privacy protection |
+| [`@astro-minimax/notify`](packages/notify/) | 0.9.0 | Notifications: Telegram Bot, Email (Resend), Webhook |
+| [`@astro-minimax/cli`](packages/cli/) | 0.9.0 | CLI tools: scaffolding, AI processing, profile building, quality evaluation |
 
 ## Documentation
 

@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-03-22
+
+### Added
+
+- **Mermaid Interactive Toolbar**: Enhanced MermaidInit component with interactive toolbar featuring zoom controls (in/out/reset), export options (SVG/PNG), fullscreen mode, theme switching, and improved rendering performance.
+- **Enhanced Comments Component**: Added loading timeout mechanism, comprehensive error handling with friendly error messages, retry mechanism for failed loads, and clear status feedback with progress indicators.
+- **UI Component Improvements**: Enhanced styling and accessibility across multiple UI components with improved button styles, better keyboard navigation and screen reader support, optimized animations, and unified design language with consistent colors and spacing.
+
+### Changed
+
+- **User Preferences**: Enhanced user preferences system with sensible default configurations, better integration with settings panel, and optimized storage and retrieval of preferences.
+- **Documentation**: Updated AI functionality guide with new features and configuration details, improved CLI tool documentation with usage examples.
+- **OG Image Generation**: Updated OG image generation tool with enhanced screenshot-related configuration options.
+
+### Fixed
+
+- **Clipboard Copy Feedback**: Fixed button innerHTML update issue for clearer copy success feedback.
+- **Website URL**: Fixed incorrect website URL in configuration.
+
 ## [0.8.3] - 2026-03-21
 
 ### Added

@@ -1,8 +1,13 @@
+import { getGlobalEventManager } from "../utils/performance";
+
+let overlay: HTMLDivElement | null = null;
+let currentImageClickHandler: (() => void) | null = null;
+
 function initLightbox() {
   const article = document.getElementById("article");
   if (!article) return;
 
-  let overlay: HTMLDivElement | null = null;
+  const manager = getGlobalEventManager();
 
   function createOverlay() {
     if (overlay) return overlay;
@@ -17,7 +22,7 @@ function initLightbox() {
     `;
     document.body.appendChild(overlay);
 
-    overlay.addEventListener("click", e => {
+    manager.add(overlay, "click", (e: Event) => {
       if (
         e.target === overlay ||
         (e.target as HTMLElement).id === "lightbox-close"
@@ -36,25 +41,25 @@ function initLightbox() {
     img.alt = alt;
     el.classList.add("active");
     document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", onKey);
+    manager.add(document, "keydown", onKey);
   }
 
   function close() {
     if (!overlay) return;
     overlay.classList.remove("active");
     document.body.style.overflow = "";
-    document.removeEventListener("keydown", onKey);
+    manager.removeListeners();
   }
 
-  function onKey(e: KeyboardEvent) {
-    if (e.key === "Escape") close();
+  function onKey(e: Event) {
+    if ((e as KeyboardEvent).key === "Escape") close();
   }
 
   const images = article.querySelectorAll("img");
   images.forEach(img => {
     if (img.closest("a")) return;
     img.style.cursor = "zoom-in";
-    img.addEventListener("click", () => {
+    manager.add(img, "click", () => {
       open(img.src, img.alt || "");
     });
   });

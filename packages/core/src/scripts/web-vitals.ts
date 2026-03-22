@@ -1,3 +1,5 @@
+import { getGlobalEventManager } from "../utils/performance";
+
 type WebVitalMetric = {
   name: string;
   value: number;
@@ -21,7 +23,8 @@ function getRating(name: string, value: number): WebVitalMetric["rating"] {
 }
 
 function reportMetric(metric: WebVitalMetric) {
-  if (import.meta.env.DEV) {
+  const isDev = typeof import.meta !== 'undefined' && (import.meta as { env?: { DEV?: boolean } }).env?.DEV;
+  if (isDev) {
     const color =
       metric.rating === "good"
         ? "#0cce6b"
@@ -40,6 +43,7 @@ function observeWebVitals() {
   if (typeof PerformanceObserver === "undefined") return;
 
   const id = `v${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const manager = getGlobalEventManager();
 
   try {
     const lcpObserver = new PerformanceObserver(list => {
@@ -55,6 +59,7 @@ function observeWebVitals() {
       }
     });
     lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
+    manager.trackObserver(lcpObserver, 'performance');
 
     const fcpObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
@@ -69,6 +74,7 @@ function observeWebVitals() {
       }
     });
     fcpObserver.observe({ type: "paint", buffered: true });
+    manager.trackObserver(fcpObserver, 'performance');
 
     const clsObserver = new PerformanceObserver(list => {
       let clsValue = 0;
@@ -88,6 +94,57 @@ function observeWebVitals() {
       });
     });
     clsObserver.observe({ type: "layout-shift", buffered: true });
+    manager.trackObserver(clsObserver, 'performance');
+
+    const fidObserver = new PerformanceObserver(list => {
+      for (const entry of list.getEntries()) {
+        const fidEntry = entry as PerformanceEventTiming;
+        if (fidEntry.processingStart && fidEntry.startTime) {
+          const fid = fidEntry.processingStart - fidEntry.startTime;
+          reportMetric({
+            name: "FID",
+            value: fid,
+            rating: getRating("FID", fid),
+            id,
+          });
+        }
+      }
+    });
+    fidObserver.observe({ type: "first-input", buffered: true });
+    manager.trackObserver(fidObserver, 'performance');
+
+    let inpValue = 0;
+    const inpObserver = new PerformanceObserver(list => {
+      for (const entry of list.getEntries()) {
+        const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
+        if (eventEntry.interactionId && eventEntry.duration) {
+          inpValue = Math.max(inpValue, eventEntry.duration);
+        }
+      }
+    });
+    inpObserver.observe({ type: "event", buffered: true });
+    manager.trackObserver(inpObserver, 'performance');
+
+    const reportINP = () => {
+      if (inpValue > 0) {
+        reportMetric({
+          name: "INP",
+          value: inpValue,
+          rating: getRating("INP", inpValue),
+          id,
+        });
+      }
+    };
+
+    if (document.visibilityState === 'hidden') {
+      reportINP();
+    } else {
+      manager.add(document, 'visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          reportINP();
+        }
+      });
+    }
   } catch {
     // PerformanceObserver types not supported in this browser
   }

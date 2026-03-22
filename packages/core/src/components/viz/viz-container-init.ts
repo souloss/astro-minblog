@@ -1,9 +1,28 @@
-/**
- * VizContainer control initialization - zoom, pan, fullscreen.
- * Must be loaded whenever viz-containers exist on the page, including:
- * - Astro-rendered components (VizContainer.astro)
- * - Dynamically created containers (e.g. markmap-renderer's buildVizShell)
- */
+import { getGlobalEventManager } from "../../utils/performance";
+
+const trackedListeners: Array<{
+  target: EventTarget;
+  type: string;
+  handler: EventListenerOrEventListenerObject;
+  options?: AddEventListenerOptions | boolean;
+}> = [];
+
+function addTrackedListener(
+  target: EventTarget,
+  type: string,
+  handler: EventListenerOrEventListenerObject,
+  options?: AddEventListenerOptions | boolean
+) {
+  target.addEventListener(type, handler, options);
+  trackedListeners.push({ target, type, handler, options });
+}
+
+function cleanupListeners() {
+  for (const { target, type, handler, options } of trackedListeners) {
+    target.removeEventListener(type, handler, options);
+  }
+  trackedListeners.length = 0;
+}
 
 function initVizContainers() {
   document.querySelectorAll<HTMLElement>(".viz-container").forEach(container => {
@@ -24,37 +43,46 @@ function initVizContainers() {
       viewport!.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
     }
 
-    container.querySelector(".viz-zoom-in")?.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      scale = Math.min(MAX_SCALE, scale + ZOOM_STEP);
-      applyTransform();
-    });
+    const zoomInBtn = container.querySelector(".viz-zoom-in");
+    if (zoomInBtn) {
+      addTrackedListener(zoomInBtn, "click", (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        scale = Math.min(MAX_SCALE, scale + ZOOM_STEP);
+        applyTransform();
+      });
+    }
 
-    container.querySelector(".viz-zoom-out")?.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      scale = Math.max(MIN_SCALE, scale - ZOOM_STEP);
-      applyTransform();
-    });
+    const zoomOutBtn = container.querySelector(".viz-zoom-out");
+    if (zoomOutBtn) {
+      addTrackedListener(zoomOutBtn, "click", (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        scale = Math.max(MIN_SCALE, scale - ZOOM_STEP);
+        applyTransform();
+      });
+    }
 
-    container.querySelector(".viz-reset")?.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      scale = 1;
-      translateX = 0;
-      translateY = 0;
-      applyTransform();
-    });
+    const resetBtn = container.querySelector(".viz-reset");
+    if (resetBtn) {
+      addTrackedListener(resetBtn, "click", (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        applyTransform();
+      });
+    }
 
     if (container.dataset.vizZoom === "true") {
-      container.addEventListener("wheel", (e: WheelEvent) => {
-        // 支持 Ctrl/Cmd+滚轮 或 触摸板双指缩放手势（通常带 ctrlKey）
-        const isZoomIntent = e.ctrlKey || e.metaKey || e.deltaMode === 0;
+      addTrackedListener(container, "wheel", (e: Event) => {
+        const wheelEvent = e as WheelEvent;
+        const isZoomIntent = wheelEvent.ctrlKey || wheelEvent.metaKey || wheelEvent.deltaMode === 0;
         if (!isZoomIntent) return;
         e.preventDefault();
         e.stopPropagation();
-        const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+        const delta = wheelEvent.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
         scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
         applyTransform();
       }, { passive: false });
@@ -63,25 +91,27 @@ function initVizContainers() {
       let startX = 0;
       let startY = 0;
 
-      container.addEventListener("mousedown", (e: MouseEvent) => {
-        if (!e.shiftKey && e.button !== 1) return;
+      addTrackedListener(container, "mousedown", (e: Event) => {
+        const mouseEvent = e as MouseEvent;
+        if (!mouseEvent.shiftKey && mouseEvent.button !== 1) return;
         e.preventDefault();
         isPanning = true;
-        startX = e.clientX;
-        startY = e.clientY;
+        startX = mouseEvent.clientX;
+        startY = mouseEvent.clientY;
         container.style.cursor = "grabbing";
       });
 
-      window.addEventListener("mousemove", (e: MouseEvent) => {
+      addTrackedListener(window, "mousemove", (e: Event) => {
         if (!isPanning) return;
-        translateX += (e.clientX - startX) / scale;
-        translateY += (e.clientY - startY) / scale;
-        startX = e.clientX;
-        startY = e.clientY;
+        const mouseEvent = e as MouseEvent;
+        translateX += (mouseEvent.clientX - startX) / scale;
+        translateY += (mouseEvent.clientY - startY) / scale;
+        startX = mouseEvent.clientX;
+        startY = mouseEvent.clientY;
         applyTransform();
       });
 
-      window.addEventListener("mouseup", () => {
+      addTrackedListener(window, "mouseup", () => {
         if (!isPanning) return;
         isPanning = false;
         container.style.cursor = "";
@@ -93,7 +123,7 @@ function initVizContainers() {
       const enterIcon = fsBtn.querySelector(".viz-fs-enter");
       const exitIcon = fsBtn.querySelector(".viz-fs-exit");
 
-      fsBtn.addEventListener("click", (e) => {
+      addTrackedListener(fsBtn, "click", (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
         if (document.fullscreenElement === container) {
@@ -103,7 +133,7 @@ function initVizContainers() {
         }
       });
 
-      container.addEventListener("fullscreenchange", () => {
+      addTrackedListener(container, "fullscreenchange", () => {
         const isFs = document.fullscreenElement === container;
         enterIcon?.classList.toggle("hidden", isFs);
         exitIcon?.classList.toggle("hidden", !isFs);
@@ -123,6 +153,9 @@ function initVizContainers() {
     }
   });
 }
+
+const manager = getGlobalEventManager();
+manager.onCleanup(cleanupListeners);
 
 initVizContainers();
 document.addEventListener("astro:page-load", initVizContainers);

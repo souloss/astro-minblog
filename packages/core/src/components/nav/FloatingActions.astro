@@ -179,10 +179,14 @@ const lang = SITE.lang;
 </div>
 
 <script>
+  import { getGlobalEventManager } from "../../utils/performance";
+
   function initFloatingActions() {
+    const manager = getGlobalEventManager();
+
     const aiFab = document.getElementById("ai-chat-toggle-fab");
     if (aiFab) {
-      aiFab.addEventListener("click", () => {
+      manager.add(aiFab, "click", () => {
         if (typeof (window as any).__aiChatToggle === 'function') {
           (window as any).__aiChatToggle();
         }
@@ -191,7 +195,7 @@ const lang = SITE.lang;
 
     const settingsBtn = document.getElementById("settings-btn");
     if (settingsBtn) {
-      settingsBtn.addEventListener("click", () => {
+      manager.add(settingsBtn, "click", () => {
         if (typeof (window as any).__settingsPanel?.toggle === 'function') {
           (window as any).__settingsPanel.toggle();
         }
@@ -214,7 +218,6 @@ const lang = SITE.lang;
         readingModeBtn.classList.remove("flex");
       }
 
-      // Sync with reading-mode setting from SettingsPanel
       const syncReadingModeUI = (active: boolean) => {
         readingModeBtn.setAttribute("aria-pressed", String(active));
         if (active) {
@@ -230,19 +233,15 @@ const lang = SITE.lang;
         }
       };
 
-      // Initial state sync
       const initialActive = document.documentElement.classList.contains("reading-mode");
       syncReadingModeUI(initialActive);
 
-      readingModeBtn.addEventListener("click", () => {
-        // Toggle reading-mode via SettingsPanel API
+      manager.add(readingModeBtn, "click", () => {
         if (typeof (window as any).__settingsPanel?.toggleReadingMode === 'function') {
           (window as any).__settingsPanel.toggleReadingMode();
         } else {
-          // Fallback: direct toggle
           const active = document.documentElement.classList.toggle("reading-mode");
           syncReadingModeUI(active);
-          // Persist to settings
           try {
             const stored = localStorage.getItem('astro-minimax-settings');
             const settings = stored ? JSON.parse(stored) : {};
@@ -253,12 +252,12 @@ const lang = SITE.lang;
         }
       });
 
-      // Listen for reading-mode changes from SettingsPanel
       const observer = new MutationObserver(() => {
         const active = document.documentElement.classList.contains("reading-mode");
         syncReadingModeUI(active);
       });
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      manager.trackObserver(observer, 'mutation');
     }
 
     if (!backToTopBtn) return;
@@ -285,11 +284,11 @@ const lang = SITE.lang;
       }
     };
 
-    backToTopBtn.addEventListener("click", () => {
+    manager.add(backToTopBtn, "click", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    window.addEventListener("scroll", updateVisibility, { passive: true });
+    manager.add(window, "scroll", updateVisibility, { passive: true });
     updateVisibility();
   }
 

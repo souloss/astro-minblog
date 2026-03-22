@@ -1,6 +1,6 @@
 {
   "name": "astro-minimax-blog",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "description": "A modern, minimalist blog built with Astro, featuring AI-powered search, multi-channel notifications, and rich visualizations.",
@@ -37,7 +37,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "astro check",
-    "clean": "rm -rf dist .astro node_modules/.cache",
+    "clean": "rm -rf dist .astro node_modules/.vite node_modules/.cache",
     "cli": "astro-minimax",
     "ai:process": "astro-minimax ai process",
     "ai:seo": "astro-minimax ai seo",

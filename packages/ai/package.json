@@ -1,6 +1,6 @@
 {
   "name": "@astro-minimax/ai",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "type": "module",
   "description": "Vendor-agnostic AI integration package with full RAG pipeline for astro-minimax blogs — supports OpenAI, Cloudflare AI, and custom providers.",
   "author": "Souloss",
@@ -97,7 +97,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^2.0.35",
-    "@astro-minimax/notify": "^0.7.5",
+    "@astro-minimax/notify": "workspace:*",
     "ai": "^6.0.116",
     "workers-ai-provider": "^3.1.2"
   },

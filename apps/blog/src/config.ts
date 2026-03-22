@@ -81,7 +81,6 @@ export const SITE: SiteConfig = {
     enabled: true,
     mockMode: false,
     apiEndpoint: "/api/chat",
-    model: "@cf/zai-org/glm-4.7-flash",
     welcomeMessage: undefined as string | undefined,
     placeholder: undefined as string | undefined,
   },

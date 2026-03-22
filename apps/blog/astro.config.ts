@@ -1,5 +1,6 @@
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
+import { visualizer } from "rollup-plugin-visualizer";
 import minimax from "@astro-minimax/core";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
@@ -30,9 +31,7 @@ import { SITE } from "./src/config";
 import { SOCIALS, SHARE_LINKS } from "./src/constants";
 import { FRIENDS } from "./src/data/friends";
 
-// Shiki transformers require type casting since they use a different type system
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const asTransformer = (t: any) => t;
+const asTransformer = (t: unknown) => t as never;
 
 const shikiTransformers = [
   asTransformer(updateStyle()),
@@ -143,6 +142,12 @@ export default defineConfig({
   vite: {
     plugins: [
       tailwindcss() as never,
+      process.env.ANALYZE === 'true' && visualizer({
+        open: true,
+        filename: 'stats.html',
+        gzipSize: true,
+        brotliSize: true,
+      }),
       {
         name: "astro-minimax-media-resolver",
         enforce: "pre" as const,
@@ -261,10 +266,27 @@ export default defineConfig({
         build: {
           rollupOptions: {
             output: {
-              // Consistent chunk naming for better caching
               chunkFileNames: "assets/[name]-[hash].js",
               entryFileNames: "assets/[name]-[hash].js",
               assetFileNames: "assets/[name]-[hash].[ext]",
+              manualChunks(id) {
+                if (id.includes('preact/') || id.includes('preact\\') || 
+                    id.includes('react/') || id.includes('react\\')) {
+                  return 'vendor-preact';
+                }
+                if (id.includes('@ai-sdk')) {
+                  return 'vendor-ai';
+                }
+                if (id.includes('mermaid')) {
+                  return 'vendor-mermaid';
+                }
+                if (id.includes('markmap')) {
+                  return 'vendor-markmap';
+                }
+                if (id.includes('katex')) {
+                  return 'vendor-katex';
+                }
+              },
             },
           },
         },

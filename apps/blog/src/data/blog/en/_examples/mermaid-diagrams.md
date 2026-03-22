@@ -414,9 +414,34 @@ mindmap
 
 ---
 
-## 11. Additional Features
+## 11. Interactive Features (New in v0.9.0)
 
-### 11.1 Style Customization
+astro-minimax v0.9.0 adds an interactive toolbar for Mermaid diagrams with the following features:
+
+### 11.1 Zoom Controls
+
+- **Zoom In/Out**: Use the +/- buttons on the toolbar, or use the mouse wheel
+- **Reset Zoom**: Click the reset button to restore the default view
+- **Pan**: Hold Shift and drag, or use the middle mouse button to drag
+
+### 11.2 Fullscreen Mode
+
+Click the fullscreen button to view the diagram in fullscreen mode. Click again to exit.
+
+### 11.3 Export Options
+
+- **Export SVG**: Export the diagram as a vector format
+- **Export PNG**: Export the diagram as a bitmap format
+
+### 11.4 Theme Switching
+
+Diagrams automatically adapt to the blog's light/dark theme without manual switching.
+
+---
+
+## 12. Additional Features
+
+### 12.1 Style Customization
 
 ```mermaid
 flowchart TD

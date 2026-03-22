@@ -16,6 +16,9 @@ export const SITE: SiteConfig = {
 
   postPerIndex: 4,
   postPerPage: 8,
+  scheduledPostMargin: 15 * 60 * 1000,
+  showBackButton: true,
+  dynamicOgImage: true,
 
   features: {
     tags: true,
@@ -107,6 +110,8 @@ export const SITE: SiteConfig = {
     enabled: false,
     mockMode: false,
     apiEndpoint: "/api/chat",
+    // welcomeMessage: "Welcome! How can I help you?",
+    // placeholder: "Ask me anything...",
   },
 
   get showArchives() {
