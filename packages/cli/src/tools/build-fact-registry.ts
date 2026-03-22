@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /**
  * 构建事实注册表 (Fact Registry)
  *
@@ -6,31 +5,35 @@
  * 生成 fact-registry.json 供 AI 对话时注入 Prompt，减少幻觉。
  *
  * 用法:
- *   pnpm facts:build                构建事实注册表
- *   pnpm facts:build --force        强制全量重建
- *   pnpm facts:build --verbose      显示详细输出
+ *   astro-minimax facts build           构建事实注册表
+ *   astro-minimax facts build --verbose 显示详细输出
+ *
+ * 或直接运行脚本:
+ *   npx tsx build-fact-registry.ts
+ *   npx tsx build-fact-registry.ts --verbose
  */
 
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import process from "node:process";
 import {
   loadEnv,
   readJson,
   writeJson,
   truncate,
   parseCliArgs,
-  DATA_DIR,
-  BLOG_DIR,
 } from "./lib/utils.js";
 import { extractFrontmatter } from "./lib/frontmatter.js";
-import { stripMarkdown } from "./lib/markdown.js";
 
-// ─── Types ────────────────────────────────────────────────────
+const __filename = fileURLToPath(import.meta.url);
 
-type FactCategory = "author" | "blog" | "content" | "project" | "tech";
-type FactSource = "explicit" | "derived" | "aggregated";
+// ─── Types (导出供其他模块使用) ────────────────────────────────────────
 
-interface Fact {
+export type FactCategory = "author" | "blog" | "content" | "project" | "tech";
+export type FactSource = "explicit" | "derived" | "aggregated";
+
+export interface Fact {
   id: string;
   category: FactCategory;
   statement: string;
@@ -40,6 +43,30 @@ interface Fact {
   tags: string[];
   lang: string;
 }
+
+export interface FactRegistryOutput {
+  $schema: string;
+  generatedAt: string;
+  version: number;
+  facts: Fact[];
+  stats: {
+    total: number;
+    byCategory: Record<FactCategory, number>;
+    avgConfidence: number;
+  };
+}
+
+export interface BuildFactRegistryOptions {
+  cwd?: string;
+}
+
+export interface BuildFactRegistryResult {
+  success: boolean;
+  output: FactRegistryOutput;
+  errors: string[];
+}
+
+// ─── Internal Types ────────────────────────────────────────────────────
 
 interface AuthorContextData {
   $schema?: string;
@@ -83,30 +110,17 @@ interface VoiceProfileData {
 
 // ─── Constants ────────────────────────────────────────────────
 
-const OUTPUT_FILE = join(DATA_DIR, "fact-registry.json");
 const SCHEMA_VERSION = 1;
-
-// ─── CLI Args ─────────────────────────────────────────────────
-
-interface CliFlags {
-  force: boolean;
-  verbose: boolean;
-}
-
-function parseArgs(): CliFlags {
-  return parseCliArgs({ force: false, verbose: false });
-}
 
 // ─── Fact Builders ────────────────────────────────────────────
 
 function buildAuthorFacts(
   ctx: AuthorContextData,
-  env: Record<string, string | undefined>,
+  env: Record<string, string | undefined>
 ): Fact[] {
   const facts: Fact[] = [];
   const profile = ctx.profile;
-  const authorName =
-    profile?.name || env.SITE_AUTHOR || "";
+  const authorName = profile?.name || env.SITE_AUTHOR || "";
   const siteUrl = profile?.siteUrl || env.SITE_URL || "";
 
   if (authorName) {
@@ -175,8 +189,15 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       source: "derived",
       confidence: 1.0,
       tags: [
-        "文章数", "总数", "统计", "多少", "数量",
-        "posts", "count", "total", "how many",
+        "文章数",
+        "总数",
+        "统计",
+        "多少",
+        "数量",
+        "posts",
+        "count",
+        "total",
+        "how many",
       ],
       lang: "zh",
     });
@@ -214,9 +235,14 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       source: "derived",
       confidence: 0.95,
       tags: [
-        "分类", "类别", "领域", "方向",
-        "category", "area", "focus",
-        ...categories.map((c) => c.toLowerCase()),
+        "分类",
+        "类别",
+        "领域",
+        "方向",
+        "category",
+        "area",
+        "focus",
+        ...categories.map(c => c.toLowerCase()),
       ],
       lang: "zh",
     });
@@ -233,8 +259,11 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       source: "derived",
       confidence: 0.9,
       tags: [
-        "标签", "tag", "topic", "主题",
-        ...topTags.slice(0, 10).map((t) => t.toLowerCase()),
+        "标签",
+        "tag",
+        "topic",
+        "主题",
+        ...topTags.slice(0, 10).map(t => t.toLowerCase()),
       ],
       lang: "zh",
     });
@@ -251,8 +280,12 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       source: "aggregated",
       confidence: 0.85,
       tags: [
-        "话题", "主题", "讨论", "topic", "recurring",
-        ...topics.slice(0, 8).map((t) => t.toLowerCase()),
+        "话题",
+        "主题",
+        "讨论",
+        "topic",
+        "recurring",
+        ...topics.slice(0, 8).map(t => t.toLowerCase()),
       ],
       lang: "zh",
     });
@@ -261,7 +294,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
   // Date range
   if (posts.length >= 2) {
     const sorted = [...posts].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
     const oldest = sorted[0];
     const newest = sorted[sorted.length - 1];
@@ -288,7 +321,9 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
     if (langs.size > 1) {
       const desc = [...langs.entries()]
         .sort((a, b) => b[1] - a[1])
-        .map(([lang, count]) => `${lang === "zh" ? "中文" : "英文"} ${count} 篇`)
+        .map(
+          ([lang, count]) => `${lang === "zh" ? "中文" : "英文"} ${count} 篇`
+        )
         .join("，");
       facts.push({
         id: "blog-lang-dist",
@@ -338,7 +373,9 @@ function buildContentFacts(ctx: AuthorContextData): Fact[] {
   const flagship = ctx.stableFacts?.flagshipPosts;
   if (flagship?.length) {
     const desc = flagship
-      .map((p) => `《${p.title}》(${new Date(p.date).toISOString().slice(0, 10)})`)
+      .map(
+        p => `《${p.title}》(${new Date(p.date).toISOString().slice(0, 10)})`
+      )
       .join("、");
     facts.push({
       id: "content-flagship",
@@ -409,8 +446,13 @@ async function buildTechStackFacts(): Promise<Fact[]> {
         source: "explicit",
         confidence: 1.0,
         tags: [
-          "技术栈", "技术", "框架", "工具",
-          "tech", "stack", "framework",
+          "技术栈",
+          "技术",
+          "框架",
+          "工具",
+          "tech",
+          "stack",
+          "framework",
           ...techTags,
         ],
         lang: "zh",
@@ -462,8 +504,12 @@ function buildSummaryDerivedFacts(summaries: AISummariesData): Fact[] {
       source: "aggregated",
       confidence: 0.85,
       tags: [
-        "标签", "主题", "AI", "tag", "topic",
-        ...topAiTags.map((t) => t.toLowerCase()),
+        "标签",
+        "主题",
+        "AI",
+        "tag",
+        "topic",
+        ...topAiTags.map(t => t.toLowerCase()),
       ],
       lang: "zh",
     });
@@ -475,7 +521,10 @@ function buildSummaryDerivedFacts(summaries: AISummariesData): Fact[] {
     for (const kp of entry.data?.keyPoints ?? []) {
       const normalized = kp.trim().toLowerCase();
       if (normalized.length >= 10) {
-        keyPointCounts.set(normalized, (keyPointCounts.get(normalized) || 0) + 1);
+        keyPointCounts.set(
+          normalized,
+          (keyPointCounts.get(normalized) || 0) + 1
+        );
       }
     }
   }
@@ -504,11 +553,11 @@ function buildSummaryDerivedFacts(summaries: AISummariesData): Fact[] {
 
 // ─── Article-level Fact Extraction ────────────────────────────
 
-async function buildArticleFacts(): Promise<Fact[]> {
+async function buildArticleFacts(blogDir: string): Promise<Fact[]> {
   const facts: Fact[] = [];
 
   try {
-    const files = await collectMarkdownFiles(BLOG_DIR);
+    const files = await collectMarkdownFiles(blogDir);
 
     // Extract facts about explicitly mentioned technologies from frontmatter tags
     const explicitTechMentions = new Map<string, number>();
@@ -519,10 +568,7 @@ async function buildArticleFacts(): Promise<Fact[]> {
 
       const tags: string[] = Array.isArray(fm.data.tags) ? fm.data.tags : [];
       for (const tag of tags) {
-        explicitTechMentions.set(
-          tag,
-          (explicitTechMentions.get(tag) || 0) + 1,
-        );
+        explicitTechMentions.set(tag, (explicitTechMentions.get(tag) || 0) + 1);
       }
     }
 
@@ -544,7 +590,11 @@ async function buildArticleFacts(): Promise<Fact[]> {
         source: "aggregated",
         confidence: 0.9,
         tags: [
-          "技术", "提及", "频率", "tech", "mention",
+          "技术",
+          "提及",
+          "频率",
+          "tech",
+          "mention",
           ...topMentions.map(([t]) => t.toLowerCase()),
         ],
         lang: "zh",
@@ -593,81 +643,58 @@ function computeStats(facts: Fact[]) {
   return {
     total: facts.length,
     byCategory,
-    avgConfidence: facts.length > 0 ? +(totalConfidence / facts.length).toFixed(3) : 0,
+    avgConfidence:
+      facts.length > 0 ? +(totalConfidence / facts.length).toFixed(3) : 0,
   };
 }
 
-// ─── Main ─────────────────────────────────────────────────────
+// ─── Main Export ─────────────────────────────────────────────────────
 
-async function main() {
-  const args = parseArgs();
+export async function buildFactRegistry(
+  options: BuildFactRegistryOptions = {}
+): Promise<BuildFactRegistryResult> {
+  const { cwd = process.cwd() } = options;
+  const errors: string[] = [];
+  const dataDir = join(cwd, "datas");
+  const blogDir = join(cwd, "src/data/blog");
+
   await loadEnv();
 
-  console.log("📊 构建事实注册表 (Fact Registry)");
-  console.log("━".repeat(50));
-
-  // Load existing data sources
   const authorContext = await readJson<AuthorContextData>(
-    join(DATA_DIR, "author-context.json"),
-    {},
+    join(dataDir, "author-context.json"),
+    {}
   );
   const aiSummaries = await readJson<AISummariesData>(
-    join(DATA_DIR, "ai-summaries.json"),
-    {},
+    join(dataDir, "ai-summaries.json"),
+    {}
   );
-  const voiceProfile = await readJson<VoiceProfileData>(
-    join(DATA_DIR, "voice-profile.json"),
-    {},
-  );
-
-  const hasAuthorContext = !!authorContext.profile;
-  const hasSummaries = !!aiSummaries.articles && Object.keys(aiSummaries.articles).length > 0;
-
-  console.log(`\n📂 数据源检测:`);
-  console.log(`   author-context.json: ${hasAuthorContext ? "✅" : "❌ (缺失)"}`);
-  console.log(`   ai-summaries.json:   ${hasSummaries ? `✅ (${Object.keys(aiSummaries.articles ?? {}).length} 篇)` : "❌ (缺失)"}`);
-  console.log(`   voice-profile.json:  ${voiceProfile.tone ? "✅" : "⚠️ (部分)"}`);
-
-  // Build facts from all sources
-  console.log("\n🔍 提取事实...");
 
   const allFacts: Fact[] = [];
 
-  // Author facts
-  const authorFacts = buildAuthorFacts(authorContext, process.env as Record<string, string | undefined>);
+  const authorFacts = buildAuthorFacts(
+    authorContext,
+    process.env as Record<string, string | undefined>
+  );
   allFacts.push(...authorFacts);
-  if (args.verbose) console.log(`   作者事实: ${authorFacts.length} 条`);
 
-  // Blog stats facts
   const blogFacts = buildBlogStatsFacts(authorContext);
   allFacts.push(...blogFacts);
-  if (args.verbose) console.log(`   博客统计: ${blogFacts.length} 条`);
 
-  // Content facts
   const contentFacts = buildContentFacts(authorContext);
   allFacts.push(...contentFacts);
-  if (args.verbose) console.log(`   内容事实: ${contentFacts.length} 条`);
 
-  // Tech stack facts
   const techFacts = await buildTechStackFacts();
   allFacts.push(...techFacts);
-  if (args.verbose) console.log(`   技术栈:   ${techFacts.length} 条`);
 
-  // Summary-derived facts
   const summaryFacts = buildSummaryDerivedFacts(aiSummaries);
   allFacts.push(...summaryFacts);
-  if (args.verbose) console.log(`   摘要衍生: ${summaryFacts.length} 条`);
 
-  // Article-level facts
-  const articleFacts = await buildArticleFacts();
+  const articleFacts = await buildArticleFacts(blogDir);
   allFacts.push(...articleFacts);
-  if (args.verbose) console.log(`   文章分析: ${articleFacts.length} 条`);
 
-  // Compute stats
   const stats = computeStats(allFacts);
 
-  // Write output
-  const output = {
+  const output: FactRegistryOutput = {
     $schema: "fact-registry-v1",
     generatedAt: new Date().toISOString(),
     version: SCHEMA_VERSION,
@@ -675,20 +702,72 @@ async function main() {
     stats,
   };
 
-  await writeJson(OUTPUT_FILE, output);
+  await writeJson(join(dataDir, "fact-registry.json"), output);
+
+  return {
+    success: errors.length === 0,
+    output,
+    errors,
+  };
+}
+
+// ─── CLI Entry Point ─────────────────────────────────────────────────
+
+async function main() {
+  const args = parseCliArgs<{ verbose: boolean }>({ verbose: false });
+  const cwd = process.cwd();
+
+  console.log("📊 构建事实注册表 (Fact Registry)");
+  console.log("━".repeat(50));
+
+  const dataDir = join(cwd, "datas");
+
+  const authorContext = await readJson<AuthorContextData>(
+    join(dataDir, "author-context.json"),
+    {}
+  );
+  const aiSummaries = await readJson<AISummariesData>(
+    join(dataDir, "ai-summaries.json"),
+    {}
+  );
+  const voiceProfile = await readJson<VoiceProfileData>(
+    join(dataDir, "voice-profile.json"),
+    {}
+  );
+
+  const hasAuthorContext = !!authorContext.profile;
+  const hasSummaries =
+    !!aiSummaries.articles && Object.keys(aiSummaries.articles).length > 0;
+
+  console.log(`\n📂 数据源检测:`);
+  console.log(
+    `   author-context.json: ${hasAuthorContext ? "✅" : "❌ (缺失)"}`
+  );
+  console.log(
+    `   ai-summaries.json:   ${hasSummaries ? `✅ (${Object.keys(aiSummaries.articles ?? {}).length} 篇)` : "❌ (缺失)"}`
+  );
+  console.log(
+    `   voice-profile.json:  ${voiceProfile.tone ? "✅" : "⚠️ (部分)"}`
+  );
+
+  console.log("\n🔍 提取事实...");
+
+  const result = await buildFactRegistry({ cwd });
 
   console.log(`\n✅ 事实注册表构建完成`);
-  console.log(`📄 输出文件: ${OUTPUT_FILE}`);
+  console.log(`📄 输出文件: ${join(dataDir, "fact-registry.json")}`);
   console.log(`\n📊 统计:`);
-  console.log(`   总事实数: ${stats.total}`);
-  console.log(`   平均置信度: ${stats.avgConfidence}`);
+  console.log(`   总事实数: ${result.output.stats.total}`);
+  console.log(`   平均置信度: ${result.output.stats.avgConfidence}`);
   console.log(`   按分类:`);
-  for (const [cat, count] of Object.entries(stats.byCategory)) {
+  for (const [cat, count] of Object.entries(result.output.stats.byCategory)) {
     if (count > 0) console.log(`     ${cat}: ${count}`);
   }
 }
 
-main().catch((error) => {
-  console.error("❌ 构建失败:", error.message);
-  process.exit(1);
-});
+if (process.argv[1] === __filename) {
+  main().catch(error => {
+    console.error("❌ 构建失败:", error.message);
+    process.exit(1);
+  });
+}
