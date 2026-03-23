@@ -26,6 +26,7 @@ export interface DynamicLayerConfig {
   answerMode?: 'fact' | 'count' | 'list' | 'opinion' | 'recommendation' | 'unknown' | 'general';
   lang?: string;
   extensions?: LoadedExtensions;
+  sessionId?: string;
 }
 
 export interface PromptBuildConfig {

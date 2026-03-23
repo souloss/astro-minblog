@@ -4,11 +4,12 @@ import {
   getAllSummaries,
   initArticleIndex,
   initProjectIndex,
+  initArticleChunks,
 } from '../index.js';
 import { getExtensionRegistry } from '../extensions/index.js';
 import { safeJoinUrl } from '../utils/url.js';
 import type { AuthorPost } from '../data/types.js';
-import type { SearchDocument } from '../search/types.js';
+import type { SearchDocument, ArticleChunk } from '../search/types.js';
 import type { MetadataConfig, ChatHandlerEnv } from './types.js';
 
 let initialized = false;
@@ -55,6 +56,17 @@ export function initializeMetadata(config: MetadataConfig, env?: ChatHandlerEnv)
 
   initArticleIndex(articleDocs);
   initProjectIndex([]);
+
+  // Initialize article chunks for paragraph-level retrieval
+  const chunksData: Record<string, ArticleChunk[]> = {};
+  for (const post of authorCtx?.posts ?? []) {
+    if (post.chunks && post.chunks.length > 0) {
+      chunksData[post.id] = post.chunks as ArticleChunk[];
+    }
+  }
+  if (Object.keys(chunksData).length > 0) {
+    initArticleChunks(chunksData);
+  }
 }
 
 /**

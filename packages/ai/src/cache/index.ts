@@ -48,6 +48,11 @@ export {
   type PlaybackChunk,
 } from './response-cache.js';
 
+export {
+  injectionCache,
+  type InjectionCacheEntry,
+} from './injection-cache.js';
+
 import { MemoryCacheAdapter } from './memory-adapter.js';
 import { KVCacheAdapter } from './kv-adapter.js';
 import type { CacheAdapter, CacheEnv, CacheManagerConfig } from './types.js';

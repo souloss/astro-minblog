@@ -31,6 +31,15 @@ export interface AuthorPost {
   summary: string;
   keyPoints: string[];
   url: string;
+  chunks?: Array<{
+    id: string;
+    postId: string;
+    heading: string;
+    content: string;
+    position: number;
+    tokenCount: number;
+    headers: Record<string, string>;
+  }>;
 }
 
 export interface AuthorProfile {

@@ -1,8 +1,9 @@
 ---
 title: "@astro-minimax/ai 模块技术架构详解"
 pubDatetime: 2026-03-21T00:00:00.000Z
+modDatetime: 2026-03-23T12:00:00.000Z
 author: Souloss
-description: "深入剖析 @astro-minimax/ai 包的技术架构：多 Provider 故障转移、RAG 检索增强、智能分析层、三层提示词系统、流式响应与缓存机制。"
+description: "深入剖析 @astro-minimax/ai 包的技术架构：多 Provider 故障转移、RAG 检索增强、智能分析层、三层提示词系统、流式响应与缓存机制。完整数据流示例与 Mermaid/Markmap 可视化图解。"
 tags:
   - docs
   - ai
@@ -927,7 +928,7 @@ export function buildDynamicLayer(config: DynamicLayerConfig): string {
 当前为列表模式：直接列 2-6 项同一维度的内容。
 ```
 
-### 4.5 Stream 流处理模块
+### 4.7 Stream 流处理模块
 
 Stream 模块提供了流式响应的处理工具，包括标准响应处理、Mock 模拟和缓存回放。
 
@@ -967,9 +968,497 @@ export function createResponsePlaybackGenerator(
 }
 ```
 
-## 五、使用场景详解
+## 五、完整数据流示例
 
-### 5.1 场景一：全局问答流程
+本节通过几个典型场景，详细展示数据如何在各模块间流转。
+
+### 5.1 请求处理全流程
+
+```mermaid
+flowchart TB
+    subgraph Phase0["Phase 0: 请求预处理"]
+        A1["OPTIONS检查"] --> A2["Rate Limit"]
+        A2 --> A3["JSON解析"]
+        A3 --> A4["消息验证"]
+    end
+
+    subgraph Phase1["Phase 1: 缓存检测"]
+        B1{"public Q?"}
+        B1 -->|是| B2["响应缓存检查"]
+        B2 --> B3{"命中?"}
+        B3 -->|是| B4["缓存回放"]
+        B3 -->|否| B5["搜索缓存检查"]
+        B1 -->|否| B6["会话缓存检查"]
+    end
+
+    subgraph Phase2["Phase 2: 搜索上下文"]
+        C1["本地查询构建"]
+        C1 --> C2{"追问检测"}
+        C2 -->|是| C3["复用上下文"]
+        C2 -->|否| C4["新搜索"]
+    end
+
+    subgraph Phase3["Phase 3: 关键词提取"]
+        D1{"需要提取?"}
+        D1 -->|是| D2["LLM关键词<br/>⏱ 5s"]
+        D1 -->|否| D3["跳过"]
+        D2 --> D4{"成功?"}
+        D4 -->|否| D5["本地分词降级"]
+    end
+
+    subgraph Phase4["Phase 4: 文档检索"]
+        E1["文本标准化"]
+        E1 --> E2["分词 tokenize"]
+        E2 --> E3["TF-IDF 评分"]
+        E3 --> E4["相关性过滤 35%"]
+        E4 --> E5["意图重排"]
+        E5 --> E6["证据预算应用"]
+    end
+
+    subgraph Phase5["Phase 5: 证据分析"]
+        F1{"需要分析?"}
+        F1 -->|是| F2["LLM证据分析<br/>⏱ 8s"]
+        F1 -->|否| F3["跳过"]
+        F2 --> F4["构建证据节"]
+    end
+
+    subgraph Phase6["Phase 6: 提示构建"]
+        G1["静态层"]
+        G2["半静态层"]
+        G3["动态层"]
+        G1 --> G4["系统提示"]
+        G2 --> G4
+        G3 --> G4
+    end
+
+    subgraph Phase7["Phase 7: LLM生成"]
+        H1["Workers AI<br/>weight:100"]
+        H2["OpenAI<br/>weight:90"]
+        H3["Mock<br/>weight:0"]
+        H1 --> H4{"成功?"}
+        H4 -->|否| H2
+        H2 --> H5{"成功?"}
+        H5 -->|否| H3
+    end
+
+    A4 --> B1
+    B4 --> J["SSE输出"]
+    B5 --> C1
+    B6 --> C1
+    C3 --> E1
+    C4 --> D1
+    D3 --> E1
+    D5 --> E1
+    E6 --> F1
+    F3 --> G1
+    F4 --> G3
+    G4 --> H1
+    H3 --> J
+    H4 -->|是| J
+```
+
+### 5.2 场景一：技术问题查询
+
+**用户输入**：`"如何部署到 Cloudflare Pages?"`
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant H as chat-handler
+    participant S as Search Module
+    participant I as Intelligence
+    participant P as Prompt Builder
+    participant L as LLM Provider
+
+    U->>H: POST /api/chat
+    Note over H: Phase 0: 速率检查通过
+
+    H->>H: Phase 1: 无缓存命中
+    Note over H: 非public问题，无缓存
+
+    H->>I: Phase 2: buildLocalSearchQuery()
+    Note over I: tokenize("如何部署到 Cloudflare Pages")
+    I-->>H: ["如何", "部署", "cloudflare", "pages"]
+
+    H->>I: Phase 3: shouldRunKeywordExtraction()
+    Note over I: 消息数<3，跳过提取
+
+    H->>S: Phase 4: searchArticles(query)
+    Note over S: TF-IDF评分中...
+    S->>S: scoreDocument()
+    Note over S: title匹配"cloudflare": +8×idf<br/>title匹配"部署": +8×idf
+    S->>S: filterLowRelevance()
+    Note over S: 保留 score ≥ topScore×0.35
+    S->>I: rankArticlesByIntent()
+    Note over I: classifyIntent → "deployment"
+    Note over I: 部署类文章优先
+    S-->>H: 6篇相关文章
+
+    H->>I: Phase 5: shouldSkipAnalysis()
+    Note over I: 文章数≥2，执行分析
+    I->>L: analyzeRetrievedEvidence()
+    Note over L: ⏱ 超时8s
+    L-->>I: "部署到CF Pages需要..."
+    I-->>H: 证据节
+
+    H->>P: Phase 6: buildSystemPrompt()
+    Note over P: Static: 身份、约束、来源分层
+    Note over P: Semi-Static: 博客概览
+    Note over P: Dynamic: 6篇文章 + 证据 + 模式提示
+    P-->>H: 完整系统提示
+
+    H->>L: Phase 7: streamText()
+    Note over L: Workers AI调用
+    L-->>U: SSE流式输出
+
+    Note over U: 实时看到回答
+```
+
+**数据变换追踪**：
+
+```
+输入: "如何部署到 Cloudflare Pages?"
+    ↓ normalizeText
+"如何部署到 cloudflare pages"
+    ↓ tokenize
+["如何", "部署", "cloudflare", "pages"]
+    ↓ dedupeByContainment
+["cloudflare", "pages", "部署", "如何"]
+    ↓ classifyIntent
+"deployment"
+    ↓ searchArticles
+[
+  {title: "Cloudflare Pages 部署指南", score: 24.5},
+  {title: "环境变量配置", score: 12.3},
+  ...
+]
+    ↓ rankArticlesByIntent (deployment关键词)
+[
+  {title: "Cloudflare Pages 部署指南", boostScore: 5},
+  ...
+]
+    ↓ applyBudget (moderate)
+maxArticles: 6, summaryMaxLength: 56
+    ↓ resolveAnswerMode
+"list" (匹配"如何")
+    ↓ buildSystemPrompt
+完整提示词 (约2000 tokens)
+```
+
+### 5.3 场景二：追问复用上下文
+
+**用户输入**：`"配置文件在哪？"` （上一轮讨论部署）
+
+```mermaid
+flowchart TB
+    A["用户输入: 配置文件在哪?"] --> B{"追问检测"}
+    B -->|isLikelyFollowUp| C{"会话缓存?"}
+    C -->|有缓存| D{"hasNewSignificantTokens?"}
+    D -->|否| E["复用上下文"]
+    D -->|是| F["新搜索"]
+    C -->|无缓存| F
+
+    E --> G["跳过搜索"]
+    G --> H["复用缓存的文章"]
+
+    F --> I["搜索: 配置 文件"]
+    I --> J["新文章列表"]
+
+    H --> K["构建提示"]
+    J --> K
+
+    subgraph 追问判定逻辑
+        B
+        note1["长度≤48字符 ✓<br/>无终结标点 ✗<br/>词数≤6 ✓"]
+    end
+
+    subgraph 上下文复用条件
+        D
+        note2["cachedTokens: [部署, cloudflare, pages]<br/>currentTokens: [配置, 文件]<br/>newTokens: [配置, 文件] ≠ ∅<br/>→ 有新token，不复用"]
+    end
+```
+
+**追问检测算法**：
+
+```typescript
+function isLikelyFollowUp(message: string): boolean {
+  const text = message.trim();
+  if (!text || text.length > 48) return false;  // 长度限制
+
+  const hasTerminalPunctuation = /[?？!！。.…]$/.test(text);
+  const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+  if (text.length <= 16) return true;           // 很短，大概率追问
+  if (!/\s/.test(text) && text.length <= 24) return true;  // 单词短语
+  return hasTerminalPunctuation && wordCount <= 6 && text.length <= 36;
+}
+```
+
+### 5.4 场景三：隐私问题拦截
+
+**用户输入**：`"你的收入是多少？"`
+
+```mermaid
+flowchart TB
+    A["用户输入: 你的收入是多少?"] --> B["请求预处理"]
+    B --> C["搜索: 收入"]
+    C --> D["返回文章 (可能无相关)"]
+
+    D --> E["resolveAnswerMode()"]
+    E --> F{"hasPrivacyIntent()"}
+    F -->|匹配: 收入| G["answerMode = 'unknown'"]
+
+    G --> H["buildUnknownRefusal()"]
+    H --> I["隐私模式匹配"]
+
+    subgraph 隐私模式检测
+        I
+        note1["PRIVACY_PATTERNS:<br/>赚多少钱|月收入|年收入|工资多少|薪资多少"]
+    end
+
+    I --> J["返回拒绝模板"]
+    J --> K["'这个信息未在博客中公开'"]
+
+    subgraph 输出
+        K
+        note2["第一句包含'未公开'<br/>1-2句收尾<br/>不引用任何文章"]
+    end
+```
+
+**隐私模式匹配**：
+
+```typescript
+const PRIVACY_PATTERNS = [
+  /具体住在哪|哪个小区|门牌号|家庭住址|具体地址|住址信息/u,
+  /赚多少钱|月收入|年收入|工资多少|薪资多少|收入多少/u,
+  /老婆叫什么|妻子叫什么|丈夫叫什么|孩子叫什么|父母叫什么|家人姓名/u,
+  /手机号码|电话号码|联系方式|微信号|QQ号/u,
+  /身份证号|护照号|证件号/u,
+  /你多大了|你几岁|年龄多大|今年多大|今年几岁/u,
+];
+
+function hasPrivacyIntent(query: string): boolean {
+  const normalized = query.trim().toLowerCase();
+  return PRIVACY_PATTERNS.some(pattern => pattern.test(normalized));
+}
+```
+
+### 5.5 场景四：供应商故障转移
+
+```mermaid
+flowchart TB
+    A["streamText() 调用"] --> B["Workers AI<br/>weight: 100"]
+
+    B --> C{"isAvailable()?"}
+    C -->|健康| D["尝试 streamText()"]
+    C -->|不健康| E["跳过"]
+
+    D --> F{"成功?"}
+    F -->|是| G["recordSuccess()"]
+    G --> H["返回结果"]
+
+    F -->|否| I["recordFailure()"]
+    I --> J["consecutiveFailures++"]
+    J --> K{"≥3次?"}
+    K -->|是| L["标记不健康"]
+    K -->|否| M["OpenAI<br/>weight: 90"]
+
+    E --> M
+    L --> M
+
+    M --> N{"isAvailable()?"}
+    N -->|健康| O["尝试 streamText()"]
+    N -->|不健康| P["跳过"]
+
+    O --> Q{"成功?"}
+    Q -->|是| R["recordSuccess()"]
+    R --> H
+
+    Q -->|否| S["recordFailure()"]
+    S --> T["Mock<br/>weight: 0"]
+
+    P --> T
+
+    T --> U["getMockResponse()"]
+    U --> V["返回模板响应"]
+
+    subgraph 健康恢复机制
+        W["不健康状态"]
+        X["等待 60s"]
+        Y["canAttemptRecovery()"]
+        Z["尝试请求"]
+        W --> X --> Y --> Z
+    end
+```
+
+### 5.6 TF-IDF 评分详解
+
+```mermaid
+flowchart LR
+    subgraph 输入
+        Q["查询: AI 学习教程"]
+        D["文档: {title, content, keyPoints, ...}"]
+    end
+
+    subgraph 分词
+        Q --> Q1["tokenize"]
+        Q1 --> Q2["[ai, 学习, 教程]"]
+    end
+
+    subgraph IDF计算
+        Q2 --> IDF["getIDFWeight()"]
+        IDF --> W1["idf(ai) = 1.2<br/>(常见词)"]
+        IDF --> W2["idf(学习) = 2.5<br/>(中等)"]
+        IDF --> W3["idf(教程) = 3.1<br/>(罕见词)"]
+    end
+
+    subgraph 字段匹配
+        D --> F1["title: 'AI入门教程'"]
+        D --> F2["keyPoints: ['学习路径']"]
+        D --> F3["content: '...AI学习...'"]
+    end
+
+    subgraph 加权评分
+        F1 --> S1["title含AI: +8×1.2 = 9.6"]
+        F1 --> S2["title含教程: +8×3.1 = 24.8"]
+        F2 --> S3["keyPoints含学习: +5×2.5 = 12.5"]
+        F3 --> S4["content含AI: +1×1.2 = 1.2"]
+        F3 --> S5["content含学习: +1×2.5 = 2.5"]
+    end
+
+    subgraph 总分
+        SUM["score = 9.6+24.8+12.5+1.2+2.5 = 50.6"]
+    end
+
+    S1 --> SUM
+    S2 --> SUM
+    S3 --> SUM
+    S4 --> SUM
+    S5 --> SUM
+```
+
+**字段权重配置**：
+
+| 字段 | 权重 | 说明 |
+|------|------|------|
+| `title` | 8 | 标题最重要，匹配即高度相关 |
+| `keyPoints` | 5 | 关键点次之 |
+| `categories` | 4 | 分类匹配 |
+| `tags` | 3 | 标签匹配 |
+| `excerpt` | 3 | 摘要匹配 |
+| `content` | 1 | 正文权重最低，作为补充 |
+
+**IDF 公式**：
+
+```
+IDF(term) = log(N / (df + 1)) + 1
+
+其中:
+- N = 文档总数
+- df = 包含该词的文档数
+- +1 平滑确保所有词权重为正
+```
+
+### 5.7 三层提示词构建流程
+
+```mermaid
+flowchart TB
+    subgraph Static["静态层 (构建时固定)"]
+        S1["身份定义"]
+        S2["职责说明"]
+        S3["格式要求"]
+        S4["原则约束"]
+        S5["来源分层 L1-L5"]
+        S6["隐私保护"]
+        S7["回答模式指导"]
+        S8["预输出检查"]
+    end
+
+    subgraph SemiStatic["半静态层 (构建时固定)"]
+        SS1["author-context.json"]
+        SS2["文章总数"]
+        SS3["主要分类"]
+        SS4["最新10篇文章"]
+    end
+
+    subgraph Dynamic["动态层 (每次请求生成)"]
+        D1["用户查询"]
+        D2["相关文章 (≤8篇)"]
+        D3["相关项目 (≤4个)"]
+        D4["证据分析结果"]
+        D5["事实匹配结果"]
+        D6["回答模式提示"]
+        D7["扩展上下文"]
+    end
+
+    subgraph 组装
+        C["buildSystemPrompt()"]
+        C --> OUT["完整系统提示<br/>(约2000-4000 tokens)"]
+    end
+
+    S1 --> C
+    S2 --> C
+    S3 --> C
+    S4 --> C
+    S5 --> C
+    S6 --> C
+    S7 --> C
+    S8 --> C
+
+    SS1 --> SS2
+    SS1 --> SS3
+    SS1 --> SS4
+    SS2 --> C
+    SS3 --> C
+    SS4 --> C
+
+    D1 --> C
+    D2 --> C
+    D3 --> C
+    D4 --> C
+    D5 --> C
+    D6 --> C
+    D7 --> C
+```
+
+**来源分层优先级**：
+
+```markmap
+# 来源分层 (Source Layers)
+
+## L1: 原始博客内容
+- 标题、摘要、要点、正文节选
+- **最高优先级**
+- 必须来自「相关文章」部分
+
+## L2: 策划数据
+- 作者简介
+- 项目列表
+- 博客概况
+
+## L3: 结构化事实
+- 标签统计
+- 分类聚合
+- 推导数据
+
+## L4: 外部验证来源
+- 官方文档
+- GitHub 仓库
+- 权威外部来源
+- 需标注引用
+
+## L5: 语言风格
+- 仅影响表达方式
+- 不作为事实依据
+
+---
+**优先级规则**: L1 > L2 > L3 > L4 > L5
+**冲突时**: 以高优先级来源为准
+```
+
+## 六、使用场景详解
+
+### 6.1 场景一：全局问答流程
 
 ```mermaid
 flowchart TB
@@ -984,7 +1473,7 @@ flowchart TB
     I --> J["流式响应推送"]
 ```
 
-### 5.2 场景二：边读边聊功能
+### 6.2 场景二：边读边聊功能
 
 这是针对文章阅读场景的增强功能，用户在阅读某篇文章时，可以针对该文章内容发起对话。
 
@@ -1015,9 +1504,9 @@ const articlePrompt = `
 `;
 ```
 
-## 六、组件设计详解
+## 七、组件设计详解
 
-### 6.1 AIChatWidget 组件
+### 7.1 AIChatWidget 组件
 
 AIChatWidget.astro 是模块的 Astro 入口点，负责初始化聊天 UI 并将其挂载到页面。
 
@@ -1056,7 +1545,7 @@ const aiConfig = {
 
 **客户端加载策略：** 使用 `client:only="preact"` 指令意味着组件会在页面主要内容和交互准备完成后才开始加载。这确保了聊天组件不会阻塞页面的首次加载，对性能影响最小化。
 
-### 6.2 AIChatContainer 组件
+### 7.2 AIChatContainer 组件
 
 AIChatContainer 是状态容器组件，管理聊天气泡的开启/关闭状态，并暴露全局控制接口。
 
@@ -1082,7 +1571,7 @@ export default function AIChatContainer({ config, articleContext }: Props) {
 }
 ```
 
-### 6.3 ChatPanel 组件
+### 7.3 ChatPanel 组件
 
 ChatPanel 是核心聊天 UI 组件，基于 `@ai-sdk/react` 的 `useChat` Hook 构建。
 
@@ -1145,7 +1634,7 @@ function useTypewriter(fullText: string, isStreaming: boolean): string {
 }
 ```
 
-### 6.4 流式文本显示优化
+### 7.4 流式文本显示优化
 
 **自动滚动策略：** 消息列表应自动滚动到底部（保持最新消息可见），但如果用户主动向上滚动，应暂停自动滚动。
 
@@ -1153,9 +1642,9 @@ function useTypewriter(fullText: string, isStreaming: boolean): string {
 - 内联元素：链接、加粗、代码
 - 块级元素：段落、代码块、引用、列表
 
-## 七、接口契约与数据类型
+## 八、接口契约与数据类型
 
-### 7.1 Chat API 请求格式
+### 8.1 Chat API 请求格式
 
 **请求端点：** `POST /api/chat`
 
@@ -1179,7 +1668,7 @@ interface ChatRequest {
 }
 ```
 
-### 7.2 Chat API 响应格式
+### 8.2 Chat API 响应格式
 
 **成功响应：** 使用 Server-Sent Events (SSE) 协议
 
@@ -1203,7 +1692,7 @@ interface ChatErrorResponse {
 }
 ```
 
-### 7.3 错误码定义
+### 8.3 错误码定义
 
 | 错误码 | HTTP 状态 | 说明 | 可重试 |
 |--------|-----------|------|--------|
@@ -1215,9 +1704,9 @@ interface ChatErrorResponse {
 | `PROVIDER_UNAVAILABLE` | 503 | 所有 Provider 不可用 | 是 |
 | `INTERNAL_ERROR` | 500 | 内部错误 | 是 |
 
-## 八、配置与环境变量
+## 九、配置与环境变量
 
-### 8.1 Provider 配置
+### 9.1 Provider 配置
 
 | 环境变量 | 必需 | 说明 |
 |----------|------|------|
@@ -1229,7 +1718,7 @@ interface ChatErrorResponse {
 | `AI_BINDING_NAME` | Workers 时 | AI 绑定名（默认 `minimaxAI`） |
 | `AI_WORKERS_MODEL` | 否 | Workers 模型（默认 `@cf/zai-org/glm-4.7-flash`） |
 
-### 8.2 响应缓存配置
+### 9.2 响应缓存配置
 
 | 环境变量 | 默认值 | 说明 |
 |----------|--------|------|
@@ -1239,7 +1728,7 @@ interface ChatErrorResponse {
 | `AI_RESPONSE_CACHE_CHUNK_SIZE` | `15` | 每块字符数 |
 | `AI_RESPONSE_CACHE_THINKING_DELAY` | `5` | 思考内容回放延迟 |
 
-### 8.3 速率限制配置
+### 9.3 速率限制配置
 
 | 环境变量 | 默认值 | 说明 |
 |----------|--------|------|
@@ -1250,7 +1739,7 @@ interface ChatErrorResponse {
 | `CHAT_RATE_LIMIT_DAILY_MAX` | `100` | 每日限制最大请求数 |
 | `CHAT_RATE_LIMIT_DAILY_WINDOW_MS` | `86400000` | 每日限制时间窗口 |
 
-### 8.4 多环境配置示例
+### 9.4 多环境配置示例
 
 **开发环境（Mock 模式）：**
 ```bash
@@ -1290,9 +1779,9 @@ SITE_AUTHOR=博客作者
 SITE_URL=https://example.com
 ```
 
-## 九、部署与运维
+## 十、部署与运维
 
-### 9.1 部署架构
+### 10.1 部署架构
 
 **Cloudflare Pages 模式（推荐）：**
 
@@ -1317,7 +1806,7 @@ flowchart TB
     C --> E["外部 AI API<br/>(OpenAI 等)"]
 ```
 
-### 9.2 性能基准
+### 10.2 性能基准
 
 | 操作阶段 | 平均延迟 | P99 延迟 | 备注 |
 |----------|----------|----------|------|
@@ -1330,7 +1819,7 @@ flowchart TB
 | AI 流式响应 | 500-3000ms | 30000ms | 取决于模型和回复长度 |
 | 端到端（跳过智能分析） | 600-4000ms | 35000ms | 完整流程 |
 
-### 9.3 监控指标
+### 10.3 监控指标
 
 ```typescript
 const MONITORING_METRICS = {
@@ -1356,7 +1845,7 @@ const MONITORING_METRICS = {
 };
 ```
 
-### 9.4 故障排查指南
+### 10.4 故障排查指南
 
 **问题：聊天功能无响应**
 
@@ -1391,7 +1880,7 @@ const MONITORING_METRICS = {
 3. 查看服务商状态页面
 4. 考虑增加备用供应商
 
-## 十、超时预算管理
+## 十一、超时预算管理
 
 单个请求的总超时为 45 秒，各阶段分配如下：
 
@@ -1418,7 +1907,7 @@ try {
 }
 ```
 
-## 十一、速率限制
+## 十二、速率限制
 
 三层 IP 级速率限制：
 
@@ -1428,9 +1917,9 @@ try {
 | Sustained | 60 秒 | 20 次 | 正常使用上限 |
 | Daily | 24 小时 | 100 次 | 单日总上限 |
 
-## 十二、CLI 工具链
+## 十三、CLI 工具链
 
-### 12.1 事实注册表验证
+### 13.1 事实注册表验证
 
 `@astro-minimax/cli` 提供了 `facts validate` 命令，用于验证 `fact-registry.json` 的结构和内容：
 
@@ -1477,14 +1966,14 @@ astro-minimax facts validate
 ✅ Fact registry is valid
 ```
 
-### 12.2 相关命令
+### 13.2 相关命令
 
 ```bash
 astro-minimax facts status    # 查看事实注册表状态
 astro-minimax profile build   # 构建完整作者画像（包含 facts）
 ```
 
-## 十三、总结
+## 十四、总结
 
 @astro-minimax/ai 模块通过以下设计实现了高可用、高质量的 AI 聊天体验：
 

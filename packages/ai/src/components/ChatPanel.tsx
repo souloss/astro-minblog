@@ -6,6 +6,7 @@ import { getMockResponse, createMockStream } from '../providers/mock.ts';
 import type { ArticleChatContext, ChatStatusData } from '../server/types.ts';
 import { isChatStatusData } from '../server/types.ts';
 import { t, getLang } from '../utils/i18n.ts';
+import { CodeBlock, generateFollowUpSuggestions, FollowUpSuggestions } from './CodeBlock.tsx';
 
 export interface AIChatConfig {
   enabled?: boolean;
@@ -319,7 +320,7 @@ function parseBlocks(text: string): BlockNode[] {
   return blocks;
 }
 
-function RichText({ text }: { text: string }) {
+function RichText({ text, isStreaming }: { text: string; isStreaming?: boolean }) {
   const blocks = useMemo(() => parseBlocks(text), [text]);
   return (
     <div class="space-y-2">
@@ -327,9 +328,12 @@ function RichText({ text }: { text: string }) {
         switch (block.type) {
           case 'code-block':
             return (
-              <pre key={i} class="overflow-x-auto rounded-md bg-muted/60 px-3 py-2 text-[12px] leading-relaxed font-mono">
-                <code>{block.content}</code>
-              </pre>
+              <CodeBlock 
+                key={i} 
+                code={block.content} 
+                lang={block.lang} 
+                isStreaming={isStreaming}
+              />
             );
           case 'blockquote':
             return (
@@ -413,7 +417,7 @@ function ReasoningBlock({ text, isStreaming, lang = 'zh' }: { text: string; isSt
 
 type ReasoningPart = { type: 'reasoning'; text: string; state?: 'streaming' | 'done' };
 
-function AssistantMessage({ message, isStreaming, lang = 'zh' }: { message: UIMessage; isStreaming?: boolean; lang?: string }) {
+function AssistantMessage({ message, isStreaming, lang = 'zh', articleContext, onFollowUp }: { message: UIMessage; isStreaming?: boolean; lang?: string; articleContext?: ArticleChatContext; onFollowUp?: (text: string) => void }) {
   const fullText = getTextFromMessage(message);
   const displayedText = useTypewriter(fullText, isStreaming ?? false);
 
@@ -425,6 +429,11 @@ function AssistantMessage({ message, isStreaming, lang = 'zh' }: { message: UIMe
   const isWaitingForContent = isStreaming && !fullText && !reasoningFullText;
 
   const sources = message.parts.filter(p => p.type === 'source-url' || p.type === 'source-document');
+  
+  const followUpSuggestions = useMemo(() => {
+    if (isStreaming || !fullText || !onFollowUp) return [];
+    return generateFollowUpSuggestions(fullText, articleContext);
+  }, [isStreaming, fullText, articleContext, onFollowUp]);
 
   if (isWaitingForContent) {
     return (
@@ -441,7 +450,7 @@ function AssistantMessage({ message, isStreaming, lang = 'zh' }: { message: UIMe
       {hasReasoning && (
         <ReasoningBlock text={reasoningDisplayed} isStreaming={isStreaming} lang={lang} />
       )}
-      {displayedText && <RichText text={displayedText} />}
+      {displayedText && <RichText text={displayedText} isStreaming={isStreaming} />}
       {!isStreaming && sources.length > 0 && (
         <div class="mt-2 flex flex-wrap gap-1.5">
           {sources.map((s, i) => {
@@ -459,6 +468,9 @@ function AssistantMessage({ message, isStreaming, lang = 'zh' }: { message: UIMe
             );
           })}
         </div>
+      )}
+      {!isStreaming && followUpSuggestions.length > 0 && onFollowUp && (
+        <FollowUpSuggestions suggestions={followUpSuggestions} onSend={onFollowUp} lang={lang} />
       )}
     </div>
   );
@@ -707,7 +719,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
             : 'min-w-0 flex-1 pt-0.5 text-[13px] leading-relaxed text-foreground'}>
             {msg.text
               ? msg.role === 'assistant'
-                ? <RichText text={msg.text} />
+                ? <RichText text={msg.text} isStreaming={msg.streaming} />
                 : msg.text
               : msg.streaming ? <TypingDots /> : null}
           </div>
@@ -756,7 +768,13 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
                 ? 'max-w-[82%] rounded-2xl rounded-br-md bg-accent px-3 py-2 text-[13px] leading-relaxed text-background'
                 : 'min-w-0 flex-1 pt-0.5 text-[13px] leading-relaxed text-foreground'}>
                 {isAssistant
-                  ? <AssistantMessage message={msg} isStreaming={isLastAssistantStreaming} lang={lang} />
+                  ? <AssistantMessage 
+                      message={msg} 
+                      isStreaming={isLastAssistantStreaming} 
+                      lang={lang}
+                      articleContext={articleContext}
+                      onFollowUp={doSend}
+                    />
                   : text}
               </div>
             </div>

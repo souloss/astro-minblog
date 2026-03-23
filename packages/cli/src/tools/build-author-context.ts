@@ -24,6 +24,7 @@ import {
   BLOG_DIR,
 } from "./lib/utils.js";
 import { stripMarkdown } from "./lib/markdown.js";
+import { chunkMarkdownByHeaders, type ArticleChunk } from "./lib/markdown-chunker.js";
 import { extractFrontmatter } from "./lib/frontmatter.js";
 import { hasAPIKey, getConfig } from "./lib/ai-provider.js";
 
@@ -119,6 +120,7 @@ interface RawPost {
   keyPoints?: string[];
   body: string;
   url: string;
+  chunks?: ArticleChunk[];
 }
 
 async function collectPosts(
@@ -151,6 +153,14 @@ async function collectPosts(
     // URL 格式: /{lang}/posts/{slug}/
     // slug 是 id 的最后部分（去掉语言前缀）
     const slug = id.split("/").slice(1).join("/");
+    
+    // 生成段落级 chunks
+    const chunks = chunkMarkdownByHeaders(fm.body, id, {
+      maxTokens: 512,
+      minTokens: 50,
+      overlapTokens: 64,
+    });
+    
     posts.push({
       id,
       title: String(data.title),
@@ -163,6 +173,7 @@ async function collectPosts(
       keyPoints: summaryEntry?.keyPoints || [],
       body: includeBody ? fm.body.slice(0, 5000) : "",
       url: `/${lang}/posts/${slug}/`,
+      chunks: chunks.length > 0 ? chunks : undefined,
     });
   }
 
@@ -372,6 +383,7 @@ async function main() {
       summary: p.summary,
       keyPoints: p.keyPoints,
       url: p.url,
+      chunks: p.chunks,
       ...(args.includeBody && { body: p.body }),
     })),
     stableFacts,
@@ -395,6 +407,13 @@ async function main() {
   console.log(`📄 输出文件: ${OUTPUT_FILE}`);
   console.log("\n📊 数据概览:");
   console.log(`   文章总数: ${stableFacts.contentFootprint.posts}`);
+  
+  // 统计 chunks
+  const totalChunks = posts.reduce((sum, p) => sum + (p.chunks?.length || 0), 0);
+  if (totalChunks > 0) {
+    console.log(`   段落总数: ${totalChunks}`);
+  }
+  
   console.log(`   聚焦领域: ${stableFacts.focusAreas.join("、")}`);
   console.log(`   热门标签: ${stableFacts.topTags.slice(0, 5).join("、")}`);
 }

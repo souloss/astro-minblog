@@ -22,6 +22,16 @@ export interface SearchResult extends SearchDocument {
   score: number;
 }
 
+export interface ArticleChunk {
+  id: string;
+  postId: string;
+  heading: string;
+  content: string;
+  position: number;
+  tokenCount: number;
+  headers: Record<string, string>;
+}
+
 export interface ArticleContext {
   title: string;
   url: string;
@@ -32,6 +42,10 @@ export interface ArticleContext {
   fullContent?: string;
   score?: number;
   readingTime?: number;
+  chunks?: ArticleChunk[];
+  rrfScore?: number;
+  bm25Rank?: number;
+  vectorRank?: number;
 }
 
 export interface ProjectContext {

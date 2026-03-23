@@ -1,4 +1,4 @@
-export { initArticleIndex, initProjectIndex, searchArticles, searchProjects, mergeResults } from './search-api.js';
+export { initArticleIndex, initProjectIndex, initArticleChunks, hasArticleChunks, getArticleChunks, searchArticles, searchProjects, searchArticleChunks, mergeResults } from './search-api.js';
 export { getIDFMapForIndex } from './search-index.js';
 export { loadVectorIndex, clearVectorIndex, hasVectorIndex, rerankWithVectors } from './vector-reranker.js';
 export type { VectorIndex, VectorChunk } from './vector-reranker.js';
@@ -19,4 +19,16 @@ export {
 export { normalizeText, tokenize, scoreDocument } from './search-utils.js';
 export { buildIDFMap, getIDFWeight } from './idf.js';
 export type { IDFMap } from './idf.js';
-export type { SearchDocument, ArticleContext, ProjectContext, CachedSearchContext, SearchResult } from './types.js';
+export type { SearchDocument, ArticleContext, ArticleChunk, ProjectContext, CachedSearchContext, SearchResult } from './types.js';
+export {
+  reciprocalRankFusion,
+  hybridSearch,
+  searchChunks,
+  computeChunkRelevance,
+  selectRelevantChunks,
+  formatChunksForInjection,
+  type RRFConfig,
+  type HybridSearchResult,
+  type ChunkMatchResult,
+  type ChunkInjectionConfig,
+} from './hybrid-search.js';

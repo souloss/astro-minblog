@@ -12,7 +12,7 @@
 
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { chunkText } from "./lib/markdown.js";
+import { chunkMarkdownByHeaders } from "./lib/markdown-chunker.js";
 import { getAllPosts } from "./lib/posts.js";
 import { generateEmbeddings } from "./lib/ai-provider.js";
 import {
@@ -23,31 +23,35 @@ import {
 
 const OUTPUT_DIR = join(process.cwd(), "src/data/vectors");
 const OUTPUT_FILE = join(OUTPUT_DIR, "index.json");
-const CHUNK_SIZE = 500;
-const CHUNK_OVERLAP = 50;
 
 async function main() {
   const useOpenAI = process.argv.includes("--openai");
   const method = useOpenAI ? "openai" : "tfidf";
 
   console.log(`📚 读取博客文章...`);
-  const posts = await getAllPosts();
+  const posts = await getAllPosts({ stripBody: false });
   console.log(`   找到 ${posts.length} 篇文章\n`);
 
-  console.log(`📝 分割内容块...`);
+  console.log(`📝 按标题分段...`);
   const chunks: ContentChunk[] = [];
 
   for (const post of posts) {
-    const fullText = `${post.title}\n${post.description}\n${post.body}`;
-    const textChunks = chunkText(fullText, CHUNK_SIZE, CHUNK_OVERLAP);
+    const fullText = `# ${post.title}\n\n${post.description}\n\n${post.body}`;
+    
+    // 使用新的段落分段器
+    const articleChunks = chunkMarkdownByHeaders(fullText, post.id, {
+      maxTokens: 512,
+      minTokens: 50,
+      overlapTokens: 64,
+    });
 
-    for (let i = 0; i < textChunks.length; i++) {
+    for (let i = 0; i < articleChunks.length; i++) {
       chunks.push({
         postId: post.id,
         title: post.title,
         lang: post.lang,
         chunkIndex: i,
-        text: textChunks[i],
+        text: articleChunks[i].content,
       });
     }
   }

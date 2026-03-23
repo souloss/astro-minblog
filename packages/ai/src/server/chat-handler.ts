@@ -216,7 +216,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
             const systemPrompt = buildSystemPrompt({
               static: { authorName: (env.SITE_AUTHOR as string) || '博主', siteUrl: (env.SITE_URL as string) || '', lang },
               semiStatic: { authorContext: getAuthorContext(), voiceProfile: getVoiceProfile() },
-              dynamic: { userQuery: cachedSearch.query, articles: cachedSearch.articles, projects: cachedSearch.projects, evidenceSection: articlePrompt, factSection: factPromptSection, extensions },
+              dynamic: { userQuery: cachedSearch.query, articles: cachedSearch.articles, projects: cachedSearch.projects, evidenceSection: articlePrompt, factSection: factPromptSection, extensions, sessionId: cacheKey || undefined },
             });
 
             const llmResult = await streamLLMResponse({ writer: w, adapter, systemPrompt, messages, lang });
@@ -419,6 +419,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       answerMode,
       lang,
       extensions,
+      sessionId: cacheKey || undefined,
     },
   });
 

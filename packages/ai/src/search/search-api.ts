@@ -1,12 +1,14 @@
 import { scoreDocument, filterLowRelevance, tokenize, pickAnchorTerms, normalizeText } from './search-utils.js';
 import { buildSearchIndex, getIDFMapForIndex } from './search-index.js';
 import { hasVectorIndex, rerankWithVectors } from './vector-reranker.js';
+import { hybridSearch, searchChunks, selectRelevantChunks, type ArticleChunk, type ArticleWithChunks } from './hybrid-search.js';
 import { safeJoinUrl } from '../utils/url.js';
 import type { SearchDocument, IndexedDocument, SearchResult, ArticleContext, ProjectContext } from './types.js';
 
 // Lazy-initialized, cached indexes
 let articleIndex: IndexedDocument[] | null = null;
 let projectIndex: IndexedDocument[] | null = null;
+let articleChunks: Map<string, ArticleChunk[]> = new Map(); // postId -> chunks
 
 const ARTICLE_LIMIT = 10;
 const ARTICLE_LIMIT_BROAD = 20;
@@ -26,13 +28,25 @@ export function initProjectIndex(documents: SearchDocument[]): void {
   projectIndex = buildSearchIndex(documents);
 }
 
+export function initArticleChunks(chunksData: Record<string, ArticleChunk[]>): void {
+  articleChunks = new Map(Object.entries(chunksData));
+}
+
+export function hasArticleChunks(): boolean {
+  return articleChunks.size > 0;
+}
+
+export function getArticleChunks(postId: string): ArticleChunk[] | undefined {
+  return articleChunks.get(postId);
+}
+
 /**
  * Searches for articles related to the query.
  * Returns enriched ArticleContext objects ready for prompt injection.
  */
 export function searchArticles(
   query: string,
-  options: { enableDeepContent?: boolean; siteUrl?: string } = {},
+  options: { enableDeepContent?: boolean; siteUrl?: string; enableRRF?: boolean; sessionId?: string } = {},
 ): ArticleContext[] {
   if (!query.trim() || !articleIndex) return [];
 
@@ -54,6 +68,7 @@ export function searchArticles(
 
   let articles = results.map((result, index) => {
     const url = safeJoinUrl(options.siteUrl ?? '', result.url);
+    const chunks = articleChunks.get(result.id);
     const fullContent =
       isDeepHit && index === 0 && result.content
         ? result.content.slice(0, DEEP_CONTENT_MAX_LENGTH)
@@ -69,15 +84,50 @@ export function searchArticles(
       fullContent,
       score: result.score,
       readingTime: result.readingTime,
+      chunks,
     };
   });
 
-  // Optional: rerank using TF-IDF vector cosine similarity
-  if (hasVectorIndex() && articles.length > 1) {
+  // Optional: RRF hybrid search with vector reranking
+  if (options.enableRRF && hasVectorIndex() && articles.length > 1) {
+    const vectorResults = articles.map(a => ({ ...a, score: a.score || 0 }));
+    const hybridResults = hybridSearch(query, articles, vectorResults, { topK: limit });
+    // Re-attach chunks to hybrid results and ensure required fields
+    const chunksMap = new Map(articles.map(a => [a.url, a.chunks]));
+    articles = hybridResults.map(h => ({
+      title: h.title,
+      url: h.url,
+      summary: h.summary ?? '',
+      keyPoints: h.keyPoints ?? [],
+      categories: h.categories ?? [],
+      dateTime: h.dateTime ?? 0,
+      fullContent: h.fullContent,
+      score: h.score ?? 0,
+      readingTime: h.readingTime,
+      chunks: chunksMap.get(h.url),
+      rrfScore: h.rrfScore,
+      bm25Rank: h.bm25Rank,
+      vectorRank: h.vectorRank,
+    }));
+  } else if (hasVectorIndex() && articles.length > 1) {
+    // Fallback: traditional vector reranking
     articles = rerankWithVectors(query, articles);
   }
 
   return articles;
+}
+
+/**
+ * Searches for relevant chunks within articles.
+ * Used for paragraph-level retrieval and injection.
+ */
+export function searchArticleChunks(
+  query: string,
+  articles: ArticleWithChunks[],
+  topK: number = 10,
+): Array<{ article: ArticleWithChunks; chunk: ArticleChunk; score: number }> {
+  if (!query.trim() || !articles.length) return [];
+  return searchChunks(query, articles, topK);
 }
 
 /**

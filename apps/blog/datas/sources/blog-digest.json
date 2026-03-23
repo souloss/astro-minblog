@@ -1,7 +1,87 @@
 {
-  "generatedAt": "2026-03-18T14:21:49.217Z",
-  "count": 35,
+  "generatedAt": "2026-03-23T14:00:33.612Z",
+  "count": 40,
   "posts": [
+    {
+      "id": "en/ai-module-architecture",
+      "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "en",
+      "category": "Technical/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "architecture",
+        "technical"
+      ],
+      "summary": "@astro-minimax/ai is the intelligent enhancement module for the astro-minimax blog theme, designed as a vendor-agnostic AI integration solution. The …",
+      "url": "/en/posts/ai-module-architecture/"
+    },
+    {
+      "id": "en/settings-panel",
+      "title": "Settings Panel & Preferences",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "astro-minimax 0.8.2 introduces a brand new settings panel for personalizing your blog's appearance and experience.\n\nOpening the Settings Panel\n\nClick…",
+      "url": "/en/posts/settings-panel/"
+    },
+    {
+      "id": "zh/ai-module-architecture",
+      "title": "\"@astro-minimax/ai 模块技术架构详解\"",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "zh",
+      "category": "技术/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "architecture",
+        "technical"
+      ],
+      "summary": "@astro-minimax/ai 是 astro-minimax 博客主题的智能增强模块，定位为供应商无关（Vendor-agnostic）的 AI 集成解决方案。该模块的核心目标是为一站式博客平台提供完整的 RAG（检索增强生成）流水线，同时支持多种 AI 服务供应商的无缝切换与故障转移，确保…",
+      "url": "/zh/posts/ai-module-architecture/"
+    },
+    {
+      "id": "zh/settings-panel",
+      "title": "设置面板与偏好设置",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "astro-minimax 0.8.2 引入了全新的设置面板，让你可以个性化博客的外观和体验。\n\n打开设置面板\n\n点击页面右下角的设置图标（齿轮图标）即可打开设置面板。\n\n设置选项\n\n外观设置\n\n| 选项 | 说明 | 可选值 |\n|------|------|--------|\n| 配色方案 |…",
+      "url": "/zh/posts/settings-panel/"
+    },
+    {
+      "id": "en/how-to-update-dependencies",
+      "title": "How to update dependencies of astro-minimax",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Engineering",
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
+      "url": "/en/posts/how-to-update-dependencies/"
+    },
+    {
+      "id": "zh/how-to-update-dependencies",
+      "title": "如何更新 astro-minimax 的依赖",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/工程化",
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
+      "url": "/zh/posts/how-to-update-dependencies/"
+    },
     {
       "id": "en/cloudflare-env-vars",
       "title": "\"Configuring Environment Variables in Cloudflare Pages\"",
@@ -185,6 +265,20 @@
       "url": "/en/posts/notification-guide/"
     },
     {
+      "id": "en/why-astro-minimax",
+      "title": "\"Why astro-minimax: Design Decisions & Technical Philosophy\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Blog",
+      "tags": [
+        "docs",
+        "architecture",
+        "design"
+      ],
+      "summary": "astro-minimax is not just another blog theme. It's a systematic answer to \"how to build a modern tech blog.\" This article documents the thinking behi…",
+      "url": "/en/posts/why-astro-minimax/"
+    },
+    {
       "id": "zh/2026-blog-ecosystem",
       "title": "\"2026 年个人技术博客生态全览：从零构建你的博客系统\"",
       "date": "2026-03-17T00:00:00.000Z",
@@ -305,7 +399,7 @@
         "docs",
         "features"
       ],
-      "summary": "astro-minimax 是一个功能丰富的 Astro 博客主题，采用模块化架构设计。本文全面介绍所有功能特性及其使用方式。\n\n架构概览\n\nastro-minimax 由五个核心包组成，形成清晰的层次架构：\n\n| 包                      | 说明              …",
+      "summary": "astro-minimax 是一个功能丰富的 Astro 博客主题，采用模块化架构设计。本文全面介绍所有功能特性及其使用方式。\n\n架构概览\n\nastro-minimax 由四个核心包组成，形成清晰的层次架构：\n\n| 包                      | 说明              …",
       "url": "/zh/posts/feature-overview/"
     },
     {
@@ -385,30 +479,6 @@
       ],
       "summary": "使用pre-commit Git钩子自动填充博客主题frontmatter中的创建和修改日期。",
       "url": "/zh/posts/setting-dates-via-git-hooks/"
-    },
-    {
-      "id": "en/how-to-update-dependencies",
-      "title": "How to update dependencies of astro-minimax",
-      "date": "2023-07-20T15:33:05.569Z",
-      "lang": "en",
-      "category": "教程/工程化",
-      "tags": [
-        "FAQ"
-      ],
-      "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
-      "url": "/en/posts/how-to-update-dependencies/"
-    },
-    {
-      "id": "zh/how-to-update-dependencies",
-      "title": "如何更新 astro-minimax 的依赖",
-      "date": "2023-07-20T15:33:05.569Z",
-      "lang": "zh",
-      "category": "教程/工程化",
-      "tags": [
-        "FAQ"
-      ],
-      "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
-      "url": "/zh/posts/how-to-update-dependencies/"
     },
     {
       "id": "en/dynamic-og-images",
