@@ -1,0 +1,96 @@
+{
+  "$schema": "extension-v1",
+  "version": 1,
+  "extensions": [
+    {
+      "id": "blog-travel",
+      "type": "voice-style",
+      "name": "Travel Voice",
+      "description": "Voice style for travel-related questions",
+      "enabled": true,
+      "priority": 80,
+      "data": {
+        "modes": [
+          {
+            "id": "travel",
+            "name": "Travel Mode",
+            "description": "Style for travel and journey related questions",
+            "matchKeywords": ["旅行", "旅游", "去过", "游记", "travel", "trip", "journey"],
+            "matchCategories": ["travel", "photography"],
+            "traits": [
+              "按时间线叙述",
+              "会提到具体地名和体验",
+              "偶尔加个人感悟",
+              "推荐实用信息"
+            ]
+          }
+        ],
+        "defaultMode": "travel",
+        "overallTone": "轻松分享，注重实用性和体验感"
+      }
+    },
+    {
+      "id": "travel-semantic-fallback",
+      "type": "semantic-fallback",
+      "name": "Travel Query Fallback",
+      "description": "Semantic fallback rules for travel queries",
+      "enabled": true,
+      "priority": 70,
+      "data": {
+        "rules": [
+          {
+            "id": "travel-countries",
+            "patterns": [
+              "去过.{0,6}(国家|城市|地方|哪里|哪些)",
+              "(国家|城市).{0,6}去过",
+              "都去过"
+            ],
+            "fallbackQuery": "旅行 游记 海外 出国 国家 城市 目的地",
+            "primaryQuery": "旅行",
+            "complexity": "complex"
+          },
+          {
+            "id": "travel-count",
+            "patterns": [
+              "(日本|韩国|美国|欧洲).{0,8}(几次|多少次|几回)"
+            ],
+            "fallbackQuery": "$1 旅行 游记",
+            "primaryQuery": "$1",
+            "complexity": "count"
+          }
+        ]
+      }
+    },
+    {
+      "id": "blog-semantic-fallback",
+      "type": "semantic-fallback",
+      "name": "Blog Query Fallback",
+      "description": "General semantic fallback rules for blog queries",
+      "enabled": true,
+      "priority": 60,
+      "data": {
+        "rules": [
+          {
+            "id": "tech-stack",
+            "patterns": [
+              "(技术栈|用什么技术|技术选型)",
+              "怎么(搭建|部署|实现).*博客"
+            ],
+            "fallbackQuery": "技术 栈 博客 Astro",
+            "primaryQuery": "技术栈",
+            "complexity": "simple"
+          },
+          {
+            "id": "how-to",
+            "patterns": [
+              "如何(添加|配置|设置|使用)",
+              "怎么(添加|配置|设置|使用)"
+            ],
+            "fallbackQuery": "教程 配置 设置",
+            "complexity": "moderate"
+          }
+        ]
+      }
+    }
+  ]
+}

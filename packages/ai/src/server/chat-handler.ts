@@ -7,23 +7,13 @@ import {
 } from 'ai';
 import { t, getLang } from '../utils/i18n.js';
 import {
-  getClientIP,
-  checkRateLimit,
-  rateLimitResponse,
-  searchArticles,
-  searchProjects,
-  getSessionCacheKey,
-  getCachedContext,
-  setCachedContext,
   shouldReuseSearchContext,
   buildLocalSearchQuery,
   shouldRunKeywordExtraction,
   extractSearchKeywords,
-  KEYWORD_EXTRACTION_TIMEOUT_MS,
   shouldSkipAnalysis,
   analyzeRetrievedEvidence,
   buildEvidenceSection,
-  EVIDENCE_ANALYSIS_TIMEOUT_MS,
   getCitationGuardPreflight,
   buildSystemPrompt,
   getAuthorContext,
@@ -44,132 +34,45 @@ import {
   rankArticlesByIntent,
   matchFactsToQuery,
   buildFactSection,
+  getEvidenceBudget,
+  applyBudgetToArticles,
+  resolveAnswerMode,
+  buildUnknownRefusal,
+  getClientIP,
+  checkRateLimit,
+  rateLimitResponse,
+  searchArticles,
+  searchProjects,
+  getSessionCacheKey,
+  getCachedContext,
+  setCachedContext,
+  initializeExtensions,
+  areExtensionsLoaded,
+  getExtensionRegistry,
+  getSemanticFallback,
+  mergeSearchDocuments,
+  mergeFacts,
+  resolveVoiceStyleMode,
+  buildVoiceStylePrompt,
 } from '../index.js';
 import type { CachedAIResponse } from '../cache/response-cache.js';
 import type { PublicQuestionType } from '../index.js';
+import type { ProviderAdapter } from '../provider-manager/types.js';
 import type { ChatHandlerOptions, ChatRequestBody, ChatContext } from './types.js';
 import { createChatStatusData } from './types.js';
 import { errors, corsPreflightResponse } from './errors.js';
-import { notifyAiChat } from './notify.js';
-import type { ArticleRef, ModelInfo, TokenUsage, PhaseTiming } from '@astro-minimax/notify';
+import type { PhaseTiming } from '@astro-minimax/notify';
 import {
   writeSearchStatus,
   writeGeneratingStatus,
   writeSourceArticles,
-  writeTextChunk,
-  writeFinish,
   streamLLMResponse,
   streamMockFallback,
   streamCachedResponse,
 } from './stream-helpers.js';
-
-const MAX_HISTORY_MESSAGES = 20;
-const MAX_INPUT_LENGTH = 500;
-const REQUEST_TIMEOUT_MS = 45_000;
-
-function sendNotification(args: {
-  env: ChatHandlerOptions['env'];
-  messages: UIMessage[];
-  responseText: string;
-  relatedArticles: Array<{ title: string; url?: string }>;
-  model?: ModelInfo;
-  usage?: TokenUsage;
-  timing: PhaseTiming;
-  cacheKey?: string | null;
-  waitUntil?: (promise: Promise<unknown>) => void;
-}): void {
-  const { env, messages, responseText, relatedArticles, model, usage, timing, cacheKey, waitUntil } = args;
-  
-  const sessionId = cacheKey || `dev-${Date.now().toString(36)}`;
-  const notifyArticles: ArticleRef[] = relatedArticles.slice(0, 5).map(a => ({
-    title: a.title,
-    url: a.url,
-  }));
-  
-  const notifyPromise = notifyAiChat({
-    env,
-    sessionId,
-    messages,
-    aiResponse: responseText,
-    referencedArticles: notifyArticles,
-    model,
-    usage,
-    timing,
-  });
-  
-  if (waitUntil) {
-    waitUntil(notifyPromise);
-  } else {
-    void notifyPromise;
-  }
-}
-
-// ── Message Helpers ───────────────────────────────────────────
-
-function getMessageText(message: UIMessage): string {
-  if (Array.isArray(message.parts)) {
-    return message.parts
-      .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-      .map(p => p.text)
-      .join('');
-  }
-  return '';
-}
-
-function hasContent(message: UIMessage): boolean {
-  const text = getMessageText(message);
-  if (text.trim()) return true;
-  if (Array.isArray(message.parts)) {
-    return message.parts.some(p => p.type !== 'text');
-  }
-  return false;
-}
-
-function filterValidMessages(messages: UIMessage[]): UIMessage[] {
-  const filtered: UIMessage[] = [];
-  let lastRole: string | null = null;
-
-  for (const msg of messages) {
-    if (!hasContent(msg)) continue;
-    if (msg.role === lastRole) continue;
-    filtered.push(msg);
-    lastRole = msg.role;
-  }
-
-  if (filtered.length > 0 && filtered[filtered.length - 1].role !== 'user') {
-    filtered.pop();
-  }
-
-  return filtered;
-}
-
-// ── Article Context Prompt Enhancement ────────────────────────
-
-function buildArticleContextPrompt(context: ChatContext): string {
-  if (context.scope !== 'article' || !context.article) return '';
-
-  const a = context.article;
-  const parts: string[] = [
-    '\n[当前阅读文章]',
-    `用户正在阅读：《${a.title}》`,
-  ];
-
-  if (a.summary) parts.push(`摘要：${a.summary}`);
-  if (a.abstract) parts.push(`详细概要：${a.abstract}`);
-  if (a.keyPoints?.length) parts.push(`核心要点：${a.keyPoints.join('；')}`);
-  if (a.categories?.length) parts.push(`分类：${a.categories.join('、')}`);
-
-  parts.push(
-    '',
-    '你正在陪用户阅读这篇文章。优先围绕这篇文章的内容回答问题。',
-    '当用户的问题与当前文章相关时，引用文章中的具体内容。',
-    '当用户想要延伸时，推荐相关的博客文章。',
-  );
-
-  return parts.join('\n');
-}
-
-// ── Main Handler ──────────────────────────────────────────────
+import { getMessageText, filterValidMessages } from './chat-message-utils.js';
+import { buildArticleContextPrompt, sendNotification, getTimeoutConfig, getHealthConfig } from './chat-utils.js';
+import { CHAT_HANDLER, RESPONSE } from '../constants.js';
 
 export async function handleChatRequest(options: ChatHandlerOptions): Promise<Response> {
   const { env, request: req, waitUntil } = options;
@@ -190,7 +93,7 @@ export async function handleChatRequest(options: ChatHandlerOptions): Promise<Re
 
   const lang = getLang(body.lang ?? (env.SITE_LANG as string | undefined));
   const context: ChatContext = body.context ?? { scope: 'global' };
-  const rawMessages = (body.messages ?? []).slice(-MAX_HISTORY_MESSAGES);
+  const rawMessages = (body.messages ?? []).slice(-CHAT_HANDLER.MAX_HISTORY_MESSAGES);
   if (!rawMessages.length) return errors.emptyMessage(lang);
 
   const messages = filterValidMessages(rawMessages);
@@ -199,13 +102,14 @@ export async function handleChatRequest(options: ChatHandlerOptions): Promise<Re
   const latestMessage = messages[messages.length - 1];
   const latestText = getMessageText(latestMessage);
   if (!latestText) return errors.emptyContent(lang);
-  if (latestText.length > MAX_INPUT_LENGTH) return errors.inputTooLong(MAX_INPUT_LENGTH, lang);
+  if (latestText.length > CHAT_HANDLER.MAX_INPUT_LENGTH) return errors.inputTooLong(CHAT_HANDLER.MAX_INPUT_LENGTH, lang);
 
+  const timeouts = getTimeoutConfig(env as Record<string, unknown>);
   const requestAbort = new AbortController();
-  const requestTimer = setTimeout(() => requestAbort.abort(), REQUEST_TIMEOUT_MS);
+  const requestTimer = setTimeout(() => requestAbort.abort(), timeouts.request);
 
   try {
-    return await runPipeline({ env, messages, latestText, context, req, requestAbort, lang, waitUntil });
+    return await runPipeline({ env, messages, latestText, context, req, requestAbort, lang, waitUntil, timeouts });
   } catch (err) {
     if (requestAbort.signal.aborted) return errors.timeout(lang);
     console.error('[chat-handler] Unexpected error:', err);
@@ -215,7 +119,12 @@ export async function handleChatRequest(options: ChatHandlerOptions): Promise<Re
   }
 }
 
-// ── RAG Pipeline ──────────────────────────────────────────────
+interface TimeoutConfig {
+  request: number;
+  keywordExtraction: number;
+  evidenceAnalysis: number;
+  llmStreaming: number;
+}
 
 interface PipelineArgs {
   env: ChatHandlerOptions['env'];
@@ -226,6 +135,7 @@ interface PipelineArgs {
   requestAbort: AbortController;
   lang: string;
   waitUntil?: (promise: Promise<unknown>) => void;
+  timeouts: TimeoutConfig;
 }
 
 interface TimingTracker {
@@ -237,42 +147,41 @@ interface TimingTracker {
 }
 
 async function runPipeline(args: PipelineArgs): Promise<Response> {
-  const { env, messages, latestText, context, req, lang, waitUntil } = args;
+  const { env, messages, latestText, context, req, lang, waitUntil, timeouts } = args;
   const timing: TimingTracker = { start: Date.now() };
 
   const cache = createCacheAdapter(env);
   const responseCacheConfig = getResponseCacheConfig(env);
+  const healthConfig = getHealthConfig(env as Record<string, unknown>);
 
   const manager = getProviderManager(env, {
     enableMockFallback: true,
-    unhealthyThreshold: 3,
-    healthRecoveryTTL: 60_000,
+    unhealthyThreshold: healthConfig.unhealthyThreshold,
+    healthRecoveryTTL: healthConfig.recoveryTtl,
   });
 
   const hasRealProvider = manager.hasProviders();
-  const adapter = hasRealProvider ? await manager.getAvailableAdapter() : null;
+  const adapters = hasRealProvider ? await manager.getAvailableAdapters() : [];
+  const adapter = adapters[0] ?? null;
 
-  // ── Global Cache Check for Public Questions ─────────────────────────
+  if (!areExtensionsLoaded()) {
+    await initializeExtensions();
+  }
+  const extensions = getExtensionRegistry().getLoadedExtensions();
 
   const articleSlug = context.scope === 'article' && context.article?.slug 
     ? context.article.slug 
     : undefined;
 
   const publicQuestion = detectPublicQuestion(latestText);
-  let globalCacheHit = false;
-  let globalCacheType: PublicQuestionType | undefined;
 
   if (publicQuestion && (!publicQuestion.needsContext || articleSlug)) {
     const globalCacheContext = { articleSlug, lang };
 
-    // Check response cache first if enabled
     if (responseCacheConfig.enabled) {
       const cachedResponse = await getResponseCache(cache, publicQuestion.type, globalCacheContext);
       
       if (cachedResponse) {
-        globalCacheHit = true;
-        globalCacheType = publicQuestion.type;
-
         const notifyTiming: PhaseTiming = { total: Date.now() - timing.start };
         sendNotification({ env, messages, responseText: cachedResponse.response, relatedArticles: cachedResponse.articles, timing: notifyTiming, waitUntil });
 
@@ -286,13 +195,9 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       }
     }
 
-    // Check search context cache
     const cachedSearch = await getGlobalSearchCache(cache, publicQuestion.type, globalCacheContext);
 
     if (cachedSearch) {
-      globalCacheHit = true;
-      globalCacheType = publicQuestion.type;
-
       const stream = createUIMessageStream({
         execute: async ({ writer }) => {
           const w = writer as never;
@@ -311,7 +216,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
             const systemPrompt = buildSystemPrompt({
               static: { authorName: (env.SITE_AUTHOR as string) || '博主', siteUrl: (env.SITE_URL as string) || '', lang },
               semiStatic: { authorContext: getAuthorContext(), voiceProfile: getVoiceProfile() },
-              dynamic: { userQuery: cachedSearch.query, articles: cachedSearch.articles, projects: cachedSearch.projects, evidenceSection: articlePrompt, factSection: factPromptSection },
+              dynamic: { userQuery: cachedSearch.query, articles: cachedSearch.articles, projects: cachedSearch.projects, evidenceSection: articlePrompt, factSection: factPromptSection, extensions },
             });
 
             const llmResult = await streamLLMResponse({ writer: w, adapter, systemPrompt, messages, lang });
@@ -335,8 +240,6 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
     }
   }
 
-  // ── Search / Retrieval ──────────────────────────────────────
-
   const cacheKey = getSessionCacheKey(req);
   const now = Date.now();
 
@@ -347,6 +250,13 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
   let searchQuery = buildLocalSearchQuery(latestText) || latestText;
   let relatedArticles = reuseContext && cachedContext ? cachedContext.articles : [];
   let relatedProjects = reuseContext && cachedContext ? cachedContext.projects : [];
+  let budget = getEvidenceBudget('moderate');
+  let answerMode: 'fact' | 'count' | 'list' | 'opinion' | 'recommendation' | 'unknown' | 'general' = 'general';
+
+  const semanticFallback = getSemanticFallback(latestText, extensions);
+  if (semanticFallback) {
+    searchQuery = semanticFallback.query;
+  }
 
   if (reuseContext && cachedContext && cacheKey) {
     searchQuery = cachedContext.query;
@@ -362,7 +272,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       if (runKW) {
         const kwStart = Date.now();
         const abortCtrl = new AbortController();
-        const timeoutId = setTimeout(() => abortCtrl.abort(), KEYWORD_EXTRACTION_TIMEOUT_MS);
+        const timeoutId = setTimeout(() => abortCtrl.abort(), timeouts.keywordExtraction);
         try {
           const provider = adapter.getProvider();
           const kwResult = await extractSearchKeywords({
@@ -400,7 +310,12 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       timing.search = Date.now() - searchStart;
     }
 
+    relatedArticles = mergeSearchDocuments(relatedArticles, extensions);
     relatedArticles = rankArticlesByIntent(latestText, relatedArticles);
+
+    answerMode = resolveAnswerMode(latestText);
+    budget = getEvidenceBudget('moderate', answerMode);
+    relatedArticles = applyBudgetToArticles(relatedArticles, budget);
 
     if (cacheKey) {
       await setCachedContext(cacheKey, {
@@ -428,8 +343,6 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
     }
   }
 
-  // ── Evidence Analysis (optional) ────────────────────────────
-
   let evidenceSection = '';
 
   if (hasRealProvider && adapter) {
@@ -438,7 +351,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
     if (!skipEvidence) {
       const evidenceStart = Date.now();
       const abortCtrl = new AbortController();
-      const timeoutId = setTimeout(() => abortCtrl.abort(), EVIDENCE_ANALYSIS_TIMEOUT_MS);
+      const timeoutId = setTimeout(() => abortCtrl.abort(), timeouts.evidenceAnalysis);
       try {
         const provider = adapter.getProvider();
         const evidenceResult = await analyzeRetrievedEvidence({
@@ -447,6 +360,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           projects: relatedProjects,
           provider,
           model: adapter.evidenceModel,
+          maxOutputTokens: budget.analysisMaxTokens,
           abortSignal: abortCtrl.signal,
         });
         if (evidenceResult.analysis) {
@@ -461,8 +375,6 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
     }
   }
 
-  // ── Citation Guard ──────────────────────────────────────────
-
   const preflight = getCitationGuardPreflight({
     userQuery: latestText,
     articles: relatedArticles,
@@ -470,12 +382,19 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
     lang,
   });
 
-  // ── Fact Registry ───────────────────────────────────────────
+  // Handle unknown answer mode (privacy-sensitive queries)
+  // Uses intent-based approach inspired by luoleiorg-x
+  const unknownRefusal = answerMode === 'unknown' 
+    ? { text: buildUnknownRefusal(latestText, lang), isUnknown: true }
+    : null;
 
-  const matchedFacts = matchFactsToQuery(latestText, lang);
+  let matchedFacts = matchFactsToQuery(latestText, lang);
+  matchedFacts = mergeFacts(matchedFacts, extensions);
   const factPromptSection = buildFactSection(matchedFacts, lang);
 
-  // ── Build System Prompt ─────────────────────────────────────
+  const articleCategories = relatedArticles.flatMap(a => a.categories ?? []);
+  const voiceMode = resolveVoiceStyleMode(latestText, articleCategories, extensions);
+  const voiceStylePrompt = buildVoiceStylePrompt(voiceMode, extensions);
 
   const articlePrompt = buildArticleContextPrompt(context);
   const systemPrompt = buildSystemPrompt({
@@ -483,6 +402,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       authorName: (env.SITE_AUTHOR as string) || '博主',
       siteUrl: (env.SITE_URL as string) || '',
       lang,
+      voiceStylePrompt,
     },
     semiStatic: {
       authorContext: getAuthorContext(),
@@ -496,30 +416,28 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         ? `${evidenceSection}\n${articlePrompt}`
         : evidenceSection,
       factSection: factPromptSection,
+      answerMode,
       lang,
+      extensions,
     },
   });
-
-  // ── Stream Response via createUIMessageStream ───────────────
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       const articleCount = relatedArticles.length + relatedProjects.length;
 
-      // Push status: search results
       if (articleCount > 0) {
         writer.write({
           type: 'message-metadata',
           messageMetadata: createChatStatusData({
             stage: 'search',
             message: t('ai.status.found', lang, { count: articleCount }),
-            progress: 40,
+            progress: RESPONSE.SEARCH_PROGRESS,
           }),
         });
       }
 
-      // Push source parts for top related articles
-      for (const article of relatedArticles.slice(0, 3)) {
+      for (const article of relatedArticles.slice(0, RESPONSE.MAX_SOURCE_ARTICLES)) {
         try {
           writer.write({
             type: 'source-url',
@@ -532,14 +450,13 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         }
       }
 
-      // Citation guard preflight: return canned response without calling LLM
       if (preflight) {
         writer.write({
           type: 'message-metadata',
           messageMetadata: createChatStatusData({
             stage: 'answer',
             message: t('ai.status.citation', lang),
-            progress: 100,
+            progress: RESPONSE.COMPLETE_PROGRESS,
             done: true,
           }),
         });
@@ -551,32 +468,49 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         return;
       }
 
-      // Push status: generating
+      if (unknownRefusal) {
+        writer.write({
+          type: 'message-metadata',
+          messageMetadata: createChatStatusData({
+            stage: 'answer',
+            message: t('ai.status.generating', lang),
+            progress: RESPONSE.COMPLETE_PROGRESS,
+            done: true,
+          }),
+        });
+        const partId = `unknown-${Date.now()}`;
+        writer.write({ type: 'text-start' as never, id: partId } as never);
+        writer.write({ type: 'text-delta' as never, id: partId, delta: unknownRefusal.text } as never);
+        writer.write({ type: 'text-end' as never, id: partId } as never);
+        writer.write({ type: 'finish', finishReason: 'stop' });
+        return;
+      }
+
       writer.write({
         type: 'message-metadata',
         messageMetadata: createChatStatusData({
           stage: 'answer',
           message: t('ai.status.generating', lang),
-          progress: 60,
+          progress: RESPONSE.GENERATING_PROGRESS,
         }),
       });
 
-// Try real provider with stream-level error detection
       let streamSuccess = false;
       let responseText = '';
       let reasoningText: string | undefined;
-      let tokenUsage: TokenUsage | undefined;
+      let tokenUsage: { total: number; input: number; output: number } | undefined;
       const generationStart = Date.now();
+      let usedAdapter: ProviderAdapter | null = null;
       
-      if (adapter) {
+      for (const currentAdapter of adapters) {
         try {
-          const provider = adapter.getProvider();
+          const provider = currentAdapter.getProvider();
           const result = streamText({
-            model: (provider as { chatModel: (m: string) => never }).chatModel(adapter.model),
+            model: (provider as { chatModel: (m: string) => never }).chatModel(currentAdapter.model),
             system: systemPrompt,
             messages: await convertToModelMessages(messages),
-            temperature: 0.3,
-            maxOutputTokens: 2500,
+            temperature: CHAT_HANDLER.DEFAULT_TEMPERATURE,
+            maxOutputTokens: CHAT_HANDLER.DEFAULT_MAX_OUTPUT_TOKENS,
             onError: ({ error }) => {
               console.error('[chat-handler] streamText error:', error);
             },
@@ -625,10 +559,11 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           hasTextOutput = text.length > 0;
 
           if (hasTextOutput && errors.length === 0) {
-            adapter.recordSuccess();
+            currentAdapter.recordSuccess();
+            usedAdapter = currentAdapter;
             
             if (shouldAppendCitations(responseText, relatedArticles, relatedProjects)) {
-              const citations = selectCitations(relatedArticles, relatedProjects, 3, 5);
+              const citations = selectCitations(relatedArticles, relatedProjects, RESPONSE.MAX_SOURCE_ARTICLES, RESPONSE.MAX_CITATIONS);
               if (citations.length > 0) {
                 const citationBlock = formatCitationBlock(citations, lang);
                 const citationId = `citation-${Date.now()}`;
@@ -642,7 +577,6 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
             writer.write({ type: 'finish', finishReason: 'stop' });
             streamSuccess = true;
 
-            // Save to response cache if enabled and public question
             if (responseCacheConfig.enabled && publicQuestion && (!publicQuestion.needsContext || articleSlug)) {
               const globalTTL = getGlobalCacheTTL(publicQuestion.type);
               const responseCacheData: CachedAIResponse = {
@@ -652,43 +586,25 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
                 articles: relatedArticles,
                 projects: relatedProjects,
                 lang,
-                model: adapter.model,
+                model: currentAdapter.model,
                 updatedAt: Date.now(),
               };
               await setResponseCache(cache, publicQuestion.type, responseCacheData, globalTTL, { articleSlug, lang });
             }
+            break;
           } else if (errors.length > 0) {
-            adapter.recordFailure(errors[0]);
-            console.error('[chat-handler] Stream error:', errors[0].message);
-            const errorId = `error-${Date.now()}`;
-            writer.write({ type: 'text-start', id: errorId } as never);
-            writer.write({ 
-              type: 'text-delta', 
-              id: errorId, 
-              delta: t('ai.error.generic', lang) 
-            } as never);
-            writer.write({ type: 'text-end', id: errorId } as never);
-            writer.write({ type: 'finish', finishReason: 'error' });
-            streamSuccess = true;
+            currentAdapter.recordFailure(errors[0]);
+            console.error('[chat-handler] Stream error from', currentAdapter.id, ':', errors[0].message);
           } else if (!hasTextOutput) {
-            const noOutputId = `no-output-${Date.now()}`;
-            writer.write({ type: 'text-start', id: noOutputId } as never);
-            writer.write({ type: 'text-delta', id: noOutputId, delta: t('ai.error.noOutput', lang) } as never);
-            writer.write({ type: 'text-end', id: noOutputId } as never);
-            writer.write({ type: 'finish', finishReason: 'stop' });
-            streamSuccess = true;
-          } else {
-            writer.write({ type: 'finish', finishReason: 'stop' });
-            streamSuccess = true;
+            currentAdapter.recordFailure(new Error('No output from model'));
           }
         } catch (err) {
           timing.generation = Date.now() - generationStart;
-          adapter.recordFailure(err instanceof Error ? err : new Error(String(err)));
-          console.error('[chat-handler] Provider threw:', (err as Error).message);
+          currentAdapter.recordFailure(err instanceof Error ? err : new Error(String(err)));
+          console.error('[chat-handler] Provider', currentAdapter.id, 'threw:', (err as Error).message);
         }
       }
 
-      // Fallback to mock if real provider didn't produce output
       if (!streamSuccess) {
         const { getMockResponse } = await import('../providers/mock.js');
         const mockText = getMockResponse(latestText, lang);
@@ -699,7 +615,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           messageMetadata: createChatStatusData({
             stage: 'answer',
             message: t('ai.status.fallback', lang),
-            progress: 80,
+            progress: RESPONSE.FALLBACK_PROGRESS,
           }),
         });
         const fallbackId = `fallback-${Date.now()}`;
@@ -709,7 +625,6 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         writer.write({ type: 'finish', finishReason: 'stop' });
       }
 
-      // Send notification (fire and forget)
       if (responseText) {
         const notifyTiming: PhaseTiming = {
           total: Date.now() - timing.start,
@@ -719,18 +634,16 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           generation: timing.generation,
         };
         
-        const notifyModel: ModelInfo | undefined = adapter ? {
-          name: adapter.model,
-          provider: (env.AI_PROVIDER as string) || undefined,
-          apiHost: (env.AI_BASE_URL as string) || undefined,
-        } : undefined;
-
         sendNotification({
           env,
           messages,
           responseText,
           relatedArticles,
-          model: notifyModel,
+          model: usedAdapter ? {
+            name: usedAdapter.model,
+            provider: (env.AI_PROVIDER as string) || undefined,
+            apiHost: (env.AI_BASE_URL as string) || undefined,
+          } : undefined,
           usage: tokenUsage,
           timing: notifyTiming,
           cacheKey,

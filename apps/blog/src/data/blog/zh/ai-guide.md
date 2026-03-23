@@ -189,6 +189,121 @@ pnpm run ai:eval -- --url=https://your.com   # 远程测试
 pnpm run ai:eval -- --verbose                # 详细输出
 ```
 
+## 扩展系统
+
+扩展系统允许你注入自定义数据到 AI 聊天流程中，增强 AI 的回答能力。
+
+### 扩展类型
+
+| 类型 | 说明 | 用途 |
+|------|------|------|
+| `searchable` | 可搜索文档 | 添加额外的知识库内容 |
+| `facts` | 结构化事实 | 添加验证过的事实数据 |
+| `context` | 上下文注入 | 添加自定义 prompt 章节 |
+| `voice-style` | 语言风格 | 定义 AI 回答风格模式 |
+| `semantic-fallback` | 语义回退 | 查询重写规则 |
+
+### 扩展文件结构
+
+扩展文件放置在 `datas/extensions/` 目录：
+
+```
+datas/extensions/
+├── travel.json        # 旅行相关扩展
+├── social.json        # 社交网络扩展
+└── custom-*.json      # 自定义扩展
+```
+
+### 扩展文件格式
+
+```json
+{
+  "$schema": "extension-v1",
+  "version": 1,
+  "extensions": [
+    {
+      "id": "blog-travel",
+      "type": "voice-style",
+      "name": "Travel Voice",
+      "description": "旅行话题的风格模式",
+      "enabled": true,
+      "priority": 80,
+      "data": {
+        "modes": [
+          {
+            "id": "travel",
+            "name": "Travel Mode",
+            "description": "旅行类回答风格",
+            "matchKeywords": ["旅行", "旅游", "travel"],
+            "traits": [
+              "按时间线叙述",
+              "会提到具体地名和体验",
+              "偶尔加个人感悟"
+            ]
+          }
+        ],
+        "defaultMode": "travel",
+        "overallTone": "轻松分享"
+      }
+    },
+    {
+      "id": "travel-fallback",
+      "type": "semantic-fallback",
+      "name": "Travel Fallback",
+      "enabled": true,
+      "priority": 70,
+      "data": {
+        "rules": [
+          {
+            "id": "travel-countries",
+            "patterns": ["去过.{0,6}(国家|城市)", "都去过"],
+            "fallbackQuery": "旅行 游记 海外 目的地",
+            "primaryQuery": "旅行",
+            "complexity": "complex"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### CLI 命令
+
+```bash
+# 查看扩展状态
+astro-minimax extensions status
+
+# 验证扩展文件
+astro-minimax extensions validate
+
+# 构建扩展（验证并组织）
+astro-minimax extensions build --verbose
+
+# 测试加载扩展
+astro-minimax extensions load
+```
+
+### 扩展优先级
+
+扩展通过 `priority` 字段（0-100）控制优先级，数值越高优先级越高。当多个扩展提供相同类型数据时，优先使用高优先级扩展。
+
+### 数据生命周期
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ BUILD TIME                                                  │
+│  datas/extensions/*.json ──→ CLI validate ──→ Registry      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ REQUEST TIME                                                │
+│  loadExtensions() ──→ resolveVoiceStyleMode()               │
+│     ├─ getSemanticFallback(query)                           │
+│     └─ mergeSearchDocuments() / mergeFacts()                │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## 通知集成
 
 AI 对话完成后自动发送通知（fire-and-forget）：

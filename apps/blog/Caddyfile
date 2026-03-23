@@ -1,0 +1,57 @@
+# Astro Minimax Blog - Caddyfile
+# For local testing: use DOMAIN=http://localhost
+# For production: use DOMAIN=your-domain.com (auto-TLS enabled)
+
+{
+	email {$CADDY_EMAIL:-admin@example.com}
+	acme_ca {$CADDY_ACME_CA:-https://acme-v02.api.letsencrypt.org/directory}
+}
+
+{$DOMAIN:http://localhost} {
+	# Static blog files
+	root * /var/www/html
+	file_server
+	
+	# Enable gzip compression
+	encode gzip zstd
+	
+	# Cache static assets
+	@static {
+		path *.css *.js *.woff *.woff2 *.ttf *.eot *.png *.jpg *.jpeg *.gif *.ico *.svg *.webp
+	}
+	header @static Cache-Control "public, max-age=31536000, immutable"
+	
+	# Security headers
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+	
+	# SPA fallback for client-side routing
+	@notStatic {
+		not path *.css *.js *.woff *.woff2 *.ttf *.eot *.png *.jpg *.jpeg *.gif *.ico *.svg *.webp
+		not path /api/*
+	}
+	try_files {path} {path}/ /index.html
+	
+	# Health check endpoint
+	respond /health "OK" 200
+	
+	# Logging
+	log {
+		output stdout
+		format json
+	}
+}
+
+# Waline comment service (when enabled)
+{$DOMAIN:localhost}/api/comment/* {
+	reverse_proxy waline:8360
+}
+
+# Umami analytics (when enabled)  
+{$DOMAIN:localhost}/api/collect/* {
+	reverse_proxy umami:3000
+}

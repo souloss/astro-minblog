@@ -162,7 +162,8 @@ export function buildStaticLayer(config: StaticLayerConfig): string {
     '',
     '## ' + t('ai.prompt.section.preOutputChecks', lang),
     ...p.preOutputChecks.map((s: string) => `- ${s}`),
-  ];
+    config.voiceStylePrompt ?? '',
+  ].filter(Boolean);
 
   return parts.join('\n').trim();
 }

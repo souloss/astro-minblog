@@ -16,6 +16,7 @@ const VIRTUAL_MODULE_IDS = new Set([
   "virtual:astro-minimax/styles",
   "virtual:astro-minimax/ai-widget",
   "virtual:astro-minimax/ai-summaries",
+  "virtual:astro-minimax/ai-seo",
   "virtual:astro-minimax/viz-mermaid-init",
   "virtual:astro-minimax/viz-markmap-init",
   "virtual:astro-minimax/preferences-defaults",
@@ -142,6 +143,18 @@ export default function minimax(
                     if (installedPkgs.has("@astro-minimax/ai") && existsSync(summariesPath)) {
                       try {
                         const data = JSON.parse(readFileSync(summariesPath, "utf-8"));
+                        return `export default ${JSON.stringify(data)};`;
+                      } catch {
+                        // fallback to empty
+                      }
+                    }
+                    return "export default { meta: {}, articles: {} };";
+                  }
+                  if (id === "\0virtual:astro-minimax/ai-seo") {
+                    const seoPath = resolve(projectRoot, "datas", "ai-seo.json");
+                    if (existsSync(seoPath)) {
+                      try {
+                        const data = JSON.parse(readFileSync(seoPath, "utf-8"));
                         return `export default ${JSON.stringify(data)};`;
                       } catch {
                         // fallback to empty
@@ -304,6 +317,27 @@ declare module "virtual:astro-minimax/viz-markmap-init" {
 declare module "virtual:astro-minimax/ai-summaries" {
   const summaries: { meta: Record<string, unknown>; articles: Record<string, unknown> };
   export default summaries;
+}
+declare module "virtual:astro-minimax/ai-seo" {
+  interface ArticleSeoData {
+    metaDescription: string;
+    keywords: string[];
+    ogDescription: string;
+  }
+  interface AiSeoData {
+    meta: {
+      lastUpdated: string;
+      model: string;
+      totalProcessed: number;
+    };
+    articles: Record<string, {
+      data: ArticleSeoData;
+      contentHash: string;
+      processedAt: string;
+    }>;
+  }
+  const aiSeo: AiSeoData;
+  export default aiSeo;
 }`,
         });
       },

@@ -1,5 +1,5 @@
 export { handleChatRequest } from './chat-handler.js';
-export { initializeMetadata, resetMetadataInit } from './metadata-init.js';
+export { initializeMetadata, resetMetadataInit, initializeExtensions, areExtensionsLoaded } from './metadata-init.js';
 export { errors, corsPreflightResponse, chatError } from './errors.js';
 export { notifyAiChat } from './notify.js';
 export type { ChatNotifyOptions } from './notify.js';

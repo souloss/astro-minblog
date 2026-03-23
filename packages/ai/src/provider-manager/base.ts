@@ -36,10 +36,34 @@ export abstract class BaseProviderAdapter implements ProviderAdapter {
       if (timeSinceLastError < this.healthRecoveryTTL) {
         return false;
       }
-      this.health.healthy = true;
-      this.health.consecutiveFailures = 0;
     }
     return true;
+  }
+
+  isInRecovery(): boolean {
+    return !this.health.healthy;
+  }
+
+  canAttemptRecovery(): boolean {
+    if (this.health.healthy) return false;
+    const timeSinceLastError = Date.now() - (this.health.lastErrorTime ?? 0);
+    return timeSinceLastError >= this.healthRecoveryTTL;
+  }
+
+  markAsRecovered(): void {
+    this.health.healthy = true;
+    this.health.consecutiveFailures = 0;
+    this.health.lastChecked = Date.now();
+  }
+
+  resetHealth(): void {
+    this.health = {
+      healthy: true,
+      consecutiveFailures: 0,
+      totalRequests: 0,
+      successfulRequests: 0,
+      lastChecked: Date.now(),
+    };
   }
 
   abstract streamText(options: StreamTextOptions): Promise<StreamTextResult>;

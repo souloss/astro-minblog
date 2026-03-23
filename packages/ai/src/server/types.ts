@@ -28,9 +28,35 @@ export interface ChatRequestBody {
   lang?: string;
 }
 
-export interface ChatHandlerEnv extends ProviderManagerEnv, CacheEnv {
+export interface AiCacheEnv {
+  AI_CACHE_ENABLED?: boolean | string;
+  AI_CACHE_TTL?: number | string;
+  AI_CACHE_PLAYBACK_DELAY?: number | string;
+  AI_CACHE_CHUNK_SIZE?: number | string;
+  AI_CACHE_THINKING_DELAY?: number | string;
+}
+
+export interface AiTimeoutEnv {
+  AI_TIMEOUT_REQUEST?: number | string;
+  AI_TIMEOUT_KEYWORD?: number | string;
+  AI_TIMEOUT_EVIDENCE?: number | string;
+  AI_TIMEOUT_LLM?: number | string;
+}
+
+export interface AiHealthEnv {
+  AI_HEALTH_THRESHOLD?: number | string;
+  AI_HEALTH_RECOVERY_TTL?: number | string;
+}
+
+export interface ChatHandlerEnv extends ProviderManagerEnv, CacheEnv, AiCacheEnv, AiTimeoutEnv, AiHealthEnv {
   SITE_AUTHOR?: string;
   SITE_URL?: string;
+  SITE_LANG?: string;
+  AI_RESPONSE_CACHE_ENABLED?: boolean | string;
+  AI_RESPONSE_CACHE_TTL?: number | string;
+  AI_RESPONSE_CACHE_PLAYBACK_DELAY?: number | string;
+  AI_RESPONSE_CACHE_CHUNK_SIZE?: number | string;
+  AI_RESPONSE_CACHE_THINKING_DELAY?: number | string;
   [key: string]: unknown;
 }
 

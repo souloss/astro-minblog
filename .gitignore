@@ -44,3 +44,5 @@ pagefind
 AGENTS.md
 
 .wrangler
+
+.pnpm-store

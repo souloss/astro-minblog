@@ -114,14 +114,13 @@ astro-minimax/
 astro-minimax init my-blog       # 创建新博客
 astro-minimax post new "标题"    # 创建新文章
 astro-minimax post list          # 列出所有文章
-astro-minimax post stats         # 文章统计
 
-# AI 内容处理
+# AI 功能（统一入口）
 astro-minimax ai process         # AI 处理文章（摘要+SEO）
 astro-minimax ai eval            # AI 对话质量评估
-
-# 作者画像
-astro-minimax profile build      # 构建完整画像（上下文+风格+报告）
+astro-minimax ai profile build   # 构建作者画像
+astro-minimax ai facts build     # 构建事实注册表
+astro-minimax ai extensions status  # 查看扩展状态
 
 # 数据管理
 astro-minimax data status        # 查看数据文件状态

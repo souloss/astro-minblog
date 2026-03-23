@@ -27,8 +27,8 @@ async function svgBufferToPngBuffer(svg: string) {
   return pngData.asPng();
 }
 
-export async function generateOgImageForPost(post: CollectionEntry<"blog">) {
-  const svg = await postOgImage(post);
+export async function generateOgImageForPost(post: CollectionEntry<"blog">, ogDescription?: string) {
+  const svg = await postOgImage(post, ogDescription);
   return svgBufferToPngBuffer(svg);
 }
 

@@ -19,6 +19,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { safeJoinUrl } from '../utils/url.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,6 +27,33 @@ const __dirname = dirname(__filename);
 const DEFAULT_SUMMARIES = { meta: { lastUpdated: new Date().toISOString(), model: 'none', totalProcessed: 0 }, articles: {} };
 const DEFAULT_AUTHOR_CONTEXT = { author: {}, posts: [] };
 const DEFAULT_VOICE_PROFILE = { style: {}, examples: [] };
+const DEFAULT_FACT_REGISTRY = { meta: { lastUpdated: new Date().toISOString() }, facts: [] };
+
+interface DataStatus {
+  loaded: boolean;
+  count?: number;
+  lastUpdated?: string;
+  model?: string;
+}
+
+function getDataStatus(data: unknown, countField?: string): DataStatus {
+  if (!data) return { loaded: false };
+  const obj = data as Record<string, unknown>;
+  const meta = obj.meta as Record<string, unknown> | undefined;
+  const articles = obj.articles as Record<string, unknown> | undefined;
+  const facts = obj.facts as Array<unknown> | undefined;
+  
+  return {
+    loaded: true,
+    count: countField === 'facts' 
+      ? facts?.length 
+      : countField === 'articles' 
+        ? Object.keys(articles ?? {}).length 
+        : undefined,
+    lastUpdated: meta?.lastUpdated as string | undefined,
+    model: meta?.model as string | undefined,
+  };
+}
 
 function extractPostTitle(url: string): string {
   const match = url.match(/\/posts\/([^/]+)/);
@@ -112,6 +140,7 @@ function loadJson(datasDir: string, file: string, defaultValue: unknown): unknow
 
 async function setupHandler(datasDir: string, hasDatas: boolean) {
   const { handleChatRequest, initializeMetadata } = await import('./index.js');
+  const { getProviderManager, hasAnyProviderConfigured, getResponseCacheConfig } = await import('../index.js');
 
   // Show warnings for missing metadata
   if (!hasDatas) {
@@ -128,6 +157,7 @@ async function setupHandler(datasDir: string, hasDatas: boolean) {
   const summaries = loadJson(datasDir, 'ai-summaries.json', DEFAULT_SUMMARIES);
   const authorContext = loadJson(datasDir, 'author-context.json', DEFAULT_AUTHOR_CONTEXT);
   const voiceProfile = loadJson(datasDir, 'voice-profile.json', DEFAULT_VOICE_PROFILE);
+  const factRegistry = loadJson(datasDir, 'fact-registry.json', DEFAULT_FACT_REGISTRY);
 
   const env: Record<string, unknown> = { ...process.env };
 
@@ -135,10 +165,11 @@ async function setupHandler(datasDir: string, hasDatas: boolean) {
     summaries: summaries as Parameters<typeof initializeMetadata>[0]['summaries'],
     authorContext: authorContext as Parameters<typeof initializeMetadata>[0]['authorContext'],
     voiceProfile: voiceProfile as Parameters<typeof initializeMetadata>[0]['voiceProfile'],
+    factRegistry: factRegistry as Parameters<typeof initializeMetadata>[0]['factRegistry'],
     siteUrl: process.env.SITE_URL || 'http://localhost:4321',
   }, env as never);
 
-  return { handleChatRequest, env };
+  return { handleChatRequest, initializeMetadata, getProviderManager, hasAnyProviderConfigured, getResponseCacheConfig, env, summaries, authorContext, voiceProfile, factRegistry };
 }
 
 function toWebRequest(req: IncomingMessage): Promise<Request> {
@@ -201,7 +232,7 @@ async function main() {
   console.log(`   AI_API_KEY: ${process.env.AI_API_KEY ? '✓ configured' : '✗ not set'}`);
   console.log(`   AI_MODEL: ${process.env.AI_MODEL || '(default)'}`);
 
-  const { handleChatRequest, env } = await setupHandler(datasDir, hasDatas);
+  const { handleChatRequest, getProviderManager, hasAnyProviderConfigured, getResponseCacheConfig, env, summaries, authorContext, voiceProfile, factRegistry } = await setupHandler(datasDir, hasDatas);
 
   const server = createServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -237,7 +268,7 @@ async function main() {
 
         const data = body.data || {};
         const siteUrl = process.env.SITE_URL || 'http://localhost:4321';
-        const postUrl = data.url?.startsWith('http') ? data.url : `${siteUrl}${data.url || '/'}`;
+        const postUrl = safeJoinUrl(siteUrl, data.url || '/');
 
         const notifier = createNotifier({
           telegram: process.env.NOTIFY_TELEGRAM_BOT_TOKEN && process.env.NOTIFY_TELEGRAM_CHAT_ID ? {
@@ -274,15 +305,72 @@ async function main() {
       }
 
       if (url.startsWith('/api/ai-info')) {
+        const manager = getProviderManager(env as never, { enableMockFallback: true });
+        const providerStatus = manager.getProviderStatus();
+        const configured = hasAnyProviderConfigured(env as never);
+        const responseCacheConfig = getResponseCacheConfig(env);
+
+        const timeoutConfig = {
+          request: (env.AI_TIMEOUT_REQUEST as number) ?? 45000,
+          keywordExtraction: (env.AI_TIMEOUT_KEYWORD as number) ?? 5000,
+          evidenceAnalysis: (env.AI_TIMEOUT_EVIDENCE as number) ?? 8000,
+          llmStreaming: (env.AI_TIMEOUT_LLM as number) ?? 30000,
+        };
+
+        const healthConfig = {
+          unhealthyThreshold: (env.AI_HEALTH_THRESHOLD as number) ?? 3,
+          recoveryTtl: (env.AI_HEALTH_RECOVERY_TTL as number) ?? 60000,
+        };
+
+        const dataStatus = {
+          summaries: getDataStatus(summaries, 'articles'),
+          authorContext: getDataStatus(authorContext),
+          voiceProfile: getDataStatus(voiceProfile),
+          factRegistry: getDataStatus(factRegistry, 'facts'),
+        };
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           status: 'ok',
           mode: 'dev-server',
-          datas: { found: hasDatas, path: datasDir },
+          timestamp: new Date().toISOString(),
           ai: {
-            configured: !!(process.env.AI_BASE_URL && process.env.AI_API_KEY),
-            model: process.env.AI_MODEL || 'unknown',
+            enabled: true,
+            mockMode: !!env.AI_MOCK_MODE,
+            configured,
+            cache: {
+              enabled: responseCacheConfig.enabled,
+              ttl: responseCacheConfig.defaultTtl,
+              playbackDelay: responseCacheConfig.playbackDelayMs,
+              chunkSize: responseCacheConfig.chunkSize,
+              thinkingDelay: responseCacheConfig.thinkingPlaybackDelayMs,
+            },
+            timeouts: timeoutConfig,
+            health: healthConfig,
+            providers: providerStatus.map(p => ({
+              id: p.id,
+              type: p.type,
+              weight: p.weight,
+              healthy: p.health.healthy,
+              model: p.model,
+              healthDetails: {
+                consecutiveFailures: p.health.consecutiveFailures,
+                totalRequests: p.health.totalRequests,
+                successfulRequests: p.health.successfulRequests,
+                lastError: p.health.lastError,
+                lastErrorTime: p.health.lastErrorTime,
+                lastSuccessTime: p.health.lastSuccessTime,
+              },
+            })),
+            dataStatus,
           },
+          hints: manager.hasProviders()
+            ? [
+                `Providers available: ${manager.getProviderCount()}`,
+                'Mock fallback: enabled',
+                responseCacheConfig.enabled ? 'Response cache: enabled' : 'Response cache: disabled',
+              ]
+            : ['No AI providers configured. Set AI_BASE_URL + AI_API_KEY environment variables.'],
         }, null, 2));
         return;
       }

@@ -1,11 +1,13 @@
 import type { ArticleContext, ProjectContext } from '../search/types.js';
 import type { AuthorContextFile, VoiceProfile } from '../data/types.js';
+import type { LoadedExtensions } from '../extensions/types.js';
 
 export interface StaticLayerConfig {
   authorName: string;
   siteUrl: string;
   description?: string;
   systemPromptOverride?: string;
+  voiceStylePrompt?: string;
   lang?: string;
 }
 
@@ -20,9 +22,10 @@ export interface DynamicLayerConfig {
   articles: ArticleContext[];
   projects: ProjectContext[];
   evidenceSection?: string;
-  /** Pre-built verified-facts prompt section from Fact Registry */
   factSection?: string;
+  answerMode?: 'fact' | 'count' | 'list' | 'opinion' | 'recommendation' | 'unknown' | 'general';
   lang?: string;
+  extensions?: LoadedExtensions;
 }
 
 export interface PromptBuildConfig {

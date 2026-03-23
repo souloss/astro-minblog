@@ -1,0 +1,37 @@
+# Docker Compose - Development Mode
+# Usage: docker compose -f docker-compose.dev.yml up
+
+services:
+  # Development server with hot reload
+  app:
+    image: node:lts
+    container_name: astro-minimax-dev
+    working_dir: /app/apps/blog
+    command: bash -c "corepack enable && pnpm install && pnpm run dev -- --host 0.0.0.0"
+    ports:
+      - "4321:4321"
+      - "8788:8788"
+    volumes:
+      - ../..:/app
+      - /app/node_modules
+      - /app/packages/ai/node_modules
+      - /app/packages/notify/node_modules
+      - /app/packages/cli/node_modules
+      - /app/apps/blog/node_modules
+    environment:
+      - NODE_ENV=development
+      - CI=true
+    env_file:
+      - .env
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4321/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  dev-network:
+    driver: bridge
+    name: astro-minimax-dev

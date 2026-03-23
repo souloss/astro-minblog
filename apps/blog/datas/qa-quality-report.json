@@ -1,0 +1,209 @@
+{
+  "$schema": "qa-quality-report-v1",
+  "generatedAt": "2026-03-23T01:30:00.000Z",
+  "summary": {
+    "totalQuestions": 50,
+    "overallScore": 72,
+    "grade": "C+",
+    "criticalIssues": 2,
+    "moderateIssues": 4,
+    "minorIssues": 8
+  },
+  
+  "metrics": {
+    "responseLength": {
+      "min": 12,
+      "max": 1234,
+      "avg": 557,
+      "median": 547,
+      "assessment": "合理范围，部分回答偏短"
+    },
+    "linkQuality": {
+      "answersWithLinks": 47,
+      "totalLinks": 194,
+      "validLinks": 151,
+      "suspiciousLinks": 43,
+      "linkCoverage": "94.0%",
+      "assessment": "链接覆盖率良好，但存在43个可疑链接"
+    },
+    "modeMatching": {
+      "conformant": 48,
+      "nonConformant": 2,
+      "rate": "96.0%",
+      "assessment": "大部分回答符合预期模式"
+    },
+    "latency": {
+      "min": 5,
+      "max": 83524,
+      "avg": 31470,
+      "assessment": "延迟波动较大，最慢83秒"
+    }
+  },
+
+  "categoryPerformance": [
+    {"category": "opinion", "questions": 2, "avgLength": 751, "linksPerQ": 6.0, "score": 85},
+    {"category": "meta", "questions": 6, "avgLength": 635, "linksPerQ": 5.0, "score": 78},
+    {"category": "tech", "questions": 5, "avgLength": 684, "linksPerQ": 4.8, "score": 80},
+    {"category": "ai", "questions": 3, "avgLength": 713, "linksPerQ": 4.7, "score": 82},
+    {"category": "troubleshooting", "questions": 4, "avgLength": 541, "linksPerQ": 4.0, "score": 75},
+    {"category": "extension", "questions": 7, "avgLength": 607, "linksPerQ": 4.0, "score": 76},
+    {"category": "setup", "questions": 6, "avgLength": 596, "linksPerQ": 3.8, "score": 74},
+    {"category": "deployment", "questions": 6, "avgLength": 472, "linksPerQ": 3.3, "score": 55},
+    {"category": "feature", "questions": 3, "avgLength": 350, "linksPerQ": 2.7, "score": 70},
+    {"category": "content", "questions": 4, "avgLength": 475, "linksPerQ": 2.5, "score": 72},
+    {"category": "recommendation", "questions": 4, "avgLength": 306, "linksPerQ": 2.2, "score": 50}
+  ],
+
+  "criticalIssues": [
+    {
+      "id": "CRITICAL-001",
+      "severity": "critical",
+      "type": "严重幻觉",
+      "questionId": "q-5",
+      "question": "如何部署到 Cloudflare Pages？",
+      "expectedAnswerMode": "list",
+      "actualResponse": "年龄信息未在博客中公开。",
+      "problem": "问部署问题却回答年龄相关信息，完全答非所问",
+      "rootCause": "RAG检索可能返回了错误上下文，或模型生成时发生严重偏移",
+      "recommendation": "检查RAG检索管道，确认检索结果与问题的相关性评分"
+    },
+    {
+      "id": "CRITICAL-002",
+      "severity": "critical",
+      "type": "回答不完整",
+      "questionId": "q-27",
+      "question": "How many articles are there?",
+      "expectedAnswerMode": "count",
+      "actualResponse": "The search returned 2 articles that may be relevant.",
+      "problem": "问文章总数却只说搜索返回2篇，未给出准确数字",
+      "rootCause": "模型未能从提供的上下文中提取正确的统计数据",
+      "recommendation": "在系统提示中强调计数类问题必须给出具体数字"
+    }
+  ],
+
+  "moderateIssues": [
+    {
+      "id": "MODERATE-001",
+      "severity": "moderate",
+      "type": "链接格式问题",
+      "description": "发现43个可疑链接，可能指向不存在的文章",
+      "examples": [
+        "https://demo-astro-minimax.souloss.cn//zh/posts/ai-guide/ (双斜杠)",
+        "https://demo-astro-minimax.souloss.cn//en/posts/ai-guide/ (双斜杠)"
+      ],
+      "recommendation": "检查URL生成逻辑，确保单斜杠格式"
+    },
+    {
+      "id": "MODERATE-002",
+      "severity": "moderate",
+      "type": "回答模式不匹配",
+      "questionId": "q-48",
+      "question": "有关于 Rust 的文章吗？",
+      "expectedAnswerMode": "list",
+      "problem": "列表类回答缺少项目符号或编号",
+      "recommendation": "强化列表类回答的格式要求"
+    },
+    {
+      "id": "MODERATE-003",
+      "severity": "moderate",
+      "type": "信息缺失声明过多",
+      "count": 4,
+      "description": "8%的回答包含'未公开/未提及'声明",
+      "recommendation": "丰富上下文数据，减少信息缺失情况"
+    },
+    {
+      "id": "MODERATE-004",
+      "severity": "moderate",
+      "type": "延迟波动过大",
+      "description": "最快5ms，最慢83.5秒，波动超过16000倍",
+      "recommendation": "检查慢查询的RAG检索路径，优化长尾响应"
+    }
+  ],
+
+  "minorIssues": [
+    {
+      "id": "MINOR-001",
+      "type": "外部链接未验证",
+      "description": "外部资源链接未检查可用性"
+    },
+    {
+      "id": "MINOR-002",
+      "type": "模糊表述",
+      "count": 3,
+      "description": "6%的回答包含'可能'等模糊表述"
+    },
+    {
+      "id": "MINOR-003",
+      "type": "引导用户查找",
+      "count": 5,
+      "description": "10%的回答引导用户自行查找信息"
+    },
+    {
+      "id": "MINOR-004",
+      "type": "推荐类回答偏短",
+      "category": "recommendation",
+      "avgLength": 306,
+      "description": "推荐类回答平均最短"
+    },
+    {
+      "id": "MINOR-005",
+      "type": "部署类回答质量低",
+      "category": "deployment",
+      "score": 55,
+      "description": "部署类分类得分最低"
+    },
+    {
+      "id": "MINOR-006",
+      "type": "feature类链接不足",
+      "category": "feature",
+      "linksPerQ": 2.7,
+      "description": "功能类回答链接密度最低"
+    },
+    {
+      "id": "MINOR-007",
+      "type": "中英双语不一致",
+      "description": "部分中文问题回答英文内容或反之"
+    },
+    {
+      "id": "MINOR-008",
+      "type": "来源引用不完整",
+      "description": "sources字段多数为空数组"
+    }
+  ],
+
+  "strengths": [
+    "94%的回答包含推荐链接",
+    "96%的回答符合预期模式",
+    "回答长度分布合理(平均557字符)",
+    "opinion/tech/ai类回答质量较高",
+    "大部分回答结构清晰"
+  ],
+
+  "weaknesses": [
+    "存在严重幻觉问题(2例)",
+    "链接格式问题(双斜杠)",
+    "部署类/推荐类回答质量偏低",
+    "响应延迟波动过大",
+    "部分回答答非所问"
+  ],
+
+  "recommendations": {
+    "immediate": [
+      "修复q-5严重幻觉问题，检查RAG检索管道",
+      "修复URL生成中的双斜杠问题",
+      "强化计数类问题的数字回答要求"
+    ],
+    "shortTerm": [
+      "优化部署类问题的上下文增强",
+      "减少信息缺失声明的比例",
+      "改进推荐类回答的深度"
+    ],
+    "longTerm": [
+      "建立回答质量自动化测试",
+      "优化慢查询的RAG路径",
+      "丰富博客元数据减少信息缺失"
+    ]
+  },
+
+  "detailedResults": []
+}

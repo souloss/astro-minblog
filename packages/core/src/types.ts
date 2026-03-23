@@ -46,12 +46,54 @@ export interface WalineConfig {
 }
 
 /**
- * AI chat configuration (client-side).
+ * AI response cache configuration.
+ */
+export interface AiCacheConfig {
+  /** Enable response caching for public questions */
+  enabled?: boolean;
+  /** Cache TTL in seconds (default: 3600 = 1 hour) */
+  ttl?: number;
+  /** Delay between chunks during playback in ms (default: 20) */
+  playbackDelay?: number;
+  /** Characters per chunk during playback (default: 15) */
+  chunkSize?: number;
+  /** Delay for thinking content playback in ms (default: 5) */
+  thinkingDelay?: number;
+}
+
+/**
+ * AI timeout configuration in milliseconds.
+ */
+export interface AiTimeoutConfig {
+  /** Total request timeout (default: 45000) */
+  request?: number;
+  /** Keyword extraction timeout (default: 5000) */
+  keywordExtraction?: number;
+  /** Evidence analysis timeout (default: 8000) */
+  evidenceAnalysis?: number;
+  /** LLM streaming timeout per provider (default: 30000) */
+  llmStreaming?: number;
+}
+
+/**
+ * AI provider health configuration.
+ */
+export interface AiHealthConfig {
+  /** Consecutive failures before marking unhealthy (default: 3) */
+  unhealthyThreshold?: number;
+  /** Time in ms before retrying unhealthy provider (default: 60000) */
+  recoveryTtl?: number;
+}
+
+/**
+ * AI chat configuration.
  * 
- * Note: Server-side AI configuration (model, apiKey, etc.) is handled via
- * environment variables (AI_MODEL, AI_API_KEY, etc.) in the @astro-minimax/ai package.
+ * Server-side sensitive configuration (API keys) is handled via environment variables:
+ * - AI_API_KEY, AI_BASE_URL, AI_MODEL for OpenAI-compatible providers
+ * - AI_BINDING_NAME for Cloudflare Workers AI
+ * - AI_PROVIDERS for multi-provider JSON config
  * 
- * @see packages/ai/README.md for server-side configuration
+ * @see packages/ai/README.md for full configuration guide
  */
 export interface AiConfig {
   /** Enable AI chat widget */
@@ -64,6 +106,12 @@ export interface AiConfig {
   welcomeMessage?: string;
   /** Custom input placeholder text */
   placeholder?: string;
+  /** Response cache configuration */
+  cache?: AiCacheConfig;
+  /** Timeout configuration in milliseconds */
+  timeouts?: AiTimeoutConfig;
+  /** Provider health configuration */
+  health?: AiHealthConfig;
 }
 
 export interface SponsorMethod {

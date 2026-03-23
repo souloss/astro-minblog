@@ -83,6 +83,20 @@ export const SITE: SiteConfig = {
     apiEndpoint: "/api/chat",
     welcomeMessage: undefined as string | undefined,
     placeholder: undefined as string | undefined,
+    cache: {
+      enabled: false,
+      ttl: 3600,
+    },
+    timeouts: {
+      request: 45000,
+      keywordExtraction: 5000,
+      evidenceAnalysis: 8000,
+      llmStreaming: 30000,
+    },
+    health: {
+      unhealthyThreshold: 3,
+      recoveryTtl: 60000,
+    },
   },
   sponsor: {
     enabled: true,

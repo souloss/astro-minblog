@@ -1,9 +1,168 @@
+# =============================================================================
+# Astro Minimax Blog - Production Docker Compose Stack
+# =============================================================================
+# Usage:
+#   Basic (blog only):              docker compose up -d
+#   With Waline comments:           docker compose --profile waline up -d
+#   With Umami analytics:           docker compose --profile umami up -d
+#   With all services:              docker compose --profile waline --profile umami up -d
+# =============================================================================
+
 services:
-  app:
-    image: node:lts
+  # ===========================================================================
+  # Caddy - Reverse Proxy with Auto-TLS
+  # ===========================================================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: astro-minimax-caddy
+    restart: unless-stopped
     ports:
-      - 4321:4321
-    working_dir: /app
-    command: npm run dev -- --host 0.0.0.0
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
-      - ./:/app
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./dist:/var/www/html:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - frontend
+    depends_on:
+      blog:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "com.astro-minimax.service=reverse-proxy"
+
+  # ===========================================================================
+  # Blog - Static Site (Internal)
+  # ===========================================================================
+  blog:
+    image: caddy:2-alpine
+    container_name: astro-minimax-blog
+    restart: unless-stopped
+    volumes:
+      - ./dist:/var/www/html:ro
+    networks:
+      - frontend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "com.astro-minimax.service=blog"
+
+  # ===========================================================================
+  # Waline - Comment System (Optional)
+  # Enable with: docker compose --profile waline up -d
+  # ===========================================================================
+  waline:
+    image: lizheming/waline:latest
+    container_name: astro-minimax-waline
+    restart: unless-stopped
+    profiles:
+      - waline
+    expose:
+      - "8360"
+    environment:
+      - TZ=Asia/Shanghai
+      - SITE_URL=${SITE_URL:-https://example.com}
+      - SITE_NAME=${SITE_NAME:-Astro Minimax Blog}
+      - SQLITE_PATH=/data/waline.db
+      - JWT_TOKEN=${WALINE_JWT_TOKEN:-change-me-to-secure-token}
+      - SECURE_DOMAINS=${SITE_URL:-https://example.com}
+    volumes:
+      - waline_data:/data
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8360/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "com.astro-minimax.service=comments"
+
+  # ===========================================================================
+  # Umami - Analytics (Optional)
+  # Enable with: docker compose --profile umami up -d
+  # ===========================================================================
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: astro-minimax-umami
+    restart: unless-stopped
+    profiles:
+      - umami
+    expose:
+      - "3000"
+    environment:
+      - DATABASE_URL=postgresql://umami:${UMAMI_DB_PASSWORD:-umami-password}@umami-db:5432/umami
+      - APP_SECRET=${UMAMI_APP_SECRET:-change-me-to-secure-secret}
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "com.astro-minimax.service=analytics"
+
+  umami-db:
+    image: postgres:15-alpine
+    container_name: astro-minimax-umami-db
+    restart: unless-stopped
+    profiles:
+      - umami
+    environment:
+      - POSTGRES_DB=umami
+      - POSTGRES_USER=umami
+      - POSTGRES_PASSWORD=${UMAMI_DB_PASSWORD:-umami-password}
+    volumes:
+      - umami_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "com.astro-minimax.service=database"
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  frontend:
+    driver: bridge
+    name: astro-minimax-frontend
+  backend:
+    driver: bridge
+    internal: true
+    name: astro-minimax-backend
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  caddy_data:
+    name: astro-minimax-caddy-data
+  caddy_config:
+    name: astro-minimax-caddy-config
+  waline_data:
+    name: astro-minimax-waline-data
+  umami_db_data:
+    name: astro-minimax-umami-db-data

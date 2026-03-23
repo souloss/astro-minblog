@@ -13,8 +13,9 @@ async function generateQRCode(data, size = 100) {
   });
 }
 
-export default async (post) => {
+export default async (post, ogDescription) => {
   const { title, author, description, pubDatetime, category } = post.data;
+  const displayDescription = ogDescription || description;
   const lang = post.id.startsWith("en/") ? "en" : "zh";
   const slug = getPostSlug(post.id);
   
@@ -196,9 +197,9 @@ export default async (post) => {
                             margin: 0,
                           },
                           children:
-                            description && description.length > 100
-                              ? description.slice(0, 100) + "..."
-                              : description || "",
+                            displayDescription && displayDescription.length > 100
+                              ? displayDescription.slice(0, 100) + "..."
+                              : displayDescription || "",
                         },
                       },
                     ],
@@ -259,7 +260,7 @@ export default async (post) => {
       width: 1200,
       height: 630,
       embedFont: true,
-      fonts: await loadGoogleFonts(title + (description || "") + author + SITE.title + dateStr),
+      fonts: await loadGoogleFonts(title + (displayDescription || "") + author + SITE.title + dateStr),
     }
   );
 };

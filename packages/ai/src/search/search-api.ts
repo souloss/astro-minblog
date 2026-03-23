@@ -1,6 +1,7 @@
 import { scoreDocument, filterLowRelevance, tokenize, pickAnchorTerms, normalizeText } from './search-utils.js';
 import { buildSearchIndex, getIDFMapForIndex } from './search-index.js';
 import { hasVectorIndex, rerankWithVectors } from './vector-reranker.js';
+import { safeJoinUrl } from '../utils/url.js';
 import type { SearchDocument, IndexedDocument, SearchResult, ArticleContext, ProjectContext } from './types.js';
 
 // Lazy-initialized, cached indexes
@@ -52,8 +53,7 @@ export function searchArticles(
     topScore > secondScore * 1.5;
 
   let articles = results.map((result, index) => {
-    const baseUrl = options.siteUrl ?? '';
-    const url = result.url.startsWith('http') ? result.url : `${baseUrl}${result.url}`;
+    const url = safeJoinUrl(options.siteUrl ?? '', result.url);
     const fullContent =
       isDeepHit && index === 0 && result.content
         ? result.content.slice(0, DEEP_CONTENT_MAX_LENGTH)
@@ -68,6 +68,7 @@ export function searchArticles(
       dateTime: result.dateTime,
       fullContent,
       score: result.score,
+      readingTime: result.readingTime,
     };
   });
 
@@ -94,10 +95,9 @@ export function searchProjects(
   const rawResults = scoreDocs(projectIndex, tokens, PROJECT_LIMIT * 2);
   if (!rawResults.length) return [];
 
-  const baseUrl = options.siteUrl ?? '';
   return rawResults.slice(0, PROJECT_LIMIT).map(r => ({
     name: r.title,
-    url: r.url.startsWith('http') ? r.url : `${baseUrl}${r.url}`,
+    url: safeJoinUrl(options.siteUrl ?? '', r.url),
     description: r.excerpt || r.content.slice(0, 200),
     score: r.score,
   }));

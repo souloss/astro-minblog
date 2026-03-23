@@ -19,15 +19,26 @@ export {
 export {
   shouldSkipAnalysis,
   analyzeRetrievedEvidence,
+  analyzeRetrievedEvidenceStructured,
   buildEvidenceSection,
   EVIDENCE_ANALYSIS_TIMEOUT_MS,
   EVIDENCE_ANALYSIS_MAX_TOKENS,
 } from './evidence-analysis.js';
 
+export type { StructuredEvidenceResult } from './evidence-analysis.js';
+
+export {
+  getEvidenceBudget,
+  applyBudgetToArticles,
+} from './evidence-budget.js';
+
+export type { EvidenceBudget } from './evidence-budget.js';
+
 export {
   getCitationGuardPreflight,
   createCitationGuardTransform,
   resolveAnswerMode,
+  buildUnknownRefusal,
 } from './citation-guard.js';
 
 export type { AnswerMode } from './citation-guard.js';

@@ -18,7 +18,7 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
 
   constructor(config: WorkersAIProviderConfig, env: ProviderManagerEnv) {
     super({
-      unhealthyThreshold: config.maxRetries ? config.maxRetries + 2 : 3,
+      unhealthyThreshold: config.unhealthyThreshold ?? (config.maxRetries ? config.maxRetries + 2 : 3),
     });
 
     this.id = config.id;

@@ -50,11 +50,11 @@ export function getResponseCacheConfig(env: Record<string, unknown>): ResponseCa
   };
 
   return {
-    enabled: parseBool(env.AI_RESPONSE_CACHE_ENABLED),
-    defaultTtl: parseNum(env.AI_RESPONSE_CACHE_TTL, 3600),
-    playbackDelayMs: parseNum(env.AI_RESPONSE_CACHE_PLAYBACK_DELAY, 20),
-    chunkSize: parseNum(env.AI_RESPONSE_CACHE_CHUNK_SIZE, 15),
-    thinkingPlaybackDelayMs: parseNum(env.AI_RESPONSE_CACHE_THINKING_DELAY, 5),
+    enabled: parseBool(env.AI_CACHE_ENABLED ?? env.AI_RESPONSE_CACHE_ENABLED),
+    defaultTtl: parseNum(env.AI_CACHE_TTL ?? env.AI_RESPONSE_CACHE_TTL, 3600),
+    playbackDelayMs: parseNum(env.AI_CACHE_PLAYBACK_DELAY ?? env.AI_RESPONSE_CACHE_PLAYBACK_DELAY, 20),
+    chunkSize: parseNum(env.AI_CACHE_CHUNK_SIZE ?? env.AI_RESPONSE_CACHE_CHUNK_SIZE, 15),
+    thinkingPlaybackDelayMs: parseNum(env.AI_CACHE_THINKING_DELAY ?? env.AI_RESPONSE_CACHE_THINKING_DELAY, 5),
   };
 }
 

@@ -15,6 +15,77 @@ draft: false
 
 @astro-minimax/ai 是 astro-minimax 博客主题的智能增强模块，定位为供应商无关（Vendor-agnostic）的 AI 集成解决方案。该模块的核心目标是为一站式博客平台提供完整的 RAG（检索增强生成）流水线，同时支持多种 AI 服务供应商的无缝切换与故障转移，确保服务的高可用性和用户体验的连贯性。
 
+## 架构概览
+
+```markmap
+# @astro-minimax/ai 模块架构
+
+## 请求处理层
+- 速率限制
+  - Burst: 10秒/3次
+  - Sustained: 60秒/20次
+  - Daily: 24小时/100次
+- 请求验证
+  - 消息长度检查
+  - 格式校验
+- 缓存检测
+  - 响应缓存 (public Q)
+  - 搜索缓存 (public Q)
+  - 会话缓存 (follow-up)
+
+## 检索增强层
+- 搜索管道
+  - 文本标准化
+  - TF-IDF 评分
+  - 相关性过滤 (35%)
+  - 向量重排 (可选)
+- 意图检测
+  - 7类意图分类
+  - 文章重排
+- 证据预算
+  - simple/moderate/complex
+  - 按答案模式调整
+
+## 智能分析层
+- 关键词提取
+  - 超时: 5s
+  - 降级: 本地分词
+- 证据分析
+  - 超时: 8s
+  - 降级: 跳过
+- 引用守卫
+  - 隐私保护
+  - URL验证
+- 答案模式
+  - fact/list/count
+  - opinion/recommendation
+
+## 提示构建层
+- 静态层 (Static)
+  - 身份定义
+  - 约束条件
+  - 来源分层 (L1-L5)
+- 半静态层 (Semi-Static)
+  - 博客概览
+  - 最新文章
+- 动态层 (Dynamic)
+  - 相关文章
+  - 证据分析
+  - 回答模式提示
+
+## 模型调用层
+- Provider Manager
+  - Workers AI (100)
+  - OpenAI Compatible (90)
+  - Mock (0)
+- 健康追踪
+  - 失败阈值: 3
+  - 恢复TTL: 60s
+- 故障转移
+  - 自动切换
+  - 透明降级
+```
+
 ## 一、项目概述与设计理念
 
 ### 1.1 项目背景与核心定位
@@ -49,6 +120,9 @@ draft: false
 | 降级策略 | Mock 兜底响应 | 本地字符串模板 | 零延迟返回 |
 | 隐私保护 | 敏感信息过滤 | Citation Guard | 实时检测拦截 |
 | 会话缓存 | 响应缓存回放 | 缓存层 + 流式模拟 | 减少 100% API 调用 |
+| 动态预算 | 证据数量自适应 | Evidence Budget | 按复杂度分配 |
+| 回答模式 | 格式自动检测 | Answer Mode | 6 种模式智能切换 |
+| 阅读时间 | 文章时长展示 | Dynamic Layer | 实时计算注入 |
 
 ### 1.4 技术栈与依赖关系
 
@@ -90,14 +164,25 @@ draft: false
 │   ├── intelligence/             # 智能分析模块
 │   │   ├── keyword-extract.ts    # 关键词提取
 │   │   ├── evidence-analysis.ts  # 证据分析
-│   │   ├── citation-guard.ts     # 引用守卫
+│   │   ├── citation-guard.ts     # 引用守卫 + 回答模式检测
+│   │   ├── evidence-budget.ts    # 动态证据预算（新增）
 │   │   ├── intent-detect.ts      # 意图检测
 │   │   └── citation-appender.ts  # 引用追加器
 │   ├── prompt/                   # 提示词工程
 │   │   ├── prompt-builder.ts     # 三层提示构建器
-│   │   ├── static-layer.ts       # 静态层
+│   │   ├── static-layer.ts       # 静态层（含回答模式指导）
 │   │   ├── semi-static-layer.ts  # 半静态层
-│   │   └── dynamic-layer.ts      # 动态层
+│   │   └── dynamic-layer.ts      # 动态层（含阅读时间）
+│   ├── extensions/               # 扩展系统（新增）
+│   │   ├── types.ts              # 扩展接口定义
+│   │   ├── registry.ts           # 扩展注册表
+│   │   ├── loader.ts             # 扩展加载器
+│   │   └── injector.ts           # 扩展注入器
+│   ├── structured-output/        # 结构化输出（新增）
+│   │   ├── types.ts              # 结构化输出接口
+│   │   ├── generator.ts          # generateStructured<T>()
+│   │   └── schemas/              # Zod schema 定义
+│   │       └── evidence.ts       # EvidenceAnalysis schema
 │   ├── cache/                    # 缓存模块
 │   │   ├── response-cache.ts     # 响应缓存
 │   │   ├── global-cache.ts       # 全局缓存
@@ -109,6 +194,7 @@ draft: false
 │       └── i18n.ts               # 国际化
 ├── package.json                  # 包配置
 ├── tsconfig.json                 # TypeScript 配置
+├── vitest.config.ts              # Vitest 测试配置（新增）
 └── README.md                     # 英文文档
 ```
 
@@ -436,36 +522,292 @@ const PRIVACY_PATTERNS: PrivacyPattern[] = [
 export function createCitationGuardTransform(params: {
   articles: ArticleContext[];
   projects: ProjectContext[];
+  siteUrl?: string;
 }): (stream: ReadableStream<string>) => ReadableStream<string> {
-  const validUrls = new Set([
-    ...articles.map(a => a.url),
-    ...projects.map(p => p.url),
-  ]);
-
-  return (stream) => {
-    const transform = new TransformStream({
-      transform(chunk, controller) {
-        // 检测 Markdown 链接格式
-        const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
-        
-        // 移除不在白名单中的伪造 URL
-        const rewritten = chunk.replace(linkPattern, (match, text, url) => {
-          if (url.startsWith('http') && !validUrls.has(url)) {
-            return text;  // 保留文字，移除链接
-          }
-          return match;
-        });
-        
-        controller.enqueue(rewritten);
-      },
-    });
-
-    return stream.pipeThrough(transform);
+  // 规范化 URL，统一处理相对路径和绝对路径
+  const normalizeUrl = (url: string): string => {
+    if (url.startsWith('/')) return `${siteUrl}${url}`;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${siteUrl}/${url}`;
   };
+
+  // 构建合法 URL 白名单
+  const validUrls = new Set([
+    ...articles.map(a => normalizeUrl(a.url)),
+    ...projects.map(p => normalizeUrl(p.url)),
+  ]);
+  // ...
 }
 ```
 
-### 4.4 Prompt 构建器模块
+**增强的 URL 验证：** 防止各种形式的幻觉链接
+
+- **协议白名单**：只允许 `http://` 和 `https://`
+- **域名验证**：阻止 localhost、私有 IP、内部网络地址
+- **XSS 防护**：过滤危险的 URL 模式
+
+#### 回答模式检测（Answer Mode）
+
+系统自动检测用户查询的期望回答格式，并在提示词中注入相应的格式指导：
+
+```typescript
+export function resolveAnswerMode(query: string): AnswerMode {
+  const q = query.toLowerCase();
+  if (/几次|多少|几篇|数量|count|how many/u.test(q)) return 'count';
+  if (/哪些|哪几个|列表|列举|list|what are/u.test(q)) return 'list';
+  if (/怎么看|怎么想|看法|观点|opinion|think about/u.test(q)) return 'opinion';
+  if (/推荐|建议|suggest|recommend/u.test(q)) return 'recommendation';
+  if (/是什么|什么是|介绍|解释|what is|explain/u.test(q)) return 'fact';
+  if (/有没有|是否|是不是|真的吗|does|is there/u.test(q)) return 'fact';
+  return 'general';
+}
+```
+
+| 模式              | 触发词               | 回答风格                     |
+|-------------------|----------------------|------------------------------|
+| `fact`            | 是什么、什么是       | 先给结论，再补依据           |
+| `count`           | 多少、几篇、数量     | 第一句先说数字               |
+| `list`            | 哪些、哪几个、列表   | 直接列出 2-6 项              |
+| `opinion`         | 怎么看、观点、看法   | 「我觉得...」+ 2-3 个观点    |
+| `recommendation`  | 推荐、建议           | 2-4 个推荐项 + 理由          |
+
+#### 动态证据预算（Evidence Budget）
+
+根据查询复杂度动态调整检索资源，避免过度消耗：
+
+```typescript
+const BUDGET_PRESETS: Record<QueryComplexity, EvidenceBudget> = {
+  simple: {
+    maxArticles: 4,          // 最多 4 篇文章
+    summaryMaxLength: 48,    // 摘要截断 48 字符
+    keyPointsMaxCount: 2,    // 最多 2 个要点
+    enableDeepContent: false, // 不启用深度内容
+    analysisMaxTokens: 200,  // 分析 token 上限
+  },
+  moderate: {
+    maxArticles: 6,
+    summaryMaxLength: 56,
+    keyPointsMaxCount: 3,
+    enableDeepContent: true,
+    analysisMaxTokens: 360,
+  },
+  complex: {
+    maxArticles: 8,
+    summaryMaxLength: 64,
+    keyPointsMaxCount: 4,
+    enableDeepContent: true,
+    analysisMaxTokens: 500,
+  },
+};
+```
+
+预算还会根据回答模式进一步调整：
+
+```typescript
+const MODE_ADJUSTMENTS: Partial<Record<AnswerMode, Partial<EvidenceBudget>>> = {
+  count: { maxArticles: 2, enableDeepContent: false },      // 计数模式：更少文章
+  list: { maxArticles: 8, summaryMaxLength: 80 },           // 列表模式：更多文章
+  opinion: { analysisMaxTokens: 200 },                      // 观点模式：减少分析
+  recommendation: { maxArticles: 6, keyPointsMaxCount: 2 }, // 推荐模式：适中
+};
+```
+
+### 4.4 Extensions 扩展系统
+
+扩展系统允许用户注入自定义数据到 AI 聊天流程中，增强 AI 的回答能力。
+
+#### 扩展类型
+
+| 类型 | 说明 | 用途 |
+|------|------|------|
+| `searchable` | 可搜索文档 | 添加额外的知识库内容 |
+| `facts` | 结构化事实 | 添加验证过的事实数据 |
+| `context` | 上下文注入 | 添加自定义 prompt 章节 |
+| `voice-style` | 语言风格 | 定义 AI 回答风格模式 |
+| `semantic-fallback` | 语义回退 | 查询重写规则 |
+
+#### 扩展注册表
+
+```typescript
+interface Extension {
+  id: string;
+  type: ExtensionType;
+  name: string;
+  description?: string;
+  enabled?: boolean;
+  priority: number;  // 0-100，越高越优先
+  data: ExtensionData;
+}
+
+interface ExtensionRegistryInterface {
+  register<T extends ExtensionData>(extension: Extension<T>): void;
+  unregister(id: string): void;
+  get<T extends ExtensionData>(id: string): Extension<T> | undefined;
+  getAll(): Extension[];
+  getByType(type: ExtensionType): Extension[];
+  getLoadedExtensions(): LoadedExtensions;
+}
+```
+
+#### 扩展加载器
+
+```typescript
+export async function loadExtensions(
+  pattern?: string,
+  basePath?: string
+): Promise<LoadedExtensions> {
+  const registry = getExtensionRegistry();
+  const extensions = await loadExtensionsFromGlob(pattern, basePath);
+  
+  for (const ext of extensions) {
+    registry.register(ext);
+  }
+  
+  return registry.getLoadedExtensions();
+}
+```
+
+#### 扩展注入器
+
+```typescript
+// 解析语言风格模式
+export function resolveVoiceStyleMode(
+  query: string,
+  categories: string[],
+  extensions: LoadedExtensions
+): VoiceStyleMode | null;
+
+// 构建语言风格 prompt 片段
+export function buildVoiceStylePrompt(
+  mode: VoiceStyleMode | null,
+  extensions: LoadedExtensions
+): string;
+
+// 获取语义回退规则
+export function getSemanticFallback(
+  query: string,
+  extensions: LoadedExtensions
+): { query: string; primaryQuery?: string; complexity?: string } | null;
+
+// 合并搜索文档
+export function mergeSearchDocuments(
+  baseDocuments: ArticleContext[],
+  extensions: LoadedExtensions
+): ArticleContext[];
+```
+
+#### 数据生命周期
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ BUILD TIME                                                  │
+│  datas/extensions/*.json ──→ CLI validate ──→ Registry      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ REQUEST TIME                                                │
+│  loadExtensions() ──→ resolveVoiceStyleMode()               │
+│     ├─ getSemanticFallback(query)                           │
+│     └─ mergeSearchDocuments() / mergeFacts()                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 4.5 Structured Output 结构化输出
+
+结构化输出模块提供了类型安全的 JSON 生成能力，使用 Zod schema 进行验证。
+
+#### 核心接口
+
+```typescript
+interface StructuredOutputConfig<T> {
+  schema: z.ZodSchema<T>;
+  schemaName?: string;
+  schemaDescription?: string;
+  fallbackParser?: (rawText: string) => T | null;
+  repairStrategy?: 'strict' | 'lenient' | 'none';
+  timeoutMs?: number;
+  maxOutputTokens?: number;
+  temperature?: number;
+}
+
+interface StructuredOutputResult<T> {
+  data: T | null;
+  success: boolean;
+  status: StructuredOutputStatus;
+  fallbackUsed: boolean;
+  rawText?: string;
+  error?: string;
+  usage?: TokenUsageStats;
+}
+```
+
+#### generateStructured 函数
+
+```typescript
+export async function generateStructured<T>(
+  options: GenerateStructuredOptions<T>
+): Promise<StructuredOutputResult<T>> {
+  const { config, provider, systemPrompt, userPrompt, abortSignal } = options;
+  
+  // 尝试 generateObject
+  try {
+    const result = await provider.generateObject({
+      schema: config.schema,
+      systemPrompt,
+      userPrompt,
+    });
+    
+    // 验证 schema
+    const validated = validateWithSchema(result.object, config.schema);
+    if (validated !== null) {
+      return { data: validated, success: true, status: 'success' };
+    }
+  } catch (error) {
+    // 继续尝试 fallback
+  }
+  
+  // Fallback: 文本生成 + JSON 解析
+  if (config.fallbackParser) {
+    const textResult = await provider.generateText({ ... });
+    const extracted = extractJsonFromText(textResult.text);
+    if (extracted) {
+      const validated = validateWithSchema(extracted, config.schema);
+      if (validated !== null) {
+        return { data: validated, success: true, status: 'success', fallbackUsed: true };
+      }
+    }
+  }
+  
+  return { data: null, success: false, status: 'error' };
+}
+```
+
+#### Evidence Analysis Schema
+
+```typescript
+export const EvidenceAnalysisSchema = z.object({
+  questionType: z.enum(['fact', 'list', 'count', 'timeline', 'recommendation', 'opinion', 'mixed', 'unknown']),
+  directAnswer: z.string(),
+  entities: z.array(z.object({
+    name: z.string(),
+    relation: z.string(),
+    status: z.string(),
+    count: z.number().int().positive().optional(),
+    countMode: z.enum(['exact', 'at_least', 'unknown']).optional(),
+    note: z.string().optional(),
+    evidenceUrls: z.array(z.string()),
+  })).max(6),
+  keyFindings: z.array(z.object({
+    claim: z.string(),
+    confidence: z.enum(['high', 'medium', 'low']),
+    evidenceUrls: z.array(z.string()),
+  })).max(4),
+  uncertainties: z.array(z.string()).max(6),
+  recommendedUrls: z.array(z.string()).max(3),
+});
+```
+
+### 4.6 Prompt 构建器模块
 
 Prompt 构建器实现了三层提示词构建体系，这是系统智能表现的关键组件。
 
@@ -493,6 +835,22 @@ const PROMPTS = {
       'L3 结构化事实：标签统计、分类聚合',
       'L4 外部验证来源（需标注引用）',
       'L5 语言风格（仅影响表达）',
+    ],
+    // 新增：回答模式指导
+    answerModes: [
+      'fact（事实）：先给结论，再补依据；如有直接对应的文章，点明标题或给出链接',
+      'list（列表）：直接列 2-6 项同一维度的内容',
+      'count（计数）：第一句先说数字或「至少 X」，禁止伪精确',
+      'opinion（观点）：先「我觉得/我的看法是」，再用 2-3 个观点展开',
+      'recommendation（推荐）：先给 2-4 个推荐项，再说明理由',
+      'unknown（未知/隐私）：第一句必须包含「未公开」或「不提供」，1-2 句收尾',
+    ],
+    // 新增：输出前检查清单
+    preOutputChecks: [
+      '将输出链接 → 检查 URL 是否在「相关文章」列表中',
+      '将输出数字 → 检查是否在可见文本中明确出现',
+      '将引用文章 → 确保使用 Markdown 链接格式 [标题](URL)',
+      '承认缺失信息时 → 一句话带过，不反复强调',
     ],
   },
 };
@@ -525,7 +883,7 @@ ${getRecentPosts(posts).map(p =>
 
 ```typescript
 export function buildDynamicLayer(config: DynamicLayerConfig): string {
-  const { userQuery, articles, projects, evidenceSection } = config;
+  const { userQuery, articles, projects, evidenceSection, answerMode } = config;
   
   const lines = ['## 与当前问题相关的内容'];
   
@@ -534,6 +892,7 @@ export function buildDynamicLayer(config: DynamicLayerConfig): string {
     lines.push('### 相关文章');
     for (const article of articles.slice(0, 8)) {
       lines.push(`**[${article.title}](${article.url})**`);
+      if (article.readingTime) lines.push(`阅读时间：约 ${article.readingTime} 分钟`); // 新增：阅读时间
       if (article.summary) lines.push(`摘要：${article.summary.slice(0, 120)}`);
       if (article.keyPoints.length) {
         lines.push(`要点：${article.keyPoints.slice(0, 3).join('；')}`);
@@ -544,8 +903,28 @@ export function buildDynamicLayer(config: DynamicLayerConfig): string {
   lines.push(`---`);
   lines.push(`基于以上内容回答用户关于「${userQuery}」的问题。`);
   
+  // 新增：回答模式提示
+  if (answerMode && answerMode !== 'general') {
+    lines.push(getAnswerModeHint(answerMode));
+  }
+  
   return lines.join('\n');
 }
+```
+
+**阅读时间显示：** 在动态层中展示文章的预估阅读时间，帮助用户快速判断文章长度：
+
+```
+**[如何配置 astro-minimax 主题](/zh/posts/how-to-configure-astro-minimax-theme)**
+阅读时间：约 5 分钟
+摘要：本文介绍 astro-minimax 主题的配置方法...
+要点：基础配置；环境变量；主题定制
+```
+
+**回答模式提示注入：** 根据检测到的回答模式，在动态层末尾注入格式指导：
+
+```
+当前为列表模式：直接列 2-6 项同一维度的内容。
 ```
 
 ### 4.5 Stream 流处理模块
@@ -1049,7 +1428,63 @@ try {
 | Sustained | 60 秒 | 20 次 | 正常使用上限 |
 | Daily | 24 小时 | 100 次 | 单日总上限 |
 
-## 十二、总结
+## 十二、CLI 工具链
+
+### 12.1 事实注册表验证
+
+`@astro-minimax/cli` 提供了 `facts validate` 命令，用于验证 `fact-registry.json` 的结构和内容：
+
+```bash
+astro-minimax facts validate
+```
+
+**验证项目：**
+
+| 检查项 | 说明 |
+|--------|------|
+| Schema 版本 | 必须为 `fact-registry-v1` |
+| ID 唯一性 | 每个 fact 必须有唯一 ID |
+| 类别有效性 | category 必须为 author/blog/content/project/tech |
+| 来源有效性 | source 必须为 explicit/derived/aggregated |
+| 置信度范围 | confidence 必须在 0-1 之间 |
+| 日期格式 | generatedAt 必须为有效 ISO 日期 |
+
+**输出示例：**
+
+```
+📋 Validating Fact Registry
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  📊 Validation Results:
+
+  Statistics:
+    Total facts: 45
+    Average confidence: 0.92
+
+  By category:
+    author: 8
+    blog: 12
+    content: 15
+    tech: 10
+
+  Coverage:
+    Author facts: ✅
+    Blog facts: ✅
+    Content facts: ✅
+    Tech facts: ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Fact registry is valid
+```
+
+### 12.2 相关命令
+
+```bash
+astro-minimax facts status    # 查看事实注册表状态
+astro-minimax profile build   # 构建完整作者画像（包含 facts）
+```
+
+## 十三、总结
 
 @astro-minimax/ai 模块通过以下设计实现了高可用、高质量的 AI 聊天体验：
 
@@ -1060,5 +1495,8 @@ try {
 5. **用户体验** — 流式响应、打字机效果、边读边聊
 6. **健壮性与容错** — 多供应商支持、自动故障转移、超时预算管理
 7. **模块化与可扩展性** — 清晰的分层架构和模块边界
+8. **动态资源调度** — 证据预算根据查询复杂度自适应调整
+9. **回答格式优化** — 自动检测回答模式，注入相应格式指导
+10. **阅读时间感知** — 动态层展示文章预估阅读时间
 
 完整的 API 文档和更多示例，请参考 [API 参考](/zh/posts/ai-api-reference)。

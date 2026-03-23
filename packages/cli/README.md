@@ -121,7 +121,9 @@ Manage Git hooks for automatic date management:
 
 ### `astro-minimax ai <subcommand>`
 
-AI content processing:
+All AI-related features are consolidated under the `ai` command:
+
+#### Content Processing
 
 | Subcommand | Description |
 | ---------- | ----------- |
@@ -130,16 +132,32 @@ AI content processing:
 | `summary` | Generate summaries |
 | `eval` | Evaluate AI chat quality |
 
-### `astro-minimax profile <subcommand>`
-
-Author profile management:
+#### Author Profile
 
 | Subcommand | Description |
 | ---------- | ----------- |
-| `build` | Build complete profile |
-| `context` | Build author context |
-| `voice` | Build voice profile |
-| `report` | Generate profile report |
+| `profile build` | Build complete profile |
+| `profile context` | Build author context |
+| `profile voice` | Build voice profile |
+| `profile facts` | Build fact registry |
+| `profile report` | Generate profile report |
+
+#### Fact Registry
+
+| Subcommand | Description |
+| ---------- | ----------- |
+| `facts build` | Build fact registry from content |
+| `facts validate` | Validate fact registry |
+| `facts status` | Show fact registry status |
+
+#### AI Extensions
+
+| Subcommand | Description |
+| ---------- | ----------- |
+| `extensions build` | Build extension files |
+| `extensions validate` | Validate extensions |
+| `extensions status` | Show extension status |
+| `extensions load` | Test loading extensions |
 
 ### `astro-minimax data <subcommand>`
 

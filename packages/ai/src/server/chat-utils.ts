@@ -1,0 +1,96 @@
+import type { UIMessage } from 'ai';
+import type { ChatContext } from './types.js';
+import type { ArticleRef, ModelInfo, TokenUsage, PhaseTiming } from '@astro-minimax/notify';
+import { notifyAiChat } from './notify.js';
+import { NOTIFICATION, TIMEOUTS, HEALTH } from '../constants.js';
+
+export function buildArticleContextPrompt(context: ChatContext): string {
+  if (context.scope !== 'article' || !context.article) return '';
+
+  const a = context.article;
+  const parts: string[] = [
+    '\n[当前阅读文章]',
+    `用户正在阅读：《${a.title}》`,
+  ];
+
+  if (a.summary) parts.push(`摘要：${a.summary}`);
+  if (a.abstract) parts.push(`详细概要：${a.abstract}`);
+  if (a.keyPoints?.length) parts.push(`核心要点：${a.keyPoints.join('；')}`);
+  if (a.categories?.length) parts.push(`分类：${a.categories.join('、')}`);
+
+  parts.push(
+    '',
+    '你正在陪用户阅读这篇文章。优先围绕这篇文章的内容回答问题。',
+    '当用户的问题与当前文章相关时，引用文章中的具体内容。',
+    '当用户想要延伸时，推荐相关的博客文章。',
+  );
+
+  return parts.join('\n');
+}
+
+export interface SendNotificationArgs {
+  env: Record<string, unknown>;
+  messages: UIMessage[];
+  responseText: string;
+  relatedArticles: Array<{ title: string; url?: string }>;
+  model?: ModelInfo;
+  usage?: TokenUsage;
+  timing: PhaseTiming;
+  cacheKey?: string | null;
+  waitUntil?: (promise: Promise<unknown>) => void;
+}
+
+export function sendNotification(args: SendNotificationArgs): void {
+  const { env, messages, responseText, relatedArticles, model, usage, timing, cacheKey, waitUntil } = args;
+  
+  const sessionId = cacheKey || `dev-${Date.now().toString(36)}`;
+  const notifyArticles: ArticleRef[] = relatedArticles
+    .slice(0, NOTIFICATION.MAX_REFERENCED_ARTICLES)
+    .map(a => ({
+      title: a.title,
+      url: a.url,
+    }));
+  
+  const notifyPromise = notifyAiChat({
+    env,
+    sessionId,
+    messages,
+    aiResponse: responseText,
+    referencedArticles: notifyArticles,
+    model,
+    usage,
+    timing,
+  });
+  
+  if (waitUntil) {
+    waitUntil(notifyPromise);
+  } else {
+    void notifyPromise;
+  }
+}
+
+export function parseNum(val: unknown, defaultVal: number): number {
+  if (val === undefined) return defaultVal;
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') {
+    const num = parseInt(val, 10);
+    return isNaN(num) ? defaultVal : num;
+  }
+  return defaultVal;
+}
+
+export function getTimeoutConfig(env: Record<string, unknown>) {
+  return {
+    request: parseNum(env.AI_TIMEOUT_REQUEST, TIMEOUTS.REQUEST),
+    keywordExtraction: parseNum(env.AI_TIMEOUT_KEYWORD, TIMEOUTS.KEYWORD_EXTRACTION),
+    evidenceAnalysis: parseNum(env.AI_TIMEOUT_EVIDENCE, TIMEOUTS.EVIDENCE_ANALYSIS),
+    llmStreaming: parseNum(env.AI_TIMEOUT_LLM, TIMEOUTS.LLM_STREAMING),
+  };
+}
+
+export function getHealthConfig(env: Record<string, unknown>) {
+  return {
+    unhealthyThreshold: parseNum(env.AI_HEALTH_THRESHOLD, HEALTH.UNHEALTHY_THRESHOLD),
+    recoveryTtl: parseNum(env.AI_HEALTH_RECOVERY_TTL, HEALTH.RECOVERY_TTL),
+  };
+}

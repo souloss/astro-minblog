@@ -92,6 +92,16 @@ From a technology selection perspective, the module adopts the current mainstrea
 │   │   ├── static-layer.ts       # Static layer
 │   │   ├── semi-static-layer.ts  # Semi-static layer
 │   │   └── dynamic-layer.ts      # Dynamic layer
+│   ├── extensions/               # Extensions system (NEW)
+│   │   ├── types.ts              # Extension interface definitions
+│   │   ├── registry.ts           # Extension registry
+│   │   ├── loader.ts             # Extension loader
+│   │   └── injector.ts           # Extension injector
+│   ├── structured-output/        # Structured output (NEW)
+│   │   ├── types.ts              # Structured output interfaces
+│   │   ├── generator.ts          # generateStructured<T>()
+│   │   └── schemas/              # Zod schema definitions
+│   │       └── evidence.ts       # EvidenceAnalysis schema
 │   ├── cache/                    # Cache module
 │   │   ├── response-cache.ts     # Response cache
 │   │   ├── global-cache.ts       # Global cache

@@ -199,6 +199,121 @@ Evaluation is based on the `datas/eval/gold-set.json` golden test set, automatic
 
 Evaluation report is saved to `datas/eval/report.json`.
 
+## Extensions System
+
+The extensions system allows you to inject custom data into the AI chat pipeline, enhancing AI response capabilities.
+
+### Extension Types
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| `searchable` | Searchable documents | Add extra knowledge base content |
+| `facts` | Structured facts | Add verified factual data |
+| `context` | Context injection | Add custom prompt sections |
+| `voice-style` | Voice style | Define AI response style modes |
+| `semantic-fallback` | Semantic fallback | Query rewriting rules |
+
+### Extension File Structure
+
+Extension files are placed in the `datas/extensions/` directory:
+
+```
+datas/extensions/
+├── travel.json        # Travel-related extensions
+├── social.json        # Social network extensions
+└── custom-*.json      # Custom extensions
+```
+
+### Extension File Format
+
+```json
+{
+  "$schema": "extension-v1",
+  "version": 1,
+  "extensions": [
+    {
+      "id": "blog-travel",
+      "type": "voice-style",
+      "name": "Travel Voice",
+      "description": "Voice style for travel topics",
+      "enabled": true,
+      "priority": 80,
+      "data": {
+        "modes": [
+          {
+            "id": "travel",
+            "name": "Travel Mode",
+            "description": "Travel response style",
+            "matchKeywords": ["travel", "trip", "journey"],
+            "traits": [
+              "Narrate by timeline",
+              "Mention specific places and experiences",
+              "Occasionally add personal insights"
+            ]
+          }
+        ],
+        "defaultMode": "travel",
+        "overallTone": "Casual sharing"
+      }
+    },
+    {
+      "id": "travel-fallback",
+      "type": "semantic-fallback",
+      "name": "Travel Fallback",
+      "enabled": true,
+      "priority": 70,
+      "data": {
+        "rules": [
+          {
+            "id": "travel-countries",
+            "patterns": ["visited.{0,6}(countries|cities)", "been to"],
+            "fallbackQuery": "travel journey destinations",
+            "primaryQuery": "travel",
+            "complexity": "complex"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### CLI Commands
+
+```bash
+# View extension status
+astro-minimax extensions status
+
+# Validate extension files
+astro-minimax extensions validate
+
+# Build extensions (validate and organize)
+astro-minimax extensions build --verbose
+
+# Test loading extensions
+astro-minimax extensions load
+```
+
+### Extension Priority
+
+Extensions use the `priority` field (0-100) to control precedence. Higher values mean higher priority. When multiple extensions provide the same type of data, higher-priority extensions are preferred.
+
+### Data Lifecycle
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ BUILD TIME                                                  │
+│  datas/extensions/*.json ──→ CLI validate ──→ Registry      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│ REQUEST TIME                                                │
+│  loadExtensions() ──→ resolveVoiceStyleMode()               │
+│     ├─ getSemanticFallback(query)                           │
+│     └─ mergeSearchDocuments() / mergeFacts()                │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## Notification Integration
 
 AI chat completion automatically sends notifications (fire-and-forget):

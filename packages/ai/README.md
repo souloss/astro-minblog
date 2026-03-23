@@ -31,11 +31,77 @@ Vendor-agnostic AI integration package with full RAG pipeline for astro-minimax 
 | `server/`           | Reusable API handlers (`handleChatRequest`, `initializeMetadata`)      |
 | `provider-manager/` | Multi-provider management with priority, failover, health tracking     |
 | `search/`           | In-memory article/project search with session caching                  |
-| `intelligence/`     | Keyword extraction, evidence analysis, citation guard                  |
+| `intelligence/`     | Keyword extraction, evidence analysis, citation guard, answer mode, dynamic evidence budget |
 | `prompt/`           | Three-layer system prompt builder (static → semi-static → dynamic)     |
 | `data/`             | Build-time metadata loading (summaries, author context, voice profile) |
 | `stream/`           | Stream helpers and response utilities                                  |
 | `components/`       | Preact UI components (ChatPanel, AIChatWidget, AIChatContainer)        |
+
+## Features
+
+### Dynamic Evidence Budget
+
+The system dynamically adjusts retrieval and analysis resources based on query complexity:
+
+| Complexity | Max Articles | Summary Length | Key Points | Deep Content |
+|------------|--------------|----------------|------------|--------------|
+| `simple`   | 4            | 48 chars       | 2          | No           |
+| `moderate` | 6            | 56 chars       | 3          | Yes          |
+| `complex`  | 8            | 64 chars       | 4          | Yes          |
+
+Budget is further adjusted by **answer mode** (count, list, opinion, recommendation):
+
+```typescript
+import { getEvidenceBudget, applyBudgetToArticles } from '@astro-minimax/ai/intelligence';
+
+const budget = getEvidenceBudget('moderate', 'list');
+// → { maxArticles: 8, summaryMaxLength: 80, ... }
+
+const trimmedArticles = applyBudgetToArticles(articles, budget);
+```
+
+### Answer Mode Detection
+
+Automatically detects the expected response format from user queries:
+
+| Mode            | Trigger Patterns              | Response Style                    |
+|-----------------|-------------------------------|-----------------------------------|
+| `fact`          | "是什么", "what is"           | Conclusion first, then evidence   |
+| `count`         | "多少", "how many"            | Number in first sentence          |
+| `list`          | "哪些", "what are"            | 2-6 items directly                |
+| `opinion`       | "怎么看", "what do you think" | "I think..." + 2-3 points         |
+| `recommendation`| "推荐", "suggest"             | 2-4 recommendations + reasons     |
+
+Answer mode hints are injected into the dynamic prompt layer, guiding the LLM toward the appropriate format.
+
+### Reading Time Display
+
+Article reading time is now displayed in the dynamic prompt layer:
+
+```
+**[Article Title](/posts/article)**
+阅读时间：约 5 分钟
+摘要：Article summary...
+```
+
+### Enhanced Citation Guard
+
+Improved URL validation prevents hallucinated links:
+
+- **Scheme whitelist**: Only `http://` and `https://` allowed
+- **Domain validation**: Blocks localhost, private IPs, internal networks
+- **XSS prevention**: Sanitizes dangerous URL patterns
+
+```typescript
+import { createCitationGuardTransform } from '@astro-minimax/ai/intelligence';
+
+const guard = createCitationGuardTransform({
+  articles,
+  projects,
+  siteUrl: 'https://example.com',
+  onApplied: ({ actions }) => console.log('Rewrote:', actions),
+});
+```
 
 ## Installation
 
@@ -216,8 +282,24 @@ Core chat UI built on `useChat` from `@ai-sdk/react`:
 | `./providers`    | Mock response/stream utilities                                  |
 | `./middleware`   | Rate limiting                                                   |
 | `./search`       | Article/project search, session cache                           |
-| `./intelligence` | Keyword extraction, evidence analysis, citation guard           |
+| `./intelligence` | Keyword extraction, evidence analysis, citation guard, answer mode, evidence budget |
 | `./prompt`       | System prompt builder                                           |
 | `./data`         | Metadata loading                                                |
 | `./stream`       | Stream utilities                                                |
 | `./components/*` | Astro/Preact components                                         |
+
+## Testing
+
+The package includes comprehensive unit tests with Vitest:
+
+```bash
+cd packages/ai
+pnpm test
+```
+
+Test coverage includes:
+- Citation guard (10 tests)
+- Intent detection (7 tests)
+- Keyword extraction (7 tests)
+- Evidence analysis (7 tests)
+- Evidence budget (5 tests)

@@ -14,23 +14,21 @@ import type { UIMessage } from 'ai';
  * Base configuration shared by all provider types.
  */
 export interface BaseProviderConfig {
-  /** Unique identifier for this provider instance */
   id: string;
-  /** Provider type */
   type: 'openai' | 'workers';
-  /** Priority weight (higher = more preferred). Default: 100 */
   weight?: number;
-  /** Default model for chat */
   model: string;
-  /** Model for keyword extraction (optional, defaults to model) */
   keywordModel?: string;
-  /** Model for evidence analysis (optional, defaults to keywordModel) */
   evidenceModel?: string;
-  /** Request timeout in milliseconds. Default: 30000 */
   timeout?: number;
-  /** Max retries on failure. Default: 0 (no retry, fallback to next provider) */
+  /**
+   * Number of consecutive failures before marking provider unhealthy.
+   * Default: 3. Note: This is NOT retry count - provider will be skipped
+   * after this many failures, not retried.
+   */
+  unhealthyThreshold?: number;
+  /** @deprecated Use unhealthyThreshold instead. This field is misleading. */
   maxRetries?: number;
-  /** Enable this provider. Default: true */
   enabled?: boolean;
 }
 
@@ -208,44 +206,30 @@ export interface ProviderManagerOptions {
  * All provider types must implement this interface.
  */
 export interface ProviderAdapter {
-  /** Provider identifier */
   readonly id: string;
-  /** Provider type */
   readonly type: 'openai' | 'workers' | 'mock';
-  /** Priority weight */
   readonly weight: number;
-  /** Default model */
   readonly model: string;
-  /** Model for keyword extraction */
   readonly keywordModel: string;
-  /** Model for evidence analysis */
   readonly evidenceModel: string;
-  /** Request timeout in ms */
   readonly timeout: number;
 
-  /**
-   * Check if this provider is currently available and healthy.
-   */
   isAvailable(): Promise<boolean>;
 
-  /**
-   * Stream text generation.
-   */
+  isInRecovery?(): boolean;
+
+  canAttemptRecovery?(): boolean;
+
+  markAsRecovered?(): void;
+
+  resetHealth?(): void;
+
   streamText(options: StreamTextOptions): Promise<StreamTextResult>;
 
-  /**
-   * Get current health status.
-   */
   getHealth(): ProviderHealth;
 
-  /**
-   * Record a successful request.
-   */
   recordSuccess(): void;
 
-  /**
-   * Record a failed request.
-   */
   recordFailure(error: Error): void;
 
   getProvider(): { chatModel: (model: string) => unknown };

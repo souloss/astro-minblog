@@ -63,7 +63,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
 
   constructor(config: OpenAIProviderConfig) {
     super({
-      unhealthyThreshold: config.maxRetries ? config.maxRetries + 2 : 3,
+      unhealthyThreshold: config.unhealthyThreshold ?? (config.maxRetries ? config.maxRetries + 2 : 3),
     });
 
     this.id = config.id;

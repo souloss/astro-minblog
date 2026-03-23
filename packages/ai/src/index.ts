@@ -39,3 +39,7 @@ export * from './stream/index.js';
 
 // Server-side API handlers (chat handler, metadata init)
 export * from './server/index.js';
+
+export * from './structured-output/index.js';
+
+export * from './extensions/index.js';

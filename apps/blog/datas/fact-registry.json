@@ -1,6 +1,6 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-03-18T14:22:00.826Z",
+  "generatedAt": "2026-03-22T17:55:43.266Z",
   "version": 1,
   "facts": [
     {
@@ -252,7 +252,7 @@
     {
       "id": "tech-stack-en",
       "category": "tech",
-      "statement": "The blog is built with: Astro 6.0.0, Preact, Tailwind CSS, AI 对话（RAG）",
+      "statement": "The blog is built with: Astro 6.0.0, Preact, Tailwind CSS, AI Chat (RAG)",
       "evidence": "package.json → dependencies + devDependencies",
       "source": "explicit",
       "confidence": 1,
@@ -321,8 +321,8 @@
     {
       "id": "content-tech-mentions",
       "category": "content",
-      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(31次)、configuration(8次)、deployment(6次)、vercel(4次)、neon(4次)",
-      "evidence": "35 markdown files → frontmatter.tags aggregation",
+      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(36次)、configuration(10次)、deployment(6次)、ai(4次)、architecture(4次)、vercel(4次)、neon(4次)",
+      "evidence": "40 markdown files → frontmatter.tags aggregation",
       "source": "aggregated",
       "confidence": 0.9,
       "tags": [
@@ -334,6 +334,8 @@
         "docs",
         "configuration",
         "deployment",
+        "ai",
+        "architecture",
         "vercel",
         "neon"
       ],

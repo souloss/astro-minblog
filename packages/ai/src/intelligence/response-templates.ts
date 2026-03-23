@@ -78,6 +78,19 @@ export const PRIVACY_REFUSAL_TEMPLATES: Record<string, ResponseTemplate> = {
   },
 };
 
+export const UNKNOWN_REFUSAL_TEMPLATES: ResponseTemplate = {
+  zh: [
+    '这个信息未在博客中公开。',
+    '这类私人信息博主没有公开分享。',
+    '抱歉，这个信息不在博客内容范围内。',
+  ],
+  en: [
+    'This information is not disclosed on the blog.',
+    'The blogger has not shared this private information.',
+    'Sorry, this information is not available in the blog.',
+  ],
+};
+
 export const NO_ARTICLE_TEMPLATES: ResponseTemplate = {
   zh: [
     '根据博客内容搜索，目前没有找到与这个主题直接相关的文章。你可以尝试用其他关键词搜索，或者问我其他问题。',

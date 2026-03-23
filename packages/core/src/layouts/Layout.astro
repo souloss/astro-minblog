@@ -29,6 +29,8 @@ type Props = {
   author?: string;
   profile?: string;
   description?: string;
+  keywords?: string[];
+  ogDescription?: string;
   ogImage?: string;
   canonicalURL?: string;
   pubDatetime?: Date;
@@ -45,6 +47,8 @@ const {
   author = SITE.author,
   profile = SITE.profile,
   description = SITE.desc,
+  keywords = [],
+  ogDescription: ogDesc,
   ogImage = SITE.ogImage ? `/${SITE.ogImage}` : "/og.png",
   canonicalURL = new URL(Astro.url.pathname, Astro.url),
   pubDatetime,
@@ -53,6 +57,8 @@ const {
   tags = [],
   articleContext,
 } = Astro.props;
+
+const socialDescription = ogDesc || description;
 
 const socialImageURL = new URL(ogImage, Astro.url);
 
@@ -180,6 +186,7 @@ const structuredData = pubDatetime
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <meta name="author" content={author} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(", ")} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="alternate"
@@ -217,7 +224,7 @@ const structuredData = pubDatetime
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content={SITE.title} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={socialDescription} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:image:alt" content={title} />
@@ -251,7 +258,7 @@ const structuredData = pubDatetime
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={socialDescription} />
     <meta name="twitter:image" content={socialImageURL} />
     <meta name="twitter:image:alt" content={title} />
 

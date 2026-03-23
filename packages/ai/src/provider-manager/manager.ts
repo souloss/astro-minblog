@@ -83,12 +83,18 @@ export class ProviderManager {
     let lastError: Error | null = null;
 
     for (const provider of this.providers) {
+      const wasInRecovery = provider.isInRecovery?.() ?? false;
       const isAvailable = await provider.isAvailable();
       if (!isAvailable) continue;
 
       try {
         const result = await provider.streamText(options);
         provider.recordSuccess();
+
+        if (wasInRecovery) {
+          provider.markAsRecovered?.();
+          this.options.onHealthChange?.(provider.id, true);
+        }
 
         if (lastProviderId && lastProviderId !== provider.id) {
           this.options.onProviderSwitch?.(lastProviderId, provider.id, 'fallback success');
@@ -137,12 +143,33 @@ export class ProviderManager {
   async getAvailableAdapter(): Promise<ProviderAdapter | null> {
     return this.getAvailableProvider();
   }
+
+  /**
+   * Returns all available adapters in priority order.
+   * Used for implementing multi-provider failover in streaming contexts.
+   */
+  async getAvailableAdapters(): Promise<ProviderAdapter[]> {
+    const available: ProviderAdapter[] = [];
+    for (const provider of this.providers) {
+      if (await provider.isAvailable()) {
+        available.push(provider);
+      }
+    }
+    return available;
+  }
+
+  /**
+   * Returns the mock adapter for fallback scenarios.
+   */
+  getMockAdapter(): MockAdapter {
+    return this.mockAdapter;
+  }
 }
 
 let managerInstance: ProviderManager | null = null;
 
-export function getProviderManager(env: ProviderManagerEnv, options?: ProviderManagerOptions): ProviderManager {
-  if (!managerInstance) {
+export function getProviderManager(env: ProviderManagerEnv, options?: ProviderManagerOptions & { forceRecreate?: boolean }): ProviderManager {
+  if (options?.forceRecreate || !managerInstance) {
     managerInstance = new ProviderManager(env, options);
   }
   return managerInstance;

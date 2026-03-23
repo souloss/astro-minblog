@@ -10,6 +10,7 @@ export interface SearchDocument {
   dateTime: number;
   lang: string;
   summary?: string;
+  readingTime?: number;
 }
 
 export interface IndexedDocument extends SearchDocument {
@@ -30,6 +31,7 @@ export interface ArticleContext {
   dateTime: number;
   fullContent?: string;
   score?: number;
+  readingTime?: number;
 }
 
 export interface ProjectContext {
