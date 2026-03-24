@@ -18,6 +18,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
+import { setLogLevel } from '../utils/logger.js';
 import { fileURLToPath } from 'node:url';
 import { safeJoinUrl } from '../utils/url.js';
 
@@ -218,6 +219,9 @@ async function main() {
     console.log('\n✅ Done! You can now configure your AI metadata files.\n');
     process.exit(0);
   }
+
+  if (process.env.AI_DEBUG) setLogLevel('debug');
+  else if (process.env.AI_LOG_LEVEL) setLogLevel(process.env.AI_LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error');
 
   const port = parseInt(process.env.AI_DEV_PORT || '8787', 10);
   const { root: blogRoot, datasDir, hasDatas } = findBlogRoot();

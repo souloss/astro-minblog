@@ -54,10 +54,14 @@ import {
 import { getMessageText, filterValidMessages } from './chat-message-utils.js';
 import { buildArticleContextPrompt, sendNotification, getTimeoutConfig, getHealthConfig } from './chat-utils.js';
 import { CHAT_HANDLER, RESPONSE, CHUNK_INJECTION } from '../constants.js';
+import { createLogger, setLogLevel } from '../utils/logger.js';
+
+const log = createLogger('chat-handler');
 
 export async function handleChatRequest(options: ChatHandlerOptions): Promise<Response> {
   const { env, request: req, waitUntil } = options;
 
+  if (env.AI_DEBUG) setLogLevel('debug');
   if (env.CORS_ORIGIN) setCorsOrigin(env.CORS_ORIGIN as string);
   if (req.method === 'OPTIONS') return corsPreflightResponse();
   if (req.method !== 'POST') return errors.methodNotAllowed('zh');
@@ -90,11 +94,13 @@ export async function handleChatRequest(options: ChatHandlerOptions): Promise<Re
   const requestAbort = new AbortController();
   const requestTimer = setTimeout(() => requestAbort.abort(), timeouts.request);
 
+  log.debug(`Request: scope=${context.scope}, msg="${latestText.substring(0, 80)}", history=${messages.length}`);
+
   try {
     return await runPipeline({ env, messages, latestText, context, req, requestAbort, lang, waitUntil, timeouts });
   } catch (err) {
     if (requestAbort.signal.aborted) return errors.timeout(lang);
-    console.error('[chat-handler] Unexpected error:', err);
+    log.error('Unexpected error:', err);
     return errors.internal(undefined, lang);
   } finally {
     clearTimeout(requestTimer);
@@ -225,7 +231,7 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
 
   let chunksSection = '';
   const articlesWithChunks = relatedArticles.filter((a: { chunks?: unknown[] }) => a.chunks && a.chunks.length > 0);
-  if (env.AI_DEBUG) console.log(`[chat-handler] Chunk injection: ${relatedArticles.length} articles found, ${articlesWithChunks.length} with chunks`);
+  log.debug(`Chunk injection: ${relatedArticles.length} articles found, ${articlesWithChunks.length} with chunks`);
   if (articlesWithChunks.length > 0) {
     try {
       const { selectRelevantChunks, formatChunksForInjection } = await import('../search/hybrid-search.js');
@@ -233,7 +239,7 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
       const matchedChunks = selectRelevantChunks(latestText, articlesWithChunks as never[], {
         maxTokens: CHUNK_INJECTION.MAX_TOKENS, minChunkScore: CHUNK_INJECTION.MIN_CHUNK_SCORE, maxChunksPerArticle: CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE,
       });
-      if (env.AI_DEBUG) console.log(`[chat-handler] Matched chunks: ${matchedChunks.length} (query: "${latestText.substring(0, 50)}")`);
+      log.debug(`Matched chunks: ${matchedChunks.length} (query: "${latestText.substring(0, 50)}")`);
       if (matchedChunks.length > 0) {
         const sessionCacheKey = cacheKey || undefined;
         const newChunks = sessionCacheKey
@@ -243,12 +249,12 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
           chunksSection = formatChunksForInjection(
             matchedChunks.filter((m: { chunk: { id: string } }) => newChunks.some((nc: { id: string }) => nc.id === m.chunk.id)), 1500
           );
-          if (env.AI_DEBUG) console.log(`[chat-handler] Injected ${newChunks.length} chunks (${chunksSection.length} chars)`);
+          log.debug(`Injected ${newChunks.length} chunks (${chunksSection.length} chars)`);
           if (sessionCacheKey) injectionCache.markAsInjected(sessionCacheKey, newChunks.map((c: { id: string }) => c.id));
         }
       }
     } catch (err) {
-      if (env.AI_DEBUG) console.log(`[chat-handler] Chunk injection failed:`, (err as Error).message);
+      log.debug(`Chunk injection failed: ${(err as Error).message}`);
     }
   }
 
@@ -261,6 +267,9 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
       factSection: factPromptSection, answerMode, lang, extensions, sessionId: cacheKey || undefined, chunksSection,
     },
   });
+
+  log.debug(`System prompt built (${systemPrompt.length} chars), chunks section: ${chunksSection.length} chars`);
+  log.debug(`System prompt preview:\n${systemPrompt.substring(0, 500)}...\n---END PREVIEW---`);
 
   return { systemPrompt, preflight, unknownRefusal };
 }
@@ -350,6 +359,11 @@ async function retrieveContext(ctx: PipelineContext, req: Request): Promise<Sear
       const globalTTL = getGlobalCacheTTL(publicQuestion.type);
       await setGlobalSearchCache(cache, publicQuestion.type, { query: searchQuery, articles: relatedArticles, projects: relatedProjects, updatedAt: now }, globalTTL, { articleSlug, lang });
     }
+  }
+
+  log.debug(`Search: query="${searchQuery}", articles=${relatedArticles.length}, projects=${relatedProjects.length}, mode=${answerMode}`);
+  if (relatedArticles.length > 0) {
+    log.debug(`Top articles: ${relatedArticles.slice(0, 3).map((a: { title: string; chunks?: unknown[] }) => `"${a.title}" (chunks: ${a.chunks?.length ?? 0})`).join(', ')}`);
   }
 
   return { searchQuery, relatedArticles, relatedProjects, budget, answerMode };

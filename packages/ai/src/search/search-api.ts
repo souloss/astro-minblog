@@ -11,6 +11,9 @@ let projectIndex: IndexedDocument[] | null = null;
 let articleChunks: Map<string, ArticleChunk[]> = new Map(); // postId -> chunks
 
 import { SEARCH } from '../constants.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('search');
 
 const ARTICLE_LIMIT = SEARCH.ARTICLE_LIMIT;
 const ARTICLE_LIMIT_BROAD = SEARCH.ARTICLE_LIMIT_BROAD;
@@ -33,7 +36,7 @@ export function initProjectIndex(documents: SearchDocument[]): void {
 export function initArticleChunks(chunksData: Record<string, ArticleChunk[]>): void {
   articleChunks = new Map(Object.entries(chunksData));
   const totalChunks = [...articleChunks.values()].reduce((sum, c) => sum + c.length, 0);
-  console.log(`[search] Loaded chunks: ${articleChunks.size} articles, ${totalChunks} total chunks`);
+  log.info(`Loaded chunks: ${articleChunks.size} articles, ${totalChunks} total chunks`);
 }
 
 export function hasArticleChunks(): boolean {
