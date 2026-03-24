@@ -42,6 +42,14 @@ pagefind
 
 
 AGENTS.md
+ARCHITECTURE_TASKS.md
+RELEASE_REPORT.md
+
+# test/eval artifacts
+tests/e2e-results.json
+apps/blog/datas/qa-*.json
+apps/blog/datas/qa-*.jsonl
+apps/blog/datas/eval/report.json
 
 .wrangler
 
