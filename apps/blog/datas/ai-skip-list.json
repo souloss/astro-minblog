@@ -1,1 +1,498 @@
-{}
+{
+  "summary:zh/how-to-update-dependencies": {
+    "slug": "zh/how-to-update-dependencies",
+    "task": "summary",
+    "reason": "Unterminated string in JSON at position 520 (line 1 column 521)",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:10:12.915Z",
+    "firstFailedAt": "2026-03-24T10:10:12.915Z"
+  },
+  "summary:en/setup-waline-on-vercel": {
+    "slug": "en/setup-waline-on-vercel",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:10:12.979Z",
+    "firstFailedAt": "2026-03-24T10:10:12.979Z"
+  },
+  "summary:en/setup-umami-analytics": {
+    "slug": "en/setup-umami-analytics",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:10:13.055Z",
+    "firstFailedAt": "2026-03-24T10:10:13.055Z"
+  },
+  "summary:en/cloudflare-env-vars": {
+    "slug": "en/cloudflare-env-vars",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:10.774Z",
+    "firstFailedAt": "2026-03-24T10:11:10.774Z"
+  },
+  "summary:en/ai-module-architecture": {
+    "slug": "en/ai-module-architecture",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:11.118Z",
+    "firstFailedAt": "2026-03-24T10:11:11.118Z"
+  },
+  "summary:zh/ai-module-architecture": {
+    "slug": "zh/ai-module-architecture",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Organization Rate limit exceeded, please try again after 1 seconds\",\"type\":\"rate_limit_reached_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:13.672Z",
+    "firstFailedAt": "2026-03-24T10:11:13.672Z"
+  },
+  "summary:en/complete-setup-guide": {
+    "slug": "en/complete-setup-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:23.485Z",
+    "firstFailedAt": "2026-03-24T10:11:23.485Z"
+  },
+  "summary:zh/settings-panel": {
+    "slug": "zh/settings-panel",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:24.331Z",
+    "firstFailedAt": "2026-03-24T10:11:24.331Z"
+  },
+  "summary:en/settings-panel": {
+    "slug": "en/settings-panel",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:26.263Z",
+    "firstFailedAt": "2026-03-24T10:11:26.263Z"
+  },
+  "summary:en/how-to-update-dependencies": {
+    "slug": "en/how-to-update-dependencies",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:11:40.111Z",
+    "firstFailedAt": "2026-03-24T10:11:40.111Z"
+  },
+  "summary:zh/cloudflare-env-vars": {
+    "slug": "zh/cloudflare-env-vars",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:12:13.506Z",
+    "firstFailedAt": "2026-03-24T10:12:13.506Z"
+  },
+  "summary:zh/complete-setup-guide": {
+    "slug": "zh/complete-setup-guide",
+    "task": "summary",
+    "reason": "Unterminated string in JSON at position 618 (line 1 column 619)",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:12:13.631Z",
+    "firstFailedAt": "2026-03-24T10:12:13.631Z"
+  },
+  "summary:zh/setup-umami-analytics": {
+    "slug": "zh/setup-umami-analytics",
+    "task": "summary",
+    "reason": "Unterminated string in JSON at position 272 (line 1 column 273)",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:12:13.737Z",
+    "firstFailedAt": "2026-03-24T10:12:13.737Z"
+  },
+  "summary:en/ai-guide": {
+    "slug": "en/ai-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:11.897Z",
+    "firstFailedAt": "2026-03-24T10:14:11.897Z"
+  },
+  "summary:en/cli-guide": {
+    "slug": "en/cli-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:18.338Z",
+    "firstFailedAt": "2026-03-24T10:14:18.338Z"
+  },
+  "summary:zh/cli-guide": {
+    "slug": "zh/cli-guide",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:19.837Z",
+    "firstFailedAt": "2026-03-24T10:14:19.837Z"
+  },
+  "summary:zh/setup-waline-on-vercel": {
+    "slug": "zh/setup-waline-on-vercel",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:26.187Z",
+    "firstFailedAt": "2026-03-24T10:14:26.187Z"
+  },
+  "summary:en/notification-guide": {
+    "slug": "en/notification-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:34.233Z",
+    "firstFailedAt": "2026-03-24T10:14:34.233Z"
+  },
+  "summary:en/why-astro-minimax": {
+    "slug": "en/why-astro-minimax",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:36.649Z",
+    "firstFailedAt": "2026-03-24T10:14:36.649Z"
+  },
+  "summary:en/2026-blog-ecosystem": {
+    "slug": "en/2026-blog-ecosystem",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:14:44.676Z",
+    "firstFailedAt": "2026-03-24T10:14:44.676Z"
+  },
+  "summary:zh/2026-blog-ecosystem": {
+    "slug": "zh/2026-blog-ecosystem",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:15:01.633Z",
+    "firstFailedAt": "2026-03-24T10:15:01.633Z"
+  },
+  "summary:zh/why-astro-minimax": {
+    "slug": "zh/why-astro-minimax",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:16:05.051Z",
+    "firstFailedAt": "2026-03-24T10:16:05.051Z"
+  },
+  "summary:en/deployment-guide": {
+    "slug": "en/deployment-guide",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:16:05.858Z",
+    "firstFailedAt": "2026-03-24T10:16:05.858Z"
+  },
+  "summary:en/feature-overview": {
+    "slug": "en/feature-overview",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:18:21.816Z",
+    "firstFailedAt": "2026-03-24T10:18:21.817Z"
+  },
+  "summary:zh/deployment-guide": {
+    "slug": "zh/deployment-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:05.289Z",
+    "firstFailedAt": "2026-03-24T10:19:05.290Z"
+  },
+  "summary:en/how-to-add-latex-equations-in-blog-posts": {
+    "slug": "en/how-to-add-latex-equations-in-blog-posts",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Organization Rate limit exceeded, please try again after 1 seconds\",\"type\":\"rate_limit_reached_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:07.829Z",
+    "firstFailedAt": "2026-03-24T10:19:07.829Z"
+  },
+  "summary:zh/setting-dates-via-git-hooks": {
+    "slug": "zh/setting-dates-via-git-hooks",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:10.167Z",
+    "firstFailedAt": "2026-03-24T10:19:10.167Z"
+  },
+  "summary:en/getting-started": {
+    "slug": "en/getting-started",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Organization Rate limit exceeded, please try again after 1 seconds\",\"type\":\"rate_limit_reached_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:16.569Z",
+    "firstFailedAt": "2026-03-24T10:19:16.569Z"
+  },
+  "summary:zh/how-to-add-latex-equations-in-blog-posts": {
+    "slug": "zh/how-to-add-latex-equations-in-blog-posts",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:16.582Z",
+    "firstFailedAt": "2026-03-24T10:19:16.583Z"
+  },
+  "summary:en/dynamic-og-images": {
+    "slug": "en/dynamic-og-images",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:19.173Z",
+    "firstFailedAt": "2026-03-24T10:19:19.173Z"
+  },
+  "summary:zh/getting-started": {
+    "slug": "zh/getting-started",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:19:23.095Z",
+    "firstFailedAt": "2026-03-24T10:19:23.095Z"
+  },
+  "summary:zh/feature-overview": {
+    "slug": "zh/feature-overview",
+    "task": "summary",
+    "reason": "Unterminated string in JSON at position 379 (line 1 column 380)",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:20:07.440Z",
+    "firstFailedAt": "2026-03-24T10:20:07.440Z"
+  },
+  "summary:en/setting-dates-via-git-hooks": {
+    "slug": "en/setting-dates-via-git-hooks",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:20:08.619Z",
+    "firstFailedAt": "2026-03-24T10:20:08.619Z"
+  },
+  "summary:en/how-to-configure-astro-minimax-theme": {
+    "slug": "en/how-to-configure-astro-minimax-theme",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:22:14.799Z",
+    "firstFailedAt": "2026-03-24T10:22:14.799Z"
+  },
+  "summary:zh/adding-new-post": {
+    "slug": "zh/adding-new-post",
+    "task": "summary",
+    "reason": "Unterminated string in JSON at position 35 (line 1 column 36)",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:22:17.680Z",
+    "firstFailedAt": "2026-03-24T10:22:17.680Z"
+  },
+  "summary:en/adding-new-post": {
+    "slug": "en/adding-new-post",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:22:23.792Z",
+    "firstFailedAt": "2026-03-24T10:22:23.792Z"
+  },
+  "summary:zh/how-to-configure-astro-minimax-theme": {
+    "slug": "zh/how-to-configure-astro-minimax-theme",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:22:28.715Z",
+    "firstFailedAt": "2026-03-24T10:22:28.715Z"
+  },
+  "seo:en/complete-setup-guide": {
+    "slug": "en/complete-setup-guide",
+    "task": "seo",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:24:26.041Z",
+    "firstFailedAt": "2026-03-24T10:24:26.041Z"
+  },
+  "seo:en/how-to-update-dependencies": {
+    "slug": "en/how-to-update-dependencies",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:23.298Z",
+    "firstFailedAt": "2026-03-24T10:25:23.298Z"
+  },
+  "seo:zh/settings-panel": {
+    "slug": "zh/settings-panel",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:31.231Z",
+    "firstFailedAt": "2026-03-24T10:25:31.231Z"
+  },
+  "seo:en/setup-waline-on-vercel": {
+    "slug": "en/setup-waline-on-vercel",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:39.942Z",
+    "firstFailedAt": "2026-03-24T10:25:39.942Z"
+  },
+  "seo:zh/ai-module-architecture": {
+    "slug": "zh/ai-module-architecture",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:40.593Z",
+    "firstFailedAt": "2026-03-24T10:25:40.593Z"
+  },
+  "seo:en/settings-panel": {
+    "slug": "en/settings-panel",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:44.421Z",
+    "firstFailedAt": "2026-03-24T10:25:44.421Z"
+  },
+  "seo:en/ai-module-architecture": {
+    "slug": "en/ai-module-architecture",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:50.167Z",
+    "firstFailedAt": "2026-03-24T10:25:50.167Z"
+  },
+  "seo:en/cloudflare-env-vars": {
+    "slug": "en/cloudflare-env-vars",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:25:52.984Z",
+    "firstFailedAt": "2026-03-24T10:25:52.984Z"
+  },
+  "seo:en/ai-guide": {
+    "slug": "en/ai-guide",
+    "task": "seo",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:27:20.293Z",
+    "firstFailedAt": "2026-03-24T10:27:20.293Z"
+  },
+  "seo:en/2026-blog-ecosystem": {
+    "slug": "en/2026-blog-ecosystem",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:28:21.856Z",
+    "firstFailedAt": "2026-03-24T10:28:21.856Z"
+  },
+  "seo:en/cli-guide": {
+    "slug": "en/cli-guide",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:28:34.673Z",
+    "firstFailedAt": "2026-03-24T10:28:34.673Z"
+  },
+  "seo:zh/ai-guide": {
+    "slug": "zh/ai-guide",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:28:51.901Z",
+    "firstFailedAt": "2026-03-24T10:28:51.901Z"
+  },
+  "seo:en/why-astro-minimax": {
+    "slug": "en/why-astro-minimax",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:28:56.004Z",
+    "firstFailedAt": "2026-03-24T10:28:56.004Z"
+  },
+  "seo:en/notification-guide": {
+    "slug": "en/notification-guide",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:28:56.644Z",
+    "firstFailedAt": "2026-03-24T10:28:56.644Z"
+  },
+  "seo:zh/cli-guide": {
+    "slug": "zh/cli-guide",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:28:59.094Z",
+    "firstFailedAt": "2026-03-24T10:28:59.094Z"
+  },
+  "seo:en/feature-overview": {
+    "slug": "en/feature-overview",
+    "task": "seo",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:29:13.423Z",
+    "firstFailedAt": "2026-03-24T10:29:13.423Z"
+  },
+  "seo:zh/why-astro-minimax": {
+    "slug": "zh/why-astro-minimax",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:30:13.506Z",
+    "firstFailedAt": "2026-03-24T10:30:13.506Z"
+  },
+  "seo:en/dynamic-og-images": {
+    "slug": "en/dynamic-og-images",
+    "task": "seo",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:30:44.885Z",
+    "firstFailedAt": "2026-03-24T10:30:44.885Z"
+  },
+  "seo:zh/deployment-guide": {
+    "slug": "zh/deployment-guide",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:31:31.660Z",
+    "firstFailedAt": "2026-03-24T10:31:31.660Z"
+  },
+  "seo:zh/getting-started": {
+    "slug": "zh/getting-started",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:31:43.989Z",
+    "firstFailedAt": "2026-03-24T10:31:43.989Z"
+  },
+  "seo:en/setting-dates-via-git-hooks": {
+    "slug": "en/setting-dates-via-git-hooks",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:31:57.712Z",
+    "firstFailedAt": "2026-03-24T10:31:57.712Z"
+  },
+  "seo:en/how-to-add-latex-equations-in-blog-posts": {
+    "slug": "en/how-to-add-latex-equations-in-blog-posts",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:32:01.565Z",
+    "firstFailedAt": "2026-03-24T10:32:01.565Z"
+  },
+  "seo:en/getting-started": {
+    "slug": "en/getting-started",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:32:06.920Z",
+    "firstFailedAt": "2026-03-24T10:32:06.920Z"
+  },
+  "seo:zh/how-to-add-latex-equations-in-blog-posts": {
+    "slug": "zh/how-to-add-latex-equations-in-blog-posts",
+    "task": "seo",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:32:13.284Z",
+    "firstFailedAt": "2026-03-24T10:32:13.284Z"
+  },
+  "seo:en/how-to-configure-astro-minimax-theme": {
+    "slug": "en/how-to-configure-astro-minimax-theme",
+    "task": "seo",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-03-24T10:32:39.789Z",
+    "firstFailedAt": "2026-03-24T10:32:39.789Z"
+  }
+}

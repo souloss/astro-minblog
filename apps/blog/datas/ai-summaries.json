@@ -1,8 +1,8 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-13T18:54:59.405Z",
-    "model": "moonshot-v1-8k",
-    "totalProcessed": 18
+    "lastUpdated": "2026-03-24T10:20:16.067Z",
+    "model": "kimi-k2-thinking",
+    "totalProcessed": 20
   },
   "articles": {
     "zh/getting-started": {
@@ -74,25 +74,27 @@
     },
     "zh/dynamic-og-images": {
       "data": {
-        "summary": "astro-minimax v1.4.0 引入动态OG图片生成，提升社交媒体分享效果。",
-        "abstract": "本文介绍了astro-minimax v1.4.0版本中新增的动态OG图片生成功能。OG图片在社交媒体分享中扮演重要角色，而动态生成OG图片可以避免每篇文章使用相同的默认图片。该功能使用Vercel的Satori包，在构建时为未指定OG图片的文章生成包含文章标题、作者名称和网站标题的图片。但动态生成OG图片会增加构建时间，且目前存在一些限制，如不支持RTL语言和emoji问题。",
+        "summary": "astro-minimax 框架内置动态 OG 图片生成功能，使用 Vercel Satori 在构建时为未指定 ogImage 的文章自动生成社交分享图，但大量文章会显著增加构建时间。",
+        "abstract": "astro-minimax 框架通过 Vercel Satori 包实现构建时动态 OG 图片生成，解决静态默认图片重复问题。未在 frontmatter 指定 ogImage 的非草稿文章将自动生成包含文章标题、作者名（SITE.author）和网站标题（SITE.title）的社交分享图。框架区分 cover 和 ogImage 字段，支持灵活的图片回退策略。针对非拉丁字符显示问题，需修改 src/utils/loadGoogleFont.ts 中的字体配置。该功能存在构建性能权衡，每生成一张图片约需 1 秒，文章数量多时显著增加构建时间。此外，Satori 尚未支持 RTL 语言和 emoji，存在兼容性限制。",
         "keyPoints": [
-          "astro-minimax v1.4.0支持动态OG图片生成",
-          "使用Vercel Satori包构建时生成OG图片",
-          "OG图片包含文章标题、作者和网站标题",
-          "动态OG图片增加构建时间",
-          "不支持RTL语言和emoji问题"
+          "astro-minimax 使用 Satori 在构建时自动生成 OG 图片",
+          "未指定 ogImage 的非草稿文章会触发自动生成",
+          "动态图片包含标题、作者名和网站标题",
+          "非拉丁字符需修改 loadGoogleFont.ts 字体配置",
+          "每张图片生成约需 1 秒，构建时间线性增长",
+          "Satori 不支持 RTL 语言和 emoji 显示"
         ],
         "tags": [
           "astro-minimax",
+          "Satori",
           "OG图片",
-          "社交媒体",
-          "动态生成"
+          "构建性能",
+          "frontmatter"
         ],
-        "readingTime": 3
+        "readingTime": 5
       },
-      "contentHash": "ac3bfe32",
-      "processedAt": "2026-03-13T18:54:17.513Z"
+      "contentHash": "61ba4690",
+      "processedAt": "2026-03-24T10:20:16.067Z"
     },
     "zh/predefined-color-schemes": {
       "data": {
@@ -403,6 +405,54 @@
       },
       "contentHash": "2c1cc2a1",
       "processedAt": "2026-03-13T18:54:59.405Z"
+    },
+    "zh/ai-guide": {
+      "data": {
+        "summary": "配置astro-minimax AI聊天系统，通过启用功能、配置Provider、设置故障转移与工具调用，实现多Provider自动切换、RAG检索增强的流式聊天助手。",
+        "abstract": "astro-minimax内置AI聊天助手，支持多Provider自动故障转移、RAG检索增强与流式响应。配置流程包括：在src/config.ts启用AI功能，于.env配置OpenAI兼容API或Cloudflare Workers AI，执行CLI命令构建文章摘要与作者画像，启动开发服务器即可使用。系统采用三级故障转移机制，优先Workers AI，失败3次后切换OpenAI API，最终降级至Mock模式。提供7种客户端/服务端工具调用，支持主题切换、文章导航等操作。安全特性包括L1-L5来源优先级协议、隐私保护自动过滤敏感信息、7类意图分类。支持通过datas/extensions扩展系统注入自定义数据，内置质量评估工具与通知集成。Mock模式便于开发测试，无需真实API密钥。",
+        "keyPoints": [
+          "astro-minimax AI聊天助手需配置Provider与构建数据",
+          "在config.ts启用功能并在.env配置OpenAI兼容API",
+          "三级故障转移机制优先Workers AI失败后降级到Mock",
+          "7种工具调用支持主题切换文章导航等客户端操作",
+          "L1-L5来源协议与隐私过滤确保AI回答安全可信",
+          "扩展系统通过priority字段控制自定义数据优先级"
+        ],
+        "tags": [
+          "astro-minimax",
+          "AI聊天配置",
+          "RAG检索",
+          "Provider故障转移",
+          "工具调用"
+        ],
+        "readingTime": 9
+      },
+      "contentHash": "d9d8e46a",
+      "processedAt": "2026-03-24T10:14:05.695Z"
+    },
+    "zh/notification-guide": {
+      "data": {
+        "summary": "astro-minimax 内置通知系统支持 Telegram、Email、Webhook 多渠道，通过配置环境变量获取 Token/Chat ID/API Key，即可在新评论或 AI 对话时实时接收带 Token 用量和耗时的通知。",
+        "abstract": "astro-minimax 框架内置多渠道通知系统，解决博客评论与 AI 对话的实时通知需求。系统支持 Telegram Bot、Resend Email 和 Webhook 三种渠道，通过以 NOTIFY_ 为前缀的环境变量配置实现。配置 Telegram 需从 @BotFather 获取 Bot Token、@userinfobot 获取 Chat ID；Email 需注册 Resend 获取 API Key 并验证域名；Webhook 配置接收端 URL 即可。系统提供 Waline 评论系统集成，支持 POST /api/notify/comment 触发通知，并允许通过 createNotifier 自定义消息模板。架构采用容错设计，各渠道并行发送失败互不影响，同时支持 HTTP_PROXY 代理访问。通知内容包含 Token 用量、阶段耗时、引用文章等丰富信息，Session ID 自动匿名化保护隐私。",
+        "keyPoints": [
+          "多渠道通知支持 Telegram、Email、Webhook 三种方式",
+          "环境变量以 NOTIFY_ 前缀配置 Token 和 ID",
+          "Telegram 需 @BotFather 获取 Bot Token 和 @userinfobot 获取 Chat ID",
+          "Email 需 Resend API Key 及域名验证发送邮件",
+          "Waline 评论系统通过 Webhook 端点触发通知",
+          "架构容错并行发送，单渠道失败不影响主流程"
+        ],
+        "tags": [
+          "Astro",
+          "通知系统",
+          "Telegram Bot",
+          "Resend",
+          "Webhook"
+        ],
+        "readingTime": 6
+      },
+      "contentHash": "db941147",
+      "processedAt": "2026-03-24T10:14:06.609Z"
     }
   }
 }

@@ -66,7 +66,18 @@ export function useTypewriter(fullText: string, isStreaming: boolean): string {
     };
   }, [isStreaming, fullText]);
 
-  return fullText.slice(0, displayedLength) || (isStreaming ? '' : fullText);
+  if (!isStreaming) return fullText;
+  if (displayedLength <= 0) return '';
+  if (displayedLength >= fullText.length) return fullText;
+
+  let end = displayedLength;
+  const fence = fullText.indexOf('```', Math.max(0, end - 2));
+  if (fence !== -1 && fence < end + 3) {
+    const fenceEnd = fence + 3;
+    const newline = fullText.indexOf('\n', fenceEnd);
+    end = newline !== -1 ? newline + 1 : fenceEnd;
+  }
+  return fullText.slice(0, end);
 }
 
 // ── Message Text Extractor ────────────────────────────────────

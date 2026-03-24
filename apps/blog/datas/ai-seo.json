@@ -1,8 +1,8 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-13T18:55:44.589Z",
-    "model": "moonshot-v1-8k",
-    "totalProcessed": 18
+    "lastUpdated": "2026-03-24T10:32:43.269Z",
+    "model": "kimi-k2-thinking",
+    "totalProcessed": 27
   },
   "articles": {
     "zh/how-to-add-latex-equations-in-blog-posts": {
@@ -39,19 +39,20 @@
     },
     "zh/setting-dates-via-git-hooks": {
       "data": {
-        "metaDescription": "本文介绍了如何利用Git钩子自动填充博客主题frontmatter中的创建日期和修改日期，通过pre-commit钩子实现自动化更新，提高内容管理效率。",
+        "metaDescription": "介绍如何通过 Git 钩子自动管理 astro-minimax 博客的发布日期和修改日期，提供 CLI 一键安装 Husky 和手动配置 pre-commit 脚本两种方式。智能识别新文章、内容修改及首次发布场景，自动填充 pubDatetime 与 modDatetime 字段，只处理空值不覆盖手动设置，彻底解决手动维护日期繁琐易忘的问题，支持 Monorepo 项目结构。",
         "keywords": [
-          "Git钩子",
-          "自动化任务",
-          "frontmatter日期",
-          "pre-commit钩子",
-          "Husky",
-          "astro-minimax"
+          "Git 钩子自动设置日期",
+          "astro-minimax",
+          "Husky pre-commit 配置",
+          "博客 frontmatter 日期管理",
+          "自动填充 pubDatetime modDatetime",
+          "首次发布自动化",
+          "Monorepo 日期管理"
         ],
-        "ogDescription": "掌握如何使用Git钩子自动更新博客文章的创建和修改日期，提高内容管理效率，让自动化流程更简单。"
+        "ogDescription": "手动维护博客文章日期总忘记？教你用 Git 钩子自动填充 astro-minimax 的 pubDatetime 和 modDatetime，支持 Husky 一键安装和手动配置，智能处理新文章、修改和首次发布场景，只填空值不覆盖设置，告别繁琐操作。"
       },
-      "contentHash": "30a0264b",
-      "processedAt": "2026-03-13T18:55:02.050Z"
+      "contentHash": "1c59eae3",
+      "processedAt": "2026-03-24T10:29:54.596Z"
     },
     "zh/predefined-color-schemes": {
       "data": {
@@ -116,18 +117,21 @@
     },
     "en/adding-new-post": {
       "data": {
-        "metaDescription": "Learn how to create new blog posts in the astro-minimax theme, including organizing posts in subdirectories, managing frontmatter properties, and optimizing for SEO with unique slugs and tags.",
+        "metaDescription": "Learn to create blog posts in astro-minimax theme with CLI commands, frontmatter setup, directory organization, and URL structure for better content management.",
         "keywords": [
-          "astro-minimax theme",
-          "blog post creation",
-          "frontmatter properties",
-          "SEO optimization",
-          "content management"
+          "astro-minimax",
+          "Astro blog posts",
+          "frontmatter configuration",
+          "astro-minimax CLI",
+          "create posts in Astro",
+          "Astro blog directory structure",
+          "Astro URL routing",
+          "astro-minimax theme tutorial"
         ],
-        "ogDescription": "Discover the step-by-step guide to adding new posts in astro-minimax theme, from organizing content to optimizing for search engines."
+        "ogDescription": "Master adding posts in astro-minimax with CLI shortcuts, frontmatter tips, and directory organization for clean URL structure."
       },
-      "contentHash": "00b1c842",
-      "processedAt": "2026-03-13T18:55:08.181Z"
+      "contentHash": "73f38191",
+      "processedAt": "2026-03-24T10:31:36.607Z"
     },
     "zh/adding-new-post": {
       "data": {
@@ -180,33 +184,39 @@
     },
     "zh/dynamic-og-images": {
       "data": {
-        "metaDescription": "astro-minimax v1.4.0 新增动态OG图片生成功能，为博客文章自动创建个性化社交图片，提升社交媒体互动效果。",
+        "metaDescription": "astro-minimax 内置动态 OG 图片生成功能，可在构建时为未指定 ogImage 的文章自动生成社交分享图。本文详解 cover 与 ogImage 字段的区别与回退机制，基于 Vercel Satori 的实现原理，包含标题、作者和网站标题的生成方式，非拉丁字符的字体配置方法，以及每张图片约 1 秒生成时间对构建效率的影响和当前功能限制。",
         "keywords": [
           "astro-minimax",
-          "动态OG图片",
-          "社交图片",
+          "动态 OG 图片",
           "Satori",
-          "社交媒体互动"
+          "astro-minimax OG 图片生成",
+          "社交分享图自动生成",
+          "Satori 字体配置",
+          "OG 图片构建时间优化",
+          "astro-minimax cover 与 ogImage 区别"
         ],
-        "ogDescription": "astro-minimax v1.4.0 版本更新，现在可以为每篇博客文章自动生成个性化的OG图片，提升社交媒体分享效果。"
+        "ogDescription": "astro-minimax 可为博客文章自动生成动态 OG 图片，省去手动配置烦恼。本文详解 cover 与 ogImage 区别、基于 Vercel Satori 的实现原理、字体配置技巧，并剖析生成耗时对构建时间的影响，助你优化社交分享效果。"
       },
-      "contentHash": "ac3bfe32",
-      "processedAt": "2026-03-13T18:55:10.941Z"
+      "contentHash": "61ba4690",
+      "processedAt": "2026-03-24T10:31:01.627Z"
     },
     "zh/how-to-configure-astro-minimax-theme": {
       "data": {
-        "metaDescription": "本文介绍了如何配置astro-minimax主题，包括设置网站信息、布局宽度和自定义logo或标题，以实现个性化的Astro博客。",
+        "metaDescription": "astro-minimax是一款高度可定制的Astro博客主题。本文提供完整的src/config.ts配置指南，详解站点基础信息、功能开关、导航菜单、项目展示、社交链接等基础模块设置，并深入讲解Waline评论系统、Algolia搜索、AI聊天助手等高级功能的集成配置步骤，帮助开发者快速打造功能完善的个性化博客。",
         "keywords": [
-          "astro-minimax 配置",
-          "Astro 博客主题",
-          "网站配置",
-          "SEO 优化",
-          "个性化博客"
+          "astro-minimax",
+          "Astro主题配置",
+          "astro-minimax配置教程",
+          "博客主题定制",
+          "Waline评论配置",
+          "Algolia搜索集成",
+          "AI聊天功能",
+          "导航菜单配置"
         ],
-        "ogDescription": "掌握astro-minimax主题配置，打造个性化Astro博客，提升SEO效果。"
+        "ogDescription": "想自定义astro-minimax博客主题？这篇教程手把手教你配置config.ts，从站点信息、功能开关到Waline评论、Algolia搜索、AI聊天等高级功能，让你的Astro博客更贴合需求。"
       },
-      "contentHash": "52a50294",
-      "processedAt": "2026-03-13T18:55:14.550Z"
+      "contentHash": "6be26396",
+      "processedAt": "2026-03-24T10:32:43.269Z"
     },
     "en/how-to-update-dependencies": {
       "data": {
@@ -225,18 +235,21 @@
     },
     "zh/how-to-update-dependencies": {
       "data": {
-        "metaDescription": "本文介绍了如何更新astro-minimax项目的依赖，包括手动更新和使用npm-check-updates工具，以及如何更新astro-minimax模板而不破坏自定义内容。",
+        "metaDescription": "astro-minimax用户面临依赖更新难题？本文提供快速更新命令与分阶段更新策略。使用pnpm可一键更新核心包，配合npm-check-updates工具智能识别补丁、次版本及主版本变更，降低升级风险。针对GitHub模板用户，还详解了通过Git远程合并实现模板同步的完整流程，包含冲突解决技巧，帮助你高效管理项目依赖并保持代码库最新。",
         "keywords": [
           "astro-minimax",
-          "项目依赖更新",
+          "更新依赖",
           "npm-check-updates",
-          "依赖管理",
-          "模板更新"
+          "pnpm update",
+          "GitHub模板更新",
+          "前端依赖管理",
+          "依赖版本升级",
+          "项目维护"
         ],
-        "ogDescription": "掌握如何高效更新astro-minimax项目的依赖和模板，确保你的项目保持最新，避免潜在的兼容性问题。"
+        "ogDescription": "想知道如何轻松更新astro-minimax依赖？这篇教程教你使用pnpm命令快速升级核心包，配合npm-check-updates工具分阶段安全更新，还有GitHub模板同步的完整攻略，让你的项目始终保持最新状态。"
       },
-      "contentHash": "20cb5ee3",
-      "processedAt": "2026-03-13T18:55:20.874Z"
+      "contentHash": "d9718e63",
+      "processedAt": "2026-03-24T10:24:20.765Z"
     },
     "en/setting-dates-via-git-hooks": {
       "data": {
@@ -285,6 +298,166 @@
       },
       "contentHash": "3a5a6b2b",
       "processedAt": "2026-03-13T18:55:44.589Z"
+    },
+    "en/setup-umami-analytics": {
+      "data": {
+        "metaDescription": "Deploy Umami analytics free on Vercel with Neon PostgreSQL. Privacy-friendly, GDPR-compliant alternative to Google Analytics with cookie-free tracking for personal blogs and small websites.",
+        "keywords": [
+          "Umami analytics",
+          "Vercel deployment",
+          "Neon PostgreSQL",
+          "free web analytics",
+          "privacy friendly analytics",
+          "Umami Docker deployment",
+          "GDPR compliant analytics",
+          "Umami setup guide"
+        ],
+        "ogDescription": "Deploy Umami analytics for free on Vercel + Neon. Privacy-friendly, GDPR-compliant tracking without cookies. Step-by-step tutorial."
+      },
+      "contentHash": "9219e50c",
+      "processedAt": "2026-03-24T10:24:07.834Z"
+    },
+    "zh/cloudflare-env-vars": {
+      "data": {
+        "metaDescription": "详解Cloudflare Pages环境变量配置方法，帮助astro-minimax博客实现完整功能。区分构建时与运行时变量，覆盖必需变量（NODE_VERSION、AI_BINDING_NAME）与Telegram、Resend等可选通知配置，提供Dashboard设置步骤、wrangler.toml配置、KV Namespace绑定及安全最佳实践，解决构建失败、AI功能失效、通知发送失败等常见问题。",
+        "keywords": [
+          "Cloudflare Pages",
+          "环境变量配置",
+          "astro-minimax",
+          "Cloudflare Pages部署教程",
+          "Node.js版本配置",
+          "AI Binding配置方法",
+          "KV Namespace绑定",
+          "环境变量故障排查"
+        ],
+        "ogDescription": "在Cloudflare Pages部署astro-minimax博客时环境变量配置不当导致功能缺失？本文手把手教你设置构建时与运行时变量，覆盖必需配置、通知系统、AI Binding等，帮你快速解决构建失败、AI功能失效等问题。"
+      },
+      "contentHash": "a139b2bf",
+      "processedAt": "2026-03-24T10:25:10.821Z"
+    },
+    "zh/complete-setup-guide": {
+      "data": {
+        "metaDescription": "本指南详细介绍如何从零开始搭建功能齐全的astro-minimax博客，45-60分钟内完成Cloudflare Pages部署、Waline评论系统配置、Umami隐私统计、Telegram即时通知及Cloudflare Workers AI聊天助手集成。涵盖项目创建、站点配置、环境变量设置、数据库初始化全流程，并提供部署失败、评论不显示等常见问题的排查方法，帮助开发者快速建立现代化个人博客。",
+        "keywords": [
+          "astro-minimax博客搭建",
+          "Cloudflare Pages部署",
+          "Astro博客教程",
+          "Waline评论系统配置",
+          "Umami访问统计部署",
+          "Vercel+Neon数据库配置",
+          "Telegram博客通知",
+          "Workers AI聊天集成"
+        ],
+        "ogDescription": "想快速搭建功能齐全的个人博客？这篇指南带你45分钟完成astro-minimax博客部署，集成评论、统计、通知和AI聊天功能，包含详细的Cloudflare和Vercel配置步骤及故障排查技巧，适合开发者一步到位建立现代化技术博客。"
+      },
+      "contentHash": "7ac69db5",
+      "processedAt": "2026-03-24T10:25:23.999Z"
+    },
+    "zh/setup-umami-analytics": {
+      "data": {
+        "metaDescription": "详细介绍如何使用Vercel和Neon PostgreSQL免费部署Umami网站统计工具，实现隐私友好的数据分析方案。对比Vercel+Neon、Docker自托管、Umami Cloud三种部署方案，提供完整配置步骤、Neon数据库连接、域名绑定及博客集成方法。方案完全兼顾GDPR合规与数据所有权，无需服务器即可零成本部署，适合个人博客与小型网站。",
+        "keywords": [
+          "Umami 网站统计",
+          "Vercel 部署",
+          "Neon PostgreSQL",
+          "Umami Vercel 免费部署教程",
+          "Umami Docker 自托管部署",
+          "网站统计工具 GDPR 合规",
+          "Umami 博客集成配置"
+        ],
+        "ogDescription": "想摆脱Google Analytics的Cookie追踪？用Vercel和Neon免费部署Umami，5分钟实现隐私友好的网站统计。无需服务器，一键部署，完全掌控数据，轻松集成到博客。"
+      },
+      "contentHash": "20c206e4",
+      "processedAt": "2026-03-24T10:26:03.220Z"
+    },
+    "zh/setup-waline-on-vercel": {
+      "data": {
+        "metaDescription": "本教程详细介绍如何在Vercel上部署Waline评论系统，使用Vercel自带的Neon PostgreSQL作为数据库存储评论数据。为astro-minimax博客集成简洁安全的评论功能，支持Markdown语法、邮件通知、Webhook通知和多语言特性。涵盖数据库创建与表结构初始化、一键部署Waline服务端、配置Resend或SMTP邮件服务、设置Webhook推送至Telegram等完整流程，帮助博主快速搭建功能完善的评论系统。",
+        "keywords": [
+          "Waline部署",
+          "Vercel评论系统",
+          "Neon PostgreSQL",
+          "Waline Vercel教程",
+          "博客评论系统搭建",
+          "astro-minimax集成",
+          "Resend邮件配置",
+          "Webhook通知"
+        ],
+        "ogDescription": "手把手教你免费在Vercel部署Waline评论系统，为astro-minimax博客添加Markdown评论、邮件通知和Webhook推送功能。使用Neon PostgreSQL数据库，完整配置流程，轻松搭建安全高效的评论系统。"
+      },
+      "contentHash": "52cf042a",
+      "processedAt": "2026-03-24T10:27:01.410Z"
+    },
+    "zh/notification-guide": {
+      "data": {
+        "metaDescription": "astro-minimax 内置多渠道通知系统，支持 Telegram Bot、Email 和 Webhook 三种方式。当博客收到新评论或 AI 对话时自动推送消息，帮助站长实时掌握站点动态。配置仅需设置 NOTIFY_ 开头的环境变量，涵盖 Telegram Token 与 Chat ID 获取、Resend 邮件 API 配置、Webhook 地址设置等详细步骤，并支持 Waline 评论系统集成与自定义通知模板，实现高效便捷的博客通知管理。",
+        "keywords": [
+          "astro-minimax 通知系统",
+          "Telegram Bot 配置",
+          "Resend 邮件配置",
+          "博客评论通知怎么做",
+          "Webhook 集成教程",
+          "Waline Webhook 配置",
+          "AI 对话通知",
+          "环境变量配置方法"
+        ],
+        "ogDescription": "想实时接收博客评论和 AI 对话通知？这篇指南教你配置 astro-minimax 的多渠道通知系统，通过简单的环境变量设置，轻松集成 Telegram Bot、Resend 邮件和 Webhook，让博客动态不再错过。"
+      },
+      "contentHash": "db941147",
+      "processedAt": "2026-03-24T10:27:39.033Z"
+    },
+    "zh/2026-blog-ecosystem": {
+      "data": {
+        "metaDescription": "2026年个人技术博客生态全览，系统性梳理框架选型、内容管理、样式系统、搜索评论、AI集成等10大能力域决策树。深度对比Astro、Hugo、Next.js等SSG与全栈方案，详解Headless CMS、隐私友好分析、零成本部署与AI聊天实现，帮助开发者避开选型陷阱，构建高性能、可扩展的博客系统。",
+        "keywords": [
+          "个人技术博客",
+          "博客框架选型",
+          "博客系统构建",
+          "Astro博客搭建",
+          "博客AI集成",
+          "静态站点生成器对比",
+          "Headless CMS集成"
+        ],
+        "ogDescription": "2026年最新个人技术博客搭建指南，从框架选型到AI功能集成，覆盖部署运维全流程。帮你避开10个技术决策陷阱，快速构建高性能博客并获取流量。"
+      },
+      "contentHash": "07cbad1f",
+      "processedAt": "2026-03-24T10:28:30.618Z"
+    },
+    "en/deployment-guide": {
+      "data": {
+        "metaDescription": "Deploy astro-minimax blog to Cloudflare Pages, Vercel, Netlify and Docker. Step-by-step guide for monorepo and CLI project types with build configurations and environment variables.",
+        "keywords": [
+          "astro-minimax deployment",
+          "Cloudflare Pages Astro",
+          "deploy astro blog",
+          "astro-minimax monorepo",
+          "Vercel Netlify deployment",
+          "Docker static site",
+          "wrangler.toml configuration",
+          "static site build guide"
+        ],
+        "ogDescription": "Deploy astro-minimax blog to Cloudflare Pages, Vercel, Netlify & Docker. Guide for monorepo and CLI project configurations."
+      },
+      "contentHash": "7a69dc6b",
+      "processedAt": "2026-03-24T10:29:02.790Z"
+    },
+    "zh/feature-overview": {
+      "data": {
+        "metaDescription": "astro-minimax是一个功能丰富的模块化Astro博客主题，由core、ai、notify、cli四核架构组成。内置AI智能聊天、Pagefind全文搜索、Mermaid图表、Markmap思维导图等可视化组件，支持Markdown/MDX多语言内容管理、自定义配色与明暗模式切换，提供完整SEO优化、动态OG图片和Lighthouse 90+性能表现。",
+        "keywords": [
+          "astro-minimax",
+          "Astro博客主题",
+          "模块化架构",
+          "AI聊天功能",
+          "Pagefind全文搜索",
+          "可视化组件",
+          "Markdown MDX支持",
+          "多语言配置"
+        ],
+        "ogDescription": "astro-minimax功能特性总览：模块化Astro博客主题，集成AI聊天、RAG检索、Pagefind全文搜索和Mermaid等20+可视化组件，支持多语言与自定义主题，助你快速搭建Lighthouse 90+的高性能博客。"
+      },
+      "contentHash": "610ddfd7",
+      "processedAt": "2026-03-24T10:29:22.249Z"
     }
   }
 }

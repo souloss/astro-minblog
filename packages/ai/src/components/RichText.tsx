@@ -73,6 +73,7 @@ interface BlockNode {
   lang?: string;
   ordered?: boolean;
   items?: string[];
+  unclosed?: boolean;
 }
 
 export function parseBlocks(text: string): BlockNode[] {
@@ -87,12 +88,22 @@ export function parseBlocks(text: string): BlockNode[] {
       const lang = line.slice(3).trim();
       const codeLines: string[] = [];
       i++;
-      while (i < lines.length && !lines[i].startsWith('```')) {
+      let closed = false;
+      while (i < lines.length) {
+        if (lines[i].startsWith('```')) {
+          closed = true;
+          i++;
+          break;
+        }
         codeLines.push(lines[i]);
         i++;
       }
-      if (i < lines.length) i++;
-      blocks.push({ type: 'code-block', content: codeLines.join('\n'), lang: lang || undefined });
+      blocks.push({
+        type: 'code-block',
+        content: codeLines.join('\n'),
+        lang: lang || undefined,
+        unclosed: !closed,
+      });
       continue;
     }
 
@@ -158,7 +169,7 @@ export function RichText({ text, isStreaming }: { text: string; isStreaming?: bo
                 key={i} 
                 code={block.content} 
                 lang={block.lang} 
-                isStreaming={isStreaming}
+                isStreaming={isStreaming || block.unclosed}
               />
             );
           case 'blockquote':

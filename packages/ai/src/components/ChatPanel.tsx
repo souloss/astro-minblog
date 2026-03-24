@@ -252,6 +252,11 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       
       if (!executor) {
         console.warn('[ChatPanel] ActionExecutor not initialized');
+        addToolOutput({
+          tool: toolCall.toolName,
+          toolCallId: toolCall.toolCallId,
+          output: { success: false, error: 'ActionExecutor not initialized' },
+        });
         return;
       }
 
@@ -286,6 +291,11 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       const mapper = TOOL_ACTION_MAP[toolCall.toolName];
       if (!mapper) {
         console.warn('[ChatPanel] Unknown tool:', toolCall.toolName);
+        addToolOutput({
+          tool: toolCall.toolName,
+          toolCallId: toolCall.toolCallId,
+          output: { success: false, error: `Unknown tool: ${toolCall.toolName}` },
+        });
         return;
       }
 
