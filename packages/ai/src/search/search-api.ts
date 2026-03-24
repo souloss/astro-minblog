@@ -32,6 +32,8 @@ export function initProjectIndex(documents: SearchDocument[]): void {
 
 export function initArticleChunks(chunksData: Record<string, ArticleChunk[]>): void {
   articleChunks = new Map(Object.entries(chunksData));
+  const totalChunks = [...articleChunks.values()].reduce((sum, c) => sum + c.length, 0);
+  console.log(`[search] Loaded chunks: ${articleChunks.size} articles, ${totalChunks} total chunks`);
 }
 
 export function hasArticleChunks(): boolean {

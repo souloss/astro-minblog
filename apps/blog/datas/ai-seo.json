@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-24T10:32:43.269Z",
+    "lastUpdated": "2026-03-24T10:33:28.098Z",
     "model": "kimi-k2-thinking",
     "totalProcessed": 27
   },
@@ -135,18 +135,20 @@
     },
     "zh/adding-new-post": {
       "data": {
-        "metaDescription": "本文介绍了在astro-minimax主题中创建新博客文章的步骤和技巧，包括文章结构、frontmatter配置、目录添加和图片存储方法，帮助用户高效管理博客内容。",
+        "metaDescription": "astro-minimax 博客主题创建新文章完整教程。详细介绍 CLI 命令快速创建文章、frontmatter 必填字段与SEO优化配置、子目录URL映射规则（支持下划线前缀跳过目录层级）、自定义 slug 覆盖机制，以及图片存储最佳实践（推荐 src/assets/自动优化）和语法高亮定制方法，帮助开发者高效管理博客内容并提升SEO效果。",
         "keywords": [
-          "astro-minimax",
-          "博客文章创建",
-          "frontmatter",
-          "博客内容管理",
-          "SEO优化"
+          "astro-minimax 创建文章",
+          "astro-minimax frontmatter 配置",
+          "astro-minimax CLI 命令",
+          "astro-minimax 博客主题教程",
+          "astro-minimax 子目录 URL 规则",
+          "astro-minimax 图片存储",
+          "astro-minimax SEO 优化"
         ],
-        "ogDescription": "掌握在astro-minimax主题中添加新文章的详细步骤，提升博客内容管理效率，增强SEO表现。"
+        "ogDescription": "想在 astro-minimax 中快速发布博客？这篇教程详解 CLI 创建命令、frontmatter 必填字段配置、子目录 URL 规则和图片存储最佳实践，帮你轻松搞定博客发布与 SEO 优化。"
       },
-      "contentHash": "b1df2a70",
-      "processedAt": "2026-03-13T18:55:08.452Z"
+      "contentHash": "509b4cf1",
+      "processedAt": "2026-03-24T10:33:28.098Z"
     },
     "en/how-to-add-latex-equations-in-blog-posts": {
       "data": {

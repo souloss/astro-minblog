@@ -225,6 +225,7 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
 
   let chunksSection = '';
   const articlesWithChunks = relatedArticles.filter((a: { chunks?: unknown[] }) => a.chunks && a.chunks.length > 0);
+  if (env.AI_DEBUG) console.log(`[chat-handler] Chunk injection: ${relatedArticles.length} articles found, ${articlesWithChunks.length} with chunks`);
   if (articlesWithChunks.length > 0) {
     try {
       const { selectRelevantChunks, formatChunksForInjection } = await import('../search/hybrid-search.js');
@@ -232,6 +233,7 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
       const matchedChunks = selectRelevantChunks(latestText, articlesWithChunks as never[], {
         maxTokens: CHUNK_INJECTION.MAX_TOKENS, minChunkScore: CHUNK_INJECTION.MIN_CHUNK_SCORE, maxChunksPerArticle: CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE,
       });
+      if (env.AI_DEBUG) console.log(`[chat-handler] Matched chunks: ${matchedChunks.length} (query: "${latestText.substring(0, 50)}")`);
       if (matchedChunks.length > 0) {
         const sessionCacheKey = cacheKey || undefined;
         const newChunks = sessionCacheKey
@@ -241,10 +243,13 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
           chunksSection = formatChunksForInjection(
             matchedChunks.filter((m: { chunk: { id: string } }) => newChunks.some((nc: { id: string }) => nc.id === m.chunk.id)), 1500
           );
+          if (env.AI_DEBUG) console.log(`[chat-handler] Injected ${newChunks.length} chunks (${chunksSection.length} chars)`);
           if (sessionCacheKey) injectionCache.markAsInjected(sessionCacheKey, newChunks.map((c: { id: string }) => c.id));
         }
       }
-    } catch { /* chunk injection is best-effort */ }
+    } catch (err) {
+      if (env.AI_DEBUG) console.log(`[chat-handler] Chunk injection failed:`, (err as Error).message);
+    }
   }
 
   const systemPrompt = buildSystemPrompt({
