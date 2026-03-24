@@ -14,22 +14,103 @@ type InlinePart =
   | { type: 'bold'; text: string }
   | { type: 'code'; text: string };
 
-export function parseInlineMarkdown(text: string): InlinePart[] {
+/**
+ * 更健壮的 Markdown 链接解析器
+ * 
+ * 处理以下边界情况：
+ * 1. URL 中包含括号：[text](url(with)parentheses)
+ * 2. 标签中包含方括号：[text [with] brackets](url)
+ * 3. 未闭合的语法：[text](url 或 [text](url)
+ */
+export function parseInlineMarkdownRobust(text: string): InlinePart[] {
   const parts: InlinePart[] = [];
-  const re = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|`([^`]+)`/g;
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push({ type: 'text', text: text.slice(lastIndex, match.index) });
+  let i = 0;
+  
+  while (i < text.length) {
+    // 检测链接开始
+    if (text[i] === '[') {
+      const linkResult = tryParseLink(text, i);
+      if (linkResult) {
+        parts.push({ type: 'link', label: linkResult.label, url: linkResult.url });
+        i = linkResult.endIndex;
+        continue;
+      }
     }
-    if (match[1] && match[2]) parts.push({ type: 'link', label: match[1], url: match[2] });
-    else if (match[3]) parts.push({ type: 'bold', text: match[3] });
-    else if (match[4]) parts.push({ type: 'code', text: match[4] });
-    lastIndex = match.index + match[0].length;
+    
+    // 检测粗体开始
+    if (text.slice(i, i + 2) === '**') {
+      const boldEnd = text.indexOf('**', i + 2);
+      if (boldEnd !== -1) {
+        parts.push({ type: 'bold', text: text.slice(i + 2, boldEnd) });
+        i = boldEnd + 2;
+        continue;
+      }
+    }
+    
+    // 检测行内代码开始
+    if (text[i] === '`' && text[i + 1] !== '`') {
+      const codeEnd = text.indexOf('`', i + 1);
+      if (codeEnd !== -1) {
+        parts.push({ type: 'code', text: text.slice(i + 1, codeEnd) });
+        i = codeEnd + 1;
+        continue;
+      }
+    }
+    
+    // 收集纯文本直到下一个特殊字符
+    let textEnd = i + 1;
+    while (textEnd < text.length && 
+           text[textEnd] !== '[' && 
+           text[textEnd] !== '*' && 
+           text[textEnd] !== '`') {
+      textEnd++;
+    }
+    
+    if (textEnd > i) {
+      parts.push({ type: 'text', text: text.slice(i, textEnd) });
+    }
+    i = textEnd;
   }
-  if (lastIndex < text.length) parts.push({ type: 'text', text: text.slice(lastIndex) });
+  
   return parts;
+}
+
+/**
+ * 尝试从指定位置解析链接
+ * 返回 { label, url, endIndex } 或 null
+ */
+function tryParseLink(text: string, start: number): { label: string; url: string; endIndex: number } | null {
+  if (text[start] !== '[') return null;
+  
+  // 找到标签结束位置（处理嵌套方括号）
+  let depth = 1;
+  let labelEnd = start + 1;
+  while (labelEnd < text.length && depth > 0) {
+    if (text[labelEnd] === '[') depth++;
+    else if (text[labelEnd] === ']') depth--;
+    else if (text[labelEnd] === '\\' && labelEnd + 1 < text.length) labelEnd++; // 跳过转义字符
+    labelEnd++;
+  }
+  
+  if (depth !== 0 || labelEnd >= text.length || text[labelEnd] !== '(') return null;
+  
+  const label = text.slice(start + 1, labelEnd - 1).replace(/\\(.)/g, '$1');
+  
+  // 找到 URL 结束位置（处理嵌套括号）
+  const urlStart = labelEnd + 1;
+  depth = 1;
+  let urlEnd = urlStart;
+  while (urlEnd < text.length && depth > 0) {
+    if (text[urlEnd] === '(') depth++;
+    else if (text[urlEnd] === ')') depth--;
+    urlEnd++;
+  }
+  
+  if (depth !== 0) return null;
+  
+  const url = text.slice(urlStart, urlEnd - 1).trim();
+  
+  return { label, url, endIndex: urlEnd };
 }
 
 function ExternalLinkIcon() {
@@ -41,7 +122,7 @@ function ExternalLinkIcon() {
 }
 
 export function InlineRichText({ text }: { text: string }) {
-  const parts = useMemo(() => parseInlineMarkdown(text), [text]);
+  const parts = useMemo(() => parseInlineMarkdownRobust(text), [text]);
   return (
     <span>
       {parts.map((p, i) => {

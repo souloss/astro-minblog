@@ -28,7 +28,7 @@ import {
 } from '../intelligence/index.js';
 import { buildSystemPrompt } from '../prompt/index.js';
 import { getAuthorContext, getVoiceProfile } from '../data/index.js';
-import { mergeResults, searchArticles, searchProjects, getSessionCacheKey, getCachedContext, setCachedContext } from '../search/index.js';
+import { mergeResults, searchArticles, searchProjects, getSessionCacheKey, getCachedContext, setCachedContext, getArticleChunks } from '../search/index.js';
 import { getProviderManager } from '../provider-manager/index.js';
 import { createCacheAdapter, getGlobalSearchCache, setGlobalSearchCache, getGlobalCacheTTL, getResponseCache, setResponseCache, getResponseCacheConfig, detectPublicQuestion } from '../cache/index.js';
 import { getClientIP, checkRateLimit, rateLimitResponse } from '../middleware/index.js';
@@ -230,14 +230,40 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
   const articlePrompt = buildArticleContextPrompt(context);
 
   let chunksSection = '';
-  const articlesWithChunks = relatedArticles.filter((a: { chunks?: unknown[] }) => a.chunks && a.chunks.length > 0);
+
+  // In article reading mode, prioritize current article's chunks
+  const articleSlugForChunks = ctx.context.scope === 'article' && ctx.context.article?.slug
+    ? ctx.context.article.slug : undefined;
+
+  let articlesWithChunks = relatedArticles.filter((a: { chunks?: unknown[] }) => a.chunks && a.chunks.length > 0);
+
+  if (articleSlugForChunks) {
+    const currentInResults = articlesWithChunks.some((a: { id?: string; url?: string }) =>
+      a.id === articleSlugForChunks || a.url?.includes(articleSlugForChunks));
+    if (!currentInResults) {
+      const currentChunks = getArticleChunks(articleSlugForChunks)
+        || getArticleChunks(`zh/${articleSlugForChunks}`)
+        || getArticleChunks(`en/${articleSlugForChunks}`);
+      if (currentChunks && currentChunks.length > 0) {
+        const currentArticle = { id: articleSlugForChunks, title: ctx.context.article?.title ?? '', url: '', chunks: currentChunks };
+        articlesWithChunks = [currentArticle as never, ...articlesWithChunks];
+        log.debug(`Reading mode: injected current article "${articleSlugForChunks}" chunks (${currentChunks.length} chunks)`);
+      }
+    }
+  }
+
   log.debug(`Chunk injection: ${relatedArticles.length} articles found, ${articlesWithChunks.length} with chunks`);
   if (articlesWithChunks.length > 0) {
     try {
       const { selectRelevantChunks, formatChunksForInjection } = await import('../search/hybrid-search.js');
       const { injectionCache } = await import('../cache/injection-cache.js');
+
+      const maxChunksPerArticle = articleSlugForChunks
+        ? CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE * 2
+        : CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE;
+
       const matchedChunks = selectRelevantChunks(latestText, articlesWithChunks as never[], {
-        maxTokens: CHUNK_INJECTION.MAX_TOKENS, minChunkScore: CHUNK_INJECTION.MIN_CHUNK_SCORE, maxChunksPerArticle: CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE,
+        maxTokens: CHUNK_INJECTION.MAX_TOKENS, minChunkScore: CHUNK_INJECTION.MIN_CHUNK_SCORE, maxChunksPerArticle,
       });
       log.debug(`Matched chunks: ${matchedChunks.length} (query: "${latestText.substring(0, 50)}")`);
       if (matchedChunks.length > 0) {
@@ -269,7 +295,7 @@ async function analyzeAndBuildPrompt(ctx: PipelineContext, search: SearchPhaseRe
   });
 
   log.debug(`System prompt built (${systemPrompt.length} chars), chunks section: ${chunksSection.length} chars`);
-  log.debug(`System prompt preview:\n${systemPrompt.substring(0, 500)}...\n---END PREVIEW---`);
+  log.debug(`System prompt preview:\n${systemPrompt}`);
 
   return { systemPrompt, preflight, unknownRefusal };
 }

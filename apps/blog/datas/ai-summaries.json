@@ -1,100 +1,105 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-24T10:20:16.067Z",
-    "model": "kimi-k2-thinking",
-    "totalProcessed": 20
+    "lastUpdated": "2026-03-24T15:31:05.310Z",
+    "model": "gpt-5.4",
+    "totalProcessed": 44
   },
   "articles": {
     "zh/getting-started": {
       "data": {
-        "summary": "介绍astro-minimax的两种使用方式：GitHub模板和NPM包集成，适合不同场景。",
-        "abstract": "本文介绍了astro-minimax的两种使用方式，适合不同场景。第一种是GitHub Template，适合一次性创建和完全自定义，需要手动合并上游更新。第二种是NPM包集成，适合内容与系统分离，可以持续获取更新。文章详细说明了每种方式的创建、安装、配置、添加内容、开发部署和更新步骤。无论使用哪种方式，博客内容结构保持一致。",
+        "summary": "文章介绍 astro-minimax 的三种快速上手方式：CLI 创建、GitHub Template 与 NPM 包集成，并说明各自适用场景、配置步骤和更新方式，帮助用户按需求高效搭建博客。",
+        "abstract": "文章围绕 astro-minimax 的入门方式展开，针对“最快上手”“完全自定义”“集成到现有 Astro 项目”三类场景，分别给出 CLI 创建、GitHub Template 和 NPM 包集成方案。CLI 方式通过 `npx @astro-minimax/cli init` 快速生成完整博客项目，并提供创建文章、AI 处理、作者画像和数据状态等管理命令。Template 方式说明了 monorepo 目录结构、站点配置文件位置、文章内容目录、frontmatter 要求，以及开发、构建、部署到 Cloudflare Pages 和同步上游更新的方法。NPM 集成方式展示了在已有 Astro 项目中安装 `@astro-minimax/core` 与可选 AI 包、在 `astro.config.ts` 中接入主题集成、并直接使用布局与组件的方法。文末统一说明了多语言内容目录结构，并给出后续配置、写作与部署指引。",
         "keyPoints": [
-          "astro-minimax两种使用方式",
-          "GitHub Template适合一次性创建",
-          "NPM包集成适合内容与系统分离",
-          "手动合并上游更新",
-          "使用pnpm update持续获取更新"
+          "三种方式对应不同接入场景",
+          "CLI 可一键生成完整博客项目",
+          "Template 采用 monorepo 管理结构",
+          "NPM 集成需在 Astro 配置中接入",
+          "文章需按目录放置并编写 frontmatter",
+          "Template 更新需手动合并上游变更"
         ],
         "tags": [
+          "Astro",
           "astro-minimax",
-          "GitHub Template",
-          "NPM包集成",
-          "博客搭建"
+          "CLI",
+          "Monorepo",
+          "configuration"
         ],
-        "readingTime": 5
+        "readingTime": 4
       },
-      "contentHash": "3a5a6b2b",
-      "processedAt": "2026-03-13T18:34:59.100Z"
+      "contentHash": "909c911c",
+      "processedAt": "2026-03-24T15:27:46.205Z"
     },
     "en/how-to-add-latex-equations-in-blog-posts": {
       "data": {
-        "summary": "Guide on integrating LaTeX equations into Astro blog posts using remark and rehype plugins.",
-        "abstract": "This document provides a step-by-step guide to enabling LaTeX equation support in Astro blog posts. It starts with installing necessary plugins like rehype-katex, remark-math, and katex. Then, it details updating the Astro configuration file to include these plugins and importing KaTeX CSS in the main layout. The guide also covers adding text-color for katex in the typography CSS. Finally, it demonstrates how to write inline and block equations using LaTeX syntax and how to use various mathematical symbols.",
+        "summary": "The article explains how to enable LaTeX rendering in Astro Markdown posts by installing math plugins, updating Astro config, importing KaTeX CSS, and adjusting typography so equations display correctly.",
+        "abstract": "This tutorial shows how to add LaTeX equation support to Markdown content in an astro-minimax blog. It starts with the problem of rendering mathematical and scientific notation in Astro posts, then walks through the required setup. The process includes installing `rehype-katex`, `remark-math`, and `katex`, enabling `remarkMath` and `rehypeKatex` in `astro.config.ts`, importing the KaTeX stylesheet in the main layout, and adding a `katex` text-color rule in `typography.css` so rendered formulas match the site theme. After configuration, the article demonstrates usage patterns for inline equations with single dollar signs and block equations with double dollar signs, along with examples such as the quadratic formula, Gaussian integral, zeta function, and Maxwell equations. It also lists common LaTeX mathematical symbols for practical reference. The result is properly rendered math expressions in Astro Markdown files during site build.",
         "keyPoints": [
-          "Install rehype-katex, remark-math, katex plugins",
-          "Update Astro config to use plugins",
-          "Import KaTeX CSS in main layout",
-          "Add katex text-color in typography CSS",
-          "Write inline and block LaTeX equations"
+          "Astro Markdown lacks math rendering by default.",
+          "Setup requires remark-math, rehype-katex, and katex.",
+          "Astro config must register remark and rehype plugins.",
+          "KaTeX stylesheet must be loaded in the layout.",
+          "Typography CSS needs katex color styling.",
+          "Inline uses $...$ and block uses $$...$$."
         ],
         "tags": [
           "Astro",
           "LaTeX",
+          "KaTeX",
           "Markdown",
-          "rehype",
-          "remark"
+          "remark-math"
         ],
-        "readingTime": 5
+        "readingTime": 2
       },
-      "contentHash": "02572a7d",
-      "processedAt": "2026-03-13T18:54:17.081Z"
+      "contentHash": "573a9f33",
+      "processedAt": "2026-03-24T15:27:51.526Z"
     },
     "zh/how-to-update-dependencies": {
       "data": {
-        "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
-        "abstract": "文章讨论了更新项目依赖的重要性，并以astro-minimax项目为例，介绍了更新依赖和模板的步骤。首先，介绍了使用npm install package-name@latest手动更新包的方法，然后推荐了使用npm-check-updates工具来更新依赖。文章详细说明了如何使用ncu命令来更新补丁、次版本和主版本依赖，并强调了主版本更新时需要特别小心。接下来，讨论了如何更新astro-minimax模板，包括需要留意的文件和目录，以及使用git来更新模板的方法。文章最后鼓励读者分享自己的更新方法，并承诺会尽快回复读者的问题。",
+        "summary": "文章介绍更新 astro-minimax 依赖与模板的实用流程：CLI 用户可直接用 pnpm 更新，模板用户可借助 npm-check-updates 分层升级并用 Git 合并模板，从而更稳妥地保持项目最新。",
+        "abstract": "文章围绕 astro-minimax 项目的依赖与模板更新展开，指出长期不更新依赖并不可取。对于通过 CLI 或 NPM 包方式集成的用户，作者给出使用 pnpm 更新核心包及升级到最新主版本的命令。对于 GitHub Template 用户或需要更新更多依赖的场景，推荐使用 npm-check-updates：先全局安装，再通过 ncu 查看可更新项，按补丁、次版本、主版本的顺序逐步升级，其中补丁可直接批量更新，次版本建议结合发布说明检查，主版本需格外谨慎。文章还说明了模板更新时应避免覆盖的内容，如博客数据、站点配置、常量、自定义资源等。若熟悉 Git，可通过添加上游远程仓库、切换分支、拉取模板仓库变更并处理 unrelated histories 与合并冲突来完成更新，最后强调必须进行完整测试。",
         "keyPoints": [
-          "更新项目依赖的重要性",
-          "使用npm-check-updates更新依赖",
-          "更新补丁、次版本和主版本依赖",
-          "更新astro-minimax模板的技巧",
-          "使用git更新模板时注意合并冲突"
+          "CLI 集成可直接用 pnpm 更新包",
+          "npm-check-updates 适合批量检查依赖",
+          "依赖升级应按 patch、minor、major 分层进行",
+          "模板更新需保留内容与配置目录",
+          "可通过 Git 远程拉取上游模板并解决冲突",
+          "主版本升级和模板合并后必须完整测试"
         ],
         "tags": [
-          "依赖管理",
-          "npm",
           "astro-minimax",
-          "git"
+          "npm-check-updates",
+          "pnpm",
+          "Git",
+          "依赖更新"
         ],
-        "readingTime": 7
+        "readingTime": 4
       },
-      "contentHash": "20cb5ee3",
-      "processedAt": "2026-03-13T18:54:17.492Z"
+      "contentHash": "d9718e63",
+      "processedAt": "2026-03-24T15:27:13.100Z"
     },
     "zh/dynamic-og-images": {
       "data": {
-        "summary": "astro-minimax 框架内置动态 OG 图片生成功能，使用 Vercel Satori 在构建时为未指定 ogImage 的文章自动生成社交分享图，但大量文章会显著增加构建时间。",
-        "abstract": "astro-minimax 框架通过 Vercel Satori 包实现构建时动态 OG 图片生成，解决静态默认图片重复问题。未在 frontmatter 指定 ogImage 的非草稿文章将自动生成包含文章标题、作者名（SITE.author）和网站标题（SITE.title）的社交分享图。框架区分 cover 和 ogImage 字段，支持灵活的图片回退策略。针对非拉丁字符显示问题，需修改 src/utils/loadGoogleFont.ts 中的字体配置。该功能存在构建性能权衡，每生成一张图片约需 1 秒，文章数量多时显著增加构建时间。此外，Satori 尚未支持 RTL 语言和 emoji，存在兼容性限制。",
+        "summary": "文章介绍 astro-minimax 在构建时为未设置 ogImage 的非草稿文章动态生成社交分享图的方法，说明 cover 与 ogImage 的回退规则、字体配置及构建耗时权衡。",
+        "abstract": "文章讲解 astro-minimax 的动态 OG 图片机制，重点解决静态默认社交图片在多篇文章中重复的问题。系统区分 `cover` 与 `ogImage` 两类图片：前者用于站内封面展示，后者用于社交媒体分享，并定义了未设置时的回退逻辑。对于未在 frontmatter 中指定 `ogImage` 且非草稿的文章，astro-minimax 会在构建阶段自动生成动态 OG 图片。生成内容包含文章标题、作者名称和网站标题，其中作者和站点信息来自 `src/config.ts` 的 `SITE.author` 与 `SITE.title`，技术实现基于 Vercel 的 Satori。文章还指出，若标题含非拉丁字符，需要修改 `src/utils/loadGoogleFont.ts` 中的字体配置以正确渲染。此外，该功能会按图片数量线性增加构建时间，且目前仍存在 RTL 语言与 emoji 支持有限等限制。",
         "keyPoints": [
-          "astro-minimax 使用 Satori 在构建时自动生成 OG 图片",
-          "未指定 ogImage 的非草稿文章会触发自动生成",
-          "动态图片包含标题、作者名和网站标题",
-          "非拉丁字符需修改 loadGoogleFont.ts 字体配置",
-          "每张图片生成约需 1 秒，构建时间线性增长",
-          "Satori 不支持 RTL 语言和 emoji 显示"
+          "静态默认 OG 图会导致多文共用同图。",
+          "未设 ogImage 且非草稿文章在构建时生成。",
+          "cover 与 ogImage 分离并带有回退规则。",
+          "生成内容取自标题、作者名和网站标题。",
+          "非拉丁字符需调整 loadGoogleFont 字体配置。",
+          "每张图约耗时一秒并线性拉长构建时间。"
         ],
         "tags": [
           "astro-minimax",
+          "OG Image",
           "Satori",
-          "OG图片",
-          "构建性能",
-          "frontmatter"
+          "frontmatter",
+          "Google Fonts"
         ],
-        "readingTime": 5
+        "readingTime": 3
       },
       "contentHash": "61ba4690",
-      "processedAt": "2026-03-24T10:20:16.067Z"
+      "processedAt": "2026-03-24T15:27:51.276Z"
     },
     "zh/predefined-color-schemes": {
       "data": {
@@ -161,229 +166,242 @@
     },
     "en/adding-new-post": {
       "data": {
-        "summary": "A guide to creating new posts in astro-minimax theme, including directory organization and frontmatter properties.",
-        "abstract": "This article provides a comprehensive guide on how to add new blog posts to the astro-minimax theme. It covers the creation of markdown files within specific directories, the use of subdirectories for content organization, and the impact on post URLs. The guide also details the frontmatter properties required for each post, including title, description, publication date, and optional fields like author, slug, and tags. Tips for overriding default settings and optimizing for SEO are included. A sample frontmatter is provided to illustrate the setup process.",
+        "summary": "This tutorial explains how to create and organize new posts in the astro-minimax theme, configure frontmatter and slugs correctly, and avoid URL or build issues for better content management and SEO.",
+        "abstract": "The article documents the recommended workflow for adding blog posts in the astro-minimax theme. It starts with quick creation via CLI commands and clarifies the blog content path differences between the GitHub Template method and CLI or NPM integration. It then explains that posts are Markdown files under the blog data directory, and that subdirectories can be used for organization, with folder names affecting generated URLs unless prefixed with an underscore. The post also notes a rebuild fix if subdirectory URLs do not appear. A major section covers frontmatter: required fields are title, description, and pubDatetime, while optional fields include modDatetime, author, slug, featured, draft, category, tags, cover, ogImage, canonicalURL, hideEditPost, and timezone. It highlights ISO 8601 datetime usage, slug uniqueness and override behavior, SEO importance of title and description, and the default tags behavior configurable in content.config.ts. A sample frontmatter block is provided to illustrate usage.",
         "keyPoints": [
-          "Create markdown files in src/data/blog/ directory",
-          "Subdirectories for content organization",
-          "Frontmatter properties for blog posts",
-          "Override default settings with frontmatter",
-          "SEO optimization with title and description"
+          "CLI supports quick post creation",
+          "Content paths differ by setup method",
+          "Subdirectories can change generated post URLs",
+          "Underscore-prefixed folders are excluded from URL paths",
+          "Frontmatter requires title, description, pubDatetime",
+          "Missing subdirectory URLs may need clean reinstall"
         ],
         "tags": [
+          "astro-minimax",
           "Astro",
-          "Blogging",
-          "Frontmatter",
-          "SEO"
+          "frontmatter",
+          "slug",
+          "Markdown"
         ],
-        "readingTime": 5
+        "readingTime": 3
       },
-      "contentHash": "00b1c842",
-      "processedAt": "2026-03-13T18:54:28.041Z"
+      "contentHash": "73f38191",
+      "processedAt": "2026-03-24T15:27:54.737Z"
     },
     "en/how-to-configure-astro-minimax-theme": {
       "data": {
-        "summary": "Configure astro-minimax theme by customizing the SITE object in src/config.ts for SEO and personalization.",
-        "abstract": "The astro-minimax theme for Astro is a customizable blogging platform. This article details how to configure the SITE object in the src/config.ts file to tailor the website to personal preferences. Key configurations include setting the website URL, author details, site description, title, and default OG image for social media sharing. Options for enabling light and dark mode, defining the number of posts per page, and scheduling posts are also covered. The article provides a table explaining each configuration option and its impact on the website's functionality and SEO.",
+        "summary": "The article explains how to customize the astro-minimax Astro blog theme through config files, covering site settings, feature toggles, navigation, projects, branding, social/share links, and optional integrations to tailor behavior and UI.",
+        "abstract": "This article is a configuration guide for the astro-minimax theme, focusing on how to customize the blog primarily through `src/config.ts` and `src/constants.ts`. It first identifies the config file location for both GitHub Template and NPM package setups, then details the `SITE` object, including SEO-related fields, pagination, scheduled post timing, archive start date, edit links, OG image generation, language, direction, timezone, and dark mode. It also explains feature toggles for tags, categories, series, archives, friends, projects, and Pagefind search, along with optional modules such as AI chat, Waline comments, and sponsorship. Beyond core settings, the article covers navigation menu control, GitHub project listing, changing layout width via `global.css`, replacing the site title with SVG or bitmap logos in `Header.astro`, and defining social and share links in `src/constants.ts`. The overall result is a flexible, code-driven way to adapt the theme’s content, appearance, and enabled modules.",
         "keyPoints": [
-          "astro-minimax theme customization",
-          "Configure SITE object in src/config.ts",
-          "SEO settings like website URL and description",
-          "Enable light and dark mode",
-          "Set post display preferences"
+          "Configuration centers on the SITE object.",
+          "Config paths differ for template and NPM use.",
+          "Feature flags control pages and menu visibility.",
+          "Navigation items can be individually enabled.",
+          "Layout width is changed in global.css.",
+          "Social and share links are set in constants.ts."
         ],
         "tags": [
           "Astro",
-          "Configuration",
-          "SEO",
-          "Customization"
+          "astro-minimax",
+          "theme configuration",
+          "Waline",
+          "Pagefind"
         ],
-        "readingTime": 3
+        "readingTime": 4
       },
-      "contentHash": "67ac0a6a",
-      "processedAt": "2026-03-13T18:54:28.617Z"
+      "contentHash": "d28bd417",
+      "processedAt": "2026-03-24T15:28:00.004Z"
     },
     "zh/adding-new-post": {
       "data": {
-        "summary": "介绍在astro-minimax主题中创建新文章的规则、技巧和提示。",
-        "abstract": "本文详细介绍了在astro-minimax博客主题中创建新文章的步骤和注意事项。首先，文章需要在`src/data/blog/`目录下创建markdown文件，并从v5.1.0版本开始支持子目录组织。文章的frontmatter部分是存储重要信息的关键，包括标题、描述、发布时间等字段。文章还介绍了如何添加目录、设置标题和使用语法高亮等功能。最后，讨论了存储博客内容图片的两种方法：推荐使用`src/assets/`目录，也可以使用`public`目录。",
+        "summary": "本文介绍如何在 astro-minimax 主题中创建新文章，包括目录与 URL 规则、Frontmatter 配置、代码高亮和图片存储方式，以便规范发布并优化管理与展示。",
+        "abstract": "文章是一篇面向 astro-minimax 用户的发文指南，说明如何在博客内容目录中新建 Markdown 文章，并介绍通过 CLI 命令快速创建文章的方法。内容重点包括目录结构与文章 URL 的映射规则，子目录会影响访问路径，而以下划线开头的目录可避免影响 slug；若构建未识别目录变化，可删除 node_modules 后重装构建。文中详细列出 Frontmatter 字段，强调 title、description、pubDatetime 为必填项，slug 可由文件名自动生成或手动覆盖，tags 缺省时可在 content.config.ts 中设为默认值。除此之外，还说明标题层级建议、Shiki 与 @shikijs/transformers 的语法高亮配置及移除方式，以及图片放在 src/assets 与 public 目录时的使用差异与优化影响。",
         "keyPoints": [
-          "astro-minimax主题创建新文章",
-          "支持子目录组织文章",
-          "frontmatter存储文章信息",
-          "添加目录和设置标题",
-          "使用Shiki进行语法高亮",
-          "图片存储在src/assets/或public目录"
+          "文章存放于 src/data/blog 目录",
+          "子目录默认参与文章 URL 生成",
+          "下划线目录可避免影响 URL",
+          "title、description、pubDatetime 为必填",
+          "tags 默认值可在 content.config.ts 配置",
+          "src/assets 图片可被 Astro 自动优化"
         ],
         "tags": [
           "astro-minimax",
-          "博客",
-          "Markdown",
-          "SEO",
-          "图片优化"
+          "Astro",
+          "Frontmatter",
+          "Shiki",
+          "Markdown"
         ],
-        "readingTime": 7
+        "readingTime": 4
       },
-      "contentHash": "b1df2a70",
-      "processedAt": "2026-03-13T18:54:28.668Z"
+      "contentHash": "509b4cf1",
+      "processedAt": "2026-03-24T15:27:57.216Z"
     },
     "zh/how-to-configure-astro-minimax-theme": {
       "data": {
-        "summary": "介绍如何配置astro-minimax主题，包括SITE配置、布局宽度和Logo或标题设置。",
-        "abstract": "本文是关于如何配置astro-minimax主题的教程。首先，介绍了在`src/config.ts`文件中配置SITE对象，包括网站URL、作者信息、描述、标题等。然后，讲解了如何更新布局宽度，通过修改`global.css`中的`max-w-app`工具类。最后，讨论了配置Logo或标题的三种方法：使用SITE标题文本、Astro的SVG组件和Astro的Image组件。每种方法都有详细的步骤说明，帮助用户根据个人喜好定制博客主题。",
+        "summary": "本文系统说明 astro-minimax 主题的配置方式，围绕 src/config.ts、constants.ts 与样式文件设置站点信息、功能开关、导航、搜索、评论等模块，以实现个性化博客定制。",
+        "abstract": "文章介绍如何配置 astro-minimax 主题，重点说明配置文件位置以及 `src/config.ts` 中 `SITE` 对象的主要参数。内容覆盖站点基础信息、SEO 相关字段、文章分页、定时发布宽限、编辑链接、动态 OG 图片、语言方向、时区与深色模式等基础设置；并说明 `features`、`nav`、`projects` 等对象如何控制标签、分类、系列、归档、友链、项目页和导航菜单的显示。文中还补充了 AI 聊天、Waline 评论、赞助打赏、社交链接、分享链接、搜索方案（Pagefind 与 Algolia DocSearch）、Logo 替换及通过修改 `global.css` 调整布局宽度的方法，给出对应配置示例与关键字段说明。整体结论是，开发者可主要通过集中配置而非改动大量模板代码来完成主题定制。",
         "keyPoints": [
-          "astro-minimax主题配置教程",
-          "配置SITE对象，包括网站信息",
-          "更新布局宽度，修改global.css",
-          "配置Logo或标题，三种方法"
+          "配置入口集中在 src/config.ts",
+          "SITE 对象控制站点与 SEO 参数",
+          "features 与 nav 联动决定页面可见性",
+          "可选接入 Waline、AI 聊天与赞助",
+          "搜索默认 Pagefind，也支持 DocSearch",
+          "可在 global.css 调整最大布局宽度"
         ],
         "tags": [
+          "Astro",
           "astro-minimax",
-          "配置",
-          "主题",
-          "CSS"
+          "主题配置",
+          "Waline",
+          "Pagefind"
         ],
-        "readingTime": 5
+        "readingTime": 4
       },
-      "contentHash": "52a50294",
-      "processedAt": "2026-03-13T18:54:32.083Z"
+      "contentHash": "6be26396",
+      "processedAt": "2026-03-24T15:28:03.052Z"
     },
     "en/getting-started": {
       "data": {
-        "summary": "astro-minimax provides two integration methods for setting up a blog: GitHub Template for beginners and NPM Packages for content-system separation.",
-        "abstract": "astro-minimax offers two methods for integrating a blog: GitHub Template and NPM Packages. The GitHub Template method is recommended for beginners and involves creating a repository from a template, installing dependencies, configuring blog details, adding content, and deploying. Updates are done manually by merging upstream changes. The NPM Package method separates content from the theme system, allowing for continuous updates via `pnpm update`. This method involves creating an Astro project, installing theme packages, configuring Astro, and using layouts and components. Both methods maintain a consistent directory structure for blog content.",
+        "summary": "The article explains three ways to integrate astro-minimax—CLI, GitHub template, and npm packages—showing setup commands, configuration locations, and update paths so users can choose the fastest or most customizable workflow.",
+        "abstract": "This tutorial introduces three integration methods for astro-minimax based on different project needs: a recommended CLI for the fastest standalone setup, a GitHub template for full monorepo-level customization, and npm packages for adding the theme to an existing Astro project. It outlines the commands for creating projects, installing dependencies, running development and build tasks, and updating each approach. The article also highlights key configuration points such as editing src/config.ts or apps/blog/src/config.ts, enabling features in the SITE object, and placing Markdown or MDX posts under language-specific content directories. For npm integration, it shows how to register @astro-minimax/core in astro.config.ts and use provided layouts and components. It concludes with consistent content directory conventions, deployment guidance, and links to next-step documentation.",
         "keyPoints": [
-          "astro-minimax two integration methods",
-          "GitHub Template for one-time setup",
-          "NPM Packages for content-system separation",
-          "Manual updates for GitHub Template",
-          "Automatic updates with NPM Packages",
-          "Consistent blog content directory structure"
+          "CLI creates a full blog with one command.",
+          "CLI includes post, AI, profile, and data commands.",
+          "GitHub template uses a monorepo with apps/blog site.",
+          "Site settings are edited in config.ts feature flags.",
+          "NPM integration registers @astro-minimax/core in Astro.",
+          "Content stays under language-based blog directories."
         ],
         "tags": [
+          "Astro",
           "astro-minimax",
-          "GitHub Template",
-          "NPM Packages",
-          "Blog Integration"
+          "CLI",
+          "Monorepo",
+          "npm packages"
         ],
-        "readingTime": 5
+        "readingTime": 4
       },
-      "contentHash": "c43e4eb8",
-      "processedAt": "2026-03-13T18:54:34.732Z"
+      "contentHash": "06b67554",
+      "processedAt": "2026-03-24T15:27:54.656Z"
     },
     "en/setting-dates-via-git-hooks": {
       "data": {
-        "summary": "利用Git钩子自动化更新Astro-minimax主题中文章的创建和修改日期。",
-        "abstract": "本文介绍了如何使用Git的pre-commit钩子自动化更新Astro-minimax博客主题中的创建(`pubDatetime`)和修改(`modDatetime`)日期。通过使用npm包Husky，可以自动安装钩子。文章详细解释了如何更新修改日期和为新文件添加日期的shell脚本，包括如何检查文件的草稿状态以及如何使用sed命令替换文件中的日期。此外，还讨论了如何通过IDE代码片段填充frontmatter，以及如何修改Astro配置以允许空的`modDatetime`。",
+        "summary": "The article shows how to automate Astro blog post `pubDatetime` and `modDatetime` updates with Git pre-commit hooks, reducing manual date maintenance while preserving any dates already set by the author.",
+        "abstract": "This tutorial addresses the repetitive and error-prone task of manually maintaining `pubDatetime` and `modDatetime` fields in astro-minimax blog post frontmatter. It presents two approaches: a recommended one-command installation via `astro-minimax hooks install`, and a manual setup using Husky with a custom `.husky/pre-commit` script. The hook inspects staged Markdown files under the blog content path through `git diff --cached --name-status`, parses frontmatter with shell tools such as `awk`, and updates fields using `sed` and `date -u`. For newly added files, it fills an empty `pubDatetime`; for modified published files, it fills an empty `modDatetime`; and for `draft: first`, it switches the post to `draft: false` and clears `modDatetime` for future edits. The article also notes that hooks are local to each developer, only process staged files, support monorepos through the CLI installer, and never overwrite manually specified dates.",
         "keyPoints": [
-          "Git Hooks自动化更新文章日期",
-          "使用Husky管理Git钩子",
-          "pre-commit钩子更新修改日期",
-          "为新文件添加创建日期",
-          "IDE代码片段填充frontmatter",
-          "修改Astro配置允许空日期"
+          "Manual frontmatter date upkeep is error-prone.",
+          "CLI can install Husky hooks in one command.",
+          "Pre-commit hook processes staged blog Markdown files.",
+          "Empty `pubDatetime` is filled on added files.",
+          "`draft: first` becomes `draft: false` on commit.",
+          "Existing date values are preserved and never overwritten."
         ],
         "tags": [
-          "Git",
+          "Git Hooks",
           "Husky",
           "Astro",
-          "自动化",
-          "前端开发"
-        ],
-        "readingTime": 7
-      },
-      "contentHash": "0c15728f",
-      "processedAt": "2026-03-13T18:54:34.807Z"
-    },
-    "zh/setting-dates-via-git-hooks": {
-      "data": {
-        "summary": "使用pre-commit Git钩子自动填充博客主题frontmatter中的创建和修改日期。",
-        "abstract": "本文介绍了如何利用Git钩子自动化更新博客文章的创建日期和修改日期。通过使用Husky包，可以自动安装pre-commit钩子，该钩子在提交代码时自动更新日期。文章详细解释了如何为修改的文件更新修改日期，以及为新文件添加创建日期。此外，还讨论了如何通过修改Astro配置来允许frontmatter中的日期字段为空。",
-        "keyPoints": [
-          "使用Git钩子自动化日期更新",
-          "Husky包自动安装pre-commit钩子",
-          "为修改文件更新修改日期",
-          "为新文件添加创建日期",
-          "修改Astro配置允许空日期"
-        ],
-        "tags": [
-          "Git",
-          "Husky",
-          "自动化",
-          "博客",
-          "Astro"
-        ],
-        "readingTime": 7
-      },
-      "contentHash": "30a0264b",
-      "processedAt": "2026-03-13T18:54:37.090Z"
-    },
-    "en/dynamic-og-images": {
-      "data": {
-        "summary": "Astro-minimax v1.4.0 introduces dynamic OG image generation for blog posts, enhancing social media engagement.",
-        "abstract": "Astro-minimax v1.4.0 features dynamic OG image generation for blog posts, addressing the issue of static default images. This new functionality uses Vercel's Satori package to create unique images for posts without a specified OG image, improving social media engagement. The dynamic images include the blog post title, author name, and site title. However, there are trade-offs, such as increased build time due to the one-second generation time per image. Additionally, there are limitations, including lack of support for RTL languages and potential issues with emoji in titles.",
-        "keyPoints": [
-          "Astro-minimax v1.4.0 adds dynamic OG image generation",
-          "Uses Vercel's Satori package for image creation",
-          "Dynamic images include post title, author, and site title",
-          "Increased build time with more blog posts",
-          "Limitations with RTL languages and emoji support"
-        ],
-        "tags": [
-          "Astro",
-          "Satori",
-          "Social Media Images",
-          "Performance",
-          "Build Time"
+          "frontmatter automation"
         ],
         "readingTime": 3
       },
-      "contentHash": "0b4eefee",
-      "processedAt": "2026-03-13T18:54:53.545Z"
+      "contentHash": "34dbb0d7",
+      "processedAt": "2026-03-24T15:27:56.225Z"
+    },
+    "zh/setting-dates-via-git-hooks": {
+      "data": {
+        "summary": "文章介绍在 astro-minimax 博客中通过 Git pre-commit 钩子自动填充 frontmatter 的发布日期与修改日期，并用 CLI 或 Husky 手动配置实现免手动维护且保留人工设定值。",
+        "abstract": "文章聚焦 astro-minimax 博客文章 frontmatter 中 pubDatetime 与 modDatetime 手动维护繁琐、易遗漏的问题，提出利用 Git 钩子在提交阶段自动补全空日期字段。推荐方案是使用 astro-minimax CLI 的 hooks install 命令，一键检测单项目或 Monorepo、安装 Husky、创建 .husky/pre-commit 并配置 prepare 脚本；同时提供 status 与 uninstall 命令。手动方案则通过安装 Husky、编写 pre-commit 脚本，结合 git diff --cached、awk、sed、date、git add 处理已暂存的 Markdown 文件：新增文件在 pubDatetime 为空时填充当前 UTC 时间，已发布文章在 modDatetime 为空时自动填充，draft: first 首次发布时会切换为 draft: false 并清空 modDatetime。文章强调钩子仅补空值、不覆盖手动设置，且只在本地生效，团队成员需分别安装。",
+        "keyPoints": [
+          "frontmatter 日期手动维护易遗漏",
+          "CLI 可一键安装 Husky 与 pre-commit",
+          "钩子仅补空日期不覆盖已有值",
+          "新增文章自动填充 pubDatetime",
+          "draft:false 修改时补 modDatetime",
+          "draft:first 提交时转为正式发布"
+        ],
+        "tags": [
+          "Git Hooks",
+          "Husky",
+          "astro-minimax",
+          "frontmatter",
+          "automation"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "1c59eae3",
+      "processedAt": "2026-03-24T15:27:59.427Z"
+    },
+    "en/dynamic-og-images": {
+      "data": {
+        "summary": "The article explains how astro-minimax generates dynamic OG images at build time, how `cover` and `ogImage` fall back to each other, and why this improves social sharing while increasing build time.",
+        "abstract": "This tutorial introduces the built-in dynamic OG image generation feature in astro-minimax for blog posts. It first clarifies the difference between `cover` images used in blog UI and `ogImage` used for social sharing, then explains the fallback rules when one or both are absent. Previously, posts without `ogImage` used a single static default image, which made different posts share the same social preview. The new approach generates OG images at build time for non-draft posts that do not define `ogImage`, using Vercel's Satori. Generated images include the post title from frontmatter plus author and site title from `src/config.ts`. The article also notes a font configuration change in `src/utils/loadGoogleFont.ts` to support non-Latin titles, such as replacing `fontsConfig` with suitable fonts. Finally, it highlights trade-offs and limitations: generation takes about one second per image, so build time grows linearly with post count, while RTL text and emoji handling remain imperfect.",
+        "keyPoints": [
+          "`cover` and `ogImage` serve different contexts.",
+          "Missing images follow explicit fallback rules.",
+          "Build-time OG generation uses Vercel Satori.",
+          "Generated images include title, author, site title.",
+          "Non-Latin titles require custom font config.",
+          "Per-image generation cost increases build time linearly."
+        ],
+        "tags": [
+          "Astro",
+          "astro-minimax",
+          "Open Graph",
+          "Satori",
+          "Social Images"
+        ],
+        "readingTime": 3
+      },
+      "contentHash": "04b7b247",
+      "processedAt": "2026-03-24T15:27:51.186Z"
     },
     "zh/how-to-add-latex-equations-in-blog-posts": {
       "data": {
-        "summary": "介绍在Astro博客中添加LaTeX公式的方法，包括安装插件和配置Astro。",
-        "abstract": "本文介绍了如何在Astro博客中添加LaTeX公式支持。首先，需要安装remark-math、rehype-katex和katex插件。然后，在Astro配置文件中引入这些插件，并在主布局文件中导入KaTeX的CSS样式。最后，在typography.css中为katex设置文本颜色。通过这些步骤，可以在Markdown文件中编写LaTeX公式，并在网站构建时正确渲染。文章还提供了行内公式和块级公式的示例，以及如何使用LaTeX中的数学符号。",
+        "summary": "文章介绍在 Astro 的 astro-minimax 博客中为 Markdown 启用 LaTeX 公式支持的方法，包括安装 remark/rehype/KaTeX 插件、配置样式与语法，最终实现行内和块级公式的正确渲染。",
+        "abstract": "本文是一篇面向 Astro 博客的教程，目标是在 astro-minimax 的 Markdown 文章中支持 LaTeX 数学公式显示。文章先说明需要安装 rehype-katex、remark-math 和 katex 三个依赖，然后在 astro.config.ts 中将 remark-math 加入 remarkPlugins、将 rehype-katex 加入 rehypePlugins，以便在构建阶段解析并渲染数学内容。接着要求在主布局文件中引入 KaTeX 的 CSS 资源，并在 typography.css 中为 .prose .katex-display 设置文本颜色，保证公式样式与站点主题一致。完成配置后，即可在 Markdown 中使用 $...$ 编写行内公式，使用 $$...$$ 编写块级公式。文末还列举了常见数学符号类别，说明配置生效后这些公式与符号都能被正确显示。",
         "keyPoints": [
-          "Astro博客添加LaTeX公式支持",
-          "安装remark-math、rehype-katex、katex插件",
-          "配置Astro使用这些插件",
-          "导入KaTeX CSS样式",
-          "为katex设置文本颜色"
+          "目标是在 Astro Markdown 中渲染 LaTeX。",
+          "需安装 remark-math、rehype-katex、katex。",
+          "在 astro.config.ts 注册 remark 与 rehype 插件。",
+          "主布局需引入 KaTeX CSS 文件。",
+          "在 typography.css 设置 katex 文本颜色。",
+          "支持 $...$ 行内与 $$...$$ 块级公式。"
         ],
         "tags": [
           "Astro",
           "LaTeX",
-          "Markdown",
-          "前端",
-          "教程"
+          "KaTeX",
+          "remark-math",
+          "rehype-katex"
         ],
-        "readingTime": 5
+        "readingTime": 3
       },
-      "contentHash": "d7a18de4",
-      "processedAt": "2026-03-13T18:54:54.252Z"
+      "contentHash": "93bcfd5a",
+      "processedAt": "2026-03-24T15:28:03.462Z"
     },
     "en/how-to-update-dependencies": {
       "data": {
-        "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
-        "abstract": "文章讨论了更新项目依赖的重要性，并以Astro-minimax为例，分享了作者更新项目依赖的常用方法。首先介绍了手动更新依赖的直接方法，然后推荐使用npm-check-updates工具来更新依赖，包括更新补丁、次要和主要版本。文章还提供了如何更新Astro-minimax模板的步骤，包括使用Git来合并更新，并强调了处理合并冲突的重要性。最后，作者鼓励读者分享自己的更新方法，并承诺会尽快回复读者的问题。",
+        "summary": "The article explains how to update astro-minimax dependencies and template safely using pnpm, npm-check-updates, and Git workflows, helping users stay current while reducing breakage risk.",
+        "abstract": "This tutorial addresses the common but necessary task of keeping an astro-minimax blog up to date. It first recommends a quick package update path for CLI or NPM users with pnpm commands, including an option to pull latest major versions that may introduce breaking changes. For broader dependency management, it suggests using npm-check-updates instead of manually updating each package, with a staged process: inspect available upgrades, apply patch updates, then minor updates, and finally review remaining major versions carefully by checking release notes. The article then covers GitHub Template users, noting that customized files such as blog content, configuration, constants, AI-generated data, and public assets should generally be preserved. For template upgrades, it proposes adding the upstream astro-minimax repository as a remote, creating an update branch, pulling changes, handling unrelated-history errors if needed, resolving merge conflicts, and thoroughly testing before merging. The overall guidance emphasizes updating safely, minimizing overwritten customizations, and being especially cautious with major releases and Git conflict resolution.",
         "keyPoints": [
-          "更新项目依赖的重要性",
-          "使用npm-check-updates工具更新依赖",
-          "更新Astro-minimax模板的步骤",
-          "处理Git合并冲突"
+          "pnpm provides the fastest package update path.",
+          "npm-check-updates enables staged patch, minor, major upgrades.",
+          "Major version bumps require careful release note review.",
+          "Template users should preserve customized content and config files.",
+          "Git remote pull can sync upstream template changes.",
+          "Merge conflicts and unrelated histories are key update pitfalls."
         ],
         "tags": [
-          "Astro-minimax",
-          "npm",
+          "astro-minimax",
+          "pnpm",
+          "npm-check-updates",
           "Git",
-          "项目管理"
+          "dependency management"
         ],
-        "readingTime": 6
+        "readingTime": 4
       },
-      "contentHash": "96098050",
-      "processedAt": "2026-03-13T18:54:58.334Z"
+      "contentHash": "8c43221d",
+      "processedAt": "2026-03-24T15:27:12.533Z"
     },
     "en/predefined-color-schemes": {
       "data": {
@@ -408,51 +426,627 @@
     },
     "zh/ai-guide": {
       "data": {
-        "summary": "配置astro-minimax AI聊天系统，通过启用功能、配置Provider、设置故障转移与工具调用，实现多Provider自动切换、RAG检索增强的流式聊天助手。",
-        "abstract": "astro-minimax内置AI聊天助手，支持多Provider自动故障转移、RAG检索增强与流式响应。配置流程包括：在src/config.ts启用AI功能，于.env配置OpenAI兼容API或Cloudflare Workers AI，执行CLI命令构建文章摘要与作者画像，启动开发服务器即可使用。系统采用三级故障转移机制，优先Workers AI，失败3次后切换OpenAI API，最终降级至Mock模式。提供7种客户端/服务端工具调用，支持主题切换、文章导航等操作。安全特性包括L1-L5来源优先级协议、隐私保护自动过滤敏感信息、7类意图分类。支持通过datas/extensions扩展系统注入自定义数据，内置质量评估工具与通知集成。Mock模式便于开发测试，无需真实API密钥。",
+        "summary": "本文系统讲解 astro-minimax 的 AI 聊天功能配置流程，包括启用开关、Provider 与数据构建、工具调用及评估扩展等设置，帮助站点获得可故障转移、可检索增强且可安全降级的聊天能力。",
+        "abstract": "文章介绍了 astro-minimax 内置 AI 聊天助手的完整配置方法，目标是为博客启用具备 RAG 检索增强、流式响应、多 Provider 故障转移和 Mock 降级能力的聊天系统。内容先说明 `@astro-minimax/ai`、CLI 与通知模块的分工，再给出快速启用步骤：在 `src/config.ts` 打开 AI 功能、在 `.env` 配置 OpenAI 兼容接口与站点信息、通过 `astro-minimax ai process` 和 `profile build` 构建摘要与作者画像、最后启动开发服务器。随后详细说明 Cloudflare Workers AI 与 OpenAI 兼容 API 的 Provider 配置、三次失败熔断和 60 秒恢复机制，以及全部失败时的 Mock 兜底。文章还覆盖 7 个工具调用与 Action 系统如何在客户端或服务端执行站点操作，补充了来源分层、隐私保护、意图分类、黄金测试集评估、扩展系统文件格式与 CLI 命令，以及 Telegram 通知和环境变量参考。",
         "keyPoints": [
-          "astro-minimax AI聊天助手需配置Provider与构建数据",
-          "在config.ts启用功能并在.env配置OpenAI兼容API",
-          "三级故障转移机制优先Workers AI失败后降级到Mock",
-          "7种工具调用支持主题切换文章导航等客户端操作",
-          "L1-L5来源协议与隐私过滤确保AI回答安全可信",
-          "扩展系统通过priority字段控制自定义数据优先级"
+          "需在配置文件显式启用 AI 功能",
+          "支持 Workers AI 与 OpenAI 兼容接口",
+          "连续失败3次熔断并在60秒后恢复",
+          "7个工具可驱动主题导航与检索动作",
+          "评估依赖黄金测试集并输出报告",
+          "扩展系统支持知识库风格与语义回退"
         ],
         "tags": [
           "astro-minimax",
-          "AI聊天配置",
-          "RAG检索",
-          "Provider故障转移",
-          "工具调用"
-        ],
-        "readingTime": 9
-      },
-      "contentHash": "d9d8e46a",
-      "processedAt": "2026-03-24T10:14:05.695Z"
-    },
-    "zh/notification-guide": {
-      "data": {
-        "summary": "astro-minimax 内置通知系统支持 Telegram、Email、Webhook 多渠道，通过配置环境变量获取 Token/Chat ID/API Key，即可在新评论或 AI 对话时实时接收带 Token 用量和耗时的通知。",
-        "abstract": "astro-minimax 框架内置多渠道通知系统，解决博客评论与 AI 对话的实时通知需求。系统支持 Telegram Bot、Resend Email 和 Webhook 三种渠道，通过以 NOTIFY_ 为前缀的环境变量配置实现。配置 Telegram 需从 @BotFather 获取 Bot Token、@userinfobot 获取 Chat ID；Email 需注册 Resend 获取 API Key 并验证域名；Webhook 配置接收端 URL 即可。系统提供 Waline 评论系统集成，支持 POST /api/notify/comment 触发通知，并允许通过 createNotifier 自定义消息模板。架构采用容错设计，各渠道并行发送失败互不影响，同时支持 HTTP_PROXY 代理访问。通知内容包含 Token 用量、阶段耗时、引用文章等丰富信息，Session ID 自动匿名化保护隐私。",
-        "keyPoints": [
-          "多渠道通知支持 Telegram、Email、Webhook 三种方式",
-          "环境变量以 NOTIFY_ 前缀配置 Token 和 ID",
-          "Telegram 需 @BotFather 获取 Bot Token 和 @userinfobot 获取 Chat ID",
-          "Email 需 Resend API Key 及域名验证发送邮件",
-          "Waline 评论系统通过 Webhook 端点触发通知",
-          "架构容错并行发送，单渠道失败不影响主流程"
-        ],
-        "tags": [
-          "Astro",
-          "通知系统",
-          "Telegram Bot",
-          "Resend",
-          "Webhook"
+          "AI 配置",
+          "RAG",
+          "Cloudflare Workers AI",
+          "OpenAI Compatible API"
         ],
         "readingTime": 6
       },
+      "contentHash": "d9d8e46a",
+      "processedAt": "2026-03-24T15:27:36.208Z"
+    },
+    "zh/notification-guide": {
+      "data": {
+        "summary": "本文介绍 astro-minimax 博客通知系统的配置方法，涵盖 Telegram、Resend 邮件与 Webhook 渠道、Waline 集成、自定义模板和代理设置，帮助站长快速接收评论与 AI 对话通知。",
+        "abstract": "文章讲解 astro-minimax 内置通知系统的使用方式，目标是在博客出现新评论或发生 AI 对话时，通过多种渠道实时推送消息。内容先概述系统支持的事件类型、通知渠道、附带信息和隐私保护能力，随后重点说明以 NOTIFY_ 前缀命名的环境变量配置，包括 Telegram Bot 的 Bot Token 与 Chat ID 获取方法、Resend 邮件所需 API Key 与收发件地址配置，以及自定义 Webhook URL 与其 POST 的 JSON 数据格式。文中还给出 .env 完整示例、评论和 AI 对话通知样式预览、Waline 通过 WEBHOOK 对接 /api/notify/comment 的方式、自定义 createNotifier 模板示例，以及 HTTP_PROXY 和 HTTPS_PROXY 代理设置。最后补充故障排查、包结构和容错并行发送设计，说明该系统以较少配置即可实现稳定的多渠道通知。",
+        "keyPoints": [
+          "通知支持评论与AI对话事件。",
+          "通过 NOTIFY_ 环境变量启用渠道。",
+          "Telegram 需配置 Bot Token 与 Chat ID。",
+          "邮件通道基于 Resend API 与已验证域名。",
+          "Waline 可用 WEBHOOK 对接评论通知端点。",
+          "系统支持自定义模板、代理与并行容错。"
+        ],
+        "tags": [
+          "astro-minimax",
+          "Telegram Bot",
+          "Resend",
+          "Webhook",
+          "Waline"
+        ],
+        "readingTime": 4
+      },
       "contentHash": "db941147",
-      "processedAt": "2026-03-24T10:14:06.609Z"
+      "processedAt": "2026-03-24T15:27:38.513Z"
+    },
+    "en/cloudflare-env-vars": {
+      "data": {
+        "summary": "This tutorial shows how to configure Cloudflare Pages environment variables for astro-minimax, including build-time and runtime settings, scope selection, and AI binding alignment, so deployment, AI chat, notifications, and builds work correctly.",
+        "abstract": "The article explains how to set up environment variables in the Cloudflare Pages Dashboard for the astro-minimax project. It first clarifies why these variables matter, grouping them into build configuration, runtime secrets, and feature configuration, and distinguishes build-time variables that require redeployment from runtime variables that apply on the next request. It then describes where to find the settings in Cloudflare Dashboard and how to use Production and Preview scopes separately. Required variables include NODE_VERSION and, for Workers AI, AI_BINDING_NAME; optional variables cover Telegram notifications, Resend email, custom AI providers, and site metadata. A step-by-step procedure walks through adding variables, choosing scope, encrypting sensitive values, and redeploying when needed. The guide also highlights a key technical requirement: AI_BINDING_NAME must match the [ai].binding value in apps/blog/wrangler.toml, alongside related Pages configuration such as pages_build_output_dir and compatibility settings.",
+        "keyPoints": [
+          "Build-time variables need redeployment.",
+          "Runtime secret changes apply immediately.",
+          "Production and Preview scopes should be separated.",
+          "NODE_VERSION 22 is required for builds.",
+          "AI_BINDING_NAME must match wrangler binding.",
+          "Sensitive variables should be encrypted in dashboard."
+        ],
+        "tags": [
+          "Cloudflare Pages",
+          "Environment Variables",
+          "astro-minimax",
+          "Workers AI",
+          "wrangler.toml"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "0defe881",
+      "processedAt": "2026-03-24T15:27:12.433Z"
+    },
+    "en/setup-waline-on-vercel": {
+      "data": {
+        "summary": "The article explains how to deploy Waline on Vercel with a built-in Neon PostgreSQL database, configure required environment variables and optional email notifications, then connect it to an astro-minimax blog for a complete comment system.",
+        "abstract": "This tutorial describes deploying the Waline comment system on Vercel and using Vercel Storage’s Neon PostgreSQL as the backend database, then integrating the service with an astro-minimax blog. It first outlines the architecture, consisting of a blog-side Waline client, a Waline server deployed on Vercel, a PostgreSQL database, and optional email or webhook notification channels. The main steps include creating a Neon PostgreSQL instance in Vercel, importing the required Waline schema through the query interface, and obtaining connection details. It then covers one-click deployment of the Waline example project to Vercel, followed by configuration of database-related environment variables such as PG_HOST, PG_PORT, PG_DB, PG_USER, PG_PASSWORD, PG_SSL, plus optional SITE_URL and SITE_TITLE. The article also notes that Vercel can auto-inject POSTGRES_* variables when the project and database are under the same account. Finally, it introduces optional email notification setup via Resend or SMTP, and mentions custom domain binding and deployment verification through the Waline welcome page.",
+        "keyPoints": [
+          "Waline uses Vercel, Neon PostgreSQL, and blog client.",
+          "Database schema must be imported before use.",
+          "Waline supports both PG_* and POSTGRES_* vars.",
+          "PG_SSL must be enabled for Neon connection.",
+          "Deployment is verified by opening the welcome page.",
+          "Email notifications can be configured with Resend or SMTP."
+        ],
+        "tags": [
+          "Waline",
+          "Vercel",
+          "Neon PostgreSQL",
+          "astro-minimax",
+          "SMTP"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "0706d7b0",
+      "processedAt": "2026-03-24T15:27:12.748Z"
+    },
+    "zh/settings-panel": {
+      "data": {
+        "summary": "文章介绍 astro-minimax 的设置面板使用方式，说明外观、阅读、布局与通用偏好的配置项，以及通过 localStorage 持久化和 URL 参数分享设置的实现效果。",
+        "abstract": "本文围绕 astro-minimax 新增的设置面板展开，说明用户如何通过页面右下角的齿轮图标打开面板，并对博客外观与阅读体验进行个性化配置。文章按外观设置、阅读设置、布局设置、通用设置及 AI 聊天面板尺寸分别列出可选项，包括配色方案、圆角、字体缩放、正文字号、行高、内容宽度、阅读主题、文章列表布局以及若干显示与动画开关。除基础配置外，文中还介绍了分享与重置功能：可将当前偏好复制为 URL 参数供他人直接应用，也可一键恢复默认值。技术上，所有设置会自动保存到浏览器 localStorage 并在下次访问时恢复，相关实现位于 preferences 目录下的 types.ts、defaults.ts、presets.ts、storage.ts 与 share.ts 等文件。",
+        "keyPoints": [
+          "设置面板入口位于右下角齿轮图标",
+          "支持外观、阅读、布局和通用偏好",
+          "阅读配置覆盖字号、行高、宽度与字体",
+          "AI 聊天面板支持 S/M/L 三档宽度",
+          "设置可持久化到 localStorage 自动恢复",
+          "当前偏好可通过 URL 参数分享"
+        ],
+        "tags": [
+          "astro-minimax",
+          "配置面板",
+          "localStorage",
+          "URL 参数",
+          "偏好设置"
+        ],
+        "readingTime": 1
+      },
+      "contentHash": "e0d33dfc",
+      "processedAt": "2026-03-24T15:27:13.213Z"
+    },
+    "en/setup-umami-analytics": {
+      "data": {
+        "summary": "This tutorial explains how to deploy the privacy-friendly Umami analytics platform for free with Vercel and Neon, compares alternative hosting options, and outlines setup, initialization, and blog integration preparation via websiteId retrieval.",
+        "abstract": "The article introduces Umami as an open-source, GDPR-compliant analytics alternative to Google Analytics, highlighting its cookie-free tracking, self-hosting support, and small script size. It compares three deployment choices: the recommended free Vercel + Neon PostgreSQL setup, self-hosted Docker, and paid Umami Cloud. The main walkthrough covers forking the Umami GitHub repository, deploying it as a Next.js project on Vercel, creating a Neon PostgreSQL database through Vercel Storage, redeploying after automatic `DATABASE_URL` injection, logging in with the default admin account, and changing the password immediately. It also notes optional custom domain binding through Vercel. For self-hosting, the post provides a `docker-compose.yml` example with Umami and PostgreSQL services, startup commands, reverse proxy examples using Nginx and Caddy, optional environment variables, PostgreSQL tuning, and backup/restore commands. The article concludes by pointing readers to obtain a `websiteId` from the Umami dashboard for later blog integration.",
+        "keyPoints": [
+          "Umami offers cookie-free, GDPR-compliant analytics.",
+          "Vercel plus Neon is the recommended free deployment path.",
+          "Initial Vercel deployment may fail before database setup.",
+          "`DATABASE_URL` is the only required environment variable.",
+          "Docker deployment includes PostgreSQL, proxy, and backup setup.",
+          "Default admin password must be changed after first login."
+        ],
+        "tags": [
+          "Umami",
+          "Vercel",
+          "Neon PostgreSQL",
+          "Docker",
+          "Web Analytics"
+        ],
+        "readingTime": 5
+      },
+      "contentHash": "9219e50c",
+      "processedAt": "2026-03-24T15:27:14.369Z"
+    },
+    "en/settings-panel": {
+      "data": {
+        "summary": "The article introduces astro-minimax’s settings panel, explaining how to adjust appearance, reading, layout, and general preferences, then save, share, reset, and automatically restore them for a personalized blog experience.",
+        "abstract": "This tutorial describes the new settings panel in astro-minimax for customizing blog appearance and reading behavior. It explains how users open the panel from the bottom-right gear icon and outlines configurable options across appearance, reading, layout, and general settings. These include color schemes, border radius, global and article font size, line height, content width, reading themes, font families, homepage post layouts, and toggles for UI features such as back-to-top, theme switch, animations, hover effects, and smooth scrolling. It also covers AI chat panel sizing options. The article notes that preferences are stored in localStorage and automatically restored on later visits. Users can share current settings via a Share button that copies URL parameters, and a Reset button returns all values to defaults. Finally, it points to the implementation files under packages/core/src/preferences/, including type definitions, defaults, presets, storage, and sharing logic.",
+        "keyPoints": [
+          "The panel opens from the bottom-right gear icon.",
+          "Preferences cover appearance, reading, layout, and UI toggles.",
+          "Reading options include theme, width, line height, and font family.",
+          "AI chat panel supports Small, Medium, and Large sizes.",
+          "Settings persist in localStorage and restore on revisit.",
+          "Share exports preferences as URL parameters; Reset restores defaults."
+        ],
+        "tags": [
+          "astro-minimax",
+          "localStorage",
+          "URL parameters",
+          "preferences system",
+          "configuration"
+        ],
+        "readingTime": 2
+      },
+      "contentHash": "682c1bb4",
+      "processedAt": "2026-03-24T15:27:14.468Z"
+    },
+    "en/ai-module-architecture": {
+      "data": {
+        "summary": "The article explains the vendor-agnostic architecture of the @astro-minimax/ai module, detailing its layered RAG pipeline, multi-provider failover, build-runtime separation, and graceful degradation to deliver low-latency, resilient blog AI interactions.",
+        "abstract": "The article presents a technical deep dive into @astro-minimax/ai, an AI enhancement module for the astro-minimax blog theme focused on blog-native RAG and provider-independent integration. It targets two interaction modes—global conversation and article-level reading companion—built on a shared but context-isolated architecture. The core design uses a layered pipeline covering request rate limiting and validation, cache checks, retrieval augmentation with text normalization, TF-IDF scoring, relevance filtering and optional vector reranking, intelligent analysis such as keyword extraction and evidence analysis, prompt assembly, and model invocation. A Provider Manager abstracts OpenAI-compatible APIs, Cloudflare Workers AI, and a mock provider with health tracking, priority scheduling, and automatic failover. The module also separates build-time preprocessing from runtime serving by generating JSON metadata in advance, reducing request-path latency. Key implementation details include SSE streaming via AI SDK 6.x, Cloudflare Workers integration, Preact UI compatibility, timeout-based fallbacks, citation privacy guards, and cache replay for session responses. Overall, the architecture emphasizes resilience, low latency, and consistent user experience under partial failures.",
+        "keyPoints": [
+          "Supports global chat and article companion modes.",
+          "Uses SSE streaming and RAG for fast responses.",
+          "Retrieval pipeline combines TF-IDF and reranking.",
+          "Provider Manager enables failover and health tracking.",
+          "Build-time preprocessing reduces runtime latency.",
+          "Fallbacks cover provider, retrieval, and analysis failures."
+        ],
+        "tags": [
+          "RAG",
+          "Cloudflare Workers",
+          "SSE",
+          "AI SDK",
+          "Preact"
+        ],
+        "readingTime": 5
+      },
+      "contentHash": "adb8d46e",
+      "processedAt": "2026-03-24T15:27:14.714Z"
+    },
+    "zh/ai-module-architecture": {
+      "data": {
+        "summary": "文章详解 @astro-minimax/ai 的分层技术架构，围绕 RAG 流水线、多供应商抽象、流式响应与降级容错设计展开，说明其如何在博客场景中实现低延迟、高可用且可扩展的 AI 交互能力。",
+        "abstract": "文章系统介绍了 @astro-minimax/ai 作为 astro-minimax 博客主题智能增强模块的整体设计，目标是在博客平台中提供供应商无关的 AI 集成方案，并实现完整的 RAG 检索增强生成流程。内容先说明全局对话与阅读伴侣两类交互模式，以及 Streaming、SSE、RAG 的技术组合与 Cloudflare Workers 适配背景；随后重点阐述供应商无关、分层解耦、构建时与运行时分离、优雅降级等设计原则。文章还给出能力矩阵、运行环境与依赖选择，包括 AI SDK 6.x、Preact、Workers KV 与 Node.js 兼容。之后按目录结构解析组件、工具、服务端处理器、Provider Manager、检索、智能分析、提示词构建、扩展与缓存等模块职责，并提到 streamText 集成 tools、toolChoice 与 stopWhen 参数。整体结论是该模块通过缓存、健康追踪、故障转移、动态证据预算和三层提示构建，实现了可切换、可降级且响应迅速的博客 AI 架构。",
+        "keyPoints": [
+          "模块面向全局对话与阅读伴侣场景",
+          "采用 Streaming、SSE 与 RAG 组合",
+          "Provider Manager实现多供应商切换",
+          "检索链路含缓存、TF-IDF与可选重排",
+          "智能分析含关键词提取与引用守卫",
+          "三层提示构建提升复用与动态适配"
+        ],
+        "tags": [
+          "RAG",
+          "AI SDK",
+          "Cloudflare Workers",
+          "SSE",
+          "技术架构"
+        ],
+        "readingTime": 6
+      },
+      "contentHash": "5c6ac97d",
+      "processedAt": "2026-03-24T15:27:16.092Z"
+    },
+    "en/complete-setup-guide": {
+      "data": {
+        "summary": "The article provides a step-by-step tutorial for creating an astro-minimax blog, configuring core features, and deploying it to Cloudflare and Vercel to enable comments, analytics, notifications, and AI chat for a production-ready setup.",
+        "abstract": "This tutorial explains how to build a production-ready blog from scratch with astro-minimax. It starts with prerequisites such as GitHub, Cloudflare, and Vercel accounts, then walks through project initialization using the CLI, local preview, and pushing the code to GitHub. The guide next covers editing `src/config.ts` and creating the first Markdown post with frontmatter. For deployment, it shows how to connect the repository to Cloudflare Pages, configure Astro build settings, and set the `NODE_VERSION` environment variable. It then adds optional production features: Waline comments deployed on Vercel with a Neon PostgreSQL database and SQL initialization, Umami analytics deployed through Vercel with website ID configuration, Telegram notifications via Cloudflare environment variables, and built-in AI chat enabled through config, data build commands, and a Workers AI binding in `wrangler.toml`. The result is a complete blog stack with content, deployment, interactivity, analytics, and AI capabilities.",
+        "keyPoints": [
+          "Uses CLI to initialize and preview blog",
+          "Configures site metadata in src/config.ts",
+          "Deploys Astro site to Cloudflare Pages",
+          "Sets up Waline with Vercel and Neon PostgreSQL",
+          "Integrates Umami analytics via websiteId and script",
+          "Enables AI chat with build commands and Workers AI"
+        ],
+        "tags": [
+          "astro-minimax",
+          "Cloudflare Pages",
+          "Waline",
+          "Umami",
+          "Vercel"
+        ],
+        "readingTime": 5
+      },
+      "contentHash": "07170ca7",
+      "processedAt": "2026-03-24T15:27:16.357Z"
+    },
+    "zh/setup-umami-analytics": {
+      "data": {
+        "summary": "文章介绍了基于 Vercel 与 Neon PostgreSQL 免费部署 Umami 的完整流程，并说明如何获取网站追踪参数集成到博客中，以实现隐私友好且低运维的网站统计。",
+        "abstract": "文章围绕为个人博客部署隐私友好的网站统计工具 Umami 展开，先对比了 Umami 与 Google Analytics 在隐私合规、自托管、数据所有权和页面体积上的差异，并比较了 Vercel + Neon、自托管 Docker、Umami Cloud 三种部署方式，推荐零运维且免费的 Vercel + Neon 方案。正文详细说明了 Fork 官方仓库、在 Vercel 创建 Next.js 项目、通过 Storage 创建 Neon PostgreSQL 数据库、自动注入 DATABASE_URL 后重新部署、首次使用默认管理员账号登录并修改密码，以及可选的自定义域名配置。随后补充了 Docker 自托管的 docker-compose、反向代理、环境变量、PostgreSQL 优化与备份方法，并说明了如何在 Umami 面板中创建网站、获取 websiteId 和脚本地址，在 src/config.ts 或环境变量中配置博客接入，最后给出验证接入、隐私合规声明、用户退出追踪及常见排查方向。",
+        "keyPoints": [
+          "Umami主打无Cookie与GDPR合规",
+          "推荐Vercel配合Neon免费部署",
+          "DATABASE_URL是部署唯一必需变量",
+          "首次部署失败后需建库并重新部署",
+          "博客接入需配置websiteId与脚本地址",
+          "统计异常需检查脚本、域名和CSP"
+        ],
+        "tags": [
+          "Umami",
+          "Vercel",
+          "Neon PostgreSQL",
+          "网站统计",
+          "Docker"
+        ],
+        "readingTime": 7
+      },
+      "contentHash": "20c206e4",
+      "processedAt": "2026-03-24T15:27:22.301Z"
+    },
+    "zh/complete-setup-guide": {
+      "data": {
+        "summary": "文章围绕 astro-minimax 博客，从项目初始化、站点配置到 Cloudflare 部署，并接入 Waline、Umami、Telegram 通知与 AI 聊天，帮助读者完成一套可用的完整博客系统。",
+        "abstract": "本文是一篇面向初学者的 astro-minimax 博客搭建教程，按步骤说明如何从零创建并上线完整博客。内容首先介绍所需账号与整体流程，然后通过 CLI 初始化项目、本地预览、推送 GitHub，并在 src/config.ts 中配置站点信息与功能开关，添加首篇文章。部署部分重点讲解 Cloudflare Pages 的构建参数、输出目录和 NODE_VERSION 环境变量。随后分别说明在 Vercel 上部署 Waline 评论系统与 Umami 统计，依赖 Neon PostgreSQL 数据库、相关环境变量和重新部署流程。文章还介绍了 Telegram Bot 通知配置、Cloudflare Workers AI 聊天功能启用、AI 数据构建命令以及 wrangler.toml 的 AI binding。最后给出环境变量汇总、功能验证清单与常见故障排查，帮助读者完成完整站点交付。",
+        "keyPoints": [
+          "使用 CLI 初始化并本地预览博客",
+          "站点信息与功能在 config.ts 配置",
+          "Cloudflare Pages 需设置构建参数与 NODE_VERSION",
+          "Waline 与 Umami 均依赖 Vercel 和 Neon 数据库",
+          "AI 聊天需启用配置并执行数据构建命令",
+          "故障排查覆盖部署、评论、AI与通知问题"
+        ],
+        "tags": [
+          "Astro",
+          "Cloudflare Pages",
+          "Waline",
+          "Umami",
+          "Workers AI"
+        ],
+        "readingTime": 6
+      },
+      "contentHash": "7ac69db5",
+      "processedAt": "2026-03-24T15:27:22.480Z"
+    },
+    "zh/cloudflare-env-vars": {
+      "data": {
+        "summary": "本文围绕 astro-minimax 在 Cloudflare Pages 部署时的环境变量配置，说明构建时与运行时变量的设置方法、必需与可选项及排障要点，以确保 AI、通知和站点功能正常启用。",
+        "abstract": "文章介绍 astro-minimax 博客部署到 Cloudflare Pages 时环境变量的完整配置方法，先区分构建时与运行时变量的作用，并说明环境变量在安全性、灵活性和维护性上的意义。文中给出 Dashboard 中的配置路径与添加步骤，包括批量粘贴变量、为 Production 与 Preview 选择生效环境，以及修改后需重新部署。必需项包含 `NODE_VERSION=22`，启用 Workers AI 时还需配置 `AI_BINDING_NAME`，并要求其与 `wrangler.toml` 中 `[ai].binding` 一致。可选项覆盖 Telegram、Resend、Webhook 通知，OpenAI 兼容 API 的 `AI_API_KEY`、`AI_BASE_URL`、`AI_MODEL`，以及 `SITE_URL`、`SITE_AUTHOR` 等站点信息。文章还说明了 KV Namespace 的可选绑定、`.env` 本地开发示例、安全最佳实践，以及针对 Node 版本错误、AI 功能异常、通知失败和变量不生效的排查方法。",
+        "keyPoints": [
+          "区分构建时与运行时环境变量",
+          "NODE_VERSION=22是构建必需项",
+          "AI_BINDING_NAME需与wrangler配置一致",
+          "变量保存后必须重新部署生效",
+          "通知与OpenAI兼容API均可按需配置",
+          "可通过日志定位AI与通知故障"
+        ],
+        "tags": [
+          "Cloudflare Pages",
+          "环境变量",
+          "Workers AI",
+          "wrangler.toml",
+          "部署配置"
+        ],
+        "readingTime": 5
+      },
+      "contentHash": "a139b2bf",
+      "processedAt": "2026-03-24T15:27:23.098Z"
+    },
+    "en/ai-guide": {
+      "data": {
+        "summary": "The guide explains how to enable and configure astro-minimax AI chat, set providers and failover, build AI data, and extend or evaluate the system to achieve reliable, secure, tool-enabled responses.",
+        "abstract": "This tutorial introduces the built-in AI chat system in astro-minimax and describes its full setup process. It starts with enabling the AI feature in `src/config.ts`, configuring an OpenAI-compatible provider in `.env`, generating AI-related data with CLI commands, and starting the development server. The article then details provider options such as Cloudflare Workers AI and OpenAI-compatible APIs, including model-specific environment variables and a failover strategy that switches providers after repeated failures and falls back to Mock mode when needed. It also explains tool calling, where the model can trigger client-side actions like theme switching, navigation, reading mode, highlighting, and preferences, while server-side search runs during chat and RAG requests. Additional sections cover Mock mode for development, security controls such as source-priority and privacy refusal rules, evaluation using a golden test set and CLI commands, and an extensions system for injecting searchable content, facts, context, voice styles, and semantic fallback rules.",
+        "keyPoints": [
+          "AI is enabled in config and served via `/api/chat`.",
+          "Providers support Workers AI and OpenAI-compatible APIs.",
+          "Failover marks providers unhealthy after 3 failures.",
+          "Tool calls map to browser actions through ActionExecutor.",
+          "Mock mode returns predefined responses for development.",
+          "Evaluation uses gold-set cases and outputs a JSON report."
+        ],
+        "tags": [
+          "astro-minimax",
+          "AI chat",
+          "Cloudflare Workers AI",
+          "RAG",
+          "OpenAI-compatible API"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "1171ad65",
+      "processedAt": "2026-03-24T15:27:23.487Z"
+    },
+    "zh/setup-waline-on-vercel": {
+      "data": {
+        "summary": "本文介绍在 Vercel 部署 Waline 评论系统的方法，包括创建 Neon PostgreSQL、导入表结构、配置环境变量与邮件/Webhook，并集成到 astro-minimax 博客以实现评论与通知能力。",
+        "abstract": "文章围绕在 Vercel 上部署 Waline 评论系统展开，目标是为已部署的 astro-minimax 博客接入评论功能，并借助 Vercel 自带的 Neon PostgreSQL 作为存储。内容先说明整体架构，包括博客端 Waline 客户端、Vercel 上的 Waline 服务端、Neon 数据库，以及邮件服务和 Webhook 通知链路。随后给出具体步骤：在 Vercel Storage 创建 Neon PostgreSQL，执行 waline.pgsql 初始化 Comment、Counter、Users 等表及索引；再通过 Vercel 一键部署 Waline 示例项目，配置 PG_HOST、PG_PORT、PG_DB、PG_USER、PG_PASSWORD、PG_SSL 及站点相关环境变量，完成重部署并验证访问。文中还补充了可选的自定义域名绑定、Resend 或 SMTP 邮件通知配置、MAIL_SUBJECT 等模板变量设置，以及通过 WEBHOOK 对接博客通知端点并转发到 Telegram 或邮件。最后说明在 astro-minimax 中启用 Waline 功能完成集成。",
+        "keyPoints": [
+          "系统由博客端、Waline服务端和Neon数据库组成",
+          "需执行 waline.pgsql 初始化评论相关表结构",
+          "Waline 在 Vercel 可通过示例项目一键部署",
+          "数据库连接使用 PG_* 或 POSTGRES_* 环境变量",
+          "Neon 连接需开启 PG_SSL=true",
+          "可选接入 Resend、SMTP 与 Webhook 通知"
+        ],
+        "tags": [
+          "Waline",
+          "Vercel",
+          "Neon PostgreSQL",
+          "astro-minimax",
+          "Webhook"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "52cf042a",
+      "processedAt": "2026-03-24T15:27:24.399Z"
+    },
+    "en/2026-blog-ecosystem": {
+      "data": {
+        "summary": "The article maps the 2026 tech blog ecosystem across framework, content, search, comments, AI, analytics, notifications, and deployment, then provides decision matrices and stack presets to help readers choose tools that fit their needs and reduce tooling friction.",
+        "abstract": "This guide surveys the full technical decision space for building a personal tech blog in 2026, framing the problem as a set of more than ten interconnected choices. It compares frameworks such as Astro, Hugo, Next.js, Nuxt, VitePress, Hexo, and Eleventy, explains the static-site workflow from Markdown to CDN delivery, and contrasts content approaches including Git-based Markdown, headless CMS, WordPress, and Notion. It then reviews search options like Pagefind, Algolia DocSearch, RAG-based AI search, and Meilisearch; comment systems such as Giscus, Waline, Utterances, and Artalk; and AI features including summaries, SEO metadata, translation, tag extraction, cover generation, and chat via RAG + LLM + SSE. The article also covers anti-hallucination safeguards, privacy-first analytics, notification channels, deployment targets, and developer tooling like Shiki, KaTeX, Mermaid, Markmap, sitemap, RSS, and dynamic OG images. A flowchart and three reference stacks help readers select a minimal, recommended, or full-featured setup, concluding that tool choices should match actual needs so authors can focus on writing.",
+        "keyPoints": [
+          "The guide frames blog building as 10+ tool decisions.",
+          "It compares SSG, full-stack, and docs frameworks.",
+          "Markdown, CMS, WordPress, and Notion are contrasted.",
+          "Search spans Pagefind, DocSearch, Meilisearch, and RAG.",
+          "AI features pair RAG plus LLM with guardrails.",
+          "Three preset stacks simplify cost-feature tradeoffs."
+        ],
+        "tags": [
+          "Astro",
+          "Static Site Generator",
+          "Pagefind",
+          "RAG",
+          "Cloudflare Pages"
+        ],
+        "readingTime": 6
+      },
+      "contentHash": "210bc327",
+      "processedAt": "2026-03-24T15:27:24.451Z"
+    },
+    "en/cli-guide": {
+      "data": {
+        "summary": "This guide explains how to use the @astro-minimax/cli toolkit to initialize blog projects, manage posts, run AI content workflows, and maintain profile and data files for more efficient blog operations.",
+        "abstract": "The article documents the command-line capabilities of @astro-minimax/cli for blog project management and AI-assisted content processing. It begins with installation as a dev dependency and shows how to initialize a new blog project with generated configuration, sample content, and an AI toolchain. It then covers post management commands for creating multilingual posts with category options, listing posts by date, and viewing Chinese/English statistics. For AI workflows, it specifies required environment variables such as AI_API_KEY, optional AI_BASE_URL, and AI_MODEL, then introduces commands for batch article processing, forced or scoped processing, summary generation, SEO metadata generation, and evaluation against a golden test set with checks like topic coverage, forbidden claims, links, and answer patterns. The guide also describes author profile generation through context, voice, and report steps, plus data status inspection and cache clearing. Overall, it serves as a practical command reference for operating the blog and its AI features from the CLI.",
+        "keyPoints": [
+          "Installs as a dev dependency via pnpm.",
+          "Init command scaffolds a complete blog project.",
+          "Post commands support multilingual creation and stats.",
+          "AI processing uses env vars and scoped options.",
+          "AI eval writes reports from a golden test set.",
+          "Profile and data commands support AI chat readiness."
+        ],
+        "tags": [
+          "@astro-minimax/cli",
+          "CLI",
+          "AI content processing",
+          "SEO metadata",
+          "pnpm"
+        ],
+        "readingTime": 2
+      },
+      "contentHash": "b05f8dc1",
+      "processedAt": "2026-03-24T15:27:26.908Z"
+    },
+    "zh/cli-guide": {
+      "data": {
+        "summary": "本文系统介绍 @astro-minimax/cli 的安装、建站、文章管理、AI 处理、评估与数据维护命令，帮助用户通过统一 CLI 高效完成博客项目初始化、内容生成和质量检查。",
+        "abstract": "文章围绕 @astro-minimax/cli 的命令行能力，说明其用于博客项目管理与 AI 内容处理的完整用法。首先介绍以开发依赖方式安装，并可通过 astro-minimax 命令或 pnpm 快捷脚本调用；随后展示如何用 init 创建带完整配置、示例文章和 AI 工具链的新博客项目。在内容管理部分，给出创建文章、按语言和分类生成 Markdown 文件、列出文章以及统计中英文文章数量的命令。AI 处理部分要求配置 AI_API_KEY、AI_BASE_URL 和 AI_MODEL 环境变量，并支持批量处理文章摘要与 SEO、强制重跑、按 slug 或语言筛选、处理最近文章和 dry-run 预览，还可单独生成摘要、SEO 元数据及基于黄金测试集执行质量评估，报告输出到指定 JSON 文件。最后介绍作者画像构建、数据状态查看与缓存清理，以及快捷脚本与等效命令对照表。",
+        "keyPoints": [
+          "支持 init 一键创建博客项目",
+          "post:new 可按语言和分类建文",
+          "ai:process 支持筛选与预览模式",
+          "ai:eval 基于黄金集生成评估报告",
+          "profile 构建作者上下文与风格画像",
+          "data:clear 清理缓存但保留评估报告"
+        ],
+        "tags": [
+          "@astro-minimax/cli",
+          "CLI",
+          "pnpm",
+          "AI 内容处理",
+          "博客工具"
+        ],
+        "readingTime": 3
+      },
+      "contentHash": "b23d923f",
+      "processedAt": "2026-03-24T15:27:35.926Z"
+    },
+    "en/notification-guide": {
+      "data": {
+        "summary": "This guide explains how to configure astro-minimax’s multi-channel notification system via environment variables, custom templates, and Waline webhooks to deliver real-time comment and AI chat alerts with fault-tolerant parallel sending.",
+        "abstract": "The article introduces the built-in notification system in astro-minimax for monitoring blog activity such as new comments and AI chat interactions. It supports Telegram Bot, Resend email, and custom Webhook channels, all configured through `NOTIFY_`-prefixed environment variables. The guide details how to obtain a Telegram Bot Token and Chat ID, set up Resend API credentials and sender/recipient addresses, and define a webhook URL that receives JSON POST payloads. It also shows a complete `.env` example, previews the default notification formats for comments and AI chats, and explains how to integrate Waline by pointing its `WEBHOOK` setting to `POST /api/notify/comment`. For advanced customization, the article demonstrates creating a notifier with `createNotifier` from `@astro-minimax/notify` and overriding per-event Telegram templates in TypeScript. Additional sections cover proxy support through `HTTP_PROXY` and `HTTPS_PROXY`, common troubleshooting steps for failed deliveries, and the package architecture and design principles, including parallel sending, fault tolerance, and minimal configuration.",
+        "keyPoints": [
+          "Notifications cover comments and AI chats.",
+          "Channels include Telegram, Resend email, and Webhook.",
+          "Configuration relies on `NOTIFY_` environment variables.",
+          "Waline can trigger comment alerts via webhook API.",
+          "Templates are customizable with `createNotifier`.",
+          "Proxy and delivery troubleshooting are documented."
+        ],
+        "tags": [
+          "astro-minimax",
+          "Telegram Bot",
+          "Resend",
+          "Webhook",
+          "Waline"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "bf7287fd",
+      "processedAt": "2026-03-24T15:27:36.217Z"
+    },
+    "zh/why-astro-minimax": {
+      "data": {
+        "summary": "文章围绕 astro-minimax 的设计决策，阐述其以 Astro、Monorepo 与模块化为核心构建现代技术博客，并通过内置 AI、搜索、通知和 CLI 提升可扩展性与使用效率。",
+        "abstract": "文章系统说明 astro-minimax 作为现代技术博客方案的设计思路，目标是在“极简”与“强大”之间取得平衡，既让内容创作者快速启动，也让开发者按需扩展。作者首先分析当前博客生态在功能、可定制性、维护成本和 AI 集成上的矛盾，随后解释为何选择 Astro 作为底座，重点看中其岛屿架构、Content Layer API 与 Edge Runtime 支持。项目采用 Monorepo 拆分为 core、ai、notify、cli 四个包，并通过 Astro Integration 与 Vite 虚拟模块实现用户配置和核心主题解耦。AI 部分采用 RAG 方案，结合构建时摘要处理、运行时 TF-IDF 检索、LLM 回答与 Mock 降级，并引入来源分层协议降低幻觉。搜索默认使用 Pagefind，DocSearch 作为高级选项；通知系统支持 Telegram、Email、Webhook；CLI 则覆盖建站、文章创建、AI 处理与评估。文末还给出性能、依赖规模、与同类项目对比及后续路线图。",
+        "keyPoints": [
+          "博客生态存在简单与扩展性冲突",
+          "Astro 以零JS和内容层适配博客场景",
+          "Monorepo拆为四包以实现按需安装",
+          "虚拟模块解耦用户配置与核心主题",
+          "AI采用TF-IDF驱动的RAG并支持Mock降级",
+          "默认Pagefind搜索，CLI覆盖创建处理评估"
+        ],
+        "tags": [
+          "Astro",
+          "Monorepo",
+          "RAG",
+          "Pagefind",
+          "CLI"
+        ],
+        "readingTime": 8
+      },
+      "contentHash": "44c5bd1f",
+      "processedAt": "2026-03-24T15:27:37.790Z"
+    },
+    "zh/deployment-guide": {
+      "data": {
+        "summary": "文章围绕 astro-minimax 的多平台部署，先区分 Monorepo 与 CLI 两种项目形式，再给出 Cloudflare Pages、Vercel、Netlify、Docker 及静态托管的构建目录、配置项与注意事项，帮助稳定上线并正确启用 AI 功能。",
+        "abstract": "本文是一份 astro-minimax 博客的部署指南，重点说明该项目是静态站点，可部署到多种支持静态托管的平台。文章首先区分 Monorepo 与 CLI 创建两种项目形式，并通过是否存在 pnpm-workspace.yaml 判断，明确各自的构建输出目录与 wrangler.toml 所在位置。随后分别介绍 Cloudflare Pages、Vercel、Netlify、Docker、GitHub Pages 及自有服务器的部署方法，涵盖构建命令 pnpm run build、输出目录设置、Node.js 版本环境变量为 22，以及 Git 集成或容器化部署步骤。针对 Cloudflare Pages，文中强调其为推荐平台，因为 AI 聊天功能依赖 Workers AI，并说明 AI_BINDING_NAME、wrangler.toml、nodejs_compat 等关键配置。对 Vercel 则指出默认不支持 Cloudflare Workers AI，需要改用其他 AI 提供商并调整 src/config.ts。最后给出部署检查清单，帮助在域名、robots.txt、OG 图片和 API 配置等方面完成上线前核对。",
+        "keyPoints": [
+          "通过 pnpm-workspace.yaml 区分项目形式。",
+          "不同项目形式的构建输出目录不同。",
+          "Cloudflare Pages 可自动识别 wrangler.toml。",
+          "AI 功能依赖 Workers AI 与 Binding 配置。",
+          "Vercel 部署需改用其他 AI 接口。",
+          "部署前需核对域名与静态资源配置。"
+        ],
+        "tags": [
+          "astro-minimax",
+          "Cloudflare Pages",
+          "Vercel",
+          "Docker",
+          "静态站点部署"
+        ],
+        "readingTime": 6
+      },
+      "contentHash": "626c89eb",
+      "processedAt": "2026-03-24T15:27:38.303Z"
+    },
+    "zh/2026-blog-ecosystem": {
+      "data": {
+        "summary": "文章系统梳理2026年个人技术博客从框架、内容管理到AI、搜索与部署的关键选型，并给出按需求决策路径，帮助从零搭建高性能、低成本且可扩展的博客系统。",
+        "abstract": "文章面向准备自建个人技术博客的读者，指出博客搭建并非只选一个框架，而是涉及框架、内容管理、样式、搜索、评论、AI、统计、通知、部署和运营等多个能力域的连续决策。文中先对Astro、Hugo、Next.js、Nuxt、VitePress、Hexo等框架进行适配场景对比，并解释SSG从Markdown经frontmatter、模板引擎到HTML静态产物的生成流程；随后比较Git-based内容管理、Headless CMS与传统CMS的优劣。文章还覆盖Tailwind CSS等样式方案、Pagefind与Algolia等搜索方案、Waline与Giscus等评论系统，以及RAG、Embedding、LLM API、Cloudflare Workers AI、Ollama等AI集成能力与防幻觉措施。最后结合隐私统计、通知渠道、部署平台与SEO运营工具，给出按是否需要AI、SSR、语言偏好等条件的选型决策流程。",
+        "keyPoints": [
+          "博客搭建包含十余项技术决策",
+          "SSG适合高性能低成本静态站",
+          "内容管理可在Git与CMS间取舍",
+          "搜索方案分静态云端与AI检索",
+          "AI集成需结合RAG与防幻觉策略",
+          "部署平台应按AI功能与受众选择"
+        ],
+        "tags": [
+          "Astro",
+          "Next.js",
+          "Cloudflare Pages",
+          "RAG",
+          "技术博客"
+        ],
+        "readingTime": 8
+      },
+      "contentHash": "07cbad1f",
+      "processedAt": "2026-03-24T15:27:38.689Z"
+    },
+    "en/feature-overview": {
+      "data": {
+        "summary": "The article introduces the modular astro-minimax Astro blog theme, explaining its content, search, styling, visualization, and optional AI/notification/CLI features, helping users understand configuration options and practical usage paths.",
+        "abstract": "This tutorial-style overview presents astro-minimax as a modular Astro blog theme composed of four packages: core, ai, notify, and cli. It explains how the theme manages content with Markdown/MDX, bilingual Chinese-English directories, frontmatter metadata, tags, hierarchical categories, series navigation, and archive pages. It then covers search configuration through Pagefind or Algolia DocSearch, including build-time indexing, filtering, and keyboard-triggered cloud search. The article also describes styling capabilities such as light/dark/system modes, CSS variable-based color customization, and responsive layouts. A major section highlights built-in visualization support, including Mermaid, Markmap, Rough.js, Excalidraw, Asciinema, and other embeddable components. Finally, it outlines optional AI chat capabilities provided by the ai package, such as multi-provider support, streaming, RAG retrieval, failover, privacy controls, tool calling, caching, and contextual article assistance, giving readers a broad map of the theme’s feature set and how to use it.",
+        "keyPoints": [
+          "The theme is split into four modular packages.",
+          "Posts support Markdown, MDX, math, alerts, and emoji.",
+          "Bilingual content uses zh/en folders and URL prefixes.",
+          "Search can use Pagefind or Algolia DocSearch.",
+          "Visualization includes Mermaid, Markmap, Excalidraw, and Asciinema.",
+          "AI package adds RAG chat, streaming, failover, and UI actions."
+        ],
+        "tags": [
+          "Astro",
+          "astro-minimax",
+          "MDX",
+          "Pagefind",
+          "Algolia DocSearch"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "13bd8620",
+      "processedAt": "2026-03-24T15:27:38.712Z"
+    },
+    "en/why-astro-minimax": {
+      "data": {
+        "summary": "The article explains astro-minimax’s design philosophy by detailing its Astro-based architecture, monorepo package split, virtual-module configuration, and built-in RAG search/chat choices, concluding that this approach balances fast setup, extensibility, and low-maintenance operation.",
+        "abstract": "This article presents astro-minimax as a systematic solution to the tradeoffs in modern tech blogging, including simplicity versus features, easy startup versus customization, and writing versus engineering overhead. It sets a goal of being minimal-first yet highly extensible for both content creators and developers. The core architectural decisions include choosing Astro for islands architecture, native TypeScript support, content layer capabilities, and edge runtime compatibility; splitting the project into four packages to enable on-demand installation, isolated updates, feature toggles, and replaceable modules; and using Astro Integration with Vite virtual modules to decouple user configuration from core theme code. It also explains three adoption paths: CLI initialization, GitHub template, and NPM package usage. For AI features, the article justifies built-in chat, a RAG workflow based on build-time summaries plus runtime TF-IDF retrieval, a source-priority protocol to constrain answers, and a mock fallback for unavailable LLM services. For search, it defaults to Pagefind for static, private, zero-config indexing while keeping DocSearch as an advanced option.",
+        "keyPoints": [
+          "The project targets core blog-system tradeoffs.",
+          "Astro was chosen for islands and content layer.",
+          "Monorepo split reduces dependency and update coupling.",
+          "Virtual modules decouple user config from theme internals.",
+          "AI chat uses TF-IDF-based RAG instead of embeddings.",
+          "Mock fallback preserves chat usability without API access."
+        ],
+        "tags": [
+          "Astro",
+          "Monorepo",
+          "RAG",
+          "TF-IDF",
+          "Pagefind"
+        ],
+        "readingTime": 5
+      },
+      "contentHash": "bfe009d3",
+      "processedAt": "2026-03-24T15:27:39.010Z"
+    },
+    "zh/feature-overview": {
+      "data": {
+        "summary": "本文系统梳理 astro-minimax 博客主题的模块化架构、内容管理、搜索、可视化、AI、互动、SEO 与性能等功能，并说明主要配置方式与适用场景，便于快速搭建功能完整的 Astro 博客。",
+        "abstract": "文章对 astro-minimax 这一 Astro 博客主题进行功能总览，先从由 core、ai、notify、cli 四个包组成的模块化架构入手，说明各包职责与依赖关系。随后介绍内容管理能力，包括 Markdown/MDX、GFM、KaTeX 数学公式、提示框、Emoji、多语言目录、标签、层级分类、系列、归档及 frontmatter 元数据。搜索部分支持 Pagefind 静态全文搜索与 Algolia DocSearch，并可通过配置切换。文章还覆盖主题样式与响应式设计、Mermaid、Markmap、Rough.js、Excalidraw、Asciinema 等可视化组件，以及 AI 聊天的多 Provider、RAG、流式响应、缓存、工具调用和配置示例。最后汇总评论、打赏、通知、SEO、动态 OG、性能优化、Shiki 代码高亮、Umami 统计及多项辅助功能，展示该主题具备较完整的博客建设能力。",
+        "keyPoints": [
+          "主题由四个包分层组成",
+          "支持 Markdown、MDX 与多语言目录",
+          "搜索可在 Pagefind 与 DocSearch 间切换",
+          "内置 Mermaid、Markmap 等可视化组件",
+          "AI 聊天支持 RAG、流式响应与工具调用",
+          "提供评论通知、SEO 与性能优化能力"
+        ],
+        "tags": [
+          "Astro",
+          "astro-minimax",
+          "MDX",
+          "Pagefind",
+          "Algolia DocSearch"
+        ],
+        "readingTime": 7
+      },
+      "contentHash": "610ddfd7",
+      "processedAt": "2026-03-24T15:27:47.482Z"
+    },
+    "en/deployment-guide": {
+      "data": {
+        "summary": "This deployment guide explains how to publish astro-minimax static blogs across Cloudflare Pages, Vercel, Netlify, and Docker by first identifying monorepo or CLI project type, then applying platform-specific build paths and Node 22 settings for reliable deployment.",
+        "abstract": "The article provides a deployment guide for astro-minimax, a static-site blog that can run on multiple hosting platforms. It begins by distinguishing two project structures—monorepo and CLI-created—using the presence of `pnpm-workspace.yaml`, because each type has different build output directories and configuration file locations. Before deployment, readers are advised to verify local builds with `pnpm run build` and troubleshoot using `pnpm run dev` if necessary. The guide then details deployment steps for Cloudflare Pages, Vercel, and Netlify, including build commands, output directories, root settings, and `NODE_VERSION=22`. Cloudflare Pages is recommended due to built-in support for Workers AI, with `wrangler.toml` defining AI binding, `nodejs_compat`, and optional KV namespace settings. The article also notes that Vercel does not support Cloudflare Workers AI and requires changing `ai.apiEndpoint` to another provider. Finally, it introduces Docker-based development with `docker compose up` and production deployment via multi-stage Dockerfiles.",
+        "keyPoints": [
+          "Project type is identified by pnpm-workspace.yaml.",
+          "Monorepo and CLI builds use different dist paths.",
+          "Cloudflare Pages is preferred for Workers AI support.",
+          "wrangler.toml defines AI binding and nodejs_compat.",
+          "Vercel requires an alternative AI provider endpoint.",
+          "Netlify and Docker use straightforward static build deployment."
+        ],
+        "tags": [
+          "astro-minimax",
+          "Cloudflare Pages",
+          "Vercel",
+          "Netlify",
+          "Docker"
+        ],
+        "readingTime": 4
+      },
+      "contentHash": "7a69dc6b",
+      "processedAt": "2026-03-24T15:31:05.310Z"
     }
   }
 }

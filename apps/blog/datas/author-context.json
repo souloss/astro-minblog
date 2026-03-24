@@ -1,6 +1,6 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-03-23T14:00:33.615Z",
+  "generatedAt": "2026-03-24T15:28:53.701Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn/",
@@ -19,8 +19,15 @@
         "architecture",
         "technical"
       ],
-      "summary": "@astro-minimax/ai is the intelligent enhancement module for the astro-minimax blog theme, designed as a vendor-agnostic AI integration solution. The …",
-      "keyPoints": [],
+      "summary": "The article explains the vendor-agnostic architecture of the @astro-minimax/ai module, detailing its layered RAG pipeline, multi-provider failover, build-runtime separation, and graceful degradation to deliver low-latency, resilient blog AI interactions.",
+      "keyPoints": [
+        "Supports global chat and article companion modes.",
+        "Uses SSE streaming and RAG for fast responses.",
+        "Retrieval pipeline combines TF-IDF and reranking.",
+        "Provider Manager enables failover and health tracking.",
+        "Build-time preprocessing reduces runtime latency.",
+        "Fallbacks cover provider, retrieval, and analysis failures."
+      ],
       "url": "/en/posts/ai-module-architecture/",
       "chunks": [
         {
@@ -81,12 +88,24 @@
           }
         },
         {
-          "id": "en/ai-module-architecture#2-2-core-directory-function-an",
+          "id": "en/ai-module-architecture#2-2-core-directory-function-an-0",
           "postId": "en/ai-module-architecture",
           "heading": "2.2 Core Directory Function Analysis",
-          "content": "### 2.2 Core Directory Function Analysis\n\n**src/components/** directory adopts atomic design philosophy for organizing UI components. At the lowest level is `ChatPanel.tsx`, the visual core of the entire chat functionality, built on `@ai-sdk/react`'s `useChat` Hook. `AIChatContainer.tsx` acts as the state container, managing chat bubble open/close state and exposing the `window.__aiChatToggle` interface for external invocation.\n\n**src/server/** directory contains all request processing logic. `chat-handler.ts` is the hub of the entire server-side processing pipeline, orchestrating all stages.\n\n**src/provider-manager/** is the core directory for implementing vendor agnosticism. It exports a Provider Manager instance supporting dynamic add/remove of providers, priority weights, automatic health tracking, and transparent failover.\n\n**src/search/** implements core RAG retrieval capabilities using session-level caching to avoid repeated retrieval.\n\n**src/intelligence/** provides intelligent enhancement capabilities beyond basic retrieval including keyword extraction, evidence analysis, and privacy protection.\n\n**src/prompt/** implements the three-layer prompt construction system enabling most prompt content to be cached and reused.",
+          "content": "### 2.2 Core Directory Function Analysis\n\n**src/components/** directory adopts atomic design philosophy for organizing UI components. At the lowest level is `ChatPanel.tsx`, the visual core of the entire chat functionality, built on `@ai-sdk/react`'s `useChat` Hook. It is responsible for message rendering (supporting text, source citations, and other parts), error state display (with retry buttons), and status indicator presentation. `AIChatContainer.tsx` acts as the state container, managing chat bubble open/close state and exposing the `window.__aiChatToggle` interface for external invocation (e.g., floating buttons) to toggle state.\n\n**src/tools/** uses the AI SDK `tool()` helper function to define all tools callable by the model. `allTools` aggregates 7 tools: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, `setPreference`, and `searchArticles`. Among these, `searchArticles` executes on the server (with an `execute` function), while the other 6 are client-executed tools (schema-only definitions, handled by the browser-side `ActionExecutor`). `getClientSideTools()` and `getServerSideTools()` provide the programmatic API for this classification.\n\n**src/server/** directory contains all request processing logic. `chat-handler.ts` is the hub of the entire server-side processing pipeline, orchestrating rate limiting, input validation, RAG search, intelligence analysis, prompt building, AI invocation, and streaming response stages. In v0.9.1, the `streamText` call added `tools: allTools`, `toolChoice: 'auto'`, and `stopWhen: stepCountIs(5)` parameters, enabling the model to invoke tools during responses.",
           "position": 5,
-          "tokenCount": 312,
+          "tokenCount": 419,
+          "headers": {
+            "H2": "2. Directory Structure and Organization",
+            "H3": "2.2 Core Directory Function Analysis"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#2-2-core-directory-function-an-1",
+          "postId": "en/ai-module-architecture",
+          "heading": "2.2 Core Directory Function Analysis",
+          "content": "**src/provider-manager/** is the core directory for implementing vendor agnosticism. It exports a Provider Manager instance supporting dynamic add/remove of providers, priority weights, automatic health tracking, and transparent failover. `mock.ts` provides local Mock response capability — when all real providers are unavailable, the system switches to Mock mode and returns predefined templated responses.\n\n\n\n**src/search/** implements core RAG retrieval capabilities. Retrieval uses session-level caching (`session-cache.ts`) to avoid repeated retrieval within the same conversation session. The retrieval strategy employs a hybrid approach: combining semantic vector similarity with keyword matching to ensure results are both relevant and comprehensive.\n\n\n\n**src/intelligence/** provides intelligent enhancement capabilities beyond basic retrieval. `keyword-extract.ts` extracts key entities and intent words from user queries, used to enhance retrieval effectiveness. `evidence-analysis.ts` performs secondary analysis on retrieved document fragments, evaluating their support for the current query. `citation-guard.ts` is the privacy protection component, responsible for detecting and filtering queries that might leak personal information.\n\n\n\n**src/prompt/** implements the three-layer prompt construction system. The first layer is the static layer, containing system role definitions and universal instructions; the second is the semi-static layer, containing blog-specific information (tech stack, feature list); the third is the dynamic layer, built dynamically based on current conversation context and RAG retrieval results. This layered design enables most prompt content to be cached and reused, with only the dynamic layer requiring real-time generation.",
+          "position": 6,
+          "tokenCount": 444,
           "headers": {
             "H2": "2. Directory Structure and Organization",
             "H3": "2.2 Core Directory Function Analysis"
@@ -97,7 +116,7 @@
           "postId": "en/ai-module-architecture",
           "heading": "Priority and Failover",
           "content": "#### Priority and Failover\n\n| Provider | Weight | Description |\n|----------|--------|-------------|\n| Workers AI | 100 | Highest priority, free on Cloudflare deployment |\n| OpenAI Compatible | 90 | Fallback, supports any OpenAI-compatible API |\n| Mock | 0 | Final fallback, guarantees users always receive a response |",
-          "position": 6,
+          "position": 7,
           "tokenCount": 80,
           "headers": {
             "H2": "4. Core Module Details",
@@ -106,27 +125,191 @@
           }
         },
         {
-          "id": "en/ai-module-architecture#4-4-prompt-builder-module",
+          "id": "en/ai-module-architecture#health-tracking-mechanism",
           "postId": "en/ai-module-architecture",
-          "heading": "4.4 Prompt Builder Module",
-          "content": "### 4.4 Prompt Builder Module\n\nThree-layer architecture:\n- **Static Layer**: Identity, responsibilities, constraints, source layers (L1-L5)\n- **Semi-Static Layer**: Blog overview, latest articles\n- **Dynamic Layer**: Related articles, evidence analysis, user instruction",
-          "position": 7,
-          "tokenCount": 68,
+          "heading": "Health Tracking Mechanism",
+          "content": "#### Health Tracking Mechanism\n\nEach Provider maintains independent health state:\n\n```typescript\ninterface ProviderHealth {\n  healthy: boolean;\n  consecutiveFailures: number;\n  totalRequests: number;\n  successfulRequests: number;\n  lastError?: string;\n  lastErrorTime?: number;\n  lastSuccessTime?: number;\n}\n```\n\n**Key configurations:**\n- `unhealthyThreshold: 3` — Mark as unhealthy after 3 consecutive failures\n- `healthRecoveryTTL: 60000` — Auto-retry after 60 seconds\n\n```mermaid\nflowchart TB\n    A[\"streamText() call\"] --> B[\"Workers AI<br/>weight: 100\"]\n\n    B --> C{\"isAvailable()?\"}\n    C -->|healthy| D[\"Try streamText()\"]\n    C -->|unhealthy| E[\"Skip\"]\n\n    D --> F{\"Success?\"}\n    F -->|yes| G[\"recordSuccess()\"]\n    G --> H[\"Return result\"]\n\n    F -->|no| I[\"recordFailure()\"]\n    I --> J[\"consecutiveFailures++\"]\n    J --> K{\"≥ 3 times?\"}\n    K -->|yes| L[\"Mark unhealthy\"]\n    K -->|no| M[\"OpenAI<br/>weight: 90\"]\n\n    E --> M\n    L --> M\n\n    M --> N{\"isAvailable()?\"}\n    N -->|healthy| O[\"Try streamText()\"]\n    N -->|unhealthy| P[\"Skip\"]\n\n    O --> Q{\"Success?\"}\n    Q -->|yes| R[\"recordSuccess()\"]\n    R --> H\n\n    Q -->|no| S[\"recordFailure()\"]\n    S --> T[\"Mock<br/>weight: 0\"]\n\n    P --> T\n\n    T --> U[\"getMockResponse()\"]\n    U --> V[\"Return template response\"]\n\n    subgraph Health_Recovery[\"Health Recovery Mechanism\"]\n        W[\"Unhealthy state\"]\n        X[\"Wait 60s\"]\n        Y[\"canAttemptRecovery()\"]\n        Z[\"Attempt request\"]\n        W --> X --> Y --> Z\n    end\n```",
+          "position": 8,
+          "tokenCount": 69,
           "headers": {
             "H2": "4. Core Module Details",
-            "H3": "4.4 Prompt Builder Module"
+            "H3": "4.1 Provider Manager Module",
+            "H4": "Health Tracking Mechanism"
           }
         },
         {
-          "id": "en/ai-module-architecture#7-2-error-code-definitions",
+          "id": "en/ai-module-architecture#rrf-hybrid-fusion-optional",
           "postId": "en/ai-module-architecture",
-          "heading": "7.2 Error Code Definitions",
-          "content": "### 7.2 Error Code Definitions\n\n| Error Code | HTTP Status | Description | Retryable |\n|------------|-------------|-------------|-----------|\n| `METHOD_NOT_ALLOWED` | 405 | Invalid HTTP method | No |\n| `INVALID_REQUEST` | 400 | Request format error | No |\n| `INPUT_TOO_LONG` | 400 | Input exceeds 500 characters | No |\n| `RATE_LIMITED` | 429 | Rate limit triggered | Yes |\n| `TIMEOUT` | 504 | Request timeout | Yes |\n| `PROVIDER_UNAVAILABLE` | 503 | All providers unavailable | Yes |\n| `INTERNAL_ERROR` | 500 | Internal error | Yes |",
-          "position": 8,
+          "heading": "RRF hybrid fusion (optional)",
+          "content": "#### RRF hybrid fusion (optional)\n\nWhen `searchArticles` is called with `enableRRF: true`, a vector index is available, and there is more than one candidate article, the pipeline can fuse **BM25/TF-IDF ranking** and **vector ranking** using **Reciprocal Rank Fusion (RRF)** (`packages/ai/src/search/hybrid-search.ts`). Each list contributes terms of the form `1 / (k + rank)` (default `k = 60`), summed per document URL. Results carry `rrfScore`, `bm25Rank`, and `vectorRank` for debugging and tuning. If RRF is not enabled but vectors exist, the code falls back to the existing vector reranker.",
+          "position": 9,
+          "tokenCount": 149,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.2 Search Retrieval Module",
+            "H4": "RRF hybrid fusion (optional)"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#paragraph-level-retrieval-and-",
+          "postId": "en/ai-module-architecture",
+          "heading": "Paragraph-level retrieval and prompt injection",
+          "content": "#### Paragraph-level retrieval and prompt injection\n\nArticle bodies can be split into **chunks** at build/runtime and attached to `ArticleContext`. In the **dynamic prompt layer** (`dynamic-layer.ts`), `selectRelevantChunks` scores chunks against the user query (token overlap on headings and body, with heading-level boosts), keeps a bounded number per article, sorts globally, and formats matches via `formatChunksForInjection`. A session-scoped cache avoids re-injecting the same chunk text across follow-up turns. This sits alongside article-level summaries and optional `fullContent` deep extraction, giving the model **paragraph-level** evidence without loading entire posts every time.",
+          "position": 10,
+          "tokenCount": 173,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.2 Search Retrieval Module",
+            "H4": "Paragraph-level retrieval and prompt injection"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#intent-classification",
+          "postId": "en/ai-module-architecture",
+          "heading": "Intent Classification",
+          "content": "#### Intent Classification\n\nClassifies user queries into 7 intent categories to optimize retrieval and response:\n\n| Intent | Example | Search Impact |\n|--------|---------|---------------|\n| `setup` | \"How to install?\" | Prioritize getting-started articles |\n| `config` | \"How to configure AI?\" | Prioritize config/settings articles |\n| `content` | \"Explain this concept\" | Standard content search |\n| `feature` | \"What can the theme do?\" | Prioritize feature documentation |\n| `deployment` | \"Deploy to Cloudflare\" | Prioritize deployment guides |\n| `troubleshooting` | \"Build fails with error\" | Prioritize FAQ and issue-related content |\n| `general` | \"Tell me about the blog\" | Broad search across all content |\n\nIntent detection uses lightweight heuristics (keyword matching + pattern analysis) to avoid adding latency. Results feed into article reranking and answer mode selection.",
+          "position": 11,
+          "tokenCount": 222,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.3 Intelligence Module",
+            "H4": "Intent Classification"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#answer-mode-detection",
+          "postId": "en/ai-module-architecture",
+          "heading": "Answer Mode Detection",
+          "content": "#### Answer Mode Detection\n\n```typescript\ntype AnswerMode = 'fact' | 'count' | 'list' | 'opinion' | 'recommendation' | 'unknown' | 'general';\n```\n\nThe system detects what type of answer the user expects:\n- **fact**: \"What version of Astro?\" → concise factual answer\n- **list**: \"What features are available?\" → bullet-point enumeration\n- **count**: \"How many articles?\" → numeric answer\n- **opinion**: \"Is Astro better than Next.js?\" → balanced perspective with evidence\n- **recommendation**: \"Which theme should I use?\" → guided suggestion\n- **unknown**: Query outside blog scope → polite refusal with redirect",
+          "position": 12,
+          "tokenCount": 128,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.3 Intelligence Module",
+            "H4": "Answer Mode Detection"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#evidence-budget",
+          "postId": "en/ai-module-architecture",
+          "heading": "Evidence Budget",
+          "content": "#### Evidence Budget\n\nBased on query complexity and answer mode, the system allocates a budget for how many articles to analyze and how deeply:\n\n| Budget | Articles | Analysis Depth | Use Case |\n|--------|----------|---------------|----------|\n| `simple` | 1-3 | Summary only | Direct factual queries |\n| `moderate` | 3-5 | Summary + key points | Most general queries |\n| `complex` | 5-8 | Full analysis + evidence | Multi-faceted discussions |",
+          "position": 13,
+          "tokenCount": 111,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.3 Intelligence Module",
+            "H4": "Evidence Budget"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#citation-guard",
+          "postId": "en/ai-module-architecture",
+          "heading": "Citation Guard",
+          "content": "#### Citation Guard\n\nAutomatically refuses 6 categories of sensitive personal information queries: address, income, family, phone, ID, age. Also validates that referenced URLs are from the blog domain to prevent hallucinated external links.",
+          "position": 14,
+          "tokenCount": 60,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.3 Intelligence Module",
+            "H4": "Citation Guard"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#source-layer-priority",
+          "postId": "en/ai-module-architecture",
+          "heading": "Source Layer Priority",
+          "content": "#### Source Layer Priority\n\n| Layer | Content | Priority |\n|-------|---------|----------|\n| L1 | Original blog content (title, summary, key points, excerpts) | Highest — must come from \"related articles\" |\n| L2 | Curated data: author bio, project list, blog overview | High |\n| L3 | Structured facts: tag statistics, category aggregation, derived data | Medium |\n| L4 | External verified sources (official docs, GitHub repos) | Lower — must annotate citations |\n| L5 | Voice style (only affects expression, not factual basis) | Lowest |\n\n**Priority rule**: L1 > L2 > L3 > L4 > L5. When sources conflict, higher priority takes precedence.",
+          "position": 15,
+          "tokenCount": 160,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.4 Prompt Builder Module",
+            "H4": "Source Layer Priority"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#4-6-tool-calling-architecture",
+          "postId": "en/ai-module-architecture",
+          "heading": "4.6 Tool Calling Architecture",
+          "content": "### 4.6 Tool Calling Architecture\n\nTools are declared in `packages/ai/src/tools/action-tools.ts` using the AI SDK `tool()` helper and Zod `inputSchema` for structured arguments. `allTools` aggregates seven tools: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, `setPreference`, and `searchArticles`.\n\n`chat-handler.ts` imports `allTools` and passes it into `streamText` with `toolChoice: 'auto'`, so the active provider may emit tool calls in the same streaming turn as natural language. **Server-side execution** applies only to `searchArticles`, whose `execute` function calls `searchArticles` / `searchProjects` from the search module and returns JSON for the model. The other six tools are **client-executed**: the stream carries tool-call parts to the Preact chat UI, which maps names and payloads to the core **Action** format and runs them in the browser (see below). `getClientSideTools()` and `getServerSideTools()` document this split for tests and integrations.",
+          "position": 16,
+          "tokenCount": 255,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.6 Tool Calling Architecture"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#4-7-action-executor-packages-c",
+          "postId": "en/ai-module-architecture",
+          "heading": "4.7 Action Executor (`packages/core/src/actions`)",
+          "content": "### 4.7 Action Executor (`packages/core/src/actions`)\n\nThe `@astro-minimax/core` package owns **runtime execution** of user-visible actions. `ActionExecutor` implements handlers for `scroll-to-section`, `highlight-text`, `toggle-theme`, `toggle-reading-mode`, `set-preference`, and `navigate`, updating the DOM, theme, reading mode, and persisted preferences consistently with the rest of the theme.\n\n**Cross-page chaining** is handled by `URLHandler`: simple actions such as theme and section scroll can be encoded as `theme` and `section` query parameters; longer sequences are **enqueued** and referenced by an `ai_actions` token so that after `navigateToArticle` loads the target page, pending actions are dequeued and executed on load. This keeps tool-driven navigation aligned with normal user navigation and avoids losing context across a full page transition.",
+          "position": 17,
+          "tokenCount": 217,
+          "headers": {
+            "H2": "4. Core Module Details",
+            "H3": "4.7 Action Executor (`packages/core/src/actions`)"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#5-2-scenario-2-read-chat-featu",
+          "postId": "en/ai-module-architecture",
+          "heading": "5.2 Scenario 2: Read & Chat Feature",
+          "content": "### 5.2 Scenario 2: Read & Chat Feature\n\nThis is an enhanced feature for article reading scenarios, where users can initiate conversations about the specific article they are currently reading.\n\n**Context-Aware Mechanism:**\n\n```typescript\nconst articleContext = {\n  scope: \"article\",\n  article: {\n    slug: \"how-to-configure-astro-minimax-theme\",\n    title: \"How to Configure astro-minimax Theme\",\n    summary: \"This article covers the configuration methods for the astro-minimax theme...\",\n    keyPoints: [\"Basic configuration\", \"Environment variables\", \"Theme customization\"],\n    categories: [\"Tutorial\", \"Configuration\"],\n  },\n};\n\n// Article context prompt injection\nconst articlePrompt = `\n[Current Reading Article]\nUser is reading: \"${articleContext.title}\"\nSummary: ${articleContext.summary}\nKey points: ${articleContext.keyPoints.join('; ')}\nCategories: ${articleContext.categories.join(', ')}\n\nYou are accompanying the user as they read this article. Prioritize answering questions based on this article's content.\n`;\n```\n\n**Read & Chat Sequence Flow:**\n\n```mermaid\nsequenceDiagram\n    participant U as User\n    participant W as AIChatWidget\n    participant H as chat-handler\n    participant S as Search Module\n    participant P as Prompt Builder\n    participant L as LLM Provider\n\n    U->>W: Opens article page\n    Note over W: Receives articleContext from Astro props\n\n    U->>W: Types question about the article\n    W->>H: POST /api/chat (scope: \"article\")\n    Note over H: context.scope === \"article\"\n\n    H->>S: searchArticles(query)\n    Note over S: Article-scoped search<br/>prioritizes current article\n\n    S-->>H: Related articles (current article boosted)\n\n    H->>P: buildSystemPrompt()\n    Note over P: Static + Semi-Static layers<br/>+ Dynamic layer with article context<br/>+ \"You are reading this article\" hint\n\n    P-->>H: Complete system prompt\n\n    H->>L: streamText()\n    L-->>U: SSE streaming response\n    Note over U: AI answers in context<br/>of the current article\n```",
+          "position": 18,
+          "tokenCount": 74,
+          "headers": {
+            "H2": "5. Usage Scenario Details",
+            "H3": "5.2 Scenario 2: Read & Chat Feature"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#5-3-scenario-3-follow-up-conte",
+          "postId": "en/ai-module-architecture",
+          "heading": "5.3 Scenario 3: Follow-up Context Reuse",
+          "content": "### 5.3 Scenario 3: Follow-up Context Reuse\n\n**User input**: `\"Where is the config file?\"` (previous turn discussed deployment)\n\n```mermaid\nflowchart TB\n    A[\"User input: Where is the config file?\"] --> B{\"Follow-up detection\"}\n    B -->|isLikelyFollowUp| C{\"Session cache?\"}\n    C -->|has cache| D{\"hasNewSignificantTokens?\"}\n    D -->|no| E[\"Reuse context\"]\n    D -->|yes| F[\"New search\"]\n    C -->|no cache| F\n\n    E --> G[\"Skip search\"]\n    G --> H[\"Reuse cached articles\"]\n\n    F --> I[\"Search: config file\"]\n    I --> J[\"New article list\"]\n\n    H --> K[\"Build prompt\"]\n    J --> K\n```\n\n**Follow-up Detection Algorithm:**\n\n```typescript\nfunction isLikelyFollowUp(message: string): boolean {\n  const text = message.trim();\n  if (!text || text.length > 48) return false;\n\n  const hasTerminalPunctuation = /[?？!！。.…]$/.test(text);\n  const wordCount = text.split(/\\s+/).filter(Boolean).length;\n\n  if (text.length <= 16) return true;           // Very short, likely a follow-up\n  if (!/\\s/.test(text) && text.length <= 24) return true;  // Single-word phrase\n  return hasTerminalPunctuation && wordCount <= 6 && text.length <= 36;\n}\n```",
+          "position": 19,
+          "tokenCount": 51,
+          "headers": {
+            "H2": "5. Usage Scenario Details",
+            "H3": "5.3 Scenario 3: Follow-up Context Reuse"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#6-1-aichatwidget-component",
+          "postId": "en/ai-module-architecture",
+          "heading": "6.1 AIChatWidget Component",
+          "content": "### 6.1 AIChatWidget Component\n\nAIChatWidget.astro is the module's Astro entry point, responsible for initializing the chat UI and mounting it to the page.\n\n```astro\n---\nimport { SITE } from \"virtual:astro-minimax/config\";\nimport AIChatContainer from \"./AIChatContainer.js\";\nimport type { ArticleChatContext } from \"../server/types.js\";\n\ninterface Props {\n  lang?: string;\n  articleContext?: ArticleChatContext;\n}\n\nconst { lang = SITE.lang ?? \"zh\", articleContext } = Astro.props;\nconst aiEnabled = SITE.ai?.enabled ?? false;\n\nconst aiConfig = {\n  enabled: aiEnabled,\n  mockMode: SITE.ai?.mockMode ?? true,\n  apiEndpoint: SITE.ai?.apiEndpoint || \"/api/chat\",\n  welcomeMessage: SITE.ai?.welcomeMessage,\n  placeholder: SITE.ai?.placeholder,\n  lang,\n};\n---\n\n{aiEnabled && (\n  <AIChatContainer\n    client:only=\"preact\"\n    config={aiConfig}\n    articleContext={articleContext}\n  />\n)}\n```\n\n**Client loading strategy:** The `client:only=\"preact\"` directive means the component loads only after the page's main content and interactions are ready. This ensures the chat component does not block initial page load, minimizing performance impact.",
+          "position": 20,
+          "tokenCount": 107,
+          "headers": {
+            "H2": "6. Component Design Details",
+            "H3": "6.1 AIChatWidget Component"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#6-4-streaming-text-display-opt",
+          "postId": "en/ai-module-architecture",
+          "heading": "6.4 Streaming Text Display Optimization",
+          "content": "### 6.4 Streaming Text Display Optimization\n\n**Auto-scroll strategy:** The message list automatically scrolls to the bottom (keeping the latest message visible), but if the user manually scrolls up, auto-scrolling is paused.\n\n**Markdown rendering:** Supports rich Markdown syntax:\n- Inline elements: links, bold, inline code\n- Block elements: paragraphs, code blocks, blockquotes, lists",
+          "position": 21,
+          "tokenCount": 97,
+          "headers": {
+            "H2": "6. Component Design Details",
+            "H3": "6.4 Streaming Text Display Optimization"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#7-3-error-code-definitions",
+          "postId": "en/ai-module-architecture",
+          "heading": "7.3 Error Code Definitions",
+          "content": "### 7.3 Error Code Definitions\n\n| Error Code | HTTP Status | Description | Retryable |\n|------------|-------------|-------------|-----------|\n| `METHOD_NOT_ALLOWED` | 405 | Invalid HTTP method | No |\n| `INVALID_REQUEST` | 400 | Request format error | No |\n| `INPUT_TOO_LONG` | 400 | Input exceeds 500 characters | No |\n| `RATE_LIMITED` | 429 | Rate limit triggered | Yes |\n| `TIMEOUT` | 504 | Request timeout | Yes |\n| `PROVIDER_UNAVAILABLE` | 503 | All providers unavailable | Yes |\n| `INTERNAL_ERROR` | 500 | Internal error | Yes |",
+          "position": 22,
           "tokenCount": 134,
           "headers": {
             "H2": "7. Interface Contracts and Data Types",
-            "H3": "7.2 Error Code Definitions"
+            "H3": "7.3 Error Code Definitions"
           }
         },
         {
@@ -134,7 +317,7 @@
           "postId": "en/ai-module-architecture",
           "heading": "8.1 Provider Configuration",
           "content": "### 8.1 Provider Configuration\n\n| Variable | Required | Description |\n|----------|----------|-------------|\n| `AI_BASE_URL` | For OpenAI | API endpoint URL |\n| `AI_API_KEY` | For OpenAI | API key |\n| `AI_MODEL` | No | Primary model (default: `gpt-4o-mini`) |\n| `AI_BINDING_NAME` | For Workers | AI binding name (default: `minimaxAI`) |\n| `AI_WORKERS_MODEL` | No | Workers model (default: `@cf/zai-org/glm-4.7-flash`) |",
-          "position": 9,
+          "position": 23,
           "tokenCount": 105,
           "headers": {
             "H2": "8. Configuration and Environment Variables",
@@ -146,7 +329,7 @@
           "postId": "en/ai-module-architecture",
           "heading": "8.2 Response Cache Configuration",
           "content": "### 8.2 Response Cache Configuration\n\n| Variable | Default | Description |\n|----------|---------|-------------|\n| `AI_RESPONSE_CACHE_ENABLED` | `false` | Enable caching |\n| `AI_RESPONSE_CACHE_TTL` | `3600` | Cache TTL (seconds) |\n| `AI_RESPONSE_CACHE_PLAYBACK_DELAY` | `20` | Playback delay (ms) |",
-          "position": 10,
+          "position": 24,
           "tokenCount": 75,
           "headers": {
             "H2": "8. Configuration and Environment Variables",
@@ -158,7 +341,7 @@
           "postId": "en/ai-module-architecture",
           "heading": "9.1 Deployment Architecture",
           "content": "### 9.1 Deployment Architecture\n\n**Cloudflare Pages Mode (Recommended):**\n\n```mermaid\nflowchart TB\n    A[\"User Request\"] --> B[\"Cloudflare CDN / Edge Network\"]\n    B --> C[\"Cloudflare Pages Functions\"]\n    C --> D[\"chat-handler.ts<br/>(handles /api/chat)\"]\n    C --> E[\"Workers KV<br/>(Response Cache)\"]\n    E --> F[\"Cloudflare Workers AI / OpenAI API\"]\n```\n\nThis architecture benefits from low latency through edge computing, with AI requests originating from the edge node closest to the user.\n\n**Traditional Node.js Mode:**\n\n```mermaid\nflowchart TB\n    A[\"User Request\"] --> B[\"CDN / Load Balancer\"]\n    B --> C[\"Astro Server<br/>(SSR Mode)\"]\n    C --> D[\"chat-handler.ts\"]\n    C --> E[\"External AI API<br/>(OpenAI, etc.)\"]\n```",
-          "position": 11,
+          "position": 25,
           "tokenCount": 70,
           "headers": {
             "H2": "9. Deployment and Operations",
@@ -170,7 +353,7 @@
           "postId": "en/ai-module-architecture",
           "heading": "9.2 Performance Benchmarks",
           "content": "### 9.2 Performance Benchmarks\n\n| Stage | Avg Latency | P99 Latency |\n|-------|-------------|-------------|\n| Rate limit check | < 1ms | < 5ms |\n| RAG retrieval | 50-150ms | 300ms |\n| Keyword extraction | 200-800ms | 5000ms |\n| Evidence analysis | 300-1000ms | 8000ms |\n| AI streaming response | 500-3000ms | 30000ms |\n| End-to-end | 600-4000ms | 35000ms |",
-          "position": 12,
+          "position": 26,
           "tokenCount": 89,
           "headers": {
             "H2": "9. Deployment and Operations",
@@ -178,14 +361,96 @@
           }
         },
         {
-          "id": "en/ai-module-architecture#12-summary",
+          "id": "en/ai-module-architecture#10-timeout-budget-management",
           "postId": "en/ai-module-architecture",
-          "heading": "12. Summary",
-          "content": "## 12. Summary\n\nThe @astro-minimax/ai module achieves high-availability, high-quality AI chat experience through:\n\n1. **Vendor Agnostic** — Multi-provider support with automatic failover\n2. **Intelligence Enhancement** — Keyword extraction, intent classification, evidence analysis\n3. **Hallucination Prevention** — Citation guard, privacy protection, source layering\n4. **Performance Optimization** — Three-layer prompts, session caching, response caching\n5. **User Experience** — Streaming responses, typewriter effect, read & chat\n6. **Robustness & Fault Tolerance** — Automatic failover, timeout budget management\n7. **Modularity & Extensibility** — Clear layered architecture and module boundaries\n\nFor complete API documentation and more examples, see the [API Reference](/en/posts/ai-api-reference).",
-          "position": 13,
-          "tokenCount": 202,
+          "heading": "10. Timeout Budget Management",
+          "content": "## 10. Timeout Budget Management\n\nThe total timeout for a single request is 45 seconds, allocated across stages as follows:\n\n| Stage | Timeout | Failure Behavior |\n|-------|---------|-----------------|\n| Keyword extraction | 5s | Degrade to local tokenization |\n| Evidence analysis | 8s | Skip this stage |\n| LLM streaming | 30s | Switch to next Provider, ultimately Mock |\n| Other overhead | 2s | — |\n\n```typescript\nconst REQUEST_TIMEOUT_MS = 45_000;\nconst requestAbort = new AbortController();\nconst requestTimer = setTimeout(() => requestAbort.abort(), REQUEST_TIMEOUT_MS);\n\ntry {\n  return await runPipeline({ ...params, requestAbort });\n} catch (err) {\n  if (requestAbort.signal.aborted) return errors.timeout(lang);\n  return errors.internal(undefined, lang);\n} finally {\n  clearTimeout(requestTimer);\n}\n```\n\nEach stage uses independent `AbortSignal` instances derived from the master controller, ensuring that a timeout in one stage does not immediately abort the entire pipeline — instead, the system degrades gracefully and continues to the next stage.",
+          "position": 27,
+          "tokenCount": 167,
           "headers": {
-            "H2": "12. Summary"
+            "H2": "10. Timeout Budget Management"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#11-rate-limiting",
+          "postId": "en/ai-module-architecture",
+          "heading": "11. Rate Limiting",
+          "content": "## 11. Rate Limiting\n\nThree-tier IP-level rate limiting:\n\n| Tier | Time Window | Max Requests | Purpose |\n|------|------------|-------------|---------|\n| Burst | 10 seconds | 3 | Prevent short-term flooding |\n| Sustained | 60 seconds | 20 | Normal usage ceiling |\n| Daily | 24 hours | 100 | Daily total limit |\n\nAll thresholds are configurable via environment variables:\n\n| Variable | Default | Description |\n|----------|---------|-------------|\n| `CHAT_RATE_LIMIT_BURST_MAX` | `3` | Burst limit max requests |\n| `CHAT_RATE_LIMIT_BURST_WINDOW_MS` | `10000` | Burst limit time window |\n| `CHAT_RATE_LIMIT_SUSTAINED_MAX` | `20` | Sustained limit max requests |\n| `CHAT_RATE_LIMIT_SUSTAINED_WINDOW_MS` | `60000` | Sustained limit time window |\n| `CHAT_RATE_LIMIT_DAILY_MAX` | `100` | Daily limit max requests |\n| `CHAT_RATE_LIMIT_DAILY_WINDOW_MS` | `86400000` | Daily limit time window |\n\nWhen any tier is exceeded, the API returns HTTP 429 with a `retryAfter` value indicating when the client may retry.",
+          "position": 28,
+          "tokenCount": 251,
+          "headers": {
+            "H2": "11. Rate Limiting"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#extension-types",
+          "postId": "en/ai-module-architecture",
+          "heading": "Extension Types",
+          "content": "### Extension Types\n\n| Type | Purpose | Example |\n|------|---------|---------|\n| `searchable` | Add custom searchable documents | Product catalog, external knowledge base |\n| `facts` | Inject verified facts for grounding | \"Author has 10 years experience\" |\n| `context` | Add background context to prompts | Company info, project status |\n| `voice-style` | Customize AI response tone | Professional, casual, technical |\n| `semantic-fallback` | Map ambiguous queries to specific content | \"homepage\" → main landing page |",
+          "position": 29,
+          "tokenCount": 130,
+          "headers": {
+            "H2": "12. Extension System",
+            "H3": "Extension Types"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#extension-registry",
+          "postId": "en/ai-module-architecture",
+          "heading": "Extension Registry",
+          "content": "### Extension Registry\n\nThe `ExtensionRegistry` manages loaded extensions with priority-based ordering. Extensions are loaded at server startup via `initializeExtensions()` and merged into the RAG pipeline at specific injection points:\n\n- **Search phase**: `mergeSearchDocuments()` adds searchable extensions\n- **Facts phase**: `mergeFacts()` adds verified facts\n- **Prompt phase**: `buildVoiceStylePrompt()` applies voice customization\n- **Query phase**: `getSemanticFallback()` handles ambiguous queries",
+          "position": 30,
+          "tokenCount": 127,
+          "headers": {
+            "H2": "12. Extension System",
+            "H3": "Extension Registry"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#component-splitting",
+          "postId": "en/ai-module-architecture",
+          "heading": "Component Splitting",
+          "content": "### Component Splitting\n\nLarge UI components have been split into focused modules:\n\n| Original | Lines | After Split |\n|----------|-------|-------------|\n| `ChatPanel.tsx` | 1020 | 580 (+ RichText, MessageBubble, ChatInput, ReasoningBlock) |\n| `CodeBlock.tsx` | 785 | 256 (+ MermaidBlock, MarkmapBlock, VizShared) |\n| CLI `ai.ts` | 1167 | 122 (+ types, run-tool, profile, facts, extensions) |",
+          "position": 31,
+          "tokenCount": 98,
+          "headers": {
+            "H2": "13. Architecture Improvements (v0.9.2)",
+            "H3": "Component Splitting"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#single-source-constants",
+          "postId": "en/ai-module-architecture",
+          "heading": "Single Source Constants",
+          "content": "### Single Source Constants\n\nAll configuration constants are now centralized in `constants.ts`:\n\n```typescript\nexport const TIMEOUTS = {\n  REQUEST: 45_000,\n  KEYWORD_EXTRACTION: 5_000,\n  EVIDENCE_ANALYSIS: 8_000,\n  LLM_STREAMING: 30_000,\n  PROVIDER_DEFAULT: 30_000,\n} as const;\n\nexport const SEARCH = {\n  ARTICLE_LIMIT: 10,\n  DEEP_CONTENT_SCORE_THRESHOLD: 8,\n  DEEP_CONTENT_MAX_LENGTH: 1500,\n} as const;\n```\n\nIndividual modules import from this single source rather than defining local duplicates.",
+          "position": 32,
+          "tokenCount": 51,
+          "headers": {
+            "H2": "13. Architecture Improvements (v0.9.2)",
+            "H3": "Single Source Constants"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#security-hardening",
+          "postId": "en/ai-module-architecture",
+          "heading": "Security Hardening",
+          "content": "### Security Hardening\n\n- URL protocol validation (`sanitizeUrl`) prevents XSS from model-generated links\n- Mermaid `securityLevel: 'strict'` prevents SVG injection\n- HTML escaping in client-rendered templates\n- CLI path traversal protection\n- Webhook log redaction (credentials stripped from URLs)\n- Configurable CORS origin (`env.CORS_ORIGIN`)",
+          "position": 33,
+          "tokenCount": 87,
+          "headers": {
+            "H2": "13. Architecture Improvements (v0.9.2)",
+            "H3": "Security Hardening"
+          }
+        },
+        {
+          "id": "en/ai-module-architecture#14-summary",
+          "postId": "en/ai-module-architecture",
+          "heading": "14. Summary",
+          "content": "## 14. Summary\n\nThe @astro-minimax/ai module achieves high-availability, high-quality AI chat experience through:\n\n1. **Vendor Agnostic** — Multi-provider support with automatic failover\n2. **Intelligence Enhancement** — Keyword extraction, intent classification, evidence analysis\n3. **Hallucination Prevention** — Citation guard, privacy protection, source layering\n4. **Performance Optimization** — Three-layer prompts, session caching, response caching\n5. **User Experience** — Streaming responses, typewriter effect, read & chat\n6. **Robustness & Fault Tolerance** — Automatic failover, timeout budget management\n7. **Modularity & Extensibility** — Clear layered architecture and module boundaries\n8. **Tool calling & actions** — Model-driven UI and navigation via AI SDK tools plus core `ActionExecutor`\n9. **Retrieval depth** — Optional RRF fusion over lexical and vector ranks; paragraph-level chunk injection in prompts\n\nFor complete API documentation and more examples, see the [API Reference](/en/posts/ai-api-reference).",
+          "position": 34,
+          "tokenCount": 258,
+          "headers": {
+            "H2": "14. Summary"
           }
         }
       ]
@@ -200,8 +465,15 @@
         "docs",
         "configuration"
       ],
-      "summary": "astro-minimax 0.8.2 introduces a brand new settings panel for personalizing your blog's appearance and experience.\n\nOpening the Settings Panel\n\nClick…",
-      "keyPoints": [],
+      "summary": "The article introduces astro-minimax’s settings panel, explaining how to adjust appearance, reading, layout, and general preferences, then save, share, reset, and automatically restore them for a personalized blog experience.",
+      "keyPoints": [
+        "The panel opens from the bottom-right gear icon.",
+        "Preferences cover appearance, reading, layout, and UI toggles.",
+        "Reading options include theme, width, line height, and font family.",
+        "AI chat panel supports Small, Medium, and Large sizes.",
+        "Settings persist in localStorage and restore on revisit.",
+        "Share exports preferences as URL parameters; Reset restores defaults."
+      ],
       "url": "/en/posts/settings-panel/",
       "chunks": [
         {
@@ -253,11 +525,23 @@
           }
         },
         {
+          "id": "en/settings-panel#ai-chat-panel-size",
+          "postId": "en/settings-panel",
+          "heading": "AI chat panel size",
+          "content": "### AI chat panel size\n\nWhen AI chat is enabled, you can resize the chat panel:\n\n| Option | Description |\n|--------|-------------|\n| **Small (S)** | Compact width, good for browsing alongside the page |\n| **Medium (M)** | Default balanced size |\n| **Large (L)** | Wider panel for long replies and code |\n\nYour choice is persisted in `localStorage` and restored on your next visit.",
+          "position": 4,
+          "tokenCount": 95,
+          "headers": {
+            "H2": "Settings Options",
+            "H3": "AI chat panel size"
+          }
+        },
+        {
           "id": "en/settings-panel#sharing-settings",
           "postId": "en/settings-panel",
           "heading": "Sharing Settings",
           "content": "## Sharing Settings\n\nYou can share your current settings with others:\n\n1. Click the \"Share\" button at the bottom of the settings panel\n2. Settings will be copied to clipboard as URL parameters\n3. Others will automatically apply your settings when opening the link",
-          "position": 4,
+          "position": 5,
           "tokenCount": 66,
           "headers": {
             "H2": "Sharing Settings"
@@ -268,7 +552,7 @@
           "postId": "en/settings-panel",
           "heading": "Technical Details",
           "content": "## Technical Details\n\nThe preferences system is located in `packages/core/src/preferences/`:\n\n- `types.ts` - Type definitions\n- `defaults.ts` - Default values\n- `presets.ts` - Theme presets\n- `storage.ts` - Storage management\n- `share.ts` - Share functionality",
-          "position": 5,
+          "position": 6,
           "tokenCount": 65,
           "headers": {
             "H2": "Technical Details"
@@ -288,8 +572,15 @@
         "architecture",
         "technical"
       ],
-      "summary": "@astro-minimax/ai 是 astro-minimax 博客主题的智能增强模块，定位为供应商无关（Vendor-agnostic）的 AI 集成解决方案。该模块的核心目标是为一站式博客平台提供完整的 RAG（检索增强生成）流水线，同时支持多种 AI 服务供应商的无缝切换与故障转移，确保…",
-      "keyPoints": [],
+      "summary": "文章详解 @astro-minimax/ai 的分层技术架构，围绕 RAG 流水线、多供应商抽象、流式响应与降级容错设计展开，说明其如何在博客场景中实现低延迟、高可用且可扩展的 AI 交互能力。",
+      "keyPoints": [
+        "模块面向全局对话与阅读伴侣场景",
+        "采用 Streaming、SSE 与 RAG 组合",
+        "Provider Manager实现多供应商切换",
+        "检索链路含缓存、TF-IDF与可选重排",
+        "智能分析含关键词提取与引用守卫",
+        "三层提示构建提升复用与动态适配"
+      ],
       "url": "/zh/posts/ai-module-architecture/",
       "chunks": [
         {
@@ -350,12 +641,24 @@
           }
         },
         {
-          "id": "zh/ai-module-architecture#2-2-核心目录功能解析",
+          "id": "zh/ai-module-architecture#2-2-核心目录功能解析-0",
           "postId": "zh/ai-module-architecture",
           "heading": "2.2 核心目录功能解析",
-          "content": "### 2.2 核心目录功能解析\n\n**src/components/** 目录采用了原子设计理念组织 UI 组件。最底层是 `ChatPanel.tsx`，这是整个聊天功能的视觉核心，构建于 `@ai-sdk/react` 的 `useChat` Hook 之上。它负责消息的渲染（支持文本、来源引用等不同部件）、错误状态的展示（带重试按钮）、以及状态指示器的显示。`AIChatContainer.tsx` 扮演状态容器的角色，管理聊天气泡的开启/关闭状态，并暴露 `window.__aiChatToggle` 接口供外部调用（如悬浮按钮）实现状态切换。\n\n**src/server/** 目录包含了请求处理的全部逻辑。`chat-handler.ts` 是整个服务端处理流水线的中枢，它编排了速率限制、输入验证、RAG 搜索、智能分析、提示构建、AI 调用、流式响应等全部环节。\n\n**src/provider-manager/** 是实现供应商无关性的核心目录。该目录导出了一个 Provider Manager 实例，支持动态添加/移除供应商、设置优先级权重、自动健康追踪和透明故障转移。`mock.ts` 提供了本地 Mock 响应能力，当所有真实供应商不可用时，系统会切换到 Mock 模式，返回预定义的模板化响应。\n\n**src/search/** 实现了 RAG 检索的核心能力。检索时会使用会话级缓存（`session-cache.ts`），避免在单个对话会话中重复检索相同查询。检索策略采用了混合方式：结合语义向量相似度和关键词匹配，确保结果既相关又全面。\n\n**src/intelligence/** 提供了超越基础检索的智能增强能力。`keyword-extract.ts` 负责从用户查询中提取关键实体和意图词，这些信息用于增强检索效果。`evidence-analysis.ts` 对检索到的文档片段进行二次分析，评估其对当前查询的支持程度。`citation-guard.ts` 是隐私保护组件，负责检测和过滤可能泄露用户个人信息的查询。\n\n**src/prompt/** 实现了三层提示词构建体系。第一层是静态层，包含系统角色定义和通用指令；第二层是半静态层，包含博客特定信息（如技术栈、功能列表）；第三层是动态层，根据当前对话上下文和 RAG 检索结果动态构建。这种分层设计使得大部分提示词内容可以被缓存复用，只有动态层需要实时生成。",
+          "content": "### 2.2 核心目录功能解析\n\n**src/components/** 目录采用了原子设计理念组织 UI 组件。最底层是 `ChatPanel.tsx`，这是整个聊天功能的视觉核心，构建于 `@ai-sdk/react` 的 `useChat` Hook 之上。它负责消息的渲染（支持文本、来源引用等不同部件）、错误状态的展示（带重试按钮）、以及状态指示器的显示。`AIChatContainer.tsx` 扮演状态容器的角色，管理聊天气泡的开启/关闭状态，并暴露 `window.__aiChatToggle` 接口供外部调用（如悬浮按钮）实现状态切换。\n\n**src/tools/** 使用 AI SDK 的 `tool()` 辅助函数定义了所有可被模型调用的工具。`allTools` 聚合了 7 个工具：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleReadingMode`、`highlightText`、`setPreference` 和 `searchArticles`。其中 `searchArticles` 在服务端执行（具有 `execute` 函数），其余 6 个为客户端执行工具（仅定义 schema，由浏览器端 `ActionExecutor` 处理）。`getClientSideTools()` 和 `getServerSideTools()` 提供了这一分类的编程接口。\n\n**src/server/** 目录包含了请求处理的全部逻辑。`chat-handler.ts` 是整个服务端处理流水线的中枢，它编排了速率限制、输入验证、RAG 搜索、智能分析、提示构建、AI 调用、流式响应等全部环节。在 v0.9.1 中，`streamText` 调用增加了 `tools: allTools`、`toolChoice: 'auto'` 和 `stopWhen: stepCountIs(5)` 参数，使模型可以在响应中调用工具。\n\n**src/provider-manager/** 是实现供应商无关性的核心目录。该目录导出了一个 Provider Manager 实例，支持动态添加/移除供应商、设置优先级权重、自动健康追踪和透明故障转移。`mock.ts` 提供了本地 Mock 响应能力，当所有真实供应商不可用时，系统会切换到 Mock 模式，返回预定义的模板化响应。\n\n**src/search/** 实现了 RAG 检索的核心能力。检索时会使用会话级缓存（`session-cache.ts`），避免在单个对话会话中重复检索相同查询。检索策略采用了混合方式：结合语义向量相似度和关键词匹配，确保结果既相关又全面。\n\n**src/intelligence/** 提供了超越基础检索的智能增强能力。`keyword-extract.ts` 负责从用户查询中提取关键实体和意图词，这些信息用于增强检索效果。`evidence-analysis.ts` 对检索到的文档片段进行二次分析，评估其对当前查询的支持程度。`citation-guard.ts` 是隐私保护组件，负责检测和过滤可能泄露用户个人信息的查询。",
           "position": 5,
-          "tokenCount": 405,
+          "tokenCount": 482,
+          "headers": {
+            "H2": "二、目录结构与组织规范",
+            "H3": "2.2 核心目录功能解析"
+          }
+        },
+        {
+          "id": "zh/ai-module-architecture#2-2-核心目录功能解析-1",
+          "postId": "zh/ai-module-architecture",
+          "heading": "2.2 核心目录功能解析",
+          "content": "**src/prompt/** 实现了三层提示词构建体系。第一层是静态层，包含系统角色定义和通用指令；第二层是半静态层，包含博客特定信息（如技术栈、功能列表）；第三层是动态层，根据当前对话上下文和 RAG 检索结果动态构建。这种分层设计使得大部分提示词内容可以被缓存复用，只有动态层需要实时生成。",
+          "position": 6,
+          "tokenCount": 67,
           "headers": {
             "H2": "二、目录结构与组织规范",
             "H3": "2.2 核心目录功能解析"
@@ -366,7 +669,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "优先级与故障转移",
           "content": "#### 优先级与故障转移\n\nProvider 按权重降序排列，权重越高优先级越高：\n\n| Provider | 权重 | 说明 |\n|----------|------|------|\n| Workers AI | 100 | 最高优先级，Cloudflare 部署时免费 |\n| OpenAI 兼容 | 90 | 备选方案，支持任何 OpenAI 兼容 API |\n| Mock | 0 | 最终兜底，保证用户始终收到回复 |\n\n```typescript\n// 故障转移逻辑\nasync streamText(options: StreamTextOptions): Promise<StreamTextResult> {\n  for (const provider of this.providers) {\n    const isAvailable = await provider.isAvailable();\n    if (!isAvailable) continue;\n\n    try {\n      const result = await provider.streamText(options);\n      provider.recordSuccess();\n      return result;\n    } catch (error) {\n      provider.recordFailure(error);\n      // 继续尝试下一个 Provider\n    }\n  }\n\n  // 所有 Provider 失败，启用 Mock 兜底\n  return this.mockAdapter.streamText(options);\n}\n```",
-          "position": 6,
+          "position": 7,
           "tokenCount": 75,
           "headers": {
             "H2": "四、核心模块详解",
@@ -379,7 +682,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "引用守卫（Citation Guard）",
           "content": "#### 引用守卫（Citation Guard）\n\n**隐私保护：** 自动拒绝 6 类敏感个人信息查询\n\n```typescript\nconst PRIVACY_PATTERNS: PrivacyPattern[] = [\n  { regex: /(住址|地址|住在哪|address|where.*live)/iu, key: 'address' },\n  { regex: /(收入|工资|薪资|salary|income)/iu, key: 'income' },\n  { regex: /(家人|妻子|丈夫|孩子|父母|family)/iu, key: 'family' },\n  { regex: /(电话|手机号|phone|mobile)/iu, key: 'phone' },\n  { regex: /(身份证|id\\s*card|passport)/iu, key: 'id' },\n  { regex: /(年龄|多大了|几岁|how old|age)/iu, key: 'age' },\n];\n```\n\n**幻觉检测：** 流式监控 AI 输出中的伪造链接\n\n```typescript\nexport function createCitationGuardTransform(params: {\n  articles: ArticleContext[];\n  projects: ProjectContext[];\n  siteUrl?: string;\n}): (stream: ReadableStream<string>) => ReadableStream<string> {\n  // 规范化 URL，统一处理相对路径和绝对路径\n  const normalizeUrl = (url: string): string => {\n    if (url.startsWith('/')) return `${siteUrl}${url}`;\n    if (url.startsWith('http://') || url.startsWith('https://')) return url;\n    return `${siteUrl}/${url}`;\n  };\n\n  // 构建合法 URL 白名单\n  const validUrls = new Set([\n    ...articles.map(a => normalizeUrl(a.url)),\n    ...projects.map(p => normalizeUrl(p.url)),\n  ]);\n  // ...\n}\n```\n\n**增强的 URL 验证：** 防止各种形式的幻觉链接\n\n- **协议白名单**：只允许 `http://` 和 `https://`\n- **域名验证**：阻止 localhost、私有 IP、内部网络地址\n- **XSS 防护**：过滤危险的 URL 模式",
-          "position": 7,
+          "position": 8,
           "tokenCount": 85,
           "headers": {
             "H2": "四、核心模块详解",
@@ -392,7 +695,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "回答模式检测（Answer Mode）",
           "content": "#### 回答模式检测（Answer Mode）\n\n系统自动检测用户查询的期望回答格式，并在提示词中注入相应的格式指导：\n\n```typescript\nexport function resolveAnswerMode(query: string): AnswerMode {\n  const q = query.toLowerCase();\n  if (/几次|多少|几篇|数量|count|how many/u.test(q)) return 'count';\n  if (/哪些|哪几个|列表|列举|list|what are/u.test(q)) return 'list';\n  if (/怎么看|怎么想|看法|观点|opinion|think about/u.test(q)) return 'opinion';\n  if (/推荐|建议|suggest|recommend/u.test(q)) return 'recommendation';\n  if (/是什么|什么是|介绍|解释|what is|explain/u.test(q)) return 'fact';\n  if (/有没有|是否|是不是|真的吗|does|is there/u.test(q)) return 'fact';\n  return 'general';\n}\n```\n\n| 模式              | 触发词               | 回答风格                     |\n|-------------------|----------------------|------------------------------|\n| `fact`            | 是什么、什么是       | 先给结论，再补依据           |\n| `count`           | 多少、几篇、数量     | 第一句先说数字               |\n| `list`            | 哪些、哪几个、列表   | 直接列出 2-6 项              |\n| `opinion`         | 怎么看、观点、看法   | 「我觉得...」+ 2-3 个观点    |\n| `recommendation`  | 推荐、建议           | 2-4 个推荐项 + 理由          |",
-          "position": 8,
+          "position": 9,
           "tokenCount": 161,
           "headers": {
             "H2": "四、核心模块详解",
@@ -405,7 +708,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "扩展类型",
           "content": "#### 扩展类型\n\n| 类型 | 说明 | 用途 |\n|------|------|------|\n| `searchable` | 可搜索文档 | 添加额外的知识库内容 |\n| `facts` | 结构化事实 | 添加验证过的事实数据 |\n| `context` | 上下文注入 | 添加自定义 prompt 章节 |\n| `voice-style` | 语言风格 | 定义 AI 回答风格模式 |\n| `semantic-fallback` | 语义回退 | 查询重写规则 |",
-          "position": 9,
+          "position": 10,
           "tokenCount": 79,
           "headers": {
             "H2": "四、核心模块详解",
@@ -418,7 +721,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "动态层",
           "content": "#### 动态层\n\n根据当前查询和检索结果实时生成：\n\n```typescript\nexport function buildDynamicLayer(config: DynamicLayerConfig): string {\n  const { userQuery, articles, projects, evidenceSection, answerMode } = config;\n  \n  const lines = ['## 与当前问题相关的内容'];\n  \n  // 相关文章\n  if (articles.length) {\n    lines.push('### 相关文章');\n    for (const article of articles.slice(0, 8)) {\n      lines.push(`**[${article.title}](${article.url})**`);\n      if (article.readingTime) lines.push(`阅读时间：约 ${article.readingTime} 分钟`); // 新增：阅读时间\n      if (article.summary) lines.push(`摘要：${article.summary.slice(0, 120)}`);\n      if (article.keyPoints.length) {\n        lines.push(`要点：${article.keyPoints.slice(0, 3).join('；')}`);\n      }\n    }\n  }\n  \n  lines.push(`---`);\n  lines.push(`基于以上内容回答用户关于「${userQuery}」的问题。`);\n  \n  // 新增：回答模式提示\n  if (answerMode && answerMode !== 'general') {\n    lines.push(getAnswerModeHint(answerMode));\n  }\n  \n  return lines.join('\\n');\n}\n```\n\n**阅读时间显示：** 在动态层中展示文章的预估阅读时间，帮助用户快速判断文章长度：\n\n```\n**[如何配置 astro-minimax 主题](/zh/posts/how-to-configure-astro-minimax-theme)**\n阅读时间：约 5 分钟\n摘要：本文介绍 astro-minimax 主题的配置方法...\n要点：基础配置；环境变量；主题定制\n```\n\n**回答模式提示注入：** 根据检测到的回答模式，在动态层末尾注入格式指导：\n\n```\n当前为列表模式：直接列 2-6 项同一维度的内容。\n```",
-          "position": 10,
+          "position": 11,
           "tokenCount": 63,
           "headers": {
             "H2": "四、核心模块详解",
@@ -431,7 +734,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "5.6 TF-IDF 评分详解",
           "content": "### 5.6 TF-IDF 评分详解\n\n```mermaid\nflowchart LR\n    subgraph 输入\n        Q[\"查询: AI 学习教程\"]\n        D[\"文档: {title, content, keyPoints, ...}\"]\n    end\n\n    subgraph 分词\n        Q --> Q1[\"tokenize\"]\n        Q1 --> Q2[\"[ai, 学习, 教程]\"]\n    end\n\n    subgraph IDF计算\n        Q2 --> IDF[\"getIDFWeight()\"]\n        IDF --> W1[\"idf(ai) = 1.2<br/>(常见词)\"]\n        IDF --> W2[\"idf(学习) = 2.5<br/>(中等)\"]\n        IDF --> W3[\"idf(教程) = 3.1<br/>(罕见词)\"]\n    end\n\n    subgraph 字段匹配\n        D --> F1[\"title: 'AI入门教程'\"]\n        D --> F2[\"keyPoints: ['学习路径']\"]\n        D --> F3[\"content: '...AI学习...'\"]\n    end\n\n    subgraph 加权评分\n        F1 --> S1[\"title含AI: +8×1.2 = 9.6\"]\n        F1 --> S2[\"title含教程: +8×3.1 = 24.8\"]\n        F2 --> S3[\"keyPoints含学习: +5×2.5 = 12.5\"]\n        F3 --> S4[\"content含AI: +1×1.2 = 1.2\"]\n        F3 --> S5[\"content含学习: +1×2.5 = 2.5\"]\n    end\n\n    subgraph 总分\n        SUM[\"score = 9.6+24.8+12.5+1.2+2.5 = 50.6\"]\n    end\n\n    S1 --> SUM\n    S2 --> SUM\n    S3 --> SUM\n    S4 --> SUM\n    S5 --> SUM\n```\n\n**字段权重配置**：\n\n| 字段 | 权重 | 说明 |\n|------|------|------|\n| `title` | 8 | 标题最重要，匹配即高度相关 |\n| `keyPoints` | 5 | 关键点次之 |\n| `categories` | 4 | 分类匹配 |\n| `tags` | 3 | 标签匹配 |\n| `excerpt` | 3 | 摘要匹配 |\n| `content` | 1 | 正文权重最低，作为补充 |\n\n**IDF 公式**：\n\n```\nIDF(term) = log(N / (df + 1)) + 1\n\n其中:\n- N = 文档总数\n- df = 包含该词的文档数\n- +1 平滑确保所有词权重为正\n```",
-          "position": 11,
+          "position": 12,
           "tokenCount": 88,
           "headers": {
             "H2": "五、完整数据流示例",
@@ -443,7 +746,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "7.1 AIChatWidget 组件",
           "content": "### 7.1 AIChatWidget 组件\n\nAIChatWidget.astro 是模块的 Astro 入口点，负责初始化聊天 UI 并将其挂载到页面。\n\n```astro\n---\nimport { SITE } from \"virtual:astro-minimax/config\";\nimport AIChatContainer from \"./AIChatContainer.js\";\nimport type { ArticleChatContext } from \"../server/types.js\";\n\ninterface Props {\n  lang?: string;\n  articleContext?: ArticleChatContext;\n}\n\nconst { lang = SITE.lang ?? \"zh\", articleContext } = Astro.props;\nconst aiEnabled = SITE.ai?.enabled ?? false;\n\nconst aiConfig = {\n  enabled: aiEnabled,\n  mockMode: SITE.ai?.mockMode ?? true,\n  apiEndpoint: SITE.ai?.apiEndpoint || \"/api/chat\",\n  welcomeMessage: SITE.ai?.welcomeMessage,\n  placeholder: SITE.ai?.placeholder,\n  lang,\n};\n---\n\n{aiEnabled && (\n  <AIChatContainer\n    client:only=\"preact\"\n    config={aiConfig}\n    articleContext={articleContext}\n  />\n)}\n```\n\n**客户端加载策略：** 使用 `client:only=\"preact\"` 指令意味着组件会在页面主要内容和交互准备完成后才开始加载。这确保了聊天组件不会阻塞页面的首次加载，对性能影响最小化。",
-          "position": 12,
+          "position": 13,
           "tokenCount": 72,
           "headers": {
             "H2": "七、组件设计详解",
@@ -455,7 +758,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "7.4 流式文本显示优化",
           "content": "### 7.4 流式文本显示优化\n\n**自动滚动策略：** 消息列表应自动滚动到底部（保持最新消息可见），但如果用户主动向上滚动，应暂停自动滚动。\n\n**Markdown 渲染：** 支持丰富的 Markdown 语法：\n- 内联元素：链接、加粗、代码\n- 块级元素：段落、代码块、引用、列表",
-          "position": 13,
+          "position": 14,
           "tokenCount": 58,
           "headers": {
             "H2": "七、组件设计详解",
@@ -467,7 +770,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "8.3 错误码定义",
           "content": "### 8.3 错误码定义\n\n| 错误码 | HTTP 状态 | 说明 | 可重试 |\n|--------|-----------|------|--------|\n| `METHOD_NOT_ALLOWED` | 405 | 无效 HTTP 方法 | 否 |\n| `INVALID_REQUEST` | 400 | 请求格式错误 | 否 |\n| `INPUT_TOO_LONG` | 400 | 输入超过 500 字符 | 否 |\n| `RATE_LIMITED` | 429 | 速率限制触发 | 是 |\n| `TIMEOUT` | 504 | 请求超时 | 是 |\n| `PROVIDER_UNAVAILABLE` | 503 | 所有 Provider 不可用 | 是 |\n| `INTERNAL_ERROR` | 500 | 内部错误 | 是 |",
-          "position": 14,
+          "position": 15,
           "tokenCount": 110,
           "headers": {
             "H2": "八、接口契约与数据类型",
@@ -479,7 +782,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "9.1 Provider 配置",
           "content": "### 9.1 Provider 配置\n\n| 环境变量 | 必需 | 说明 |\n|----------|------|------|\n| `AI_BASE_URL` | OpenAI 时必需 | API 地址 |\n| `AI_API_KEY` | OpenAI 时必需 | API 密钥 |\n| `AI_MODEL` | 否 | 主模型（默认 `gpt-4o-mini`） |\n| `AI_KEYWORD_MODEL` | 否 | 关键词提取模型 |\n| `AI_EVIDENCE_MODEL` | 否 | 证据分析模型 |\n| `AI_BINDING_NAME` | Workers 时 | AI 绑定名（默认 `minimaxAI`） |\n| `AI_WORKERS_MODEL` | 否 | Workers 模型（默认 `@cf/zai-org/glm-4.7-flash`） |",
-          "position": 15,
+          "position": 16,
           "tokenCount": 112,
           "headers": {
             "H2": "九、配置与环境变量",
@@ -491,7 +794,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "9.2 响应缓存配置",
           "content": "### 9.2 响应缓存配置\n\n| 环境变量 | 默认值 | 说明 |\n|----------|--------|------|\n| `AI_RESPONSE_CACHE_ENABLED` | `false` | 是否启用缓存 |\n| `AI_RESPONSE_CACHE_TTL` | `3600` | 缓存 TTL（秒） |\n| `AI_RESPONSE_CACHE_PLAYBACK_DELAY` | `20` | 回放延迟（毫秒） |\n| `AI_RESPONSE_CACHE_CHUNK_SIZE` | `15` | 每块字符数 |\n| `AI_RESPONSE_CACHE_THINKING_DELAY` | `5` | 思考内容回放延迟 |",
-          "position": 16,
+          "position": 17,
           "tokenCount": 93,
           "headers": {
             "H2": "九、配置与环境变量",
@@ -503,7 +806,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "9.3 速率限制配置",
           "content": "### 9.3 速率限制配置\n\n| 环境变量 | 默认值 | 说明 |\n|----------|--------|------|\n| `CHAT_RATE_LIMIT_BURST_MAX` | `3` | 突发限制最大请求数 |\n| `CHAT_RATE_LIMIT_BURST_WINDOW_MS` | `10000` | 突发限制时间窗口 |\n| `CHAT_RATE_LIMIT_SUSTAINED_MAX` | `20` | 持续限制最大请求数 |\n| `CHAT_RATE_LIMIT_SUSTAINED_WINDOW_MS` | `60000` | 持续限制时间窗口 |\n| `CHAT_RATE_LIMIT_DAILY_MAX` | `100` | 每日限制最大请求数 |\n| `CHAT_RATE_LIMIT_DAILY_WINDOW_MS` | `86400000` | 每日限制时间窗口 |",
-          "position": 17,
+          "position": 18,
           "tokenCount": 118,
           "headers": {
             "H2": "九、配置与环境变量",
@@ -515,7 +818,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "10.2 性能基准",
           "content": "### 10.2 性能基准\n\n| 操作阶段 | 平均延迟 | P99 延迟 | 备注 |\n|----------|----------|----------|------|\n| 速率限制检查 | < 1ms | < 5ms | 内存操作 |\n| 请求验证 | < 2ms | < 10ms | JSON 解析 |\n| 关键词提取 | 200-800ms | 5000ms | 取决于模型和网络 |\n| RAG 检索 | 50-150ms | 300ms | 内存索引 |\n| 证据分析 | 300-1000ms | 8000ms | 可跳过 |\n| 提示词构建 | < 10ms | < 50ms | 字符串拼接 |\n| AI 流式响应 | 500-3000ms | 30000ms | 取决于模型和回复长度 |\n| 端到端（跳过智能分析） | 600-4000ms | 35000ms | 完整流程 |",
-          "position": 18,
+          "position": 19,
           "tokenCount": 125,
           "headers": {
             "H2": "十、部署与运维",
@@ -527,7 +830,7 @@
           "postId": "zh/ai-module-architecture",
           "heading": "10.4 故障排查指南",
           "content": "### 10.4 故障排查指南\n\n**问题：聊天功能无响应**\n\n排查步骤：\n1. 检查浏览器控制台是否有 JavaScript 错误\n2. 检查网络请求是否发出（DevTools Network 面板）\n3. 检查 `/api/chat` 端点是否返回正确响应\n4. 检查服务端日志中的错误信息\n5. 验证环境变量配置是否正确\n\n**问题：AI 回复质量差或答非所问**\n\n排查步骤：\n1. 检查 RAG 检索是否返回了相关内容（查看 source 消息）\n2. 检查日志中的检索结果评分\n3. 如果涉及最新内容，验证元数据是否已更新\n4. 考虑调整检索的 topK 参数或相关性阈值\n\n**问题：响应速度慢**\n\n排查步骤：\n1. 检查网络延迟（特别是 AI API 响应时间）\n2. 检查是否触发了降级策略（Mock 模式）\n3. 检查是否有大量并发请求（速率限制）\n4. 考虑启用响应缓存减少 API 调用\n\n**问题：间歇性返回 Mock 响应**\n\n这表明 AI 供应商不可用，应：\n1. 检查 API 密钥是否有效\n2. 检查 API 配额是否用尽\n3. 查看服务商状态页面\n4. 考虑增加备用供应商",
-          "position": 19,
+          "position": 20,
           "tokenCount": 196,
           "headers": {
             "H2": "十、部署与运维",
@@ -539,21 +842,57 @@
           "postId": "zh/ai-module-architecture",
           "heading": "十一、超时预算管理",
           "content": "## 十一、超时预算管理\n\n单个请求的总超时为 45 秒，各阶段分配如下：\n\n| 阶段 | 超时 | 失败行为 |\n|------|------|----------|\n| 关键词提取 | 5s | 降级使用本地分词 |\n| 证据分析 | 8s | 跳过此阶段 |\n| LLM 流式 | 30s | 切换下一 Provider，最终 Mock |\n| 其他开销 | 2s | — |\n\n```typescript\n// 主请求超时控制\nconst REQUEST_TIMEOUT_MS = 45_000;\nconst requestAbort = new AbortController();\nconst requestTimer = setTimeout(() => requestAbort.abort(), REQUEST_TIMEOUT_MS);\n\ntry {\n  return await runPipeline({ ...params, requestAbort });\n} catch (err) {\n  if (requestAbort.signal.aborted) return errors.timeout(lang);\n  return errors.internal(undefined, lang);\n} finally {\n  clearTimeout(requestTimer);\n}\n```",
-          "position": 20,
+          "position": 21,
           "tokenCount": 70,
           "headers": {
             "H2": "十一、超时预算管理"
           }
         },
         {
-          "id": "zh/ai-module-architecture#十二-速率限制",
+          "id": "zh/ai-module-architecture#12-1-工具定义",
           "postId": "zh/ai-module-architecture",
-          "heading": "十二、速率限制",
-          "content": "## 十二、速率限制\n\n三层 IP 级速率限制：\n\n| 层级 | 时间窗口 | 最大请求数 | 说明 |\n|------|----------|-----------|------|\n| Burst | 10 秒 | 3 次 | 防止短时间刷屏 |\n| Sustained | 60 秒 | 20 次 | 正常使用上限 |\n| Daily | 24 小时 | 100 次 | 单日总上限 |",
-          "position": 21,
+          "heading": "12.1 工具定义",
+          "content": "### 12.1 工具定义\n\n工具在 `packages/ai/src/tools/action-tools.ts` 中使用 AI SDK 的 `tool()` 函数和 Zod schema 定义：\n\n| 工具名 | 类型 | 功能 | 执行位置 |\n|--------|------|------|---------|\n| `toggleTheme` | 客户端 | 切换主题（light/dark/system） | 浏览器 |\n| `navigateToArticle` | 客户端 | 跳转到指定文章 | 浏览器 |\n| `scrollToSection` | 客户端 | 滚动到指定章节 | 浏览器 |\n| `toggleReadingMode` | 客户端 | 切换阅读模式 | 浏览器 |\n| `highlightText` | 客户端 | 高亮文章中的文本 | 浏览器 |\n| `setPreference` | 客户端 | 设置用户偏好 | 浏览器 |\n| `searchArticles` | 服务端 | 搜索博客文章和项目 | 服务器 |",
+          "position": 22,
+          "tokenCount": 149,
+          "headers": {
+            "H2": "十二、工具调用架构 (Tool Calling)",
+            "H3": "12.1 工具定义"
+          }
+        },
+        {
+          "id": "zh/ai-module-architecture#12-2-执行流程",
+          "postId": "zh/ai-module-architecture",
+          "heading": "12.2 执行流程",
+          "content": "### 12.2 执行流程\n\n`chat-handler.ts` 将 `allTools` 传入 `streamText`，配合 `toolChoice: 'auto'` 让模型自主决定是否调用工具。`stepCountIs(5)` 限制单次对话最多 5 步工具调用，防止无限循环。\n\n**服务端执行**：`searchArticles` 的 `execute` 函数调用 `searchArticles()` / `searchProjects()` 从检索模块获取结果，将 JSON 返回给模型进行后续推理。\n\n**客户端执行**：其余 6 个工具的调用通过流式协议传输到前端。`ChatPanel.tsx` 的 `onToolCall` 回调将工具名和参数映射为 core 包的 Action 格式，通过 `window.__actionExecutor` 执行。`addToolOutput` 将执行结果回传给模型，配合 `sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls` 实现自动化的多步工具调用。",
+          "position": 23,
+          "tokenCount": 160,
+          "headers": {
+            "H2": "十二、工具调用架构 (Tool Calling)",
+            "H3": "12.2 执行流程"
+          }
+        },
+        {
+          "id": "zh/ai-module-architecture#12-3-动作执行器-packages-core-src-a",
+          "postId": "zh/ai-module-architecture",
+          "heading": "12.3 动作执行器 (`packages/core/src/actions`)",
+          "content": "### 12.3 动作执行器 (`packages/core/src/actions`)\n\n`@astro-minimax/core` 包负责运行时执行所有用户可见的动作。`ActionExecutor` 实现了 6 种动作的处理：\n\n- **scroll-to-section**：滚动到指定章节 + 高亮脉冲动画\n- **highlight-text**：按 CSS 选择器或文本内容匹配高亮\n- **toggle-theme**：切换主题并同步 `localStorage` 和全局 `window.theme`\n- **toggle-reading-mode**：切换阅读模式 + 字体/主题偏好\n- **set-preference**：更新用户偏好（支持嵌套路径如 `reading.fontSize`）\n- **navigate**：跳转文章 + View Transitions + 跨页动作队列\n\n**跨页动作链**：`URLHandler` 处理 `ai_actions` 查询参数。当 `navigateToArticle` 需要在目标页面继续执行动作时，`ActionQueue` 将后续动作入队并生成令牌，附加到 URL 中。页面加载后 `initActionSystem` 自动出队并执行。",
+          "position": 24,
+          "tokenCount": 179,
+          "headers": {
+            "H2": "十二、工具调用架构 (Tool Calling)",
+            "H3": "12.3 动作执行器 (`packages/core/src/actions`)"
+          }
+        },
+        {
+          "id": "zh/ai-module-architecture#十三-速率限制",
+          "postId": "zh/ai-module-architecture",
+          "heading": "十三、速率限制",
+          "content": "## 十三、速率限制\n\n三层 IP 级速率限制：\n\n| 层级 | 时间窗口 | 最大请求数 | 说明 |\n|------|----------|-----------|------|\n| Burst | 10 秒 | 3 次 | 防止短时间刷屏 |\n| Sustained | 60 秒 | 20 次 | 正常使用上限 |\n| Daily | 24 小时 | 100 次 | 单日总上限 |",
+          "position": 25,
           "tokenCount": 62,
           "headers": {
-            "H2": "十二、速率限制"
+            "H2": "十三、速率限制"
           }
         },
         {
@@ -561,22 +900,22 @@
           "postId": "zh/ai-module-architecture",
           "heading": "13.1 事实注册表验证",
           "content": "### 13.1 事实注册表验证\n\n`@astro-minimax/cli` 提供了 `facts validate` 命令，用于验证 `fact-registry.json` 的结构和内容：\n\n```bash\nastro-minimax facts validate\n```\n\n**验证项目：**\n\n| 检查项 | 说明 |\n|--------|------|\n| Schema 版本 | 必须为 `fact-registry-v1` |\n| ID 唯一性 | 每个 fact 必须有唯一 ID |\n| 类别有效性 | category 必须为 author/blog/content/project/tech |\n| 来源有效性 | source 必须为 explicit/derived/aggregated |\n| 置信度范围 | confidence 必须在 0-1 之间 |\n| 日期格式 | generatedAt 必须为有效 ISO 日期 |\n\n**输出示例：**\n\n```\n📋 Validating Fact Registry\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n  📊 Validation Results:\n\n  Statistics:\n    Total facts: 45\n    Average confidence: 0.92\n\n  By category:\n    author: 8\n    blog: 12\n    content: 15\n    tech: 10\n\n  Coverage:\n    Author facts: ✅\n    Blog facts: ✅\n    Content facts: ✅\n    Tech facts: ✅\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ Fact registry is valid\n```",
-          "position": 22,
+          "position": 26,
           "tokenCount": 132,
           "headers": {
-            "H2": "十三、CLI 工具链",
+            "H2": "十四、CLI 工具链",
             "H3": "13.1 事实注册表验证"
           }
         },
         {
-          "id": "zh/ai-module-architecture#十四-总结",
+          "id": "zh/ai-module-architecture#十五-总结",
           "postId": "zh/ai-module-architecture",
-          "heading": "十四、总结",
-          "content": "## 十四、总结\n\n@astro-minimax/ai 模块通过以下设计实现了高可用、高质量的 AI 聊天体验：\n\n1. **供应商无关** — 多 Provider 支持与自动故障转移\n2. **智能增强** — 关键词提取、意图分类、证据分析\n3. **幻觉防护** — 引用守卫、隐私保护、来源分层\n4. **性能优化** — 三层提示词、会话缓存、响应缓存\n5. **用户体验** — 流式响应、打字机效果、边读边聊\n6. **健壮性与容错** — 多供应商支持、自动故障转移、超时预算管理\n7. **模块化与可扩展性** — 清晰的分层架构和模块边界\n8. **动态资源调度** — 证据预算根据查询复杂度自适应调整\n9. **回答格式优化** — 自动检测回答模式，注入相应格式指导\n10. **阅读时间感知** — 动态层展示文章预估阅读时间\n\n完整的 API 文档和更多示例，请参考 [API 参考](/zh/posts/ai-api-reference)。",
-          "position": 23,
-          "tokenCount": 167,
+          "heading": "十五、总结",
+          "content": "## 十五、总结\n\n@astro-minimax/ai 模块通过以下设计实现了高可用、高质量的 AI 聊天体验：\n\n1. **供应商无关** — 多 Provider 支持与自动故障转移\n2. **智能增强** — 关键词提取、意图分类、证据分析\n3. **幻觉防护** — 引用守卫、隐私保护、来源分层\n4. **性能优化** — 三层提示词、会话缓存、响应缓存\n5. **用户体验** — 流式响应、打字机效果、边读边聊\n6. **健壮性与容错** — 多供应商支持、自动故障转移、超时预算管理\n7. **模块化与可扩展性** — 清晰的分层架构和模块边界\n8. **动态资源调度** — 证据预算根据查询复杂度自适应调整\n9. **回答格式优化** — 自动检测回答模式，注入相应格式指导\n10. **阅读时间感知** — 动态层展示文章预估阅读时间\n11. **工具调用与动作系统** — 模型通过 AI SDK Tool Calling 驱动 UI 和导航，core `ActionExecutor` 在浏览器中执行\n12. **检索深度增强** — 支持 RRF 混合排序，段落级 chunk 注入提示词提供精细证据\n\n完整的 API 文档和更多示例，请参考 [API 参考](/zh/posts/ai-api-reference)。",
+          "position": 27,
+          "tokenCount": 214,
           "headers": {
-            "H2": "十四、总结"
+            "H2": "十五、总结"
           }
         }
       ]
@@ -591,8 +930,15 @@
         "docs",
         "configuration"
       ],
-      "summary": "astro-minimax 0.8.2 引入了全新的设置面板，让你可以个性化博客的外观和体验。\n\n打开设置面板\n\n点击页面右下角的设置图标（齿轮图标）即可打开设置面板。\n\n设置选项\n\n外观设置\n\n| 选项 | 说明 | 可选值 |\n|------|------|--------|\n| 配色方案 |…",
-      "keyPoints": [],
+      "summary": "文章介绍 astro-minimax 的设置面板使用方式，说明外观、阅读、布局与通用偏好的配置项，以及通过 localStorage 持久化和 URL 参数分享设置的实现效果。",
+      "keyPoints": [
+        "设置面板入口位于右下角齿轮图标",
+        "支持外观、阅读、布局和通用偏好",
+        "阅读配置覆盖字号、行高、宽度与字体",
+        "AI 聊天面板支持 S/M/L 三档宽度",
+        "设置可持久化到 localStorage 自动恢复",
+        "当前偏好可通过 URL 参数分享"
+      ],
       "url": "/zh/posts/settings-panel/",
       "chunks": [
         {
@@ -632,11 +978,23 @@
           }
         },
         {
+          "id": "zh/settings-panel#ai-聊天面板尺寸",
+          "postId": "zh/settings-panel",
+          "heading": "AI 聊天面板尺寸",
+          "content": "### AI 聊天面板尺寸\n\n启用 AI 聊天时，可调整对话面板宽度：\n\n| 选项 | 说明 |\n|------|------|\n| **小（S）** | 紧凑宽度，适合边浏览边对话 |\n| **中（M）** | 默认平衡尺寸 |\n| **大（L）** | 更宽面板，适合长回答与代码阅读 |\n\n所选尺寸会保存到浏览器 `localStorage`，下次访问自动恢复。",
+          "position": 3,
+          "tokenCount": 66,
+          "headers": {
+            "H2": "设置选项",
+            "H3": "AI 聊天面板尺寸"
+          }
+        },
+        {
           "id": "zh/settings-panel#技术细节",
           "postId": "zh/settings-panel",
           "heading": "技术细节",
           "content": "## 技术细节\n\n设置系统位于 `packages/core/src/preferences/` 目录：\n\n- `types.ts` - 类型定义\n- `defaults.ts` - 默认值\n- `presets.ts` - 主题预设\n- `storage.ts` - 存储管理\n- `share.ts` - 分享功能",
-          "position": 3,
+          "position": 4,
           "tokenCount": 48,
           "headers": {
             "H2": "技术细节"
@@ -653,12 +1011,14 @@
       "tags": [
         "FAQ"
       ],
-      "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
+      "summary": "The article explains how to update astro-minimax dependencies and template safely using pnpm, npm-check-updates, and Git workflows, helping users stay current while reducing breakage risk.",
       "keyPoints": [
-        "更新项目依赖的重要性",
-        "使用npm-check-updates工具更新依赖",
-        "更新Astro-minimax模板的步骤",
-        "处理Git合并冲突"
+        "pnpm provides the fastest package update path.",
+        "npm-check-updates enables staged patch, minor, major upgrades.",
+        "Major version bumps require careful release note review.",
+        "Template users should preserve customized content and config files.",
+        "Git remote pull can sync upstream template changes.",
+        "Merge conflicts and unrelated histories are key update pitfalls."
       ],
       "url": "/en/posts/how-to-update-dependencies/",
       "chunks": [
@@ -752,13 +1112,14 @@
       "tags": [
         "FAQ"
       ],
-      "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
+      "summary": "文章介绍更新 astro-minimax 依赖与模板的实用流程：CLI 用户可直接用 pnpm 更新，模板用户可借助 npm-check-updates 分层升级并用 Git 合并模板，从而更稳妥地保持项目最新。",
       "keyPoints": [
-        "更新项目依赖的重要性",
-        "使用npm-check-updates更新依赖",
-        "更新补丁、次版本和主版本依赖",
-        "更新astro-minimax模板的技巧",
-        "使用git更新模板时注意合并冲突"
+        "CLI 集成可直接用 pnpm 更新包",
+        "npm-check-updates 适合批量检查依赖",
+        "依赖升级应按 patch、minor、major 分层进行",
+        "模板更新需保留内容与配置目录",
+        "可通过 Git 远程拉取上游模板并解决冲突",
+        "主版本升级和模板合并后必须完整测试"
       ],
       "url": "/zh/posts/how-to-update-dependencies/",
       "chunks": [
@@ -844,8 +1205,15 @@
         "deployment",
         "configuration"
       ],
-      "summary": "This guide explains how to configure environment variables in Cloudflare Pages Dashboard for astro-minimax. Proper environment variable configuration…",
-      "keyPoints": [],
+      "summary": "This tutorial shows how to configure Cloudflare Pages environment variables for astro-minimax, including build-time and runtime settings, scope selection, and AI binding alignment, so deployment, AI chat, notifications, and builds work correctly.",
+      "keyPoints": [
+        "Build-time variables need redeployment.",
+        "Runtime secret changes apply immediately.",
+        "Production and Preview scopes should be separated.",
+        "NODE_VERSION 22 is required for builds.",
+        "AI_BINDING_NAME must match wrangler binding.",
+        "Sensitive variables should be encrypted in dashboard."
+      ],
       "url": "/en/posts/cloudflare-env-vars/",
       "chunks": [
         {
@@ -1182,8 +1550,15 @@
         "tutorial",
         "getting-started"
       ],
-      "summary": "This guide walks you through building a complete blog from scratch with astro-minimax.\n\nOverview\n\nEstimated time: 45-60 minutes\n\nPrerequisites\n\nBefor…",
-      "keyPoints": [],
+      "summary": "The article provides a step-by-step tutorial for creating an astro-minimax blog, configuring core features, and deploying it to Cloudflare and Vercel to enable comments, analytics, notifications, and AI chat for a production-ready setup.",
+      "keyPoints": [
+        "Uses CLI to initialize and preview blog",
+        "Configures site metadata in src/config.ts",
+        "Deploys Astro site to Cloudflare Pages",
+        "Sets up Waline with Vercel and Neon PostgreSQL",
+        "Integrates Umami analytics via websiteId and script",
+        "Enables AI chat with build commands and Workers AI"
+      ],
       "url": "/en/posts/complete-setup-guide/",
       "chunks": [
         {
@@ -1389,8 +1764,15 @@
         "vercel",
         "neon"
       ],
-      "summary": "Umami is an open-source, privacy-friendly web analytics tool. Compared to Google Analytics, Umami doesn't use cookies, doesn't track users across sit…",
-      "keyPoints": [],
+      "summary": "This tutorial explains how to deploy the privacy-friendly Umami analytics platform for free with Vercel and Neon, compares alternative hosting options, and outlines setup, initialization, and blog integration preparation via websiteId retrieval.",
+      "keyPoints": [
+        "Umami offers cookie-free, GDPR-compliant analytics.",
+        "Vercel plus Neon is the recommended free deployment path.",
+        "Initial Vercel deployment may fail before database setup.",
+        "`DATABASE_URL` is the only required environment variable.",
+        "Docker deployment includes PostgreSQL, proxy, and backup setup.",
+        "Default admin password must be changed after first login."
+      ],
       "url": "/en/posts/setup-umami-analytics/",
       "chunks": [
         {
@@ -1692,8 +2074,15 @@
         "neon",
         "comments"
       ],
-      "summary": "Waline is a simple, safe comment system with Markdown support, email notifications, and multi-language features. This guide walks you through deployi…",
-      "keyPoints": [],
+      "summary": "The article explains how to deploy Waline on Vercel with a built-in Neon PostgreSQL database, configure required environment variables and optional email notifications, then connect it to an astro-minimax blog for a complete comment system.",
+      "keyPoints": [
+        "Waline uses Vercel, Neon PostgreSQL, and blog client.",
+        "Database schema must be imported before use.",
+        "Waline supports both PG_* and POSTGRES_* vars.",
+        "PG_SSL must be enabled for Neon connection.",
+        "Deployment is verified by opening the welcome page.",
+        "Email notifications can be configured with Resend or SMTP."
+      ],
       "url": "/en/posts/setup-waline-on-vercel/",
       "chunks": [
         {
@@ -2063,8 +2452,15 @@
         "deployment",
         "configuration"
       ],
-      "summary": "astro-minimax 博客在 Cloudflare Pages 部署时，需要正确配置环境变量才能启用完整功能。本文详细介绍环境变量的作用、配置方法和最佳实践。\n\n概览\n\n环境变量在 Cloudflare Pages 中有两个作用时机：\n\n| 时机       | 说明            …",
-      "keyPoints": [],
+      "summary": "本文围绕 astro-minimax 在 Cloudflare Pages 部署时的环境变量配置，说明构建时与运行时变量的设置方法、必需与可选项及排障要点，以确保 AI、通知和站点功能正常启用。",
+      "keyPoints": [
+        "区分构建时与运行时环境变量",
+        "NODE_VERSION=22是构建必需项",
+        "AI_BINDING_NAME需与wrangler配置一致",
+        "变量保存后必须重新部署生效",
+        "通知与OpenAI兼容API均可按需配置",
+        "可通过日志定位AI与通知故障"
+      ],
       "url": "/zh/posts/cloudflare-env-vars/",
       "chunks": [
         {
@@ -2282,8 +2678,15 @@
         "tutorial",
         "getting-started"
       ],
-      "summary": "本指南将带你从零开始，完整搭建一个功能齐全的 astro-minimax 博客。\n\n概览\n\n预计时间：45-60 分钟\n\n前置准备\n\n在开始之前，请确保你有以下账号：\n\n| 账号       | 用途           | 注册地址                                …",
-      "keyPoints": [],
+      "summary": "文章围绕 astro-minimax 博客，从项目初始化、站点配置到 Cloudflare 部署，并接入 Waline、Umami、Telegram 通知与 AI 聊天，帮助读者完成一套可用的完整博客系统。",
+      "keyPoints": [
+        "使用 CLI 初始化并本地预览博客",
+        "站点信息与功能在 config.ts 配置",
+        "Cloudflare Pages 需设置构建参数与 NODE_VERSION",
+        "Waline 与 Umami 均依赖 Vercel 和 Neon 数据库",
+        "AI 聊天需启用配置并执行数据构建命令",
+        "故障排查覆盖部署、评论、AI与通知问题"
+      ],
       "url": "/zh/posts/complete-setup-guide/",
       "chunks": [
         {
@@ -2429,8 +2832,15 @@
         "vercel",
         "neon"
       ],
-      "summary": "Umami 是一款开源、隐私友好的网站统计分析工具。相比 Google Analytics，Umami 不使用 Cookie、不跨站追踪用户、完全符合 GDPR 隐私法规。本文将介绍如何使用 Vercel + Neon PostgreSQL 免费部署 Umami 并与 astro-minimax …",
-      "keyPoints": [],
+      "summary": "文章介绍了基于 Vercel 与 Neon PostgreSQL 免费部署 Umami 的完整流程，并说明如何获取网站追踪参数集成到博客中，以实现隐私友好且低运维的网站统计。",
+      "keyPoints": [
+        "Umami主打无Cookie与GDPR合规",
+        "推荐Vercel配合Neon免费部署",
+        "DATABASE_URL是部署唯一必需变量",
+        "首次部署失败后需建库并重新部署",
+        "博客接入需配置websiteId与脚本地址",
+        "统计异常需检查脚本、域名和CSP"
+      ],
       "url": "/zh/posts/setup-umami-analytics/",
       "chunks": [
         {
@@ -2635,8 +3045,15 @@
         "neon",
         "comments"
       ],
-      "summary": "Waline 是一款简洁、安全的评论系统，支持 Markdown、邮件通知、多语言等特性。本文将详细介绍如何在 Vercel 部署 Waline，使用 Vercel 自带的 Neon PostgreSQL 作为数据库，并与 astro-minimax 博客集成。\n\n架构概览\n\n整个系统由三部分组成…",
-      "keyPoints": [],
+      "summary": "本文介绍在 Vercel 部署 Waline 评论系统的方法，包括创建 Neon PostgreSQL、导入表结构、配置环境变量与邮件/Webhook，并集成到 astro-minimax 博客以实现评论与通知能力。",
+      "keyPoints": [
+        "系统由博客端、Waline服务端和Neon数据库组成",
+        "需执行 waline.pgsql 初始化评论相关表结构",
+        "Waline 在 Vercel 可通过示例项目一键部署",
+        "数据库连接使用 PG_* 或 POSTGRES_* 环境变量",
+        "Neon 连接需开启 PG_SSL=true",
+        "可选接入 Resend、SMTP 与 Webhook 通知"
+      ],
       "url": "/zh/posts/setup-waline-on-vercel/",
       "chunks": [
         {
@@ -2926,8 +3343,15 @@
         "ecosystem",
         "\"2026\""
       ],
-      "summary": "Building a personal tech blog involves 10+ technical decisions. This guide exhaustively covers every capability domain in the 2026 blog ecosystem to …",
-      "keyPoints": [],
+      "summary": "The article maps the 2026 tech blog ecosystem across framework, content, search, comments, AI, analytics, notifications, and deployment, then provides decision matrices and stack presets to help readers choose tools that fit their needs and reduce tooling friction.",
+      "keyPoints": [
+        "The guide frames blog building as 10+ tool decisions.",
+        "It compares SSG, full-stack, and docs frameworks.",
+        "Markdown, CMS, WordPress, and Notion are contrasted.",
+        "Search spans Pagefind, DocSearch, Meilisearch, and RAG.",
+        "AI features pair RAG plus LLM with guardrails.",
+        "Three preset stacks simplify cost-feature tradeoffs."
+      ],
       "url": "/en/posts/2026-blog-ecosystem/",
       "chunks": [
         {
@@ -3066,8 +3490,15 @@
         "ai",
         "configuration"
       ],
-      "summary": "astro-minimax includes a built-in AI chat assistant with multi-provider failover, RAG retrieval, streaming responses, and Mock fallback. This guide c…",
-      "keyPoints": [],
+      "summary": "The guide explains how to enable and configure astro-minimax AI chat, set providers and failover, build AI data, and extend or evaluate the system to achieve reliable, secure, tool-enabled responses.",
+      "keyPoints": [
+        "AI is enabled in config and served via `/api/chat`.",
+        "Providers support Workers AI and OpenAI-compatible APIs.",
+        "Failover marks providers unhealthy after 3 failures.",
+        "Tool calls map to browser actions through ActionExecutor.",
+        "Mock mode returns predefined responses for development.",
+        "Evaluation uses gold-set cases and outputs a JSON report."
+      ],
       "url": "/en/posts/ai-guide/",
       "chunks": [
         {
@@ -3094,11 +3525,58 @@
           }
         },
         {
+          "id": "en/ai-guide#ai-tool-calling-and-actions",
+          "postId": "en/ai-guide",
+          "heading": "AI Tool Calling and Actions",
+          "content": "## AI Tool Calling and Actions\n\nWhen users ask things like “switch to dark mode” or “open article X,” the model can **invoke tools** to perform those actions directly, instead of only describing the steps.",
+          "position": 2,
+          "tokenCount": 52,
+          "headers": {
+            "H2": "AI Tool Calling and Actions"
+          }
+        },
+        {
+          "id": "en/ai-guide#available-tools",
+          "postId": "en/ai-guide",
+          "heading": "Available tools",
+          "content": "### Available tools\n\nThe chat pipeline registers seven tools (names match the implementation):\n\n| Tool | Purpose |\n|------|---------|\n| `toggleTheme` | Switch among light, dark, and system theme |\n| `navigateToArticle` | Go to a post by slug (optional language and section) |\n| `scrollToSection` | Scroll to a heading/section on the current page |\n| `toggleReadingMode` | Turn reading mode on/off and adjust font options |\n| `highlightText` | Highlight text or a target element |\n| `setPreference` | Set a user preference key/value |\n| `searchArticles` | Search posts and projects; returns titles, URLs, summaries |",
+          "position": 3,
+          "tokenCount": 154,
+          "headers": {
+            "H2": "AI Tool Calling and Actions",
+            "H3": "Available tools"
+          }
+        },
+        {
+          "id": "en/ai-guide#how-it-works",
+          "postId": "en/ai-guide",
+          "heading": "How it works",
+          "content": "### How it works\n\n- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` are defined with schemas on the server; the model emits tool calls, and the **browser** runs them via the theme’s **ActionExecutor** (`@astro-minimax/core`), mapping calls to DOM, routing, and preferences.\n- **Server-side tool**: `searchArticles` includes an `execute` handler that runs **on the server during the chat/RAG request**, calling the same `searchArticles` / `searchProjects` retrieval used by the pipeline so the model can search before answering or suggest links.",
+          "position": 4,
+          "tokenCount": 158,
+          "headers": {
+            "H2": "AI Tool Calling and Actions",
+            "H3": "How it works"
+          }
+        },
+        {
+          "id": "en/ai-guide#action-system-and-cross-page-c",
+          "postId": "en/ai-guide",
+          "heading": "Action system and cross-page chaining",
+          "content": "### Action system and cross-page chaining\n\nExecution is centralized under `packages/core/src/actions/`: **ActionExecutor** performs each action; **URLHandler** (and related helpers) can carry work across navigations using query parameters (`theme`, `section`, `ai_actions` plus a queued token) so a **chain of actions** can finish after the next page load. The chat UI turns client tool calls into these actions.",
+          "position": 5,
+          "tokenCount": 103,
+          "headers": {
+            "H2": "AI Tool Calling and Actions",
+            "H3": "Action system and cross-page chaining"
+          }
+        },
+        {
           "id": "en/ai-guide#source-priority-protocol",
           "postId": "en/ai-guide",
           "heading": "Source Priority Protocol",
           "content": "### Source Priority Protocol\n\nAI responses follow L1-L5 source priority:\n\n- **L1**: Blog original content (highest priority)\n- **L2**: Author bio, project list\n- **L3**: Structured factual data\n- **L5**: Writing style (affects expression only)",
-          "position": 2,
+          "position": 6,
           "tokenCount": 61,
           "headers": {
             "H2": "AI Security Features",
@@ -3110,7 +3588,7 @@
           "postId": "en/ai-guide",
           "heading": "Run Evaluation",
           "content": "### Run Evaluation\n\n```bash\npnpm run ai:eval                             # Test local server\npnpm run ai:eval -- --url=https://your-blog.com     # Test production\npnpm run ai:eval -- --category=no_answer     # Evaluate specific category\npnpm run ai:eval -- --verbose                # Detailed output\n```\n\nEvaluation is based on the `datas/eval/gold-set.json` golden test set, automatically checking:\n- Non-empty response\n- Topic coverage\n- Forbidden claims not present\n- Markdown links exist\n- Answer pattern matching\n\nEvaluation report is saved to `datas/eval/report.json`.",
-          "position": 3,
+          "position": 7,
           "tokenCount": 77,
           "headers": {
             "H2": "Quality Evaluation",
@@ -3122,7 +3600,7 @@
           "postId": "en/ai-guide",
           "heading": "Extension Types",
           "content": "### Extension Types\n\n| Type | Description | Use Case |\n|------|-------------|----------|\n| `searchable` | Searchable documents | Add extra knowledge base content |\n| `facts` | Structured facts | Add verified factual data |\n| `context` | Context injection | Add custom prompt sections |\n| `voice-style` | Voice style | Define AI response style modes |\n| `semantic-fallback` | Semantic fallback | Query rewriting rules |",
-          "position": 4,
+          "position": 8,
           "tokenCount": 105,
           "headers": {
             "H2": "Extensions System",
@@ -3134,7 +3612,7 @@
           "postId": "en/ai-guide",
           "heading": "Extension Priority",
           "content": "### Extension Priority\n\nExtensions use the `priority` field (0-100) to control precedence. Higher values mean higher priority. When multiple extensions provide the same type of data, higher-priority extensions are preferred.",
-          "position": 5,
+          "position": 9,
           "tokenCount": 56,
           "headers": {
             "H2": "Extensions System",
@@ -3146,7 +3624,7 @@
           "postId": "en/ai-guide",
           "heading": "Notification Integration",
           "content": "## Notification Integration\n\nAI chat completion automatically sends notifications (fire-and-forget):\n\n```bash\n# .env\nNOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token\nNOTIFY_TELEGRAM_CHAT_ID=your-chat-id\n```\n\nNotification content includes: user question, AI response summary, referenced articles, token usage, and phase timing.\n\nSee [Notification System Configuration Guide](/en/posts/notification-guide) for details.",
-          "position": 6,
+          "position": 10,
           "tokenCount": 83,
           "headers": {
             "H2": "Notification Integration"
@@ -3157,7 +3635,7 @@
           "postId": "en/ai-guide",
           "heading": "Environment Variables Reference",
           "content": "## Environment Variables Reference\n\n| Variable | Description | Required |\n|----------|-------------|----------|\n| `AI_BASE_URL` | OpenAI-compatible API URL | Required when using OpenAI |\n| `AI_API_KEY` | API key | Required when using OpenAI |\n| `AI_MODEL` | Main chat model | No (default `gpt-4o-mini`) |\n| `AI_KEYWORD_MODEL` | Keyword extraction model | No (same as main model) |\n| `AI_EVIDENCE_MODEL` | Evidence analysis model | No (same as keyword model) |\n| `SITE_AUTHOR` | Author name | No |\n| `SITE_URL` | Site URL | No |",
-          "position": 7,
+          "position": 11,
           "tokenCount": 132,
           "headers": {
             "H2": "Environment Variables Reference"
@@ -3168,7 +3646,7 @@
           "postId": "en/ai-guide",
           "heading": "Next Steps",
           "content": "## Next Steps\n\n- [Feature Overview](/en/posts/feature-overview) — Learn about all AI features\n- [CLI Tool Guide](/en/posts/cli-guide) — AI processing commands in detail\n- [Notification System](/en/posts/notification-guide) — Configure AI chat notifications\n- [Deployment Guide](/en/posts/deployment-guide) — Cloudflare Workers AI deployment",
-          "position": 8,
+          "position": 12,
           "tokenCount": 85,
           "headers": {
             "H2": "Next Steps"
@@ -3187,8 +3665,15 @@
         "cli",
         "tools"
       ],
-      "summary": "provides a comprehensive command-line toolkit for blog project management and AI content processing. This guide covers all available commands.\n\nInsta…",
-      "keyPoints": [],
+      "summary": "This guide explains how to use the @astro-minimax/cli toolkit to initialize blog projects, manage posts, run AI content workflows, and maintain profile and data files for more efficient blog operations.",
+      "keyPoints": [
+        "Installs as a dev dependency via pnpm.",
+        "Init command scaffolds a complete blog project.",
+        "Post commands support multilingual creation and stats.",
+        "AI processing uses env vars and scoped options.",
+        "AI eval writes reports from a golden test set.",
+        "Profile and data commands support AI chat readiness."
+      ],
       "url": "/en/posts/cli-guide/",
       "chunks": [
         {
@@ -3228,8 +3713,15 @@
         "telegram",
         "email"
       ],
-      "summary": "astro-minimax includes a built-in multi-channel notification system that automatically sends notifications to Telegram, Email, or custom Webhooks whe…",
-      "keyPoints": [],
+      "summary": "This guide explains how to configure astro-minimax’s multi-channel notification system via environment variables, custom templates, and Waline webhooks to deliver real-time comment and AI chat alerts with fault-tolerant parallel sending.",
+      "keyPoints": [
+        "Notifications cover comments and AI chats.",
+        "Channels include Telegram, Resend email, and Webhook.",
+        "Configuration relies on `NOTIFY_` environment variables.",
+        "Waline can trigger comment alerts via webhook API.",
+        "Templates are customizable with `createNotifier`.",
+        "Proxy and delivery troubleshooting are documented."
+      ],
       "url": "/en/posts/notification-guide/",
       "chunks": [
         {
@@ -3351,8 +3843,15 @@
         "architecture",
         "design"
       ],
-      "summary": "astro-minimax is not just another blog theme. It's a systematic answer to \"how to build a modern tech blog.\" This article documents the thinking behi…",
-      "keyPoints": [],
+      "summary": "The article explains astro-minimax’s design philosophy by detailing its Astro-based architecture, monorepo package split, virtual-module configuration, and built-in RAG search/chat choices, concluding that this approach balances fast setup, extensibility, and low-maintenance operation.",
+      "keyPoints": [
+        "The project targets core blog-system tradeoffs.",
+        "Astro was chosen for islands and content layer.",
+        "Monorepo split reduces dependency and update coupling.",
+        "Virtual modules decouple user config from theme internals.",
+        "AI chat uses TF-IDF-based RAG instead of embeddings.",
+        "Mock fallback preserves chat usability without API access."
+      ],
       "url": "/en/posts/why-astro-minimax/",
       "chunks": [
         {
@@ -3609,8 +4108,15 @@
         "ecosystem",
         "\"2026\""
       ],
-      "summary": "构建个人技术博客看似简单，实际涉及 10+ 个技术决策。本文穷举式地梳理 2026 年博客生态的每个能力域，帮你做出知情的选择。\n\n一、框架选型\n\n框架决定了博客的技术基础。2026 年的主流选择：\n\n静态站点生成器 (SSG)\n\n| 框架 | 语言 | 特点 | 适合人群 |\n|------|-…",
-      "keyPoints": [],
+      "summary": "文章系统梳理2026年个人技术博客从框架、内容管理到AI、搜索与部署的关键选型，并给出按需求决策路径，帮助从零搭建高性能、低成本且可扩展的博客系统。",
+      "keyPoints": [
+        "博客搭建包含十余项技术决策",
+        "SSG适合高性能低成本静态站",
+        "内容管理可在Git与CMS间取舍",
+        "搜索方案分静态云端与AI检索",
+        "AI集成需结合RAG与防幻觉策略",
+        "部署平台应按AI功能与受众选择"
+      ],
       "url": "/zh/posts/2026-blog-ecosystem/",
       "chunks": [
         {
@@ -3800,8 +4306,15 @@
         "ai",
         "configuration"
       ],
-      "summary": "astro-minimax 内置 AI 聊天助手，支持多 Provider 自动故障转移、RAG 检索增强、流式响应和 Mock 降级。本文介绍完整的 AI 配置流程。\n\n概览\n\nAI 聊天系统由以下模块组成：\n\n| 模块 | 说明 |\n|------|------|\n|  | AI 核心包：RA…",
-      "keyPoints": [],
+      "summary": "本文系统讲解 astro-minimax 的 AI 聊天功能配置流程，包括启用开关、Provider 与数据构建、工具调用及评估扩展等设置，帮助站点获得可故障转移、可检索增强且可安全降级的聊天能力。",
+      "keyPoints": [
+        "需在配置文件显式启用 AI 功能",
+        "支持 Workers AI 与 OpenAI 兼容接口",
+        "连续失败3次熔断并在60秒后恢复",
+        "7个工具可驱动主题导航与检索动作",
+        "评估依赖黄金测试集并输出报告",
+        "扩展系统支持知识库风格与语义回退"
+      ],
       "url": "/zh/posts/ai-guide/",
       "chunks": [
         {
@@ -3816,11 +4329,59 @@
           }
         },
         {
+          "id": "zh/ai-guide#可用工具一览",
+          "postId": "zh/ai-guide",
+          "heading": "可用工具一览",
+          "content": "### 可用工具一览\n\n当前聊天管线注册了 7 个工具（名称与代码中一致）：\n\n| 工具名 | 作用概要 |\n|--------|----------|\n| `toggleTheme` | 在浅色 / 深色 / 跟随系统之间切换主题 |\n| `navigateToArticle` | 按 slug（及可选语言、章节）跳转到文章页 |\n| `scrollToSection` | 在当前页滚动到指定章节并可选高亮 |\n| `toggleReadingMode` | 开启或关闭阅读模式，并可调字号等 |\n| `highlightText` | 按文本或选择器高亮文中内容 |\n| `setPreference` | 写入用户偏好（与站点偏好系统对齐的键值） |\n| `searchArticles` | 按关键词检索文章与项目，返回标题、链接与摘要等 |",
+          "position": 1,
+          "tokenCount": 131,
+          "headers": {
+            "H2": "AI 工具调用与 Actions",
+            "H3": "可用工具一览"
+          }
+        },
+        {
+          "id": "zh/ai-guide#工作原理",
+          "postId": "zh/ai-guide",
+          "heading": "工作原理",
+          "content": "### 工作原理\n\n- **客户端工具**：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleReadingMode`、`highlightText`、`setPreference` 在服务端声明 schema，由模型生成 tool call；**实际执行在浏览器中完成**（通过主题 `@astro-minimax/core` 的 **ActionExecutor** 将调用映射为 DOM / 路由 / 偏好更新）。\n- **服务端工具**：`searchArticles` 带有 `execute` 实现，在 **RAG 请求处理过程中于服务端运行**，直接调用与主检索相同的 `searchArticles` / `searchProjects` 逻辑，把结构化结果返回给模型，便于「先搜再答」或辅助导航。",
+          "position": 2,
+          "tokenCount": 125,
+          "headers": {
+            "H2": "AI 工具调用与 Actions",
+            "H3": "工作原理"
+          }
+        },
+        {
+          "id": "zh/ai-guide#action-系统与跨页串联",
+          "postId": "zh/ai-guide",
+          "heading": "Action 系统与跨页串联",
+          "content": "### Action 系统与跨页串联\n\n站点行为统一由 `packages/core/src/actions/` 负责：**ActionExecutor** 执行具体动作；**URLHandler** 等模块支持通过查询参数（如 `theme`、`section`、`ai_actions` 与队列 token）在 **导航后继续执行** 一串动作，实现跨页面的 action chaining。聊天 UI 在收到客户端工具调用时，会把参数转成上述 Action 并执行。",
+          "position": 3,
+          "tokenCount": 80,
+          "headers": {
+            "H2": "AI 工具调用与 Actions",
+            "H3": "Action 系统与跨页串联"
+          }
+        },
+        {
+          "id": "zh/ai-guide#运行评估",
+          "postId": "zh/ai-guide",
+          "heading": "运行评估",
+          "content": "### 运行评估\n\n```bash\npnpm run ai:eval                             # 本地测试\npnpm run ai:eval -- --url=https://your.com   # 远程测试\npnpm run ai:eval -- --category=no_answer     # 评估特定类别\npnpm run ai:eval -- --verbose                # 详细输出\n```\n\n评估基于 `datas/eval/gold-set.json` 黄金测试集，自动检查：\n- 非空响应\n- 主题覆盖率\n- 禁止声明未出现\n- Markdown 链接存在性\n- 回答模式匹配\n\n评估报告保存到 `datas/eval/report.json`。",
+          "position": 4,
+          "tokenCount": 53,
+          "headers": {
+            "H2": "质量评估",
+            "H3": "运行评估"
+          }
+        },
+        {
           "id": "zh/ai-guide#扩展类型",
           "postId": "zh/ai-guide",
           "heading": "扩展类型",
           "content": "### 扩展类型\n\n| 类型 | 说明 | 用途 |\n|------|------|------|\n| `searchable` | 可搜索文档 | 添加额外的知识库内容 |\n| `facts` | 结构化事实 | 添加验证过的事实数据 |\n| `context` | 上下文注入 | 添加自定义 prompt 章节 |\n| `voice-style` | 语言风格 | 定义 AI 回答风格模式 |\n| `semantic-fallback` | 语义回退 | 查询重写规则 |",
-          "position": 1,
+          "position": 5,
           "tokenCount": 79,
           "headers": {
             "H2": "扩展系统",
@@ -3832,7 +4393,7 @@
           "postId": "zh/ai-guide",
           "heading": "通知集成",
           "content": "## 通知集成\n\nAI 对话完成后自动发送通知（fire-and-forget）：\n\n```bash\n# .env\nNOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token\nNOTIFY_TELEGRAM_CHAT_ID=your-chat-id\n```\n\n通知内容包含：用户问题、AI 回答摘要、引用文章、Token 用量、各阶段耗时。\n\n详见 [通知系统配置指南](/zh/posts/notification-guide)。",
-          "position": 2,
+          "position": 6,
           "tokenCount": 50,
           "headers": {
             "H2": "通知集成"
@@ -3843,7 +4404,7 @@
           "postId": "zh/ai-guide",
           "heading": "环境变量参考",
           "content": "## 环境变量参考\n\n| 变量 | 说明 | 必需 |\n|------|------|------|\n| `AI_BASE_URL` | OpenAI 兼容 API 地址 | 使用 OpenAI 时必需 |\n| `AI_API_KEY` | API 密钥 | 使用 OpenAI 时必需 |\n| `AI_MODEL` | 主对话模型 | 否（默认 `gpt-4o-mini`） |\n| `AI_KEYWORD_MODEL` | 关键词提取模型 | 否（同主模型） |\n| `AI_EVIDENCE_MODEL` | 证据分析模型 | 否（同关键词模型） |\n| `SITE_AUTHOR` | 作者名称 | 否 |\n| `SITE_URL` | 站点 URL | 否 |",
-          "position": 3,
+          "position": 7,
           "tokenCount": 102,
           "headers": {
             "H2": "环境变量参考"
@@ -3854,7 +4415,7 @@
           "postId": "zh/ai-guide",
           "heading": "下一步",
           "content": "## 下一步\n\n- [功能特性总览](/zh/posts/feature-overview) — 了解所有 AI 功能\n- [CLI 工具指南](/zh/posts/cli-guide) — AI 处理命令详解\n- [通知系统](/zh/posts/notification-guide) — 配置 AI 对话通知\n- [部署指南](/zh/posts/deployment-guide) — Cloudflare Workers AI 部署",
-          "position": 4,
+          "position": 8,
           "tokenCount": 66,
           "headers": {
             "H2": "下一步"
@@ -3873,8 +4434,15 @@
         "cli",
         "tools"
       ],
-      "summary": "提供一套完整的命令行工具，用于博客项目管理和 AI 内容处理。本文介绍所有可用命令及其用法。\n\n安装\n\nCLI 工具作为开发依赖自动安装：\n\n安装后可通过  命令使用，也可以通过  快捷脚本调用。\n\n创建新博客\n\n生成包含完整配置、示例文章和 AI 工具链的博客项目。\n\n文章管理\n\n创建文章\n\n自…",
-      "keyPoints": [],
+      "summary": "本文系统介绍 @astro-minimax/cli 的安装、建站、文章管理、AI 处理、评估与数据维护命令，帮助用户通过统一 CLI 高效完成博客项目初始化、内容生成和质量检查。",
+      "keyPoints": [
+        "支持 init 一键创建博客项目",
+        "post:new 可按语言和分类建文",
+        "ai:process 支持筛选与预览模式",
+        "ai:eval 基于黄金集生成评估报告",
+        "profile 构建作者上下文与风格画像",
+        "data:clear 清理缓存但保留评估报告"
+      ],
       "url": "/zh/posts/cli-guide/",
       "chunks": [
         {
@@ -3914,8 +4482,15 @@
         "telegram",
         "email"
       ],
-      "summary": "astro-minimax 内置多渠道通知系统，可以在博客收到评论或用户进行 AI 对话时，自动发送通知到 Telegram、邮箱或自定义 Webhook。\n\n功能概览\n\n通知系统支持以下功能：\n\n| 功能     | 说明                                  |\n|…",
-      "keyPoints": [],
+      "summary": "本文介绍 astro-minimax 博客通知系统的配置方法，涵盖 Telegram、Resend 邮件与 Webhook 渠道、Waline 集成、自定义模板和代理设置，帮助站长快速接收评论与 AI 对话通知。",
+      "keyPoints": [
+        "通知支持评论与AI对话事件。",
+        "通过 NOTIFY_ 环境变量启用渠道。",
+        "Telegram 需配置 Bot Token 与 Chat ID。",
+        "邮件通道基于 Resend API 与已验证域名。",
+        "Waline 可用 WEBHOOK 对接评论通知端点。",
+        "系统支持自定义模板、代理与并行容错。"
+      ],
       "url": "/zh/posts/notification-guide/",
       "chunks": [
         {
@@ -3990,8 +4565,15 @@
         "architecture",
         "design"
       ],
-      "summary": "astro-minimax 不只是又一个博客主题。它是对「如何构建一个现代技术博客」的系统性回答。本文记录每个关键决策背后的思考。\n\n为什么做这个项目\n\n问题\n\n2024-2025 年的博客生态面临几个核心矛盾：\n简单 vs 功能丰富 — 极简主题缺功能，功能丰富的主题又太臃肿\n开箱即用 vs 可…",
-      "keyPoints": [],
+      "summary": "文章围绕 astro-minimax 的设计决策，阐述其以 Astro、Monorepo 与模块化为核心构建现代技术博客，并通过内置 AI、搜索、通知和 CLI 提升可扩展性与使用效率。",
+      "keyPoints": [
+        "博客生态存在简单与扩展性冲突",
+        "Astro 以零JS和内容层适配博客场景",
+        "Monorepo拆为四包以实现按需安装",
+        "虚拟模块解耦用户配置与核心主题",
+        "AI采用TF-IDF驱动的RAG并支持Mock降级",
+        "默认Pagefind搜索，CLI覆盖创建处理评估"
+      ],
       "url": "/zh/posts/why-astro-minimax/",
       "chunks": [
         {
@@ -4420,8 +5002,15 @@
         "docs",
         "features"
       ],
-      "summary": "astro-minimax is a feature-rich Astro blog theme built with a modular architecture. This article provides a comprehensive overview of all features an…",
-      "keyPoints": [],
+      "summary": "The article introduces the modular astro-minimax Astro blog theme, explaining its content, search, styling, visualization, and optional AI/notification/CLI features, helping users understand configuration options and practical usage paths.",
+      "keyPoints": [
+        "The theme is split into four modular packages.",
+        "Posts support Markdown, MDX, math, alerts, and emoji.",
+        "Bilingual content uses zh/en folders and URL prefixes.",
+        "Search can use Pagefind or Algolia DocSearch.",
+        "Visualization includes Mermaid, Markmap, Excalidraw, and Asciinema.",
+        "AI package adds RAG chat, streaming, failover, and UI actions."
+      ],
       "url": "/en/posts/feature-overview/",
       "chunks": [
         {
@@ -4524,9 +5113,9 @@
           "id": "en/feature-overview#key-features",
           "postId": "en/feature-overview",
           "heading": "Key Features",
-          "content": "### Key Features\n\n- **Multi-provider support** — Cloudflare Workers AI + OpenAI-compatible APIs\n- **Automatic failover** — Seamlessly switches to backup when primary fails, Mock fallback guarantees availability\n- **Streaming responses** — Real-time SSE streaming output\n- **RAG retrieval** — Context-enhanced answers based on blog content\n- **Source priority protocol** — L1-L5 source layers to prevent AI hallucination\n- **Intent classification** — 7 topic categories for improved search relevance\n- **Privacy protection** — Automatically refuses sensitive personal info queries (address, income, family, etc.)\n- **Reading companion** — Article pages auto-inject context for contextual Q&A\n- **Global/session cache** — Public questions cached across users for faster responses\n- **Mock mode** — No real API needed during development",
+          "content": "### Key Features\n\n- **Multi-provider support** — Cloudflare Workers AI + OpenAI-compatible APIs\n- **Automatic failover** — Seamlessly switches to backup when primary fails, Mock fallback guarantees availability\n- **Streaming responses** — Real-time SSE streaming output\n- **RAG retrieval** — Context-enhanced answers based on blog content\n- **Source priority protocol** — L1-L5 source layers to prevent AI hallucination\n- **Intent classification** — 7 topic categories for improved search relevance\n- **Privacy protection** — Automatically refuses sensitive personal info queries (address, income, family, etc.)\n- **Reading companion** — Article pages auto-inject context for contextual Q&A\n- **Global/session cache** — Public questions cached across users for faster responses\n- **Mock mode** — No real API needed during development\n- **AI tool calling** — The assistant can control page UI directly: theme switching, article navigation, section scrolling, reading mode, text highlighting\n- **Action executor system** — Client-side action execution with cross-page action chaining and URL-based action persistence\n- **ChatPanel** — Resizable panel with S/M/L presets\n- **CodeBlock** — Enhanced visualization toolbar: zoom, fullscreen, copy",
           "position": 8,
-          "tokenCount": 209,
+          "tokenCount": 310,
           "headers": {
             "H1": "Central Topic",
             "H2": "AI Chat",
@@ -4712,8 +5301,15 @@
         "docs",
         "deployment"
       ],
-      "summary": "本指南详细介绍如何将 astro-minimax 博客部署到各种平台。astro-minimax 生成静态站点，可以部署到几乎任何支持静态托管的服务。\n\n项目形式说明\n\nastro-minimax 支持两种项目形式，部署配置略有不同：\n\n| 项目形式     | 说明               …",
-      "keyPoints": [],
+      "summary": "文章围绕 astro-minimax 的多平台部署，先区分 Monorepo 与 CLI 两种项目形式，再给出 Cloudflare Pages、Vercel、Netlify、Docker 及静态托管的构建目录、配置项与注意事项，帮助稳定上线并正确启用 AI 功能。",
+      "keyPoints": [
+        "通过 pnpm-workspace.yaml 区分项目形式。",
+        "不同项目形式的构建输出目录不同。",
+        "Cloudflare Pages 可自动识别 wrangler.toml。",
+        "AI 功能依赖 Workers AI 与 Binding 配置。",
+        "Vercel 部署需改用其他 AI 接口。",
+        "部署前需核对域名与静态资源配置。"
+      ],
       "url": "/zh/posts/deployment-guide/",
       "chunks": [
         {
@@ -4898,8 +5494,15 @@
         "docs",
         "features"
       ],
-      "summary": "astro-minimax 是一个功能丰富的 Astro 博客主题，采用模块化架构设计。本文全面介绍所有功能特性及其使用方式。\n\n架构概览\n\nastro-minimax 由四个核心包组成，形成清晰的层次架构：\n\n| 包                      | 说明              …",
-      "keyPoints": [],
+      "summary": "本文系统梳理 astro-minimax 博客主题的模块化架构、内容管理、搜索、可视化、AI、互动、SEO 与性能等功能，并说明主要配置方式与适用场景，便于快速搭建功能完整的 Astro 博客。",
+      "keyPoints": [
+        "主题由四个包分层组成",
+        "支持 Markdown、MDX 与多语言目录",
+        "搜索可在 Pagefind 与 DocSearch 间切换",
+        "内置 Mermaid、Markmap 等可视化组件",
+        "AI 聊天支持 RAG、流式响应与工具调用",
+        "提供评论通知、SEO 与性能优化能力"
+      ],
       "url": "/zh/posts/feature-overview/",
       "chunks": [
         {
@@ -4990,9 +5593,9 @@
           "id": "zh/feature-overview#功能特点",
           "postId": "zh/feature-overview",
           "heading": "功能特点",
-          "content": "### 功能特点\n\n- **多 Provider 支持** — Cloudflare Workers AI + OpenAI 兼容 API\n- **自动故障转移** — 主 Provider 失败时自动切换到备用，Mock 兜底保证可用\n- **流式响应** — SSE 实时流式输出\n- **RAG 检索** — 基于博客内容的上下文增强回答\n- **来源分层协议** — L1-L5 五层来源优先级，有效防止 AI 幻觉\n- **意图分类** — 7 类主题意图识别，提升搜索相关性\n- **隐私保护** — 自动拒绝回答敏感个人信息（住址、收入、家人等）\n- **边读边聊** — 文章页自动注入上下文，实现阅读伴侣模式\n- **全局/会话缓存** — 公共问题跨用户缓存，提升响应速度\n- **Mock 模式** — 开发时无需真实 API",
+          "content": "### 功能特点\n\n- **多 Provider 支持** — Cloudflare Workers AI + OpenAI 兼容 API\n- **自动故障转移** — 主 Provider 失败时自动切换到备用，Mock 兜底保证可用\n- **流式响应** — SSE 实时流式输出\n- **RAG 检索** — 基于博客内容的上下文增强回答\n- **来源分层协议** — L1-L5 五层来源优先级，有效防止 AI 幻觉\n- **意图分类** — 7 类主题意图识别，提升搜索相关性\n- **隐私保护** — 自动拒绝回答敏感个人信息（住址、收入、家人等）\n- **边读边聊** — 文章页自动注入上下文，实现阅读伴侣模式\n- **全局/会话缓存** — 公共问题跨用户缓存，提升响应速度\n- **Mock 模式** — 开发时无需真实 API\n- **AI 工具调用（Tool Calling）** — AI 助手可直接控制页面 UI：主题切换、文章导航、章节滚动、阅读模式、文本高亮等\n- **Action 执行器** — 客户端执行动作，支持跨页动作链与基于 URL 的动作持久化\n- **ChatPanel** — 可调整大小的对话面板，提供 S/M/L 三档预设\n- **CodeBlock** — 增强可视化工具栏：缩放、全屏、复制按钮",
           "position": 7,
-          "tokenCount": 136,
+          "tokenCount": 210,
           "headers": {
             "H1": "中心主题",
             "H2": "AI 聊天",
@@ -5114,14 +5717,14 @@
         "docs",
         "configuration"
       ],
-      "summary": "astro-minimax provides two integration methods for setting up a blog: GitHub Template for beginners and NPM Packages for content-system separation.",
+      "summary": "The article explains three ways to integrate astro-minimax—CLI, GitHub template, and npm packages—showing setup commands, configuration locations, and update paths so users can choose the fastest or most customizable workflow.",
       "keyPoints": [
-        "astro-minimax two integration methods",
-        "GitHub Template for one-time setup",
-        "NPM Packages for content-system separation",
-        "Manual updates for GitHub Template",
-        "Automatic updates with NPM Packages",
-        "Consistent blog content directory structure"
+        "CLI creates a full blog with one command.",
+        "CLI includes post, AI, profile, and data commands.",
+        "GitHub template uses a monorepo with apps/blog site.",
+        "Site settings are edited in config.ts feature flags.",
+        "NPM integration registers @astro-minimax/core in Astro.",
+        "Content stays under language-based blog directories."
       ],
       "url": "/en/posts/getting-started/",
       "chunks": [
@@ -5228,13 +5831,14 @@
         "docs",
         "configuration"
       ],
-      "summary": "介绍astro-minimax的两种使用方式：GitHub模板和NPM包集成，适合不同场景。",
+      "summary": "文章介绍 astro-minimax 的三种快速上手方式：CLI 创建、GitHub Template 与 NPM 包集成，并说明各自适用场景、配置步骤和更新方式，帮助用户按需求高效搭建博客。",
       "keyPoints": [
-        "astro-minimax两种使用方式",
-        "GitHub Template适合一次性创建",
-        "NPM包集成适合内容与系统分离",
-        "手动合并上游更新",
-        "使用pnpm update持续获取更新"
+        "三种方式对应不同接入场景",
+        "CLI 可一键生成完整博客项目",
+        "Template 采用 monorepo 管理结构",
+        "NPM 集成需在 Astro 配置中接入",
+        "文章需按目录放置并编写 frontmatter",
+        "Template 更新需手动合并上游变更"
       ],
       "url": "/zh/posts/getting-started/",
       "chunks": [
@@ -5294,13 +5898,14 @@
       "tags": [
         "docs"
       ],
-      "summary": "Guide on integrating LaTeX equations into Astro blog posts using remark and rehype plugins.",
+      "summary": "The article explains how to enable LaTeX rendering in Astro Markdown posts by installing math plugins, updating Astro config, importing KaTeX CSS, and adjusting typography so equations display correctly.",
       "keyPoints": [
-        "Install rehype-katex, remark-math, katex plugins",
-        "Update Astro config to use plugins",
-        "Import KaTeX CSS in main layout",
-        "Add katex text-color in typography CSS",
-        "Write inline and block LaTeX equations"
+        "Astro Markdown lacks math rendering by default.",
+        "Setup requires remark-math, rehype-katex, and katex.",
+        "Astro config must register remark and rehype plugins.",
+        "KaTeX stylesheet must be loaded in the layout.",
+        "Typography CSS needs katex color styling.",
+        "Inline uses $...$ and block uses $$...$$."
       ],
       "url": "/en/posts/how-to-add-latex-equations-in-blog-posts/",
       "chunks": [
@@ -5368,13 +5973,14 @@
       "tags": [
         "docs"
       ],
-      "summary": "介绍在Astro博客中添加LaTeX公式的方法，包括安装插件和配置Astro。",
+      "summary": "文章介绍在 Astro 的 astro-minimax 博客中为 Markdown 启用 LaTeX 公式支持的方法，包括安装 remark/rehype/KaTeX 插件、配置样式与语法，最终实现行内和块级公式的正确渲染。",
       "keyPoints": [
-        "Astro博客添加LaTeX公式支持",
-        "安装remark-math、rehype-katex、katex插件",
-        "配置Astro使用这些插件",
-        "导入KaTeX CSS样式",
-        "为katex设置文本颜色"
+        "目标是在 Astro Markdown 中渲染 LaTeX。",
+        "需安装 remark-math、rehype-katex、katex。",
+        "在 astro.config.ts 注册 remark 与 rehype 插件。",
+        "主布局需引入 KaTeX CSS 文件。",
+        "在 typography.css 设置 katex 文本颜色。",
+        "支持 $...$ 行内与 $$...$$ 块级公式。"
       ],
       "url": "/zh/posts/how-to-add-latex-equations-in-blog-posts/",
       "chunks": [
@@ -5444,14 +6050,14 @@
         "git",
         "automation"
       ],
-      "summary": "利用Git钩子自动化更新Astro-minimax主题中文章的创建和修改日期。",
+      "summary": "The article shows how to automate Astro blog post `pubDatetime` and `modDatetime` updates with Git pre-commit hooks, reducing manual date maintenance while preserving any dates already set by the author.",
       "keyPoints": [
-        "Git Hooks自动化更新文章日期",
-        "使用Husky管理Git钩子",
-        "pre-commit钩子更新修改日期",
-        "为新文件添加创建日期",
-        "IDE代码片段填充frontmatter",
-        "修改Astro配置允许空日期"
+        "Manual frontmatter date upkeep is error-prone.",
+        "CLI can install Husky hooks in one command.",
+        "Pre-commit hook processes staged blog Markdown files.",
+        "Empty `pubDatetime` is filled on added files.",
+        "`draft: first` becomes `draft: false` on commit.",
+        "Existing date values are preserved and never overwritten."
       ],
       "url": "/en/posts/setting-dates-via-git-hooks/",
       "chunks": [
@@ -5544,13 +6150,14 @@
         "git",
         "automation"
       ],
-      "summary": "使用pre-commit Git钩子自动填充博客主题frontmatter中的创建和修改日期。",
+      "summary": "文章介绍在 astro-minimax 博客中通过 Git pre-commit 钩子自动填充 frontmatter 的发布日期与修改日期，并用 CLI 或 Husky 手动配置实现免手动维护且保留人工设定值。",
       "keyPoints": [
-        "使用Git钩子自动化日期更新",
-        "Husky包自动安装pre-commit钩子",
-        "为修改文件更新修改日期",
-        "为新文件添加创建日期",
-        "修改Astro配置允许空日期"
+        "frontmatter 日期手动维护易遗漏",
+        "CLI 可一键安装 Husky 与 pre-commit",
+        "钩子仅补空日期不覆盖已有值",
+        "新增文章自动填充 pubDatetime",
+        "draft:false 修改时补 modDatetime",
+        "draft:first 提交时转为正式发布"
       ],
       "url": "/zh/posts/setting-dates-via-git-hooks/",
       "chunks": [
@@ -5611,13 +6218,14 @@
         "docs",
         "release"
       ],
-      "summary": "Astro-minimax v1.4.0 introduces dynamic OG image generation for blog posts, enhancing social media engagement.",
+      "summary": "The article explains how astro-minimax generates dynamic OG images at build time, how `cover` and `ogImage` fall back to each other, and why this improves social sharing while increasing build time.",
       "keyPoints": [
-        "Astro-minimax v1.4.0 adds dynamic OG image generation",
-        "Uses Vercel's Satori package for image creation",
-        "Dynamic images include post title, author, and site title",
-        "Increased build time with more blog posts",
-        "Limitations with RTL languages and emoji support"
+        "`cover` and `ogImage` serve different contexts.",
+        "Missing images follow explicit fallback rules.",
+        "Build-time OG generation uses Vercel Satori.",
+        "Generated images include title, author, site title.",
+        "Non-Latin titles require custom font config.",
+        "Per-image generation cost increases build time linearly."
       ],
       "url": "/en/posts/dynamic-og-images/",
       "chunks": [
@@ -5734,13 +6342,14 @@
         "docs",
         "release"
       ],
-      "summary": "astro-minimax v1.4.0 引入动态OG图片生成，提升社交媒体分享效果。",
+      "summary": "文章介绍 astro-minimax 在构建时为未设置 ogImage 的非草稿文章动态生成社交分享图的方法，说明 cover 与 ogImage 的回退规则、字体配置及构建耗时权衡。",
       "keyPoints": [
-        "astro-minimax v1.4.0支持动态OG图片生成",
-        "使用Vercel Satori包构建时生成OG图片",
-        "OG图片包含文章标题、作者和网站标题",
-        "动态OG图片增加构建时间",
-        "不支持RTL语言和emoji问题"
+        "静态默认 OG 图会导致多文共用同图。",
+        "未设 ogImage 且非草稿文章在构建时生成。",
+        "cover 与 ogImage 分离并带有回退规则。",
+        "生成内容取自标题、作者名和网站标题。",
+        "非拉丁字符需调整 loadGoogleFont 字体配置。",
+        "每张图约耗时一秒并线性拉长构建时间。"
       ],
       "url": "/zh/posts/dynamic-og-images/",
       "chunks": [
@@ -5844,13 +6453,14 @@
       "tags": [
         "docs"
       ],
-      "summary": "A guide to creating new posts in astro-minimax theme, including directory organization and frontmatter properties.",
+      "summary": "This tutorial explains how to create and organize new posts in the astro-minimax theme, configure frontmatter and slugs correctly, and avoid URL or build issues for better content management and SEO.",
       "keyPoints": [
-        "Create markdown files in src/data/blog/ directory",
-        "Subdirectories for content organization",
-        "Frontmatter properties for blog posts",
-        "Override default settings with frontmatter",
-        "SEO optimization with title and description"
+        "CLI supports quick post creation",
+        "Content paths differ by setup method",
+        "Subdirectories can change generated post URLs",
+        "Underscore-prefixed folders are excluded from URL paths",
+        "Frontmatter requires title, description, pubDatetime",
+        "Missing subdirectory URLs may need clean reinstall"
       ],
       "url": "/en/posts/adding-new-post/",
       "chunks": [
@@ -6010,14 +6620,14 @@
       "tags": [
         "docs"
       ],
-      "summary": "介绍在astro-minimax主题中创建新文章的规则、技巧和提示。",
+      "summary": "本文介绍如何在 astro-minimax 主题中创建新文章，包括目录与 URL 规则、Frontmatter 配置、代码高亮和图片存储方式，以便规范发布并优化管理与展示。",
       "keyPoints": [
-        "astro-minimax主题创建新文章",
-        "支持子目录组织文章",
-        "frontmatter存储文章信息",
-        "添加目录和设置标题",
-        "使用Shiki进行语法高亮",
-        "图片存储在src/assets/或public目录"
+        "文章存放于 src/data/blog 目录",
+        "子目录默认参与文章 URL 生成",
+        "下划线目录可避免影响 URL",
+        "title、description、pubDatetime 为必填",
+        "tags 默认值可在 content.config.ts 配置",
+        "src/assets 图片可被 Astro 自动优化"
       ],
       "url": "/zh/posts/adding-new-post/",
       "chunks": [
@@ -6189,13 +6799,14 @@
         "configuration",
         "docs"
       ],
-      "summary": "Configure astro-minimax theme by customizing the SITE object in src/config.ts for SEO and personalization.",
+      "summary": "The article explains how to customize the astro-minimax Astro blog theme through config files, covering site settings, feature toggles, navigation, projects, branding, social/share links, and optional integrations to tailor behavior and UI.",
       "keyPoints": [
-        "astro-minimax theme customization",
-        "Configure SITE object in src/config.ts",
-        "SEO settings like website URL and description",
-        "Enable light and dark mode",
-        "Set post display preferences"
+        "Configuration centers on the SITE object.",
+        "Config paths differ for template and NPM use.",
+        "Feature flags control pages and menu visibility.",
+        "Navigation items can be individually enabled.",
+        "Layout width is changed in global.css.",
+        "Social and share links are set in constants.ts."
       ],
       "url": "/en/posts/how-to-configure-astro-minimax-theme/",
       "chunks": [
@@ -6378,12 +6989,14 @@
         "configuration",
         "docs"
       ],
-      "summary": "介绍如何配置astro-minimax主题，包括SITE配置、布局宽度和Logo或标题设置。",
+      "summary": "本文系统说明 astro-minimax 主题的配置方式，围绕 src/config.ts、constants.ts 与样式文件设置站点信息、功能开关、导航、搜索、评论等模块，以实现个性化博客定制。",
       "keyPoints": [
-        "astro-minimax主题配置教程",
-        "配置SITE对象，包括网站信息",
-        "更新布局宽度，修改global.css",
-        "配置Logo或标题，三种方法"
+        "配置入口集中在 src/config.ts",
+        "SITE 对象控制站点与 SEO 参数",
+        "features 与 nav 联动决定页面可见性",
+        "可选接入 Waline、AI 聊天与赞助",
+        "搜索默认 Pagefind，也支持 DocSearch",
+        "可在 global.css 调整最大布局宽度"
       ],
       "url": "/zh/posts/how-to-configure-astro-minimax-theme/",
       "chunks": [
@@ -6544,23 +7157,24 @@
     ],
     "recurringTopics": [
       "astro-minimax",
-      "docs",
-      "to",
-      "blog",
-      "AI",
-      "configuration",
-      "in",
-      "guide",
-      "Guide",
-      "ai",
-      "for",
-      "This",
-      "Vercel",
       "and",
-      "Umami",
+      "to",
+      "docs",
+      "AI",
+      "blog",
+      "how",
+      "The",
+      "article",
+      "explains",
+      "configuration",
+      "Vercel",
+      "the",
+      "CLI",
       "Astro",
-      "posts",
-      "theme"
+      "ai",
+      "Guide",
+      "for",
+      "in"
     ],
     "flagshipPosts": [
       {
@@ -6677,8 +7291,8 @@
     ]
   },
   "aiConfig": {
-    "model": "kimi-k2-thinking",
+    "model": "gpt-5.4",
     "provider": "openai"
   },
-  "contextHash": "85b1d92ae8ca057c"
+  "contextHash": "a08d63d8031fcabb"
 }

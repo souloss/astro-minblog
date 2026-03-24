@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-23T14:00:33.612Z",
+  "generatedAt": "2026-03-24T15:28:53.697Z",
   "count": 40,
   "posts": [
     {
@@ -14,7 +14,7 @@
         "architecture",
         "technical"
       ],
-      "summary": "@astro-minimax/ai is the intelligent enhancement module for the astro-minimax blog theme, designed as a vendor-agnostic AI integration solution. The …",
+      "summary": "The article explains the vendor-agnostic architecture of the @astro-minimax/ai module, detailing its layered RAG pipeline, multi-provider failover, build-runtime separation, and graceful degradation to deliver low-latency, resilient blog AI interactions.",
       "url": "/en/posts/ai-module-architecture/"
     },
     {
@@ -27,7 +27,7 @@
         "docs",
         "configuration"
       ],
-      "summary": "astro-minimax 0.8.2 introduces a brand new settings panel for personalizing your blog's appearance and experience.\n\nOpening the Settings Panel\n\nClick…",
+      "summary": "The article introduces astro-minimax’s settings panel, explaining how to adjust appearance, reading, layout, and general preferences, then save, share, reset, and automatically restore them for a personalized blog experience.",
       "url": "/en/posts/settings-panel/"
     },
     {
@@ -42,7 +42,7 @@
         "architecture",
         "technical"
       ],
-      "summary": "@astro-minimax/ai 是 astro-minimax 博客主题的智能增强模块，定位为供应商无关（Vendor-agnostic）的 AI 集成解决方案。该模块的核心目标是为一站式博客平台提供完整的 RAG（检索增强生成）流水线，同时支持多种 AI 服务供应商的无缝切换与故障转移，确保…",
+      "summary": "文章详解 @astro-minimax/ai 的分层技术架构，围绕 RAG 流水线、多供应商抽象、流式响应与降级容错设计展开，说明其如何在博客场景中实现低延迟、高可用且可扩展的 AI 交互能力。",
       "url": "/zh/posts/ai-module-architecture/"
     },
     {
@@ -55,7 +55,7 @@
         "docs",
         "configuration"
       ],
-      "summary": "astro-minimax 0.8.2 引入了全新的设置面板，让你可以个性化博客的外观和体验。\n\n打开设置面板\n\n点击页面右下角的设置图标（齿轮图标）即可打开设置面板。\n\n设置选项\n\n外观设置\n\n| 选项 | 说明 | 可选值 |\n|------|------|--------|\n| 配色方案 |…",
+      "summary": "文章介绍 astro-minimax 的设置面板使用方式，说明外观、阅读、布局与通用偏好的配置项，以及通过 localStorage 持久化和 URL 参数分享设置的实现效果。",
       "url": "/zh/posts/settings-panel/"
     },
     {
@@ -67,7 +67,7 @@
       "tags": [
         "FAQ"
       ],
-      "summary": "本文介绍了如何更新Astro-minimax项目的依赖，并提供了更新模板的技巧。",
+      "summary": "The article explains how to update astro-minimax dependencies and template safely using pnpm, npm-check-updates, and Git workflows, helping users stay current while reducing breakage risk.",
       "url": "/en/posts/how-to-update-dependencies/"
     },
     {
@@ -79,7 +79,7 @@
       "tags": [
         "FAQ"
       ],
-      "summary": "文章介绍了如何更新astro-minimax项目的依赖和模板，包括使用npm-check-updates和git操作。",
+      "summary": "文章介绍更新 astro-minimax 依赖与模板的实用流程：CLI 用户可直接用 pnpm 更新，模板用户可借助 npm-check-updates 分层升级并用 Git 合并模板，从而更稳妥地保持项目最新。",
       "url": "/zh/posts/how-to-update-dependencies/"
     },
     {
@@ -94,7 +94,7 @@
         "deployment",
         "configuration"
       ],
-      "summary": "This guide explains how to configure environment variables in Cloudflare Pages Dashboard for astro-minimax. Proper environment variable configuration…",
+      "summary": "This tutorial shows how to configure Cloudflare Pages environment variables for astro-minimax, including build-time and runtime settings, scope selection, and AI binding alignment, so deployment, AI chat, notifications, and builds work correctly.",
       "url": "/en/posts/cloudflare-env-vars/"
     },
     {
@@ -108,7 +108,7 @@
         "tutorial",
         "getting-started"
       ],
-      "summary": "This guide walks you through building a complete blog from scratch with astro-minimax.\n\nOverview\n\nEstimated time: 45-60 minutes\n\nPrerequisites\n\nBefor…",
+      "summary": "The article provides a step-by-step tutorial for creating an astro-minimax blog, configuring core features, and deploying it to Cloudflare and Vercel to enable comments, analytics, notifications, and AI chat for a production-ready setup.",
       "url": "/en/posts/complete-setup-guide/"
     },
     {
@@ -124,7 +124,7 @@
         "vercel",
         "neon"
       ],
-      "summary": "Umami is an open-source, privacy-friendly web analytics tool. Compared to Google Analytics, Umami doesn't use cookies, doesn't track users across sit…",
+      "summary": "This tutorial explains how to deploy the privacy-friendly Umami analytics platform for free with Vercel and Neon, compares alternative hosting options, and outlines setup, initialization, and blog integration preparation via websiteId retrieval.",
       "url": "/en/posts/setup-umami-analytics/"
     },
     {
@@ -141,7 +141,7 @@
         "neon",
         "comments"
       ],
-      "summary": "Waline is a simple, safe comment system with Markdown support, email notifications, and multi-language features. This guide walks you through deployi…",
+      "summary": "The article explains how to deploy Waline on Vercel with a built-in Neon PostgreSQL database, configure required environment variables and optional email notifications, then connect it to an astro-minimax blog for a complete comment system.",
       "url": "/en/posts/setup-waline-on-vercel/"
     },
     {
@@ -156,7 +156,7 @@
         "deployment",
         "configuration"
       ],
-      "summary": "astro-minimax 博客在 Cloudflare Pages 部署时，需要正确配置环境变量才能启用完整功能。本文详细介绍环境变量的作用、配置方法和最佳实践。\n\n概览\n\n环境变量在 Cloudflare Pages 中有两个作用时机：\n\n| 时机       | 说明            …",
+      "summary": "本文围绕 astro-minimax 在 Cloudflare Pages 部署时的环境变量配置，说明构建时与运行时变量的设置方法、必需与可选项及排障要点，以确保 AI、通知和站点功能正常启用。",
       "url": "/zh/posts/cloudflare-env-vars/"
     },
     {
@@ -170,7 +170,7 @@
         "tutorial",
         "getting-started"
       ],
-      "summary": "本指南将带你从零开始，完整搭建一个功能齐全的 astro-minimax 博客。\n\n概览\n\n预计时间：45-60 分钟\n\n前置准备\n\n在开始之前，请确保你有以下账号：\n\n| 账号       | 用途           | 注册地址                                …",
+      "summary": "文章围绕 astro-minimax 博客，从项目初始化、站点配置到 Cloudflare 部署，并接入 Waline、Umami、Telegram 通知与 AI 聊天，帮助读者完成一套可用的完整博客系统。",
       "url": "/zh/posts/complete-setup-guide/"
     },
     {
@@ -186,7 +186,7 @@
         "vercel",
         "neon"
       ],
-      "summary": "Umami 是一款开源、隐私友好的网站统计分析工具。相比 Google Analytics，Umami 不使用 Cookie、不跨站追踪用户、完全符合 GDPR 隐私法规。本文将介绍如何使用 Vercel + Neon PostgreSQL 免费部署 Umami 并与 astro-minimax …",
+      "summary": "文章介绍了基于 Vercel 与 Neon PostgreSQL 免费部署 Umami 的完整流程，并说明如何获取网站追踪参数集成到博客中，以实现隐私友好且低运维的网站统计。",
       "url": "/zh/posts/setup-umami-analytics/"
     },
     {
@@ -203,7 +203,7 @@
         "neon",
         "comments"
       ],
-      "summary": "Waline 是一款简洁、安全的评论系统，支持 Markdown、邮件通知、多语言等特性。本文将详细介绍如何在 Vercel 部署 Waline，使用 Vercel 自带的 Neon PostgreSQL 作为数据库，并与 astro-minimax 博客集成。\n\n架构概览\n\n整个系统由三部分组成…",
+      "summary": "本文介绍在 Vercel 部署 Waline 评论系统的方法，包括创建 Neon PostgreSQL、导入表结构、配置环境变量与邮件/Webhook，并集成到 astro-minimax 博客以实现评论与通知能力。",
       "url": "/zh/posts/setup-waline-on-vercel/"
     },
     {
@@ -218,7 +218,7 @@
         "ecosystem",
         "\"2026\""
       ],
-      "summary": "Building a personal tech blog involves 10+ technical decisions. This guide exhaustively covers every capability domain in the 2026 blog ecosystem to …",
+      "summary": "The article maps the 2026 tech blog ecosystem across framework, content, search, comments, AI, analytics, notifications, and deployment, then provides decision matrices and stack presets to help readers choose tools that fit their needs and reduce tooling friction.",
       "url": "/en/posts/2026-blog-ecosystem/"
     },
     {
@@ -232,7 +232,7 @@
         "ai",
         "configuration"
       ],
-      "summary": "astro-minimax includes a built-in AI chat assistant with multi-provider failover, RAG retrieval, streaming responses, and Mock fallback. This guide c…",
+      "summary": "The guide explains how to enable and configure astro-minimax AI chat, set providers and failover, build AI data, and extend or evaluate the system to achieve reliable, secure, tool-enabled responses.",
       "url": "/en/posts/ai-guide/"
     },
     {
@@ -246,7 +246,7 @@
         "cli",
         "tools"
       ],
-      "summary": "provides a comprehensive command-line toolkit for blog project management and AI content processing. This guide covers all available commands.\n\nInsta…",
+      "summary": "This guide explains how to use the @astro-minimax/cli toolkit to initialize blog projects, manage posts, run AI content workflows, and maintain profile and data files for more efficient blog operations.",
       "url": "/en/posts/cli-guide/"
     },
     {
@@ -261,7 +261,7 @@
         "telegram",
         "email"
       ],
-      "summary": "astro-minimax includes a built-in multi-channel notification system that automatically sends notifications to Telegram, Email, or custom Webhooks whe…",
+      "summary": "This guide explains how to configure astro-minimax’s multi-channel notification system via environment variables, custom templates, and Waline webhooks to deliver real-time comment and AI chat alerts with fault-tolerant parallel sending.",
       "url": "/en/posts/notification-guide/"
     },
     {
@@ -275,7 +275,7 @@
         "architecture",
         "design"
       ],
-      "summary": "astro-minimax is not just another blog theme. It's a systematic answer to \"how to build a modern tech blog.\" This article documents the thinking behi…",
+      "summary": "The article explains astro-minimax’s design philosophy by detailing its Astro-based architecture, monorepo package split, virtual-module configuration, and built-in RAG search/chat choices, concluding that this approach balances fast setup, extensibility, and low-maintenance operation.",
       "url": "/en/posts/why-astro-minimax/"
     },
     {
@@ -290,7 +290,7 @@
         "ecosystem",
         "\"2026\""
       ],
-      "summary": "构建个人技术博客看似简单，实际涉及 10+ 个技术决策。本文穷举式地梳理 2026 年博客生态的每个能力域，帮你做出知情的选择。\n\n一、框架选型\n\n框架决定了博客的技术基础。2026 年的主流选择：\n\n静态站点生成器 (SSG)\n\n| 框架 | 语言 | 特点 | 适合人群 |\n|------|-…",
+      "summary": "文章系统梳理2026年个人技术博客从框架、内容管理到AI、搜索与部署的关键选型，并给出按需求决策路径，帮助从零搭建高性能、低成本且可扩展的博客系统。",
       "url": "/zh/posts/2026-blog-ecosystem/"
     },
     {
@@ -304,7 +304,7 @@
         "ai",
         "configuration"
       ],
-      "summary": "astro-minimax 内置 AI 聊天助手，支持多 Provider 自动故障转移、RAG 检索增强、流式响应和 Mock 降级。本文介绍完整的 AI 配置流程。\n\n概览\n\nAI 聊天系统由以下模块组成：\n\n| 模块 | 说明 |\n|------|------|\n|  | AI 核心包：RA…",
+      "summary": "本文系统讲解 astro-minimax 的 AI 聊天功能配置流程，包括启用开关、Provider 与数据构建、工具调用及评估扩展等设置，帮助站点获得可故障转移、可检索增强且可安全降级的聊天能力。",
       "url": "/zh/posts/ai-guide/"
     },
     {
@@ -318,7 +318,7 @@
         "cli",
         "tools"
       ],
-      "summary": "提供一套完整的命令行工具，用于博客项目管理和 AI 内容处理。本文介绍所有可用命令及其用法。\n\n安装\n\nCLI 工具作为开发依赖自动安装：\n\n安装后可通过  命令使用，也可以通过  快捷脚本调用。\n\n创建新博客\n\n生成包含完整配置、示例文章和 AI 工具链的博客项目。\n\n文章管理\n\n创建文章\n\n自…",
+      "summary": "本文系统介绍 @astro-minimax/cli 的安装、建站、文章管理、AI 处理、评估与数据维护命令，帮助用户通过统一 CLI 高效完成博客项目初始化、内容生成和质量检查。",
       "url": "/zh/posts/cli-guide/"
     },
     {
@@ -333,7 +333,7 @@
         "telegram",
         "email"
       ],
-      "summary": "astro-minimax 内置多渠道通知系统，可以在博客收到评论或用户进行 AI 对话时，自动发送通知到 Telegram、邮箱或自定义 Webhook。\n\n功能概览\n\n通知系统支持以下功能：\n\n| 功能     | 说明                                  |\n|…",
+      "summary": "本文介绍 astro-minimax 博客通知系统的配置方法，涵盖 Telegram、Resend 邮件与 Webhook 渠道、Waline 集成、自定义模板和代理设置，帮助站长快速接收评论与 AI 对话通知。",
       "url": "/zh/posts/notification-guide/"
     },
     {
@@ -347,7 +347,7 @@
         "architecture",
         "design"
       ],
-      "summary": "astro-minimax 不只是又一个博客主题。它是对「如何构建一个现代技术博客」的系统性回答。本文记录每个关键决策背后的思考。\n\n为什么做这个项目\n\n问题\n\n2024-2025 年的博客生态面临几个核心矛盾：\n简单 vs 功能丰富 — 极简主题缺功能，功能丰富的主题又太臃肿\n开箱即用 vs 可…",
+      "summary": "文章围绕 astro-minimax 的设计决策，阐述其以 Astro、Monorepo 与模块化为核心构建现代技术博客，并通过内置 AI、搜索、通知和 CLI 提升可扩展性与使用效率。",
       "url": "/zh/posts/why-astro-minimax/"
     },
     {
@@ -373,7 +373,7 @@
         "docs",
         "features"
       ],
-      "summary": "astro-minimax is a feature-rich Astro blog theme built with a modular architecture. This article provides a comprehensive overview of all features an…",
+      "summary": "The article introduces the modular astro-minimax Astro blog theme, explaining its content, search, styling, visualization, and optional AI/notification/CLI features, helping users understand configuration options and practical usage paths.",
       "url": "/en/posts/feature-overview/"
     },
     {
@@ -386,7 +386,7 @@
         "docs",
         "deployment"
       ],
-      "summary": "本指南详细介绍如何将 astro-minimax 博客部署到各种平台。astro-minimax 生成静态站点，可以部署到几乎任何支持静态托管的服务。\n\n项目形式说明\n\nastro-minimax 支持两种项目形式，部署配置略有不同：\n\n| 项目形式     | 说明               …",
+      "summary": "文章围绕 astro-minimax 的多平台部署，先区分 Monorepo 与 CLI 两种项目形式，再给出 Cloudflare Pages、Vercel、Netlify、Docker 及静态托管的构建目录、配置项与注意事项，帮助稳定上线并正确启用 AI 功能。",
       "url": "/zh/posts/deployment-guide/"
     },
     {
@@ -399,7 +399,7 @@
         "docs",
         "features"
       ],
-      "summary": "astro-minimax 是一个功能丰富的 Astro 博客主题，采用模块化架构设计。本文全面介绍所有功能特性及其使用方式。\n\n架构概览\n\nastro-minimax 由四个核心包组成，形成清晰的层次架构：\n\n| 包                      | 说明              …",
+      "summary": "本文系统梳理 astro-minimax 博客主题的模块化架构、内容管理、搜索、可视化、AI、互动、SEO 与性能等功能，并说明主要配置方式与适用场景，便于快速搭建功能完整的 Astro 博客。",
       "url": "/zh/posts/feature-overview/"
     },
     {
@@ -412,7 +412,7 @@
         "docs",
         "configuration"
       ],
-      "summary": "astro-minimax provides two integration methods for setting up a blog: GitHub Template for beginners and NPM Packages for content-system separation.",
+      "summary": "The article explains three ways to integrate astro-minimax—CLI, GitHub template, and npm packages—showing setup commands, configuration locations, and update paths so users can choose the fastest or most customizable workflow.",
       "url": "/en/posts/getting-started/"
     },
     {
@@ -425,7 +425,7 @@
         "docs",
         "configuration"
       ],
-      "summary": "介绍astro-minimax的两种使用方式：GitHub模板和NPM包集成，适合不同场景。",
+      "summary": "文章介绍 astro-minimax 的三种快速上手方式：CLI 创建、GitHub Template 与 NPM 包集成，并说明各自适用场景、配置步骤和更新方式，帮助用户按需求高效搭建博客。",
       "url": "/zh/posts/getting-started/"
     },
     {
@@ -437,7 +437,7 @@
       "tags": [
         "docs"
       ],
-      "summary": "Guide on integrating LaTeX equations into Astro blog posts using remark and rehype plugins.",
+      "summary": "The article explains how to enable LaTeX rendering in Astro Markdown posts by installing math plugins, updating Astro config, importing KaTeX CSS, and adjusting typography so equations display correctly.",
       "url": "/en/posts/how-to-add-latex-equations-in-blog-posts/"
     },
     {
@@ -449,7 +449,7 @@
       "tags": [
         "docs"
       ],
-      "summary": "介绍在Astro博客中添加LaTeX公式的方法，包括安装插件和配置Astro。",
+      "summary": "文章介绍在 Astro 的 astro-minimax 博客中为 Markdown 启用 LaTeX 公式支持的方法，包括安装 remark/rehype/KaTeX 插件、配置样式与语法，最终实现行内和块级公式的正确渲染。",
       "url": "/zh/posts/how-to-add-latex-equations-in-blog-posts/"
     },
     {
@@ -463,7 +463,7 @@
         "git",
         "automation"
       ],
-      "summary": "利用Git钩子自动化更新Astro-minimax主题中文章的创建和修改日期。",
+      "summary": "The article shows how to automate Astro blog post `pubDatetime` and `modDatetime` updates with Git pre-commit hooks, reducing manual date maintenance while preserving any dates already set by the author.",
       "url": "/en/posts/setting-dates-via-git-hooks/"
     },
     {
@@ -477,7 +477,7 @@
         "git",
         "automation"
       ],
-      "summary": "使用pre-commit Git钩子自动填充博客主题frontmatter中的创建和修改日期。",
+      "summary": "文章介绍在 astro-minimax 博客中通过 Git pre-commit 钩子自动填充 frontmatter 的发布日期与修改日期，并用 CLI 或 Husky 手动配置实现免手动维护且保留人工设定值。",
       "url": "/zh/posts/setting-dates-via-git-hooks/"
     },
     {
@@ -490,7 +490,7 @@
         "docs",
         "release"
       ],
-      "summary": "Astro-minimax v1.4.0 introduces dynamic OG image generation for blog posts, enhancing social media engagement.",
+      "summary": "The article explains how astro-minimax generates dynamic OG images at build time, how `cover` and `ogImage` fall back to each other, and why this improves social sharing while increasing build time.",
       "url": "/en/posts/dynamic-og-images/"
     },
     {
@@ -503,7 +503,7 @@
         "docs",
         "release"
       ],
-      "summary": "astro-minimax v1.4.0 引入动态OG图片生成，提升社交媒体分享效果。",
+      "summary": "文章介绍 astro-minimax 在构建时为未设置 ogImage 的非草稿文章动态生成社交分享图的方法，说明 cover 与 ogImage 的回退规则、字体配置及构建耗时权衡。",
       "url": "/zh/posts/dynamic-og-images/"
     },
     {
@@ -515,7 +515,7 @@
       "tags": [
         "docs"
       ],
-      "summary": "A guide to creating new posts in astro-minimax theme, including directory organization and frontmatter properties.",
+      "summary": "This tutorial explains how to create and organize new posts in the astro-minimax theme, configure frontmatter and slugs correctly, and avoid URL or build issues for better content management and SEO.",
       "url": "/en/posts/adding-new-post/"
     },
     {
@@ -527,7 +527,7 @@
       "tags": [
         "docs"
       ],
-      "summary": "介绍在astro-minimax主题中创建新文章的规则、技巧和提示。",
+      "summary": "本文介绍如何在 astro-minimax 主题中创建新文章，包括目录与 URL 规则、Frontmatter 配置、代码高亮和图片存储方式，以便规范发布并优化管理与展示。",
       "url": "/zh/posts/adding-new-post/"
     },
     {
@@ -540,7 +540,7 @@
         "configuration",
         "docs"
       ],
-      "summary": "Configure astro-minimax theme by customizing the SITE object in src/config.ts for SEO and personalization.",
+      "summary": "The article explains how to customize the astro-minimax Astro blog theme through config files, covering site settings, feature toggles, navigation, projects, branding, social/share links, and optional integrations to tailor behavior and UI.",
       "url": "/en/posts/how-to-configure-astro-minimax-theme/"
     },
     {
@@ -553,7 +553,7 @@
         "configuration",
         "docs"
       ],
-      "summary": "介绍如何配置astro-minimax主题，包括SITE配置、布局宽度和Logo或标题设置。",
+      "summary": "本文系统说明 astro-minimax 主题的配置方式，围绕 src/config.ts、constants.ts 与样式文件设置站点信息、功能开关、导航、搜索、评论等模块，以实现个性化博客定制。",
       "url": "/zh/posts/how-to-configure-astro-minimax-theme/"
     }
   ]
