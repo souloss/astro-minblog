@@ -1,6 +1,6 @@
 {
   "name": "astro-minimax-blog",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "private": true,
   "type": "module",
   "description": "A modern, minimalist blog built with Astro, featuring AI-powered search, multi-channel notifications, and rich visualizations.",

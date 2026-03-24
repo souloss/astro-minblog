@@ -1,11 +1,5 @@
-import {
-  preloadMetadata,
-  getAuthorContext,
-  getAllSummaries,
-  initArticleIndex,
-  initProjectIndex,
-  initArticleChunks,
-} from '../index.js';
+import { preloadMetadata, getAuthorContext, getAllSummaries } from '../data/index.js';
+import { initArticleIndex, initProjectIndex, initArticleChunks } from '../search/index.js';
 import { getExtensionRegistry } from '../extensions/index.js';
 import { safeJoinUrl } from '../utils/url.js';
 import type { AuthorPost } from '../data/types.js';

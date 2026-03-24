@@ -4,6 +4,15 @@ export interface WebhookProvider {
   send(payload: WebhookPayload): Promise<SendResult>;
 }
 
+function redactUrl(rawUrl: string): string {
+  try {
+    const u = new URL(rawUrl);
+    return `${u.origin}${u.pathname}`;
+  } catch {
+    return '<invalid-url>';
+  }
+}
+
 export function createWebhookProvider(
   config: WebhookConfig,
   logger?: Logger
@@ -22,6 +31,7 @@ export function createWebhookProvider(
             ...headers,
           },
           body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10_000),
         });
 
         const duration = Date.now() - start;
@@ -31,7 +41,7 @@ export function createWebhookProvider(
           const errorMsg = `Webhook error: ${response.status} - ${errorText}`;
           
           logger?.error('Webhook send failed', new Error(errorMsg), {
-            url,
+            url: redactUrl(url),
             status: response.status,
           });
           
@@ -43,7 +53,7 @@ export function createWebhookProvider(
           };
         }
 
-        logger?.info('Webhook notification sent', { url, duration });
+        logger?.info('Webhook notification sent', { url: redactUrl(url), duration });
         
         return {
           channel: 'webhook',
@@ -55,7 +65,7 @@ export function createWebhookProvider(
         const errorMsg = error instanceof Error ? error.message : String(error);
         
         logger?.error('Webhook send failed', error instanceof Error ? error : undefined, {
-          url,
+          url: redactUrl(url),
           error: errorMsg,
         });
         

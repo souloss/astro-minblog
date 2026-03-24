@@ -43,3 +43,6 @@ export * from './server/index.js';
 export * from './structured-output/index.js';
 
 export * from './extensions/index.js';
+
+// Domain error types
+export * from './errors/index.js';

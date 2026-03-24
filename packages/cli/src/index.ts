@@ -3,13 +3,15 @@ import { join, resolve, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { initCommand } from "./commands/init.js";
 import { postCommand } from "./commands/post.js";
-import { aiCommand } from "./commands/ai.js";
+import { aiCommand } from "./commands/ai/index.js";
 import { dataCommand } from "./commands/data.js";
 import { hooksCommand } from "./commands/hooks.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-const VERSION = "0.9.0";
+import { createRequire } from "node:module";
+const _require = createRequire(import.meta.url);
+const VERSION: string = (_require("../package.json") as { version: string }).version;
 
 interface Command {
   name: string;

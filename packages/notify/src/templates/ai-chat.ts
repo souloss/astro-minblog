@@ -1,4 +1,5 @@
 import type { AiChatEvent, TelegramTemplate, WebhookPayload, EmailTemplate } from '../types.js';
+import { escapeHtml, sanitizeUrl } from '../utils.js';
 
 function anonymizeSessionId(sessionId: string): string {
   if (!sessionId || sessionId.length <= 6) return sessionId;
@@ -38,7 +39,7 @@ export function telegramTemplate(event: AiChatEvent): TelegramTemplate {
     lines.push(``, `📎 <b>引用文章:</b>`);
     event.referencedArticles.slice(0, 5).forEach(article => {
       if (article.url) {
-        lines.push(`  · <a href="${article.url}">${escapeHtml(article.title)}</a>`);
+        lines.push(`  · <a href="${sanitizeUrl(article.url)}">${escapeHtml(article.title)}</a>`);
       } else {
         lines.push(`  · ${escapeHtml(article.title)}`);
       }
@@ -79,7 +80,7 @@ export function telegramTemplate(event: AiChatEvent): TelegramTemplate {
   }
 
   if (event.siteUrl) {
-    lines.push(``, `🔗 <a href="${event.siteUrl}">访问网站</a>`);
+    lines.push(``, `🔗 <a href="${sanitizeUrl(event.siteUrl)}">访问网站</a>`);
   }
 
   return {
@@ -120,7 +121,7 @@ export function emailTemplate(event: AiChatEvent): EmailTemplate {
       <div class="section-title">📎 引用文章</div>
       <div class="content">
         ${event.referencedArticles.slice(0, 5).map(a => 
-          a.url ? `<a href="${a.url}">${escapeHtml(a.title)}</a>` : escapeHtml(a.title)
+          a.url ? `<a href="${sanitizeUrl(a.url)}">${escapeHtml(a.title)}</a>` : escapeHtml(a.title)
         ).join('<br>')}
       </div>
     </div>
@@ -201,7 +202,7 @@ export function emailTemplate(event: AiChatEvent): EmailTemplate {
   ${modelHtml}
   ${usageHtml}
   ${timingHtml}
-  ${event.siteUrl ? `<a href="${event.siteUrl}" class="link">访问网站</a>` : ''}
+  ${event.siteUrl ? `<a href="${sanitizeUrl(event.siteUrl)}" class="link">访问网站</a>` : ''}
 </body>
 </html>`,
     text: `博客 AI 对话
@@ -219,14 +220,6 @@ ${event.timing ? `⏱️ 耗时: ${formatTime(event.timing.total)}\n` : ''}`,
   };
 }
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
 
 function formatDate(date: Date): string {
   const pad = (n: number) => n.toString().padStart(2, '0');

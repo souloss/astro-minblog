@@ -16,7 +16,9 @@ export interface KVCacheOptions {
   prefix?: string;
 }
 
-const DEFAULT_TTL_SECONDS = 600;
+import { CACHE } from '../constants.js';
+
+const DEFAULT_TTL_SECONDS = CACHE.DEFAULT_TTL;
 const MIN_TTL_SECONDS = 60;
 
 export class KVCacheAdapter implements CacheAdapter {

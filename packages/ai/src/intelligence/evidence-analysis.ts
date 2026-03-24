@@ -6,9 +6,10 @@ import {
   EvidenceAnalysis,
   EVIDENCE_ANALYSIS_SYSTEM_PROMPT,
 } from '../structured-output/index.js';
+import { TIMEOUTS, INTELLIGENCE } from '../constants.js';
 
-export const EVIDENCE_ANALYSIS_TIMEOUT_MS = 8000;
-export const EVIDENCE_ANALYSIS_MAX_TOKENS = 360;
+export const EVIDENCE_ANALYSIS_TIMEOUT_MS = TIMEOUTS.EVIDENCE_ANALYSIS;
+export const EVIDENCE_ANALYSIS_MAX_TOKENS = INTELLIGENCE.EVIDENCE_ANALYSIS_MAX_TOKENS;
 
 export function shouldSkipAnalysis(
   latestText: string,

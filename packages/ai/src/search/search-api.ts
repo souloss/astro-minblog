@@ -10,11 +10,13 @@ let articleIndex: IndexedDocument[] | null = null;
 let projectIndex: IndexedDocument[] | null = null;
 let articleChunks: Map<string, ArticleChunk[]> = new Map(); // postId -> chunks
 
-const ARTICLE_LIMIT = 10;
-const ARTICLE_LIMIT_BROAD = 20;
-const PROJECT_LIMIT = 5;
-const DEEP_CONTENT_SCORE_THRESHOLD = 8;
-const DEEP_CONTENT_MAX_LENGTH = 1500;
+import { SEARCH } from '../constants.js';
+
+const ARTICLE_LIMIT = SEARCH.ARTICLE_LIMIT;
+const ARTICLE_LIMIT_BROAD = SEARCH.ARTICLE_LIMIT_BROAD;
+const PROJECT_LIMIT = SEARCH.PROJECT_LIMIT;
+const DEEP_CONTENT_SCORE_THRESHOLD = SEARCH.DEEP_CONTENT_SCORE_THRESHOLD;
+const DEEP_CONTENT_MAX_LENGTH = SEARCH.DEEP_CONTENT_MAX_LENGTH;
 
 /**
  * Initializes the article search index from the provided documents.

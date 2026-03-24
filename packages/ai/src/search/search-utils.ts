@@ -1,43 +1,13 @@
 /**
  * Text normalization and tokenization utilities for search.
+ * Core text functions are in utils/text.ts; re-exported here for backward compatibility.
  */
 
 import type { IDFMap } from './idf.js';
 import { getIDFWeight } from './idf.js';
 
-/**
- * Normalizes text for search: lowercase, remove punctuation, normalize whitespace.
- */
-export function normalizeText(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\u4e00-\u9fa5\w\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/**
- * Splits a query into normalized tokens (handles both Chinese and Latin text).
- */
-export function tokenize(text: string): string[] {
-  const normalized = normalizeText(text);
-  const parts = normalized.split(/\s+/).filter(Boolean);
-  return dedupeByContainment(parts);
-}
-
-/**
- * Removes tokens that are substrings of longer tokens (avoids redundant matching).
- */
-export function dedupeByContainment(terms: string[]): string[] {
-  const unique = [...new Set(terms)];
-  const kept: string[] = [];
-  for (const term of unique.sort((a, b) => b.length - a.length)) {
-    if (!kept.some(existing => existing.includes(term))) {
-      kept.push(term);
-    }
-  }
-  return kept;
-}
+import { normalizeText, tokenize, dedupeByContainment } from '../utils/text.js';
+export { normalizeText, tokenize, dedupeByContainment };
 
 /** Positional weight multipliers for each document field */
 const FIELD_WEIGHTS = {

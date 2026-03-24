@@ -111,7 +111,7 @@ export interface ProviderStatus {
   /** Provider ID */
   id: string;
   /** Provider type */
-  type: 'openai' | 'workers' | 'mock';
+  type: string;
   /** Priority weight */
   weight: number;
   /** Whether the provider is enabled */
@@ -209,7 +209,7 @@ export interface ProviderManagerOptions {
  */
 export interface ProviderAdapter {
   readonly id: string;
-  readonly type: 'openai' | 'workers' | 'mock';
+  readonly type: string;
   readonly weight: number;
   readonly model: string;
   readonly keywordModel: string;

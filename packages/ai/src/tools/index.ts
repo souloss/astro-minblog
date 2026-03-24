@@ -1,5 +1,7 @@
 export {
   allTools,
+  registerTool,
+  unregisterTool,
   toggleThemeTool,
   navigateToArticleTool,
   scrollToSectionTool,

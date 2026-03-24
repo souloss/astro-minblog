@@ -11,6 +11,7 @@ import {
   convertToModelMessages,
 } from 'ai';
 import { t } from '../utils/i18n.js';
+import { CHAT_HANDLER } from '../constants.js';
 import { createChatStatusData } from './types.js';
 import type { ArticleRef, ModelInfo, TokenUsage, PhaseTiming } from '@astro-minimax/notify';
 import type { ProviderAdapter } from '../provider-manager/types.js';
@@ -143,8 +144,8 @@ export async function streamLLMResponse(
     systemPrompt,
     messages,
     lang,
-    temperature = 0.3,
-    maxOutputTokens = 2500,
+    temperature = CHAT_HANDLER.CACHED_REPLAY_TEMPERATURE as number,
+    maxOutputTokens = CHAT_HANDLER.CACHED_REPLAY_MAX_OUTPUT_TOKENS as number,
   } = params;
 
   const start = Date.now();
@@ -212,7 +213,7 @@ export async function streamLLMResponse(
       adapter.recordFailure(streamErrors[0]);
       writeTextChunk(writer, t('ai.error.generic', lang), 'error');
       writeFinish(writer, 'error');
-      return { success: true, responseText: text, reasoningText, tokenUsage, generationMs };
+      return { success: false, responseText: text, reasoningText, tokenUsage, generationMs };
     }
 
     if (text.length > 0) {

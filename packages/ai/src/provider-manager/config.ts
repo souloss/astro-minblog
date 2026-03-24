@@ -7,8 +7,10 @@ import type {
 
 export const DEFAULT_WORKERS_BINDING_NAME = 'minimaxAI';
 
-const DEFAULT_WEIGHT = 100;
-const DEFAULT_TIMEOUT = 30000;
+import { PROVIDER, TIMEOUTS } from '../constants.js';
+
+const DEFAULT_WEIGHT = PROVIDER.DEFAULT_WEIGHT;
+const DEFAULT_TIMEOUT = TIMEOUTS.PROVIDER_DEFAULT;
 const DEFAULT_MODEL = 'gpt-4o-mini';
 
 function hasOpenAIConfig(env: ProviderManagerEnv): boolean {

@@ -1,10 +1,18 @@
 import type { ChatErrorResponse } from './types.js';
 import { t, type AITranslationKey } from '../utils/i18n.js';
 
-const CORS_HEADERS: HeadersInit = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-};
+let _allowedOrigin = '*';
+
+export function setCorsOrigin(origin: string): void {
+  _allowedOrigin = origin;
+}
+
+function corsHeaders(): HeadersInit {
+  return {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': _allowedOrigin,
+  };
+}
 
 export function chatError(
   code: string,
@@ -18,7 +26,7 @@ export function chatError(
     retryable: options?.retryable ?? false,
     retryAfter: options?.retryAfter,
   };
-  const headers: HeadersInit = { ...CORS_HEADERS };
+  const headers: HeadersInit = { ...corsHeaders() };
   if (options?.retryAfter) {
     (headers as Record<string, string>)['Retry-After'] = String(options.retryAfter);
   }
@@ -53,7 +61,7 @@ export const errors = {
 export function corsPreflightResponse(): Response {
   return new Response(null, {
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': _allowedOrigin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, x-session-id',
     },

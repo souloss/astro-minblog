@@ -78,15 +78,15 @@ async function createNewPost(args: string[]): Promise<void> {
     .replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-")
     .replace(/^-|-$/g, "");
 
-  const date = new Date().toISOString().split("T")[0];
+  const now = new Date().toISOString();
   const frontmatter = `---
-title: "${title}"
-date: ${date}
-updated: ${date}
-categories:
-  - ${category}
+title: "${title.replace(/"/g, '\\"')}"
+pubDatetime: ${now}
+modDatetime: ${now}
+category: ${category}
 tags:
   - draft
+draft: false
 ---
 
 # ${title}
@@ -142,7 +142,7 @@ function parseTitle(content: string, fallback: string): string {
 }
 
 function parseDate(content: string): string {
-  const m = content.match(/^pubDatetime:\s*(.+)$/m);
+  const m = content.match(/^(?:pubDatetime|date):\s*(.+)$/m);
   if (!m) return "";
   try {
     return new Date(m[1].trim()).toISOString().slice(0, 10);

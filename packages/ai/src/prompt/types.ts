@@ -27,6 +27,7 @@ export interface DynamicLayerConfig {
   lang?: string;
   extensions?: LoadedExtensions;
   sessionId?: string;
+  chunksSection?: string;
 }
 
 export interface PromptBuildConfig {

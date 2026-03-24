@@ -24,8 +24,12 @@ console.log("\nDirectory: " + extensionsDir);
 
 async function main() {
   try {
+    type LoadResult = { searchable: Map<string, unknown>; facts: Map<string, unknown>; context: unknown[]; voiceStyle: unknown; semanticFallback: unknown[] };
+    let loadExtensions: (pattern: string, cwd: string) => Promise<LoadResult>;
+
     const aiExtensionsPath = join(__dirname, "..", "..", "..", "ai", "dist", "extensions", "loader.js");
-    const { loadExtensions } = await import(aiExtensionsPath);
+    const mod = await import(aiExtensionsPath) as { loadExtensions: typeof loadExtensions };
+    loadExtensions = mod.loadExtensions;
     const loaded = await loadExtensions("datas/extensions/*.json", cwd);
 
     console.log("\nLoad Results:");

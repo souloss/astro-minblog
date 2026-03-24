@@ -1,5 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
-import { getProviderManager, hasAnyProviderConfigured, DEFAULT_WORKERS_BINDING_NAME, getResponseCacheConfig } from '@astro-minimax/ai';
+import { getProviderManager, hasAnyProviderConfigured, DEFAULT_WORKERS_BINDING_NAME } from '@astro-minimax/ai';
+import { getResponseCacheConfig } from '@astro-minimax/ai/cache';
 import { initializeMetadata } from '@astro-minimax/ai/server';
 import type { ChatHandlerEnv } from '@astro-minimax/ai/server';
 import aiSummaries from '../../datas/ai-summaries.json';
@@ -89,7 +90,7 @@ export const onRequest: PagesFunction<FunctionEnv> = async (context) => {
       },
       timeouts: timeoutConfig,
       health: healthConfig,
-      providers: providerStatus.map(p => ({
+      providers: providerStatus.map((p: { id: string; type: string; weight: number; model: string; health: { healthy: boolean; consecutiveFailures: number; totalRequests: number; successfulRequests: number; lastError?: string; lastErrorAt?: number; lastErrorTime?: number; lastSuccessTime?: number } }) => ({
         id: p.id,
         type: p.type,
         weight: p.weight,

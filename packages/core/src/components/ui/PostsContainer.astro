@@ -83,6 +83,7 @@ const i18n = {
 };
 
 // 辅助函数
+const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const catUrl = (c) => `/${lang}/categories/${encodeURIComponent(c)}/`;
 const tagUrl = (t) => `/${lang}/tags/${encodeURIComponent(t)}/`;
 const min = (m) => `${m} ${i18n.minutes}`;
@@ -110,7 +111,7 @@ function renderMeta(p, compact = false) {
       <time class="flex items-center gap-1.5">${icons.date}<span>${p.dateStr}</span></time>
       ${updatedDot}
       <span class="flex items-center gap-1.5">${icons.clock}<span>${min(p.readingMinutes)}</span></span>
-      ${p.category ? `<a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors" onclick="event.stopPropagation()">${p.category}</a>` : ''}
+      ${p.category ? `<a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors" onclick="event.stopPropagation()">${esc(p.category)}</a>` : ''}
     `;
   }
   
@@ -118,7 +119,7 @@ function renderMeta(p, compact = false) {
   return `
     <a href="/${lang}/about/" class="meta-link flex items-center gap-1.5 hover:text-accent transition-colors" onclick="event.stopPropagation()">
       ${icons.author}
-      <span>${author}</span>
+      <span>${esc(author)}</span>
     </a>
     <time datetime="${p.dateIso}" class="flex items-center gap-1.5">
       ${icons.date}
@@ -131,14 +132,14 @@ function renderMeta(p, compact = false) {
     </span>
     ${p.category ? `
       <a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors" onclick="event.stopPropagation()">
-        ${p.category}
+        ${esc(p.category)}
       </a>
     ` : ''}
     ${p.tags?.length ? `
       <div class="flex flex-wrap items-center gap-1.5">
         ${p.tags.slice(0, 3).map(t => `
           <a href="${tagUrl(t)}" class="meta-link px-2 py-0.5 rounded-md border border-border/50 text-foreground-soft hover:text-accent hover:border-accent/30 transition-colors" onclick="event.stopPropagation()">
-            #${t}
+            #${esc(t)}
           </a>
         `).join('')}
       </div>
@@ -173,7 +174,7 @@ function render(mode) {
             <div class="p-5 pb-0">
               <a href="${p.href}" class="block outline-none" onclick="event.stopPropagation()">
                 <h3 class="title-with-underline inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
-                  ${p.title}
+                  ${esc(p.title)}
                 </h3>
               </a>
             </div>
@@ -190,7 +191,7 @@ function render(mode) {
             <!-- 摘要 -->
             <div class="p-5 pt-4 flex-1">
               <p class="line-clamp-3 text-sm leading-relaxed text-foreground-soft">
-                ${p.description}
+                ${esc(p.description)}
               </p>
             </div>
 
@@ -235,12 +236,12 @@ function render(mode) {
               <!-- 标题 -->
               <a href="${p.href}" class="block outline-none" onclick="event.stopPropagation()">
                 <h3 class="title-with-underline inline text-base font-bold text-foreground line-clamp-2 leading-snug transition-colors duration-200 group-hover:text-accent">
-                  ${p.title}
+                  ${esc(p.title)}
                 </h3>
               </a>
               
               <!-- 摘要 -->
-              <p class="mt-2 text-sm text-foreground-soft/80 line-clamp-2 leading-relaxed flex-1">${p.description}</p>
+              <p class="mt-2 text-sm text-foreground-soft/80 line-clamp-2 leading-relaxed flex-1">${esc(p.description)}</p>
               
               <!-- 分隔线 -->
               <div class="my-3 border-t border-border/50"></div>
@@ -282,12 +283,12 @@ function render(mode) {
               <!-- 标题 -->
               <a href="${p.href}" class="block outline-none" onclick="event.stopPropagation()">
                 <h3 class="title-with-underline inline text-sm font-bold text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-accent">
-                  ${p.title}
+                  ${esc(p.title)}
                 </h3>
               </a>
               
               <!-- 摘要 -->
-              <p class="mt-1 text-xs text-foreground-soft/80 line-clamp-1">${p.description}</p>
+              <p class="mt-1 text-xs text-foreground-soft/80 line-clamp-1">${esc(p.description)}</p>
               
               <!-- 元信息 -->
               <div class="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted">
@@ -295,10 +296,10 @@ function render(mode) {
                 <span>${min(p.readingMinutes)}</span>
                 ${p.category ? `
                   <span class="text-border">·</span>
-                  <a href="${catUrl(p.category)}" class="meta-link text-accent hover:underline" onclick="event.stopPropagation()">${p.category}</a>
+                  <a href="${catUrl(p.category)}" class="meta-link text-accent hover:underline" onclick="event.stopPropagation()">${esc(p.category)}</a>
                 ` : ''}
                 ${p.tags?.slice(0, 2).map(t => `
-                  <a href="${tagUrl(t)}" class="meta-link px-1.5 py-0.5 rounded bg-muted/50 text-foreground-soft hover:text-accent" onclick="event.stopPropagation()">#${t}</a>
+                  <a href="${tagUrl(t)}" class="meta-link px-1.5 py-0.5 rounded bg-muted/50 text-foreground-soft hover:text-accent" onclick="event.stopPropagation()">#${esc(t)}</a>
                 `).join('')}
               </div>
             </div>

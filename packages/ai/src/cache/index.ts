@@ -57,7 +57,9 @@ import { MemoryCacheAdapter } from './memory-adapter.js';
 import { KVCacheAdapter } from './kv-adapter.js';
 import type { CacheAdapter, CacheEnv, CacheManagerConfig } from './types.js';
 
-const DEFAULT_TTL = 600;
+import { CACHE } from '../constants.js';
+
+const DEFAULT_TTL = CACHE.DEFAULT_TTL;
 const DEFAULT_MAX_ENTRIES = 400;
 
 let globalMemoryCache: MemoryCacheAdapter | null = null;

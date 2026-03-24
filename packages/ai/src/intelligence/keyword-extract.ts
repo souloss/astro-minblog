@@ -1,8 +1,9 @@
 import { generateText, type LanguageModel } from 'ai';
-import { tokenize } from '../search/search-utils.js';
+import { tokenize } from '../utils/text.js';
 import type { KeywordExtractionResult, QueryComplexity } from './types.js';
+import { TIMEOUTS } from '../constants.js';
 
-export const KEYWORD_EXTRACTION_TIMEOUT_MS = 5000;
+export const KEYWORD_EXTRACTION_TIMEOUT_MS = TIMEOUTS.KEYWORD_EXTRACTION;
 
 /**
  * Determines whether to run LLM-based keyword extraction.

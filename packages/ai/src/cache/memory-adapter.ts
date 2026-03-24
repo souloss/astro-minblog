@@ -19,7 +19,9 @@ export interface MemoryCacheOptions {
 }
 
 const DEFAULT_MAX_ENTRIES = 400;
-const DEFAULT_TTL_SECONDS = 600;
+import { CACHE } from '../constants.js';
+
+const DEFAULT_TTL_SECONDS = CACHE.DEFAULT_TTL;
 
 export class MemoryCacheAdapter implements CacheAdapter {
   readonly name = 'memory';

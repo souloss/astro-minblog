@@ -1,6 +1,6 @@
-import { tokenize, normalizeText } from '../search/search-utils.js';
+import { tokenize, normalizeText } from '../utils/text.js';
 import type { CachedSearchContext, ArticleContext } from '../search/types.js';
-import { SESSION_CACHE_TTL_MS } from '../search/session-cache.js';
+import { CACHE } from '../constants.js';
 
 const MAX_FOLLOW_UP_LENGTH = 48;
 
@@ -140,7 +140,7 @@ export function shouldReuseSearchContext(params: {
   const { latestText, cachedContext, userTurnCount, now } = params;
   if (!cachedContext) return false;
   if (userTurnCount <= 1) return false;
-  if (now - cachedContext.updatedAt > SESSION_CACHE_TTL_MS) return false;
+  if (now - cachedContext.updatedAt > CACHE.SESSION_TTL * 1000) return false;
   if (!isLikelyFollowUp(latestText)) return false;
   if (!hasQueryOverlap(latestText, cachedContext.query)) return false;
   if (hasNewSignificantTokens(latestText, cachedContext.query)) return false;

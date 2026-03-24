@@ -99,7 +99,7 @@ export const searchArticlesTool = tool({
   },
 });
 
-export const allTools = {
+const builtinTools = {
   toggleTheme: toggleThemeTool,
   navigateToArticle: navigateToArticleTool,
   scrollToSection: scrollToSectionTool,
@@ -109,19 +109,32 @@ export const allTools = {
   searchArticles: searchArticlesTool,
 };
 
-export type ToolName = keyof typeof allTools;
+type AnyTool = typeof builtinTools[keyof typeof builtinTools];
+const customTools: Record<string, AnyTool> = {};
 
-export function getClientSideTools(): ToolName[] {
-  return [
-    'toggleTheme',
-    'navigateToArticle', 
-    'scrollToSection',
-    'toggleReadingMode',
-    'highlightText',
-    'setPreference',
-  ];
+export function registerTool(name: string, definition: AnyTool): void {
+  customTools[name] = definition;
 }
 
-export function getServerSideTools(): ToolName[] {
-  return ['searchArticles'];
+export function unregisterTool(name: string): void {
+  delete customTools[name];
+}
+
+export function getAllTools(): Record<string, AnyTool> {
+  return { ...builtinTools, ...customTools };
+}
+
+export const allTools = getAllTools();
+
+export type ToolName = string;
+
+const BUILTIN_CLIENT_TOOLS = ['toggleTheme', 'navigateToArticle', 'scrollToSection', 'toggleReadingMode', 'highlightText', 'setPreference'];
+const BUILTIN_SERVER_TOOLS = ['searchArticles'];
+
+export function getClientSideTools(): string[] {
+  return [...BUILTIN_CLIENT_TOOLS, ...Object.keys(customTools).filter(k => !(customTools[k] as { execute?: unknown }).execute)];
+}
+
+export function getServerSideTools(): string[] {
+  return [...BUILTIN_SERVER_TOOLS, ...Object.keys(customTools).filter(k => !!(customTools[k] as { execute?: unknown }).execute)];
 }

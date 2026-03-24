@@ -11,7 +11,9 @@ import type {
   StructuredOutputStatus,
 } from './types.js';
 
-const DEFAULT_TIMEOUT_MS = 8000;
+import { TIMEOUTS } from '../constants.js';
+
+const DEFAULT_TIMEOUT_MS = TIMEOUTS.EVIDENCE_ANALYSIS;
 const DEFAULT_MAX_OUTPUT_TOKENS = 500;
 const DEFAULT_TEMPERATURE = 0;
 

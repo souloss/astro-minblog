@@ -1,8 +1,6 @@
 import type { DynamicLayerConfig } from './types.js';
 import type { PromptContext, ContextData, LoadedExtensions } from '../extensions/types.js';
 import { getLang } from '../utils/i18n.js';
-import { selectRelevantChunks, formatChunksForInjection } from '../search/hybrid-search.js';
-import { injectionCache } from '../cache/injection-cache.js';
 
 const LABELS = {
   zh: {
@@ -156,37 +154,7 @@ export function buildDynamicLayer(config: DynamicLayerConfig): string {
     lines.push('');
     lines.push(`### ${l.relatedArticles}`);
     
-    // Paragraph-level injection for chunks
-    const articlesWithChunks = articles.filter(a => a.chunks && a.chunks.length > 0);
-    let chunksSection = '';
-    
-    if (articlesWithChunks.length > 0) {
-      const matchedChunks = selectRelevantChunks(userQuery, articlesWithChunks as any[], {
-        maxTokens: 1500,
-        minChunkScore: 0.2,
-        maxChunksPerArticle: 2,
-      });
-      
-      if (matchedChunks.length > 0) {
-        // Filter out already-injected chunks using cache
-        const sessionId = config.sessionId;
-        const newChunks = sessionId 
-          ? injectionCache.filterNewChunks(sessionId, matchedChunks.map(m => ({ id: m.chunk.id, content: m.chunk.content })))
-          : matchedChunks.map(m => ({ id: m.chunk.id, content: m.chunk.content }));
-        
-        if (newChunks.length > 0) {
-          chunksSection = formatChunksForInjection(
-            matchedChunks.filter(m => newChunks.some(nc => nc.id === m.chunk.id)),
-            1500
-          );
-          
-          // Mark chunks as injected
-          if (sessionId) {
-            injectionCache.markAsInjected(sessionId, newChunks.map(c => c.id));
-          }
-        }
-      }
-    }
+    const chunksSection = config.chunksSection || '';
     
     for (const article of articles.slice(0, 8)) {
       lines.push(`**[${article.title}](${article.url})**`);

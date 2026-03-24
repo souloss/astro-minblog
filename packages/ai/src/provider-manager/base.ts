@@ -7,7 +7,7 @@ import type {
 
 export abstract class BaseProviderAdapter implements ProviderAdapter {
   abstract readonly id: string;
-  abstract readonly type: 'openai' | 'workers' | 'mock';
+  abstract readonly type: string;
   abstract readonly weight: number;
   abstract readonly model: string;
   abstract readonly keywordModel: string;

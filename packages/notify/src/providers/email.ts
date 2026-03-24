@@ -37,6 +37,7 @@ export function createEmailProvider(
             html: template.html,
             text: template.text,
           }),
+          signal: AbortSignal.timeout(10_000),
         });
 
         const duration = Date.now() - start;

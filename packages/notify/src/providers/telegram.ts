@@ -30,6 +30,7 @@ export function createTelegramProvider(
             parse_mode: template.parse_mode ?? 'HTML',
             disable_web_page_preview: false,
           }),
+          signal: AbortSignal.timeout(10_000),
         });
 
         const duration = Date.now() - start;

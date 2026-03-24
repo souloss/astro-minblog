@@ -1,4 +1,5 @@
 import type { CommentEvent, TelegramTemplate, WebhookPayload, EmailTemplate } from '../types.js';
+import { escapeHtml, sanitizeUrl } from '../utils.js';
 
 export function telegramTemplate(event: CommentEvent): TelegramTemplate {
   const content = event.content.length > 200 
@@ -13,7 +14,7 @@ export function telegramTemplate(event: CommentEvent): TelegramTemplate {
 
 <i>「${escapeHtml(content)}」</i>
 
-🔗 <a href="${event.postUrl}">查看评论</a>`,
+🔗 <a href="${sanitizeUrl(event.postUrl)}">查看评论</a>`,
     parse_mode: 'HTML',
   };
 }
@@ -57,13 +58,13 @@ export function emailTemplate(event: CommentEvent): EmailTemplate {
 <body>
   <div class="header">
     <h1 class="title">💬 新评论</h1>
-    <p class="meta">文章：<a href="${event.postUrl}">${escapeHtml(event.postTitle)}</a></p>
+    <p class="meta">文章：<a href="${sanitizeUrl(event.postUrl)}">${escapeHtml(event.postTitle)}</a></p>
   </div>
   <p><strong>评论者：</strong>${escapeHtml(event.author)}</p>
   <div class="content">
     <p class="quote">"${escapeHtml(content)}"</p>
   </div>
-  <a href="${event.postUrl}" class="link">查看评论</a>
+  <a href="${sanitizeUrl(event.postUrl)}" class="link">查看评论</a>
   <div class="footer">
     <p>此邮件由您的博客通知系统发送</p>
   </div>
@@ -78,19 +79,4 @@ export function emailTemplate(event: CommentEvent): EmailTemplate {
 
 查看评论：${event.postUrl}`,
   };
-}
-
-function escapeHtml(text: unknown): string {
-  if (text === null || text === undefined) {
-    return '';
-  }
-  if (typeof text !== 'string') {
-    return String(text);
-  }
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
 }
