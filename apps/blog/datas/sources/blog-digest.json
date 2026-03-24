@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-24T15:28:53.697Z",
+  "generatedAt": "2026-03-24T16:08:30.301Z",
   "count": 40,
   "posts": [
     {
@@ -360,7 +360,7 @@
         "docs",
         "deployment"
       ],
-      "summary": "This guide covers how to deploy your astro-minimax blog to various platforms. astro-minimax generates static sites, so it can be deployed to almost a…",
+      "summary": "This deployment guide explains how to publish astro-minimax static blogs across Cloudflare Pages, Vercel, Netlify, and Docker by first identifying monorepo or CLI project type, then applying platform-specific build paths and Node 22 settings for reliable deployment.",
       "url": "/en/posts/deployment-guide/"
     },
     {

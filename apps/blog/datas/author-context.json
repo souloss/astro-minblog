@@ -1,6 +1,6 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-03-24T15:28:53.701Z",
+  "generatedAt": "2026-03-24T16:08:30.306Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn/",
@@ -4792,8 +4792,15 @@
         "docs",
         "deployment"
       ],
-      "summary": "This guide covers how to deploy your astro-minimax blog to various platforms. astro-minimax generates static sites, so it can be deployed to almost a…",
-      "keyPoints": [],
+      "summary": "This deployment guide explains how to publish astro-minimax static blogs across Cloudflare Pages, Vercel, Netlify, and Docker by first identifying monorepo or CLI project type, then applying platform-specific build paths and Node 22 settings for reliable deployment.",
+      "keyPoints": [
+        "Project type is identified by pnpm-workspace.yaml.",
+        "Monorepo and CLI builds use different dist paths.",
+        "Cloudflare Pages is preferred for Workers AI support.",
+        "wrangler.toml defines AI binding and nodejs_compat.",
+        "Vercel requires an alternative AI provider endpoint.",
+        "Netlify and Docker use straightforward static build deployment."
+      ],
       "url": "/en/posts/deployment-guide/",
       "chunks": [
         {
@@ -4893,7 +4900,7 @@
           }
         },
         {
-          "id": "en/deployment-guide#monorepo-type",
+          "id": "en/deployment-guide#monorepo-type-1",
           "postId": "en/deployment-guide",
           "heading": "Monorepo Type",
           "content": "#### Monorepo Type\n\n| Setting          | Value              |\n| ---------------- | ------------------ |\n| Framework preset | Astro              |\n| Build command    | `pnpm run build`   |\n| Output directory | `apps/blog/dist`   |\n| Install command  | `pnpm install`     |\n| Root directory   | `.` (keep default) |",
@@ -4906,7 +4913,7 @@
           }
         },
         {
-          "id": "en/deployment-guide#cli-created-type",
+          "id": "en/deployment-guide#cli-created-type-1",
           "postId": "en/deployment-guide",
           "heading": "CLI Created Type",
           "content": "#### CLI Created Type\n\n| Setting          | Value              |\n| ---------------- | ------------------ |\n| Framework preset | Astro              |\n| Build command    | `pnpm run build`   |\n| Output directory | `dist`             |\n| Install command  | `pnpm install`     |\n| Root directory   | `.` (keep default) |\n\n3. Set `NODE_VERSION=22` in environment variables\n4. Click **Deploy**",
@@ -4931,7 +4938,7 @@
           }
         },
         {
-          "id": "en/deployment-guide#cli-created-type",
+          "id": "en/deployment-guide#cli-created-type-2",
           "postId": "en/deployment-guide",
           "heading": "CLI Created Type",
           "content": "#### CLI Created Type\n\n| Setting           | Value            |\n| ----------------- | ---------------- |\n| Build command     | `pnpm run build` |\n| Publish directory | `dist`           |\n\n3. Set `NODE_VERSION=22` in environment variables\n4. Click **Deploy site**",
@@ -5397,7 +5404,7 @@
           }
         },
         {
-          "id": "zh/deployment-guide#monorepo-形式",
+          "id": "zh/deployment-guide#monorepo-形式-1",
           "postId": "zh/deployment-guide",
           "heading": "Monorepo 形式",
           "content": "#### Monorepo 形式\n\n| 设置     | 值               |\n| -------- | ---------------- |\n| 框架预设 | Astro            |\n| 构建命令 | `pnpm run build` |\n| 输出目录 | `apps/blog/dist` |\n| 安装命令 | `pnpm install`   |\n| 根目录   | `.`（保持默认）  |",
@@ -5410,7 +5417,7 @@
           }
         },
         {
-          "id": "zh/deployment-guide#cli-创建形式",
+          "id": "zh/deployment-guide#cli-创建形式-1",
           "postId": "zh/deployment-guide",
           "heading": "CLI 创建形式",
           "content": "#### CLI 创建形式\n\n| 设置     | 值               |\n| -------- | ---------------- |\n| 框架预设 | Astro            |\n| 构建命令 | `pnpm run build` |\n| 输出目录 | `dist`           |\n| 安装命令 | `pnpm install`   |\n| 根目录   | `.`（保持默认）  |\n\n3. 环境变量中设置 `NODE_VERSION=22`\n4. 点击 **Deploy**",
@@ -5423,7 +5430,7 @@
           }
         },
         {
-          "id": "zh/deployment-guide#cli-创建形式",
+          "id": "zh/deployment-guide#cli-创建形式-2",
           "postId": "zh/deployment-guide",
           "heading": "CLI 创建形式",
           "content": "#### CLI 创建形式\n\n| 设置     | 值               |\n| -------- | ---------------- |\n| 构建命令 | `pnpm run build` |\n| 发布目录 | `dist`           |\n\n3. 环境变量中设置 `NODE_VERSION=22`\n4. 点击 **Deploy site**",
@@ -6518,7 +6525,7 @@
           }
         },
         {
-          "id": "en/adding-new-post#frontmatter",
+          "id": "en/adding-new-post#frontmatter-1",
           "postId": "en/adding-new-post",
           "heading": "Frontmatter",
           "content": "| **_canonicalURL_** | Canonical URL (absolute), in case the article already exists on other source.                                                         | default = `Astro.site` + `Astro.url.pathname`  |\n| **_hideEditPost_** | Hide editPost button under blog title. This applies only to the current blog post.                                                    | default = false                                |\n| **_timezone_**     | Specify a timezone in IANA format for the current blog post. This will override the `SITE.timezone` config for the current blog post. | default = `SITE.timezone`                      |\n\n> Tip! You can get ISO 8601 datetime by running `new Date().toISOString()` in the console. Make sure you remove quotes though.\n\nOnly `title`, `description` and `pubDatetime` fields in frontmatter must be specified.\n\nTitle and description (excerpt) are important for search engine optimization (SEO) and thus astro-minimax encourages to include these in blog posts.\n\n`slug` is the unique identifier of the url. Thus, `slug` must be unique and different from other posts. The whitespace of `slug` should to be separated with `-` or `_` but `-` is recommended. Slug is automatically generated using the blog post file name. However, you can define your `slug` as a frontmatter in your blog post.\n\nFor example, if the blog file name is `adding-new-post.md` and you don't specify the slug in your frontmatter, Astro will automatically create a slug for the blog post using the file name. Thus, the slug will be `adding-new-post`. But if you specify the `slug` in the frontmatter, this will override the default slug. You can read more about this in [Astro Docs](https://docs.astro.build/en/guides/content-collections/#defining-custom-slugs).\n\nIf you omit `tags` in a blog post (in other words, if no tag is specified), the default tag `others` will be used as a tag for that post. You can set the default tag in the `content.config.ts` file.\n\n```ts file=\"src/content.config.ts\"\nconst blog = defineCollection({\n  // ...\n  schema: z.object({\n    // ...\n    // [!code highlight:1]\n    tags: z.array(z.string()).default([\"others\"]), // replace \"others\" with whatever you want\n    // ...\n  }),\n});\n```",
@@ -6696,7 +6703,7 @@
           }
         },
         {
-          "id": "zh/adding-new-post#frontmatter",
+          "id": "zh/adding-new-post#frontmatter-1",
           "postId": "zh/adding-new-post",
           "heading": "Frontmatter",
           "content": "标题和描述（摘录）对搜索引擎优化（SEO）很重要，因此 astro-minimax 鼓励在博客文章中包含这些内容。\n\n`slug` 是 URL 的唯一标识符。因此，`slug` 必须唯一且与其他文章不同。`slug` 的空格应用 `-` 或 `_` 分隔，但推荐使用 `-`。Slug 使用博客文章文件名自动生成。但是，你可以在博客文章的 frontmatter 中定义你的 `slug`。\n\n例如，如果博客文件名是 `adding-new-post.md` 且你没有在 frontmatter 中指定 slug，Astro 将使用文件名自动为博客文章创建 slug。因此，slug 将是 `adding-new-post`。但如果你在 frontmatter 中指定了 `slug`，这将覆盖默认 slug。你可以在 [Astro 文档](https://docs.astro.build/en/guides/content-collections/#defining-custom-slugs)中阅读更多相关内容。\n\n如果你在博客文章中省略 `tags`（换句话说，如果没有指定任何标签），默认标签 `others` 将用作该文章的标签。你可以在 `content.config.ts` 文件中设置默认标签。\n\n```ts file=\"src/content.config.ts\"\nconst blog = defineCollection({\n  // ...\n  schema: z.object({\n    // ...\n    // [!code highlight:1]\n    tags: z.array(z.string()).default([\"others\"]), // 替换 \"others\" 为你想要的默认标签\n    // ...\n  }),\n});\n```",
@@ -7164,17 +7171,17 @@
       "blog",
       "how",
       "The",
-      "article",
       "explains",
+      "article",
       "configuration",
       "Vercel",
-      "the",
       "CLI",
+      "the",
       "Astro",
       "ai",
-      "Guide",
       "for",
-      "in"
+      "Cloudflare",
+      "deployment"
     ],
     "flagshipPosts": [
       {
@@ -7294,5 +7301,5 @@
     "model": "gpt-5.4",
     "provider": "openai"
   },
-  "contextHash": "a08d63d8031fcabb"
+  "contextHash": "c8fc790294bda686"
 }

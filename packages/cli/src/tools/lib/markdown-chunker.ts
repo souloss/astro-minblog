@@ -97,13 +97,14 @@ export function chunkMarkdownByHeaders(
 
   // 保护代码块（不分割）
   const codeBlocks: string[] = [];
-  const protectedText = text.replace(/```[\s\S]*?```/g, (match) => {
+  const protectedText = text.replace(/```[\s\S]*?```/g, match => {
     codeBlocks.push(match);
     return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
   });
 
   const lines = protectedText.split("\n");
   const chunks: ArticleChunk[] = [];
+  const chunkIdCounts = new Map<string, number>();
 
   // 标题栈，跟踪当前层级
   let headerStack: Array<{ level: number; text: string; slug: string }> = [];
@@ -135,7 +136,13 @@ export function chunkMarkdownByHeaders(
     // 生成 chunk ID
     const lastHeader = headerStack[headerStack.length - 1];
     const headingSlug = lastHeader ? lastHeader.slug : `p${currentPosition}`;
-    const chunkId = postId ? `${postId}#${headingSlug}` : `chunk-${currentPosition}`;
+    const baseChunkId = postId
+      ? `${postId}#${headingSlug}`
+      : `chunk-${currentPosition}`;
+    const duplicateCount = chunkIdCounts.get(baseChunkId) ?? 0;
+    chunkIdCounts.set(baseChunkId, duplicateCount + 1);
+    const chunkId =
+      duplicateCount === 0 ? baseChunkId : `${baseChunkId}-${duplicateCount}`;
 
     chunks.push({
       id: chunkId,
@@ -242,7 +249,7 @@ export function subdivideLargeChunks(
     }
 
     const subChunks = splitLargeChunk(chunk, maxTokens, overlapTokens);
-    
+
     // 递归检查分割后的 chunks，确保没有超过 maxTokens 的
     for (const subChunk of subChunks) {
       if (subChunk.tokenCount > maxTokens) {
@@ -333,17 +340,20 @@ function splitByLines(
   overlapTokens: number
 ): ArticleChunk[] {
   const { content, id, postId, heading, headers } = chunk;
-  const lines = content.split('\n');
+  const lines = content.split("\n");
   const subChunks: ArticleChunk[] = [];
-  
+
   let currentLines: string[] = [];
   let currentPosition = 0;
 
   for (const line of lines) {
-    const testContent = [...currentLines, line].join('\n');
-    
-    if (estimateTokenCount(testContent) > maxTokens && currentLines.length > 0) {
-      const saveContent = currentLines.join('\n');
+    const testContent = [...currentLines, line].join("\n");
+
+    if (
+      estimateTokenCount(testContent) > maxTokens &&
+      currentLines.length > 0
+    ) {
+      const saveContent = currentLines.join("\n");
       subChunks.push({
         id: `${id}-${currentPosition}`,
         postId,
@@ -364,9 +374,9 @@ function splitByLines(
       id: `${id}-${currentPosition}`,
       postId,
       heading,
-      content: currentLines.join('\n'),
+      content: currentLines.join("\n"),
       position: currentPosition,
-      tokenCount: estimateTokenCount(currentLines.join('\n')),
+      tokenCount: estimateTokenCount(currentLines.join("\n")),
       headers,
     });
   }
@@ -395,7 +405,9 @@ function getOverlapContent(text: string, overlapTokens: number): string {
 /**
  * 从 Markdown 文本中提取所有标题
  */
-export function extractHeaders(text: string): Array<{ level: number; text: string; line: number }> {
+export function extractHeaders(
+  text: string
+): Array<{ level: number; text: string; line: number }> {
   const lines = text.split("\n");
   const headers: Array<{ level: number; text: string; line: number }> = [];
 
@@ -432,10 +444,16 @@ export function getChunkStats(chunks: ArticleChunk[]): {
   minTokens: number;
 } {
   if (chunks.length === 0) {
-    return { totalChunks: 0, totalTokens: 0, avgTokens: 0, maxTokens: 0, minTokens: 0 };
+    return {
+      totalChunks: 0,
+      totalTokens: 0,
+      avgTokens: 0,
+      maxTokens: 0,
+      minTokens: 0,
+    };
   }
 
-  const tokenCounts = chunks.map((c) => c.tokenCount);
+  const tokenCounts = chunks.map(c => c.tokenCount);
   const totalTokens = tokenCounts.reduce((sum, t) => sum + t, 0);
 
   return {
