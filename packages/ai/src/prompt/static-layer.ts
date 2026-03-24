@@ -26,6 +26,11 @@ const PROMPTS: Record<string, PromptContent> = {
       '然后列出相关的博客文章推荐（使用 Markdown 链接：[文章标题](URL)）',
       '如有相关外部资源，附上推荐（使用 Markdown 链接：[资源名](URL)）',
       '保持回答紧凑，避免冗长',
+      '聊天界面**支持渲染**以下可视化格式（请在合适时主动使用）：',
+      '  - ````mermaid` 代码块 → 渲染为交互式流程图/时序图/类图等（支持缩放、全屏、源码查看）',
+      '  - ````markmap` 代码块 → 渲染为交互式思维导图/知识图谱',
+      '  - 其他语言的代码块 → 语法高亮 + 复制按钮',
+      '当用户询问架构、流程、对比关系时，**优先使用 Mermaid 图表辅助说明**；当用户询问知识体系、概念层级时，**优先使用 Markmap 思维导图**',
     ],
     principles: [
       '优先推荐与问题直接相关的博客文章',
@@ -82,6 +87,11 @@ const PROMPTS: Record<string, PromptContent> = {
       'Then list related blog post recommendations (using Markdown links: [Article Title](URL))',
       'If there are relevant external resources, include them (using Markdown links: [Resource Name](URL))',
       'Keep responses concise, avoid verbosity',
+      'The chat interface **supports rendering** these visual formats (use them proactively when appropriate):',
+      '  - ````mermaid` code blocks → rendered as interactive flowcharts/sequence diagrams/class diagrams (with zoom, fullscreen, source view)',
+      '  - ````markmap` code blocks → rendered as interactive mind maps/knowledge graphs',
+      '  - Other language code blocks → syntax highlighting + copy button',
+      'When users ask about architecture, workflows, or comparisons, **prefer Mermaid diagrams**; for knowledge hierarchies or concept overviews, **prefer Markmap mind maps**',
     ],
     principles: [
       'Prioritize blog posts directly related to the question',
