@@ -1,7 +1,7 @@
 ---
 title: "@astro-minimax/ai 模块技术架构详解"
 pubDatetime: 2026-03-21T00:00:00.000Z
-modDatetime: 2026-03-23T12:00:00.000Z
+modDatetime: 2026-03-24T00:00:00.000Z
 author: Souloss
 description: "深入剖析 @astro-minimax/ai 包的技术架构：多 Provider 故障转移、RAG 检索增强、智能分析层、三层提示词系统、流式响应与缓存机制。完整数据流示例与 Mermaid/Markmap 可视化图解。"
 tags:
@@ -146,6 +146,9 @@ draft: false
 │   │   ├── ChatPanel.tsx         # 核心聊天界面（865行）
 │   │   ├── AIChatContainer.tsx   # 容器组件（状态管理）
 │   │   └── AIChatWidget.astro    # Astro 入口点
+│   ├── tools/                    # AI SDK tool() 定义
+│   │   ├── action-tools.ts       # 客户端/服务端工具 schema 及 searchArticles execute
+│   │   └── index.ts              # 统一导出
 │   ├── server/                   # 服务端处理逻辑
 │   │   ├── chat-handler.ts       # 主请求处理器
 │   │   ├── stream-helpers.ts     # 流式响应辅助函数
@@ -203,7 +206,9 @@ draft: false
 
 **src/components/** 目录采用了原子设计理念组织 UI 组件。最底层是 `ChatPanel.tsx`，这是整个聊天功能的视觉核心，构建于 `@ai-sdk/react` 的 `useChat` Hook 之上。它负责消息的渲染（支持文本、来源引用等不同部件）、错误状态的展示（带重试按钮）、以及状态指示器的显示。`AIChatContainer.tsx` 扮演状态容器的角色，管理聊天气泡的开启/关闭状态，并暴露 `window.__aiChatToggle` 接口供外部调用（如悬浮按钮）实现状态切换。
 
-**src/server/** 目录包含了请求处理的全部逻辑。`chat-handler.ts` 是整个服务端处理流水线的中枢，它编排了速率限制、输入验证、RAG 搜索、智能分析、提示构建、AI 调用、流式响应等全部环节。
+**src/tools/** 使用 AI SDK 的 `tool()` 辅助函数定义了所有可被模型调用的工具。`allTools` 聚合了 7 个工具：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleReadingMode`、`highlightText`、`setPreference` 和 `searchArticles`。其中 `searchArticles` 在服务端执行（具有 `execute` 函数），其余 6 个为客户端执行工具（仅定义 schema，由浏览器端 `ActionExecutor` 处理）。`getClientSideTools()` 和 `getServerSideTools()` 提供了这一分类的编程接口。
+
+**src/server/** 目录包含了请求处理的全部逻辑。`chat-handler.ts` 是整个服务端处理流水线的中枢，它编排了速率限制、输入验证、RAG 搜索、智能分析、提示构建、AI 调用、流式响应等全部环节。在 v0.9.1 中，`streamText` 调用增加了 `tools: allTools`、`toolChoice: 'auto'` 和 `stopWhen: stepCountIs(5)` 参数，使模型可以在响应中调用工具。
 
 **src/provider-manager/** 是实现供应商无关性的核心目录。该目录导出了一个 Provider Manager 实例，支持动态添加/移除供应商、设置优先级权重、自动健康追踪和透明故障转移。`mock.ts` 提供了本地 Mock 响应能力，当所有真实供应商不可用时，系统会切换到 Mock 模式，返回预定义的模板化响应。
 
@@ -1907,7 +1912,46 @@ try {
 }
 ```
 
-## 十二、速率限制
+## 十二、工具调用架构 (Tool Calling)
+
+v0.9.1 引入了 AI SDK v6 的 Tool Calling 机制，允许模型在对话中主动发起客户端操作。
+
+### 12.1 工具定义
+
+工具在 `packages/ai/src/tools/action-tools.ts` 中使用 AI SDK 的 `tool()` 函数和 Zod schema 定义：
+
+| 工具名 | 类型 | 功能 | 执行位置 |
+|--------|------|------|---------|
+| `toggleTheme` | 客户端 | 切换主题（light/dark/system） | 浏览器 |
+| `navigateToArticle` | 客户端 | 跳转到指定文章 | 浏览器 |
+| `scrollToSection` | 客户端 | 滚动到指定章节 | 浏览器 |
+| `toggleReadingMode` | 客户端 | 切换阅读模式 | 浏览器 |
+| `highlightText` | 客户端 | 高亮文章中的文本 | 浏览器 |
+| `setPreference` | 客户端 | 设置用户偏好 | 浏览器 |
+| `searchArticles` | 服务端 | 搜索博客文章和项目 | 服务器 |
+
+### 12.2 执行流程
+
+`chat-handler.ts` 将 `allTools` 传入 `streamText`，配合 `toolChoice: 'auto'` 让模型自主决定是否调用工具。`stepCountIs(5)` 限制单次对话最多 5 步工具调用，防止无限循环。
+
+**服务端执行**：`searchArticles` 的 `execute` 函数调用 `searchArticles()` / `searchProjects()` 从检索模块获取结果，将 JSON 返回给模型进行后续推理。
+
+**客户端执行**：其余 6 个工具的调用通过流式协议传输到前端。`ChatPanel.tsx` 的 `onToolCall` 回调将工具名和参数映射为 core 包的 Action 格式，通过 `window.__actionExecutor` 执行。`addToolOutput` 将执行结果回传给模型，配合 `sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls` 实现自动化的多步工具调用。
+
+### 12.3 动作执行器 (`packages/core/src/actions`)
+
+`@astro-minimax/core` 包负责运行时执行所有用户可见的动作。`ActionExecutor` 实现了 6 种动作的处理：
+
+- **scroll-to-section**：滚动到指定章节 + 高亮脉冲动画
+- **highlight-text**：按 CSS 选择器或文本内容匹配高亮
+- **toggle-theme**：切换主题并同步 `localStorage` 和全局 `window.theme`
+- **toggle-reading-mode**：切换阅读模式 + 字体/主题偏好
+- **set-preference**：更新用户偏好（支持嵌套路径如 `reading.fontSize`）
+- **navigate**：跳转文章 + View Transitions + 跨页动作队列
+
+**跨页动作链**：`URLHandler` 处理 `ai_actions` 查询参数。当 `navigateToArticle` 需要在目标页面继续执行动作时，`ActionQueue` 将后续动作入队并生成令牌，附加到 URL 中。页面加载后 `initActionSystem` 自动出队并执行。
+
+## 十三、速率限制
 
 三层 IP 级速率限制：
 
@@ -1917,7 +1961,7 @@ try {
 | Sustained | 60 秒 | 20 次 | 正常使用上限 |
 | Daily | 24 小时 | 100 次 | 单日总上限 |
 
-## 十三、CLI 工具链
+## 十四、CLI 工具链
 
 ### 13.1 事实注册表验证
 
@@ -1973,7 +2017,7 @@ astro-minimax facts status    # 查看事实注册表状态
 astro-minimax profile build   # 构建完整作者画像（包含 facts）
 ```
 
-## 十四、总结
+## 十五、总结
 
 @astro-minimax/ai 模块通过以下设计实现了高可用、高质量的 AI 聊天体验：
 
@@ -1987,5 +2031,7 @@ astro-minimax profile build   # 构建完整作者画像（包含 facts）
 8. **动态资源调度** — 证据预算根据查询复杂度自适应调整
 9. **回答格式优化** — 自动检测回答模式，注入相应格式指导
 10. **阅读时间感知** — 动态层展示文章预估阅读时间
+11. **工具调用与动作系统** — 模型通过 AI SDK Tool Calling 驱动 UI 和导航，core `ActionExecutor` 在浏览器中执行
+12. **检索深度增强** — 支持 RRF 混合排序，段落级 chunk 注入提示词提供精细证据
 
 完整的 API 文档和更多示例，请参考 [API 参考](/zh/posts/ai-api-reference)。

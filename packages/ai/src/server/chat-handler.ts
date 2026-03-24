@@ -4,6 +4,7 @@ import {
   createUIMessageStreamResponse,
   streamText,
   convertToModelMessages,
+  stepCountIs,
 } from 'ai';
 import { t, getLang } from '../utils/i18n.js';
 import {
@@ -11,50 +12,30 @@ import {
   buildLocalSearchQuery,
   shouldRunKeywordExtraction,
   extractSearchKeywords,
+
+  rankArticlesByIntent,
   shouldSkipAnalysis,
   analyzeRetrievedEvidence,
   buildEvidenceSection,
-  getCitationGuardPreflight,
-  buildSystemPrompt,
-  getAuthorContext,
-  getVoiceProfile,
-  mergeResults,
-  getProviderManager,
-  createCacheAdapter,
-  detectPublicQuestion,
-  getGlobalSearchCache,
-  shouldAppendCitations,
-  formatCitationBlock,
-  selectCitations,
-  setGlobalSearchCache,
-  getGlobalCacheTTL,
-  getResponseCache,
-  setResponseCache,
-  getResponseCacheConfig,
-  rankArticlesByIntent,
-  matchFactsToQuery,
-  buildFactSection,
   getEvidenceBudget,
   applyBudgetToArticles,
+  getCitationGuardPreflight,
   resolveAnswerMode,
   buildUnknownRefusal,
-  getClientIP,
-  checkRateLimit,
-  rateLimitResponse,
-  searchArticles,
-  searchProjects,
-  getSessionCacheKey,
-  getCachedContext,
-  setCachedContext,
-  initializeExtensions,
-  areExtensionsLoaded,
-  getExtensionRegistry,
-  getSemanticFallback,
-  mergeSearchDocuments,
-  mergeFacts,
-  resolveVoiceStyleMode,
-  buildVoiceStylePrompt,
-} from '../index.js';
+  shouldAppendCitations,
+  selectCitations,
+  formatCitationBlock,
+} from '../intelligence/index.js';
+import { buildSystemPrompt } from '../prompt/index.js';
+import { getAuthorContext, getVoiceProfile } from '../data/index.js';
+import { mergeResults, searchArticles, searchProjects, getSessionCacheKey, getCachedContext, setCachedContext } from '../search/index.js';
+import { getProviderManager } from '../provider-manager/index.js';
+import { createCacheAdapter, getGlobalSearchCache, setGlobalSearchCache, getGlobalCacheTTL, getResponseCache, setResponseCache, getResponseCacheConfig, detectPublicQuestion } from '../cache/index.js';
+import { getClientIP, checkRateLimit, rateLimitResponse } from '../middleware/index.js';
+import { matchFactsToQuery, buildFactSection } from '../fact-registry/index.js';
+import { getExtensionRegistry, getSemanticFallback, resolveVoiceStyleMode, buildVoiceStylePrompt, mergeSearchDocuments, mergeFacts } from '../extensions/index.js';
+import { initializeExtensions, areExtensionsLoaded } from './metadata-init.js';
+import { allTools } from '../tools/index.js';
 import type { CachedAIResponse } from '../cache/response-cache.js';
 import type { PublicQuestionType } from '../index.js';
 import type { ProviderAdapter } from '../provider-manager/types.js';
@@ -506,12 +487,16 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       for (const currentAdapter of adapters) {
         try {
           const provider = currentAdapter.getProvider();
+          
           const result = streamText({
             model: (provider as { chatModel: (m: string) => never }).chatModel(currentAdapter.model),
             system: systemPrompt,
             messages: await convertToModelMessages(messages),
-            temperature: CHAT_HANDLER.DEFAULT_TEMPERATURE,
-            maxOutputTokens: CHAT_HANDLER.DEFAULT_MAX_OUTPUT_TOKENS,
+            tools: allTools,
+            toolChoice: 'auto',
+            stopWhen: stepCountIs(5),
+            temperature: 1.0,
+            maxOutputTokens: 16000,
             onError: ({ error }) => {
               console.error('[chat-handler] streamText error:', error);
             },
@@ -520,44 +505,49 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           let hasTextOutput = false;
           const errors: Error[] = [];
 
+          // Use toUIMessageStream() for correct AI SDK v6 protocol compliance
+          // This automatically transforms tool-call events to tool-input-available format
           writer.merge(result.toUIMessageStream({ sendFinish: false }));
+
+          // Consume the stream to wait for completion and collect errors
           await result.consumeStream({
             onError: (error) => {
               errors.push(error instanceof Error ? error : new Error(String(error)));
+              console.error('[chat-handler] Stream error:', error);
             },
           });
 
-          const text = await result.text;
-          const reasoningPromise = (result as unknown as { reasoning?: PromiseLike<unknown> }).reasoning;
-          const usagePromise = (result as unknown as { usage?: PromiseLike<{ inputTokens?: number; outputTokens?: number; totalTokens?: number }> }).usage;
+          // Get response data after stream completes
+          const responseTextResult = await result.text;
+          let reasoningOutput: unknown;
+          try {
+            reasoningOutput = await (result as unknown as { reasoning?: PromiseLike<unknown> }).reasoning;
+          } catch { /* ignore */ }
           
-          if (reasoningPromise) {
-            try {
-              const reasoningOutput = await Promise.resolve(reasoningPromise);
-              reasoningText = typeof reasoningOutput === 'string' ? reasoningOutput : 
-                (Array.isArray(reasoningOutput) ? reasoningOutput.map((r): string => {
-                  if (typeof r === 'object' && r !== null && 'text' in r) return (r as { text: string }).text;
-                  return String(r);
-                }).join('') : undefined);
-            } catch { }
+          let usageResult: { inputTokens?: number; outputTokens?: number; totalTokens?: number } | undefined;
+          try {
+            usageResult = await (result as unknown as { usage?: PromiseLike<{ inputTokens?: number; outputTokens?: number; totalTokens?: number }> }).usage;
+          } catch { /* ignore */ }
+
+          reasoningText = typeof reasoningOutput === 'string' ? reasoningOutput :
+            (Array.isArray(reasoningOutput) ? reasoningOutput.map((r): string => {
+              if (typeof r === 'object' && r !== null && 'text' in r) return (r as { text: string }).text;
+              return String(r);
+            }).join('') : undefined);
+
+          if (usageResult) {
+            const inputTokens = usageResult.inputTokens ?? 0;
+            const outputTokens = usageResult.outputTokens ?? 0;
+            tokenUsage = {
+              total: usageResult.totalTokens ?? inputTokens + outputTokens,
+              input: inputTokens,
+              output: outputTokens,
+            };
           }
-          
-          if (usagePromise) {
-            try {
-              const usage = await Promise.resolve(usagePromise);
-              const inputTokens = usage.inputTokens ?? 0;
-              const outputTokens = usage.outputTokens ?? 0;
-              tokenUsage = {
-                total: usage.totalTokens ?? inputTokens + outputTokens,
-                input: inputTokens,
-                output: outputTokens,
-              };
-            } catch { }
-          }
-          
+
           timing.generation = Date.now() - generationStart;
-          responseText = text;
-          hasTextOutput = text.length > 0;
+          responseText = responseTextResult;
+          hasTextOutput = responseTextResult.length > 0;
 
           if (hasTextOutput && errors.length === 0) {
             currentAdapter.recordSuccess();
@@ -583,7 +573,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
               const responseCacheData: CachedAIResponse = {
                 query: searchQuery,
                 thinking: reasoningText,
-                response: text,
+                response: responseText,
                 articles: relatedArticles,
                 projects: relatedProjects,
                 lang,

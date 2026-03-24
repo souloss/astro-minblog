@@ -83,6 +83,7 @@ export default function minimax(
         }
 
         cssLines.push('@import "@astro-minimax/core/styles/theme.css";');
+        cssLines.push('@import "@astro-minimax/core/styles/actions.css";');
 
         const astroDir = resolve(projectRoot, ".astro");
         mkdirSync(astroDir, { recursive: true });

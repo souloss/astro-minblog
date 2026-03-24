@@ -811,7 +811,105 @@ background: var(--card);
 :global(html[data-theme="dark"]) .my-component { }
 ```
 
-### 12. WCAG Contrast Requirements
+### 12. Preact SSR with @ai-sdk/react Hooks
+
+**Problem:** Build fails with `TypeError: Cannot read properties of null (reading 'useRef')` when SSR-prerendering components that use `@ai-sdk/react`'s `useChat` hook.
+
+**Root Cause:** `useChat` imports from `react`, which is aliased to `preact/compat` at build time. During SSR via `preact-render-to-string`, the React compat layer's hooks are null because the preact-render-to-string context doesn't initialize them the same way.
+
+**Solution:** Use `client:only="preact"` instead of `client:idle` for components that depend on `@ai-sdk/react`:
+
+```astro
+<!-- ❌ SSR will fail -->
+<AIChatContainer client:idle config={config} />
+
+<!-- ✅ Skip SSR entirely -->
+<AIChatContainer client:only="preact" config={config} />
+```
+
+Also ensure Vite deduplication includes both `@ai-sdk/react` and `ai`:
+
+```typescript
+// astro.config.ts
+vite: {
+  resolve: {
+    dedupe: [
+      "preact", "preact/hooks", "preact/compat",
+      "react", "react-dom",
+      "@ai-sdk/react", "ai"  // Required for hook consistency
+    ],
+  },
+}
+```
+
+### 13. AI SDK v6 Tool Calling Integration
+
+**Pattern:** Define tools in `packages/ai/src/tools/action-tools.ts`, pass to `streamText` in chat-handler, handle client-side via `onToolCall` in ChatPanel.
+
+**Key types:**
+```typescript
+import type { ToolSet } from 'ai';  // Not Record<string, unknown>
+
+streamText({
+  tools: allTools,           // ToolSet type
+  toolChoice: 'auto',
+  stopWhen: stepCountIs(5),  // Prevent infinite tool loops
+});
+```
+
+**Client-side handling:**
+```typescript
+useChat({
+  sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+  onToolCall({ toolCall }) {
+    // Execute via ActionExecutor, return result via addToolOutput
+  },
+});
+```
+
+**Anti-pattern:** Do NOT implement parallel text-based action mechanisms (e.g., `<ai-action>` XML tags in response text). Tool Calling provides type safety, feedback loops, and multi-step capabilities that text-embedded commands cannot.
+
+### 14. CSS Selector Injection in DOM Queries
+
+**Problem:** User-controlled IDs (from URL parameters or AI tool calls) used directly in `querySelector` can break or manipulate selection.
+
+**Solution:** Always sanitize IDs before CSS selector interpolation:
+
+```typescript
+const sanitizedId = CSS.escape
+  ? CSS.escape(sectionId)
+  : sectionId.replace(/[^\w\u4e00-\u9fff-]/g, '');
+
+document.querySelector(`[data-section-id="${sanitizedId}"]`);
+```
+
+For URL parameters, also apply a whitelist regex:
+
+```typescript
+const section = params.get('section');
+if (section && /^[\w\u4e00-\u9fff-]+$/.test(section)) {
+  // Safe to use
+}
+```
+
+### 15. PromiseLike vs Promise
+
+**Problem:** `PromiseLike<T>` (used in AI SDK result types) doesn't have `.catch()` method — only `.then()`.
+
+**Solution:** Use try/catch instead of optional chaining with `.catch()`:
+
+```typescript
+// ❌ PromiseLike has no .catch()
+const result = await somePromiseLike?.catch(() => undefined);
+
+// ✅ Use try/catch
+let result: T | undefined;
+try {
+  result = await somePromiseLike;
+} catch { /* ignore */ }
+```
+
+### 16. WCAG Contrast Requirements
 
 **Problem:** Some text colors don't meet WCAG AA contrast requirements (4.5:1 for body text, 3:1 for large text).
 
@@ -1038,6 +1136,15 @@ pnpm run dev
 - [ ] `prefers-reduced-motion` respected
 - [ ] Color not the only indicator
 
+### AI Integration
+
+- [ ] Components using `@ai-sdk/react` use `client:only="preact"` (not `client:idle`)
+- [ ] Tool definitions use `ToolSet` type from `ai` (not `Record<string, unknown>`)
+- [ ] No duplicate action mechanisms (only Tool Calling, no text-embedded commands)
+- [ ] User-controlled IDs sanitized before CSS selector usage (`CSS.escape`)
+- [ ] `PromiseLike` handled with try/catch (not `.catch()`)
+- [ ] `@ai-sdk/react` and `ai` in Vite `dedupe` config
+
 ### Release (if applicable)
 
 - [ ] All package versions updated
@@ -1045,6 +1152,8 @@ pnpm run dev
 - [ ] CHANGELOG.md updated
 - [ ] Release articles created (zh + en)
 - [ ] New feature documentation added
+- [ ] Blog documentation updated to reflect code changes (see `.husky/precommit.md` stage 4.3)
+- [ ] zh/en documentation parity verified
 
 ### Code Review Points
 

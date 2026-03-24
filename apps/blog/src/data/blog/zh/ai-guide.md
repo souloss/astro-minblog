@@ -1,6 +1,7 @@
 ---
 title: "AI 聊天功能配置指南"
 pubDatetime: 2026-03-17T00:00:00.000Z
+modDatetime: 2026-03-24T00:00:00.000Z
 author: Souloss
 description: "全面配置 astro-minimax 的 AI 聊天功能：Provider 设置、RAG 搜索、Mock 模式、作者画像和质量评估。"
 tags:
@@ -123,6 +124,33 @@ flowchart LR
 - 60 秒后自动尝试恢复
 - 所有 Provider 失败时，Mock 保证用户始终收到回复
 
+## AI 工具调用与 Actions
+
+当用户用自然语言提出「切换到深色模式」「打开某篇文章」「跳到某一节」等操作时，模型除了说明步骤外，还可以通过 **工具调用（Tool Calling）** 直接驱动站点行为，减少「只说不做」的体验落差。
+
+### 可用工具一览
+
+当前聊天管线注册了 7 个工具（名称与代码中一致）：
+
+| 工具名 | 作用概要 |
+|--------|----------|
+| `toggleTheme` | 在浅色 / 深色 / 跟随系统之间切换主题 |
+| `navigateToArticle` | 按 slug（及可选语言、章节）跳转到文章页 |
+| `scrollToSection` | 在当前页滚动到指定章节并可选高亮 |
+| `toggleReadingMode` | 开启或关闭阅读模式，并可调字号等 |
+| `highlightText` | 按文本或选择器高亮文中内容 |
+| `setPreference` | 写入用户偏好（与站点偏好系统对齐的键值） |
+| `searchArticles` | 按关键词检索文章与项目，返回标题、链接与摘要等 |
+
+### 工作原理
+
+- **客户端工具**：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleReadingMode`、`highlightText`、`setPreference` 在服务端声明 schema，由模型生成 tool call；**实际执行在浏览器中完成**（通过主题 `@astro-minimax/core` 的 **ActionExecutor** 将调用映射为 DOM / 路由 / 偏好更新）。
+- **服务端工具**：`searchArticles` 带有 `execute` 实现，在 **RAG 请求处理过程中于服务端运行**，直接调用与主检索相同的 `searchArticles` / `searchProjects` 逻辑，把结构化结果返回给模型，便于「先搜再答」或辅助导航。
+
+### Action 系统与跨页串联
+
+站点行为统一由 `packages/core/src/actions/` 负责：**ActionExecutor** 执行具体动作；**URLHandler** 等模块支持通过查询参数（如 `theme`、`section`、`ai_actions` 与队列 token）在 **导航后继续执行** 一串动作，实现跨页面的 action chaining。聊天 UI 在收到客户端工具调用时，会把参数转成上述 Action 并执行。
+
 ## Mock 模式
 
 开发时不需要真实 API：
@@ -186,8 +214,18 @@ AI 回答遵循 L1-L5 来源优先级：
 ```bash
 pnpm run ai:eval                             # 本地测试
 pnpm run ai:eval -- --url=https://your.com   # 远程测试
+pnpm run ai:eval -- --category=no_answer     # 评估特定类别
 pnpm run ai:eval -- --verbose                # 详细输出
 ```
+
+评估基于 `datas/eval/gold-set.json` 黄金测试集，自动检查：
+- 非空响应
+- 主题覆盖率
+- 禁止声明未出现
+- Markdown 链接存在性
+- 回答模式匹配
+
+评估报告保存到 `datas/eval/report.json`。
 
 ## 扩展系统
 

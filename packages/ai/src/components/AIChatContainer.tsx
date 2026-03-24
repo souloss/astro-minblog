@@ -15,8 +15,7 @@ export default function AIChatContainer({ config, articleContext }: Props) {
   const handleClose = useCallback(() => setOpen(false), []);
 
   if (typeof window !== 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).__aiChatToggle = handleToggle;
+    (window as unknown as { __aiChatToggle?: () => void }).__aiChatToggle = handleToggle;
   }
 
   return (

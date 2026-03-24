@@ -1,6 +1,6 @@
 {
   "name": "@astro-minimax/notify",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "type": "module",
   "description": "Multi-channel notification package for astro-minimax blogs — supports Telegram, Email (Resend), and more.",
   "author": "Souloss",

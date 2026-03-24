@@ -16,7 +16,7 @@ async function loadVectorIndex(): Promise<unknown> {
   try {
     const module = await import('../../src/data/vectors/index.json');
     vectorIndex = module.default;
-  } catch (_e) {
+  } catch {
     vectorIndex = null;
   }
   return vectorIndex;

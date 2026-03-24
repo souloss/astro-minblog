@@ -29,6 +29,7 @@ function hasPrivacyIntent(query: string): boolean {
 
 export function resolveAnswerMode(query: string): AnswerMode {
   const q = query.toLowerCase();
+
   if (hasPrivacyIntent(query)) return 'unknown';
   if (/几次|多少|几篇|数量|count|how many/u.test(q)) return 'count';
   if (/哪些|哪几个|列表|列举|list|what are/u.test(q)) return 'list';

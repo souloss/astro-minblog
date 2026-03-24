@@ -1,6 +1,7 @@
 ---
 author: Souloss
 pubDatetime: 2026-03-21T00:00:00.000Z
+modDatetime: 2026-03-24T00:00:00.000Z
 title: Settings Panel & Preferences
 featured: false
 category: Tutorial/Configuration
@@ -10,7 +11,7 @@ tags:
 description: "Learn about astro-minimax settings panel features, including appearance, reading, layout, and general settings."
 ---
 
-astro-minimax 0.8.2 introduces a brand new settings panel for personalizing your blog's appearance and experience.
+astro-minimax introduces a brand new settings panel for personalizing your blog's appearance and experience.
 
 ## Opening the Settings Panel
 
@@ -52,6 +53,18 @@ Click the settings icon (gear icon) in the bottom-right corner of the page to op
 | **Animations** | Enable/disable page animations |
 | **Card Hover** | Enable/disable card hover effects |
 | **Smooth Scroll** | Enable/disable smooth scrolling |
+
+### AI chat panel size
+
+When AI chat is enabled, you can resize the chat panel:
+
+| Option | Description |
+|--------|-------------|
+| **Small (S)** | Compact width, good for browsing alongside the page |
+| **Medium (M)** | Default balanced size |
+| **Large (L)** | Wider panel for long replies and code |
+
+Your choice is persisted in `localStorage` and restored on your next visit.
 
 ## Sharing Settings
 

@@ -1,6 +1,6 @@
 {
   "name": "@astro-minimax/core",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "type": "module",
   "description": "Core theme package for astro-minimax — layouts, components, styles, utilities and plugins.",
   "author": "Souloss",
@@ -36,6 +36,7 @@
     "./utils/*": "./src/utils/*.ts",
     "./plugins/*": "./src/plugins/*.ts",
     "./scripts/*": "./src/scripts/*.ts",
+    "./actions": "./src/actions/index.ts",
     "./types": "./src/types.ts"
   },
   "files": [

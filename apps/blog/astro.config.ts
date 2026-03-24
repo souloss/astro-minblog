@@ -203,7 +203,21 @@ export default defineConfig({
       // the hooks module (__H) can become undefined. This prevents multiple Preact
       // instances by forcing all imports to use the same resolved module.
       // The __H error (hooks undefined) occurs when Preact loads inconsistently.
-      dedupe: ["preact", "preact/hooks", "preact/compat", "preact/debug", "preact/devtools", "react", "react-dom"],
+      // 
+      // IMPORTANT: @ai-sdk/react and ai MUST be deduped because they use React hooks
+      // that get aliased to preact/compat. Without deduplication, multiple hook instances
+      // can cause __H undefined errors during hydration.
+      dedupe: [
+        "preact",
+        "preact/hooks",
+        "preact/compat",
+        "preact/debug",
+        "preact/devtools",
+        "react",
+        "react-dom",
+        "@ai-sdk/react",
+        "ai"
+      ],
     },
     // Pre-bundle dependencies to speed up development and ensure consistency.
     // 
@@ -216,7 +230,7 @@ export default defineConfig({
     // because they're linked via workspace protocol and should be loaded fresh on changes.
     optimizeDeps: {
       noDiscovery: true,
-      exclude: ["@resvg/resvg-js", "@astro-minimax/ai", "@astro-minimax/core"],
+      exclude: ["@resvg/resvg-js"],
       include: [
         "preact",
         "preact/hooks",
@@ -227,6 +241,7 @@ export default defineConfig({
         "preact/jsx-dev-runtime",
         "@ai-sdk/react",
         "ai",
+        "@astro-minimax/ai",
         "mermaid",
         "markmap-lib",
         "katex",

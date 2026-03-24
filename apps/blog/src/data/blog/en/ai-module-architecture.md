@@ -1,6 +1,7 @@
 ---
 title: "@astro-minimax/ai Module Technical Architecture Deep Dive"
 pubDatetime: 2026-03-21T00:00:00.000Z
+modDatetime: 2026-03-24T00:00:00.000Z
 author: Souloss
 description: "A deep dive into the @astro-minimax/ai package architecture: multi-provider failover, RAG retrieval augmentation, intelligence layer, three-layer prompt system, streaming responses, and caching mechanisms."
 tags:
@@ -70,6 +71,9 @@ From a technology selection perspective, the module adopts the current mainstrea
 │   │   ├── stream-helpers.ts     # Streaming response helpers
 │   │   ├── errors.ts             # Error response factory
 │   │   └── types.ts              # Type definitions
+│   ├── tools/                    # AI SDK tool() definitions (actions + search)
+│   │   ├── action-tools.ts       # Client/server tool schemas and searchArticles execute
+│   │   └── index.ts              # Public exports
 │   ├── provider-manager/         # AI provider management
 │   │   ├── manager.ts            # Provider Manager core
 │   │   ├── openai.ts             # OpenAI adapter
@@ -121,6 +125,8 @@ From a technology selection perspective, the module adopts the current mainstrea
 **src/components/** directory adopts atomic design philosophy for organizing UI components. At the lowest level is `ChatPanel.tsx`, the visual core of the entire chat functionality, built on `@ai-sdk/react`'s `useChat` Hook. `AIChatContainer.tsx` acts as the state container, managing chat bubble open/close state and exposing the `window.__aiChatToggle` interface for external invocation.
 
 **src/server/** directory contains all request processing logic. `chat-handler.ts` is the hub of the entire server-side processing pipeline, orchestrating all stages.
+
+**src/tools/** defines AI SDK `tool()` instances exported as `allTools`. The handler passes this object into `streamText` so the model can call theme, navigation, reading-mode, preference, highlight, and search tools. Client-executed tools have schemas only on the server; `searchArticles` also implements `execute` on the server.
 
 **src/provider-manager/** is the core directory for implementing vendor agnosticism. It exports a Provider Manager instance supporting dynamic add/remove of providers, priority weights, automatic health tracking, and transparent failover.
 
@@ -263,6 +269,14 @@ When the top result score significantly exceeds the second, deep content extract
 
 TTL: 10 minutes, with intelligent follow-up detection for cache reuse.
 
+#### RRF hybrid fusion (optional)
+
+When `searchArticles` is called with `enableRRF: true`, a vector index is available, and there is more than one candidate article, the pipeline can fuse **BM25/TF-IDF ranking** and **vector ranking** using **Reciprocal Rank Fusion (RRF)** (`packages/ai/src/search/hybrid-search.ts`). Each list contributes terms of the form `1 / (k + rank)` (default `k = 60`), summed per document URL. Results carry `rrfScore`, `bm25Rank`, and `vectorRank` for debugging and tuning. If RRF is not enabled but vectors exist, the code falls back to the existing vector reranker.
+
+#### Paragraph-level retrieval and prompt injection
+
+Article bodies can be split into **chunks** at build/runtime and attached to `ArticleContext`. In the **dynamic prompt layer** (`dynamic-layer.ts`), `selectRelevantChunks` scores chunks against the user query (token overlap on headings and body, with heading-level boosts), keeps a bounded number per article, sorts globally, and formats matches via `formatChunksForInjection`. A session-scoped cache avoids re-injecting the same chunk text across follow-up turns. This sits alongside article-level summaries and optional `fullContent` deep extraction, giving the model **paragraph-level** evidence without loading entire posts every time.
+
 ### 4.3 Intelligence Module
 
 #### Intent Classification
@@ -283,6 +297,18 @@ Three-layer architecture:
 ### 4.5 Stream Processing Module
 
 Supports streaming response processing with cache playback simulating real streaming output.
+
+### 4.6 Tool Calling Architecture
+
+Tools are declared in `packages/ai/src/tools/action-tools.ts` using the AI SDK `tool()` helper and Zod `inputSchema` for structured arguments. `allTools` aggregates seven tools: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, `setPreference`, and `searchArticles`.
+
+`chat-handler.ts` imports `allTools` and passes it into `streamText` with `toolChoice: 'auto'`, so the active provider may emit tool calls in the same streaming turn as natural language. **Server-side execution** applies only to `searchArticles`, whose `execute` function calls `searchArticles` / `searchProjects` from the search module and returns JSON for the model. The other six tools are **client-executed**: the stream carries tool-call parts to the Preact chat UI, which maps names and payloads to the core **Action** format and runs them in the browser (see below). `getClientSideTools()` and `getServerSideTools()` document this split for tests and integrations.
+
+### 4.7 Action Executor (`packages/core/src/actions`)
+
+The `@astro-minimax/core` package owns **runtime execution** of user-visible actions. `ActionExecutor` implements handlers for `scroll-to-section`, `highlight-text`, `toggle-theme`, `toggle-reading-mode`, `set-preference`, and `navigate`, updating the DOM, theme, reading mode, and persisted preferences consistently with the rest of the theme.
+
+**Cross-page chaining** is handled by `URLHandler`: simple actions such as theme and section scroll can be encoded as `theme` and `section` query parameters; longer sequences are **enqueued** and referenced by an `ai_actions` token so that after `navigateToArticle` loads the target page, pending actions are dequeued and executed on load. This keeps tool-driven navigation aligned with normal user navigation and avoids losing context across a full page transition.
 
 ## 5. Usage Scenario Details
 
@@ -420,5 +446,7 @@ The @astro-minimax/ai module achieves high-availability, high-quality AI chat ex
 5. **User Experience** — Streaming responses, typewriter effect, read & chat
 6. **Robustness & Fault Tolerance** — Automatic failover, timeout budget management
 7. **Modularity & Extensibility** — Clear layered architecture and module boundaries
+8. **Tool calling & actions** — Model-driven UI and navigation via AI SDK tools plus core `ActionExecutor`
+9. **Retrieval depth** — Optional RRF fusion over lexical and vector ranks; paragraph-level chunk injection in prompts
 
 For complete API documentation and more examples, see the [API Reference](/en/posts/ai-api-reference).

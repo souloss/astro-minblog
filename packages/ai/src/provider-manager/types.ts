@@ -4,7 +4,7 @@
  * Supports multiple provider types with priority-based fallback.
  */
 
-import type { UIMessage } from 'ai';
+import type { UIMessage, ToolSet } from 'ai';
 
 // ============================================================================
 // Provider Configuration Types
@@ -148,6 +148,8 @@ export interface StreamTextOptions {
   userQuestion?: string;
   /** Callback for errors during streaming */
   onError?: (error: Error) => void;
+  /** Tools for function calling */
+  tools?: ToolSet;
 }
 
 /**

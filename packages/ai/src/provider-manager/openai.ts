@@ -87,7 +87,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
   async streamText(options: StreamTextOptions): Promise<StreamTextResult> {
     await ensureProxySetup();
     
-    const { system, messages, temperature = 0.7, maxOutputTokens, topP, abortSignal, onError } = options;
+    const { system, messages, temperature = 0.7, maxOutputTokens, topP, abortSignal, onError, tools } = options;
 
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), this.timeout);
@@ -104,6 +104,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
         temperature,
         maxOutputTokens,
         topP,
+        tools,
         abortSignal: abortController.signal,
         onError: ({ error }) => {
           onError?.(error instanceof Error ? error : new Error(String(error)));

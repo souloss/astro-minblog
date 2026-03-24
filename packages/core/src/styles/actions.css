@@ -1,0 +1,43 @@
+/* AI Action Highlight Styles */
+
+.ai-section-highlight {
+  animation: section-pulse 3s ease-out;
+  border-radius: 4px;
+}
+
+@keyframes section-pulse {
+  0% {
+    background-color: oklch(from var(--accent) l c h / 0.3);
+    box-shadow: 0 0 0 4px oklch(from var(--accent) l c h / 0.1);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.ai-highlight {
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
+}
+
+.ai-highlight-accent {
+  background-color: oklch(from var(--accent) l c h / 0.2);
+}
+
+.ai-highlight-warning {
+  background-color: oklch(0.75 0.15 85 / 0.2);
+}
+
+.ai-highlight-info {
+  background-color: oklch(0.65 0.2 250 / 0.2);
+}
+
+.ai-highlight-success {
+  background-color: oklch(0.7 0.2 145 / 0.2);
+}
+
+/* Theme transition support */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

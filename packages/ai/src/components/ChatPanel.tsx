@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
 import type { UIMessage } from 'ai';
+import { APICallError } from '@ai-sdk/provider';
 import { getMockResponse, createMockStream } from '../providers/mock.ts';
 import type { ArticleChatContext, ChatStatusData } from '../server/types.ts';
 import { isChatStatusData } from '../server/types.ts';
 import { t, getLang } from '../utils/i18n.ts';
 import { CodeBlock, generateFollowUpSuggestions, FollowUpSuggestions } from './CodeBlock.tsx';
+
 
 export interface AIChatConfig {
   enabled?: boolean;
@@ -163,10 +165,26 @@ function buildWelcomeMessage(config: AIChatConfig, articleContext?: ArticleChatC
 
 function parseErrorMessage(error: Error, lang: string = 'zh'): string {
   const l = getLang(lang);
+
+  // APICallError from @ai-sdk/provider contains server response in responseBody,
+  // not in error.message which may just be generic text like "Failed to fetch"
+  if (APICallError.isInstance(error)) {
+    if (error.responseBody) {
+      try {
+        const parsed = JSON.parse(error.responseBody);
+        if (parsed?.error) return parsed.error;
+      } catch { /* not JSON */ }
+    }
+    if (error.data && typeof error.data === 'object' && 'error' in error.data) {
+      return String(error.data.error);
+    }
+  }
+
   try {
     const parsed = JSON.parse(error.message);
     if (parsed?.error) return parsed.error;
   } catch { /* not JSON */ }
+
   const msg = error.message;
   if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return t('ai.error.network', l);
   if (msg.includes('aborted')) return t('ai.error.aborted', l);
@@ -176,10 +194,16 @@ function parseErrorMessage(error: Error, lang: string = 'zh'): string {
 }
 
 function isRetryable(error: Error): boolean {
+  // APICallError has isRetryable property from server response
+  if (APICallError.isInstance(error)) {
+    return error.isRetryable;
+  }
+  // Fallback: try parsing error.message for retryable flag
   try {
     const parsed = JSON.parse(error.message);
     if (typeof parsed?.retryable === 'boolean') return parsed.retryable;
   } catch { /* not JSON */ }
+  // Default to true for unknown errors (allows retry button to show)
   return true;
 }
 
@@ -435,6 +459,7 @@ function AssistantMessage({ message, isStreaming, lang = 'zh', articleContext, o
     return generateFollowUpSuggestions(fullText, articleContext);
   }, [isStreaming, fullText, articleContext, onFollowUp]);
 
+
   if (isWaitingForContent) {
     return (
       <div class="space-y-1.5">
@@ -559,6 +584,16 @@ function useMockChat(lang: string) {
   return { messages, isStreaming, sendMessage, clear };
 }
 
+// ── Panel Size Presets ─────────────────────────────────────────
+
+type PanelSize = 'S' | 'M' | 'L';
+
+const PANEL_SIZE_CONFIG: Record<PanelSize, { width: string; height: string; class: string }> = {
+  S: { width: '370px', height: 'min(520px, calc(100vh - 7rem))', class: 'w-[370px] max-w-[calc(100vw-2rem)]' },
+  M: { width: '550px', height: 'min(70vh, calc(100vh - 5rem))', class: 'w-[550px] max-w-[calc(100vw-3rem)]' },
+  L: { width: '80vw', height: '80vh', class: 'w-[80vw] max-w-[900px]' },
+};
+
 // ── Main ChatPanel ────────────────────────────────────────────
 
 export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelProps) {
@@ -574,9 +609,28 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
   const [inputValue, setInputValue] = useState('');
   const [cooldown, setCooldown] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>();
+  
+  // Panel size state with localStorage persistence
+  const [panelSize, setPanelSize] = useState<PanelSize>(() => {
+    if (typeof window === 'undefined') return 'S';
+    try {
+      const saved = localStorage.getItem('ai-chat-panel-size');
+      if (saved === 'S' || saved === 'M' || saved === 'L') return saved;
+    } catch { /* ignore */ }
+    return 'S';
+  });
 
   const quickPrompts = useMemo(() => getQuickPrompts(lang, articleContext), [lang, articleContext]);
   const welcomeMessage = useMemo(() => buildWelcomeMessage(config, articleContext), [config, articleContext]);
+
+  // Persist size preference
+  useEffect(() => {
+    try {
+      localStorage.setItem('ai-chat-panel-size', panelSize);
+    } catch { /* ignore */ }
+  }, [panelSize]);
+
+  const sizeConfig = PANEL_SIZE_CONFIG[panelSize];
 
   // ── Live Mode (useChat) ─────────────────────────────────────
 
@@ -601,10 +655,71 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
     regenerate,
     status: liveStatus,
     error: liveError,
+    addToolOutput,
   } = useChat({
     transport,
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     onError: (err) => {
       console.error('[ChatPanel] Chat error:', err.message);
+    },
+    async onToolCall({ toolCall }) {
+      const executor = (window as unknown as { __actionExecutor?: { execute: (a: { type: string; payload: Record<string, unknown> }) => Promise<{ success: boolean }> } }).__actionExecutor;
+      
+      if (!executor) {
+        console.warn('[ChatPanel] ActionExecutor not initialized');
+        return;
+      }
+
+      const TOOL_ACTION_MAP: Record<string, (input: Record<string, unknown>) => { type: string; payload: Record<string, unknown> }> = {
+        toggleTheme: (i) => ({ type: 'toggle-theme', payload: { theme: i.theme } }),
+        navigateToArticle: (i) => ({
+          type: 'navigate',
+          payload: {
+            slug: i.slug,
+            lang: (i.lang as string) || 'zh',
+            then: i.sectionId ? [{ type: 'scroll-to-section', payload: { sectionId: i.sectionId } }] : undefined,
+          },
+        }),
+        scrollToSection: (i) => ({
+          type: 'scroll-to-section',
+          payload: { sectionId: i.sectionId, highlight: i.highlight ?? true, behavior: i.behavior ?? 'smooth' },
+        }),
+        toggleReadingMode: (i) => ({
+          type: 'toggle-reading-mode',
+          payload: {
+            enabled: i.enabled,
+            settings: { ...(i.fontSize ? { fontSize: i.fontSize } : {}), ...(i.fontFamily ? { fontFamily: i.fontFamily } : {}) },
+          },
+        }),
+        highlightText: (i) => ({
+          type: 'highlight-text',
+          payload: { text: i.text, selector: i.selector, style: i.style ?? 'accent', duration: i.duration ?? 3000, scrollIntoView: i.scrollIntoView ?? false },
+        }),
+        setPreference: (i) => ({ type: 'set-preference', payload: { key: i.key, value: i.value } }),
+      };
+
+      const mapper = TOOL_ACTION_MAP[toolCall.toolName];
+      if (!mapper) {
+        console.warn('[ChatPanel] Unknown tool:', toolCall.toolName);
+        return;
+      }
+
+      try {
+        const action = mapper(toolCall.input as Record<string, unknown>);
+        await executor.execute(action);
+        addToolOutput({
+          tool: toolCall.toolName,
+          toolCallId: toolCall.toolCallId,
+          output: { success: true },
+        });
+      } catch (error) {
+        console.error('[ChatPanel] Tool execution error:', error);
+        addToolOutput({
+          tool: toolCall.toolName,
+          toolCallId: toolCall.toolCallId,
+          output: { success: false, error: String(error) },
+        });
+      }
     },
   });
 
@@ -794,8 +909,12 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
 
   return (
     <div ref={panelRef} id="ai-chat-panel" data-ai-chat-panel
-      class="fixed right-4 bottom-20 z-[90] flex w-[370px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl sm:right-6 sm:bottom-20"
-      style={{ height: 'min(520px, calc(100vh - 7rem))' }}>
+      class={`fixed z-[90] flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl transition-all duration-300 ease-out ${
+        panelSize === 'L' 
+          ? 'right-[10vw] bottom-[10vh] z-[100]' 
+          : 'right-4 bottom-20 sm:right-6 sm:bottom-20'
+      } ${sizeConfig.class}`}
+      style={{ height: sizeConfig.height }}>
 
       {/* Header */}
       <div class="flex shrink-0 items-center justify-between border-b border-border px-3.5 py-2.5">
@@ -818,6 +937,23 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
           </span>
         </div>
         <div class="flex items-center gap-0.5">
+          <div class="flex items-center gap-0.5 rounded-md border border-border bg-muted/30 p-0.5">
+            {(['S', 'M', 'L'] as const).map(size => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => setPanelSize(size)}
+                class={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${
+                  panelSize === size
+                    ? 'bg-accent text-background'
+                    : 'text-foreground-soft hover:text-foreground'
+                }`}
+                title={size === 'S' ? 'Small' : size === 'M' ? 'Medium' : 'Large'}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
           <button type="button" onClick={handleClear}
             class="rounded-md p-1 text-foreground-soft transition-colors hover:bg-muted/60 hover:text-foreground"
             title={t('ai.clear', lang)}>

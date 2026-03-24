@@ -162,8 +162,34 @@ export function buildStaticLayer(config: StaticLayerConfig): string {
     '',
     '## ' + t('ai.prompt.section.preOutputChecks', lang),
     ...p.preOutputChecks.map((s: string) => `- ${s}`),
+    '',
+    buildToolsSection(lang),
     config.voiceStylePrompt ?? '',
   ].filter(Boolean);
 
   return parts.join('\n').trim();
+}
+
+function buildToolsSection(lang: string): string {
+  const isZh = lang === 'zh';
+  
+  const header = isZh ? '## 工具使用' : '## Tool Usage';
+  
+  const intro = isZh 
+    ? '当用户请求执行操作（如切换主题、跳转文章、滚动到章节等）时，请直接调用相应的工具，而不是解释如何操作。'
+    : 'When the user requests an action (e.g., toggle theme, navigate to article, scroll to section), call the appropriate tool directly instead of explaining how to do it.';
+  
+  const examples = isZh ? [
+    '示例：',
+    '- 用户: "切换到暗模式" → 调用 toggleTheme({ theme: "dark" })',
+    '- 用户: "帮我找 AI 相关的文章" → 调用 searchArticles({ query: "AI" })，然后根据结果回答',
+    '- 用户: "跳到第三章" → 调用 scrollToSection({ sectionId: "三系统架构设计" })',
+  ] : [
+    'Examples:',
+    '- User: "switch to dark mode" → Call toggleTheme({ theme: "dark" })',
+    '- User: "find articles about AI" → Call searchArticles({ query: "AI" }), then respond based on results',
+    '- User: "jump to chapter 3" → Call scrollToSection({ sectionId: "chapter-3" })',
+  ];
+  
+  return [header, '', intro, '', ...examples].join('\n');
 }

@@ -1,6 +1,7 @@
 ---
 title: "AI Chat Configuration Guide"
 pubDatetime: 2026-03-17T00:00:00.000Z
+modDatetime: 2026-03-24T00:00:00.000Z
 author: Souloss
 description: "Complete guide to configuring astro-minimax AI chat: providers, RAG search, Mock mode, author profiles, and quality evaluation."
 tags:
@@ -122,6 +123,33 @@ flowchart LR
 - 3 consecutive failures marks a provider as unhealthy
 - Automatic recovery attempt after 60 seconds
 - When all providers fail, Mock ensures users always receive a response
+
+## AI Tool Calling and Actions
+
+When users ask things like “switch to dark mode” or “open article X,” the model can **invoke tools** to perform those actions directly, instead of only describing the steps.
+
+### Available tools
+
+The chat pipeline registers seven tools (names match the implementation):
+
+| Tool | Purpose |
+|------|---------|
+| `toggleTheme` | Switch among light, dark, and system theme |
+| `navigateToArticle` | Go to a post by slug (optional language and section) |
+| `scrollToSection` | Scroll to a heading/section on the current page |
+| `toggleReadingMode` | Turn reading mode on/off and adjust font options |
+| `highlightText` | Highlight text or a target element |
+| `setPreference` | Set a user preference key/value |
+| `searchArticles` | Search posts and projects; returns titles, URLs, summaries |
+
+### How it works
+
+- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` are defined with schemas on the server; the model emits tool calls, and the **browser** runs them via the theme’s **ActionExecutor** (`@astro-minimax/core`), mapping calls to DOM, routing, and preferences.
+- **Server-side tool**: `searchArticles` includes an `execute` handler that runs **on the server during the chat/RAG request**, calling the same `searchArticles` / `searchProjects` retrieval used by the pipeline so the model can search before answering or suggest links.
+
+### Action system and cross-page chaining
+
+Execution is centralized under `packages/core/src/actions/`: **ActionExecutor** performs each action; **URLHandler** (and related helpers) can carry work across navigations using query parameters (`theme`, `section`, `ai_actions` plus a queued token) so a **chain of actions** can finish after the next page load. The chat UI turns client tool calls into these actions.
 
 ## Mock Mode
 

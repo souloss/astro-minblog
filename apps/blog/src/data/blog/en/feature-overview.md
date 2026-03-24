@@ -1,6 +1,7 @@
 ---
 title: "astro-minimax Feature Overview"
 pubDatetime: 2026-03-14T00:00:00.000Z
+modDatetime: 2026-03-24T00:00:00.000Z
 author: Souloss
 description: "A comprehensive guide to all astro-minimax features, including content management, visualization components, AI integration, and interactive systems."
 tags:
@@ -300,6 +301,10 @@ The `@astro-minimax/ai` package provides intelligent conversation capabilities.
 - **Reading companion** — Article pages auto-inject context for contextual Q&A
 - **Global/session cache** — Public questions cached across users for faster responses
 - **Mock mode** — No real API needed during development
+- **AI tool calling** — The assistant can control page UI directly: theme switching, article navigation, section scrolling, reading mode, text highlighting
+- **Action executor system** — Client-side action execution with cross-page action chaining and URL-based action persistence
+- **ChatPanel** — Resizable panel with S/M/L presets
+- **CodeBlock** — Enhanced visualization toolbar: zoom, fullscreen, copy
 
 ### Usage
 
