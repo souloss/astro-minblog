@@ -31,17 +31,20 @@ import { SITE } from "./src/config";
 import { SOCIALS, SHARE_LINKS } from "./src/constants";
 import { FRIENDS } from "./src/data/friends";
 
-const asTransformer = (t: unknown) => t as never;
-
 const shikiTransformers = [
-  asTransformer(updateStyle()),
-  asTransformer(addTitle()),
-  asTransformer(addLanguage()),
-  asTransformer(addCopyButton(2000)),
-  asTransformer(addCollapse(15)),
+  updateStyle(),
+  addTitle(),
+  addLanguage(),
+  addCopyButton(2000),
+  addCollapse(15),
   transformerNotationHighlight(),
   transformerNotationWordHighlight(),
   transformerNotationDiff({ matchAlgorithm: "v3" }),
+];
+
+const zoomableRemarkPlugin = [remarkAddZoomable, { className: "zoomable" }] as [
+  typeof remarkAddZoomable,
+  { className: string },
 ];
 
 export default defineConfig({
@@ -75,7 +78,7 @@ export default defineConfig({
           fontSize: "md",
           lineHeight: "comfortable",
           contentWidth: "medium",
-          theme: "light",
+          theme: "default",
           fontFamily: "system",
           focusMode: false,
         },
@@ -93,7 +96,7 @@ export default defineConfig({
       },
     }),
     // Preact integration with React compatibility mode.
-    // 
+    //
     // WHY: @ai-sdk/react (used by AI chat) is a React library that uses React hooks.
     // Preact's compat layer shims React to work with Preact's smaller runtime (3kb vs 40kb).
     // This lets us use @ai-sdk/react without shipping full React to the browser.
@@ -122,9 +125,7 @@ export default defineConfig({
       remarkGithubAlerts,
       remarkEmoji,
       remarkReadingTime,
-      // remarkAddZoomable needs options parameter cast
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      [remarkAddZoomable as any, { className: "zoomable" }],
+      zoomableRemarkPlugin,
     ],
     rehypePlugins: [
       rehypeKatex,
@@ -141,20 +142,28 @@ export default defineConfig({
   },
   vite: {
     plugins: [
-      tailwindcss() as never,
-      process.env.ANALYZE === 'true' && visualizer({
-        open: true,
-        filename: 'stats.html',
-        gzipSize: true,
-        brotliSize: true,
-      }),
+      tailwindcss(),
+      process.env.ANALYZE === "true" &&
+        visualizer({
+          open: true,
+          filename: "stats.html",
+          gzipSize: true,
+          brotliSize: true,
+        }),
       {
         name: "astro-minimax-media-resolver",
         enforce: "pre" as const,
         async resolveId(source, importer, options) {
           if (source.startsWith("@/components/media")) {
-            const vizDir = new URL("../../packages/core/src/components/viz", import.meta.url).pathname;
-            return this.resolve(source.replace("@/components/media", vizDir), importer, { ...options, skipSelf: true });
+            const vizDir = new URL(
+              "../../packages/core/src/components/viz",
+              import.meta.url
+            ).pathname;
+            return this.resolve(
+              source.replace("@/components/media", vizDir),
+              importer,
+              { ...options, skipSelf: true }
+            );
           }
         },
       },
@@ -184,26 +193,29 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        "@/components/media": new URL("../../packages/core/src/components/viz", import.meta.url).pathname,
+        "@/components/media": new URL(
+          "../../packages/core/src/components/viz",
+          import.meta.url
+        ).pathname,
         // Base path alias for src/ directory
-        "@/" : new URL("./src/", import.meta.url).pathname,
+        "@/": new URL("./src/", import.meta.url).pathname,
         // React compatibility: redirect React imports to Preact compat layer.
-        // 
+        //
         // WHY: @ai-sdk/react imports from 'react' and 'react-dom'.
         // We alias these to preact/compat so the React hooks (@ai-sdk/react uses
         // useState, useEffect, etc.) work with Preact instead of full React.
         // This is the standard pattern for using React libraries with Preact.
-        "react": "preact/compat",
+        react: "preact/compat",
         "react-dom": "preact/compat",
         "react/jsx-runtime": "preact/jsx-runtime",
       },
       // Dedupe: ensure only ONE copy of Preact and its variants is loaded.
-      // 
+      //
       // WHY: When multiple packages depend on different versions or copies of Preact,
       // the hooks module (__H) can become undefined. This prevents multiple Preact
       // instances by forcing all imports to use the same resolved module.
       // The __H error (hooks undefined) occurs when Preact loads inconsistently.
-      // 
+      //
       // IMPORTANT: @ai-sdk/react and ai MUST be deduped because they use React hooks
       // that get aliased to preact/compat. Without deduplication, multiple hook instances
       // can cause __H undefined errors during hydration.
@@ -216,16 +228,16 @@ export default defineConfig({
         "react",
         "react-dom",
         "@ai-sdk/react",
-        "ai"
+        "ai",
       ],
     },
     // Pre-bundle dependencies to speed up development and ensure consistency.
-    // 
+    //
     // WHY: By explicitly including these packages in optimizeDeps, Vite pre-bundles
     // them on startup. This prevents lazy-loading race conditions where modules
     // might load from different copies during dev. Particularly important for
     // @ai-sdk/react which uses hooks that must resolve consistently.
-    // 
+    //
     // NOTE: Local workspace packages (@astro-minimax/*) are excluded from optimization
     // because they're linked via workspace protocol and should be loaded fresh on changes.
     optimizeDeps: {
@@ -251,7 +263,7 @@ export default defineConfig({
       ],
     },
     // SSR configuration for Cloudflare Pages deployment.
-    // 
+    //
     // WHY: @resvg/resvg-js and sharp are native modules that don't work in
     // Cloudflare's V8 runtime. Marking them as external means they're not
     // bundled and are expected to be available in the deployment environment.
@@ -285,21 +297,25 @@ export default defineConfig({
               entryFileNames: "assets/[name]-[hash].js",
               assetFileNames: "assets/[name]-[hash].[ext]",
               manualChunks(id) {
-                if (id.includes('preact/') || id.includes('preact\\') || 
-                    id.includes('react/') || id.includes('react\\')) {
-                  return 'vendor-preact';
+                if (
+                  id.includes("preact/") ||
+                  id.includes("preact\\") ||
+                  id.includes("react/") ||
+                  id.includes("react\\")
+                ) {
+                  return "vendor-preact";
                 }
-                if (id.includes('@ai-sdk')) {
-                  return 'vendor-ai';
+                if (id.includes("@ai-sdk")) {
+                  return "vendor-ai";
                 }
-                if (id.includes('mermaid')) {
-                  return 'vendor-mermaid';
+                if (id.includes("mermaid")) {
+                  return "vendor-mermaid";
                 }
-                if (id.includes('markmap')) {
-                  return 'vendor-markmap';
+                if (id.includes("markmap")) {
+                  return "vendor-markmap";
                 }
-                if (id.includes('katex')) {
-                  return 'vendor-katex';
+                if (id.includes("katex")) {
+                  return "vendor-katex";
                 }
               },
             },
