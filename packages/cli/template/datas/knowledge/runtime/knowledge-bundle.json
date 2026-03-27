@@ -1,0 +1,54 @@
+{
+  "$schema": "knowledge-bundle-v1",
+  "version": 1,
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "corpusHash": "template-sample",
+  "runtime": {
+    "summaries": {
+      "meta": {
+        "lastUpdated": "2026-01-01T00:00:00.000Z",
+        "model": "none",
+        "totalProcessed": 0
+      },
+      "articles": {}
+    },
+    "authorContext": {
+      "author": {},
+      "posts": []
+    },
+    "voiceProfile": {
+      "style": {},
+      "examples": []
+    },
+    "factRegistry": {
+      "$schema": "fact-registry-v1",
+      "generatedAt": "",
+      "version": 1,
+      "facts": [],
+      "stats": {
+        "total": 0,
+        "byCategory": {
+          "author": 0,
+          "blog": 0,
+          "content": 0,
+          "project": 0,
+          "tech": 0
+        },
+        "avgConfidence": 0
+      }
+    },
+    "vectorIndex": null
+  },
+  "corpus": {
+    "$schema": "knowledge-corpus-v1",
+    "version": 1,
+    "generatedAt": "2026-01-01T00:00:00.000Z",
+    "documents": []
+  },
+  "passages": {
+    "$schema": "knowledge-passages-v1",
+    "version": 1,
+    "generatedAt": "2026-01-01T00:00:00.000Z",
+    "passages": []
+  }
+}

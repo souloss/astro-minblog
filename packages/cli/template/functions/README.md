@@ -1,6 +1,6 @@
 # Cloudflare Pages Functions
 
-Thin adapter layer for Cloudflare Pages deployment. Core logic lives in `@astro-minimax/ai/server`.
+Thin adapter layer for Cloudflare Pages deployment. Core logic lives in `@astro-minimax/ai/server` and `@astro-minimax/notify`.
 
 ## Structure
 
@@ -12,8 +12,6 @@ functions/
     notify/
       comment.ts      → Comment notification webhook (for Waline)
       status.ts       → Notification config status endpoint
-      test-ai-chat.ts → Test AI chat notification
-      debug.ts        → Debug webhook payload
 ```
 
 ## Local Development
@@ -37,6 +35,8 @@ Configure in `.env` (local) or Cloudflare Dashboard (production):
 | `SITE_AUTHOR`     | Author name for AI prompts                     |
 | `SITE_URL`        | Site URL for article links                     |
 
+Template runtime data should be generated before deployment. The AI adapters initialize metadata from `datas/knowledge/runtime/knowledge-bundle.json`, with `runtime.vectorIndex` treated as an optional companion for retrieval features.
+
 ### Notification Configuration
 
 | Variable                    | Description                            |
@@ -50,7 +50,7 @@ Configure in `.env` (local) or Cloudflare Dashboard (production):
 
 ## Deployment
 
-For monorepo deployment, set **Root directory** to `apps/blog` in Cloudflare Pages project settings.
+For a project generated from this template, run the build from the scaffold root and deploy the generated `dist/` directory.
 
 ```bash
 pnpm run build
