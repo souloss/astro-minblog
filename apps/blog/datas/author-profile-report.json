@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-18T14:22:06.776Z",
+    "lastUpdated": "2026-03-27T14:36:39.506Z",
     "model": "rule-based-template",
     "generatedBy": "rule-based"
   },
@@ -8,18 +8,18 @@
     "hero": {
       "title": "AI 视角下的 Souloss",
       "summary": "一位专注于教程/博客、教程/配置、Tutorial/Configuration领域的博主，持续输出高质量内容。",
-      "intro": "博客已发布 35 篇文章，涵盖 15 个主题标签。"
+      "intro": "博客已发布 40 篇文章，涵盖 15 个主题标签。"
     },
     "identities": [
       {
         "name": "技术博主",
         "description": "持续分享技术经验与实践心得。",
-        "evidence": "已发布 35 篇文章。"
+        "evidence": "已发布 40 篇文章。"
       },
       {
         "name": "内容创作者",
         "description": "注重内容质量与读者体验。",
-        "evidence": "近期文章《\"Configuring Environment Variables in Cloudflare Pages\"》体现了专业的写作风格。"
+        "evidence": "近期文章《\"@astro-minimax/ai Module Technical Architecture Deep Dive\"》体现了专业的写作风格。"
       }
     ],
     "strengths": [
@@ -53,34 +53,34 @@
     "proofs": {
       "posts": [
         {
-          "title": "\"Configuring Environment Variables in Cloudflare Pages\"",
-          "url": "/en/posts/cloudflare-env-vars/",
-          "reason": "This guide explains how to configure environment variables i",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
+          "url": "/en/posts/ai-module-architecture/",
+          "reason": "The article explains the vendor-agnostic architecture of the",
+          "date": "2026-03-21T00:00:00.000Z"
         },
         {
-          "title": "\"Complete Setup Guide: From Zero to Production\"",
-          "url": "/en/posts/complete-setup-guide/",
-          "reason": "This guide walks you through building a complete blog from s",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "Settings Panel & Preferences",
+          "url": "/en/posts/settings-panel/",
+          "reason": "The article introduces astro-minimax’s settings panel, expla",
+          "date": "2026-03-21T00:00:00.000Z"
         },
         {
-          "title": "\"Setup Umami Analytics: Free Vercel Deployment\"",
-          "url": "/en/posts/setup-umami-analytics/",
-          "reason": "Umami is an open-source, privacy-friendly web analytics tool",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "\"@astro-minimax/ai 模块技术架构详解\"",
+          "url": "/zh/posts/ai-module-architecture/",
+          "reason": "文章详解 @astro-minimax/ai 的分层技术架构，围绕 RAG 流水线、多供应商抽象、流式响应与降级容错设计",
+          "date": "2026-03-21T00:00:00.000Z"
         },
         {
-          "title": "\"Deploy Waline Comment System on Vercel\"",
-          "url": "/en/posts/setup-waline-on-vercel/",
-          "reason": "Waline is a simple, safe comment system with Markdown suppor",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "设置面板与偏好设置",
+          "url": "/zh/posts/settings-panel/",
+          "reason": "文章介绍 astro-minimax 的设置面板使用方式，说明外观、阅读、布局与通用偏好的配置项，以及通过 localS",
+          "date": "2026-03-21T00:00:00.000Z"
         },
         {
-          "title": "\"Cloudflare Pages 环境变量配置指南\"",
-          "url": "/zh/posts/cloudflare-env-vars/",
-          "reason": "astro-minimax 博客在 Cloudflare Pages 部署时，需要正确配置环境变量才能启用完整功能。本文",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "How to update dependencies of astro-minimax",
+          "url": "/en/posts/how-to-update-dependencies/",
+          "reason": "The article explains how to update astro-minimax dependencie",
+          "date": "2026-03-20T00:00:00.000Z"
         }
       ]
     },

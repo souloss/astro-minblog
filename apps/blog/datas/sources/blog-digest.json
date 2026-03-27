@@ -1,7 +1,105 @@
 {
-  "generatedAt": "2026-03-24T16:08:30.301Z",
-  "count": 40,
+  "generatedAt": "2026-03-27T05:50:58.399Z",
+  "count": 70,
   "posts": [
+    {
+      "id": "en/_releases/astro-minimax-0.9.2",
+      "title": "\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"",
+      "date": "2026-03-24T12:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "security",
+        "refactoring"
+      ],
+      "summary": "astro-minimax v0.9.2 focuses on security hardening and architectural improvements. Following a parallel deep audit of all four packages, we fixed XSS…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.2/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.2",
+      "title": "\"astro-minimax v0.9.2: 安全加固与架构拆分\"",
+      "date": "2026-03-24T12:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "security",
+        "refactoring"
+      ],
+      "summary": "astro-minimax v0.9.2 聚焦「安全加固」与「架构拆分」：基于四包并行深度审计，修复了 XSS/路径穿越等安全问题，完成两轮组件拆分，并将配置常量收敛到单一数据源。\n\n安全修复\n\nURL 协议校验 (Critical)\n\nAI 聊天中模型返回的 Markdown 链接、通知模板中的…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.2/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.9.1",
+      "title": "\"astro-minimax v0.9.1: AI Tool Calling & Action System\"",
+      "date": "2026-03-24T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "ai",
+        "tool-calling",
+        "actions"
+      ],
+      "summary": "astro-minimax v0.9.1 focuses on what the AI can do: standard tool calls drive page behavior, backed by a type-safe action pipeline in the theme. It a…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.1/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.1",
+      "title": "\"astro-minimax v0.9.1: AI 工具调用与动作系统\"",
+      "date": "2026-03-24T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "ai",
+        "tool-calling",
+        "actions"
+      ],
+      "summary": "astro-minimax v0.9.1 聚焦「AI 能做什么」：通过标准工具调用驱动页面行为，并在主题中落地类型安全的动作执行管线；同时提升检索粒度与聊天、代码块等周边体验。\n\n新功能\n\nAI 工具调用 (Tool Calling)\n\nAI 助手现在可以通过工具调用直接控制页面行为。内置 7 个…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.1/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.9.0",
+      "title": "astro-minimax 0.9.0",
+      "date": "2026-03-22T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.9.0 is a feature enhancement release with multiple user experience improvements and component enhancements.\n\nNew Features\n\nMermaid In…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.0/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.0",
+      "title": "astro-minimax 0.9.0",
+      "date": "2026-03-22T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.9.0 是一个功能增强版本，带来了多项用户体验改进和组件增强。\n\n新功能\n\nMermaid 交互工具栏\n\n增强了 MermaidInit 组件，新增交互式工具栏：\n缩放控制：放大、缩小、重置缩放\n导出功能：支持导出为 SVG 和 PNG 格式\n全屏模式：全屏查看图表…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.0/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.8.3",
+      "title": "astro-minimax 0.8.3",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.3 is a feature release with significant user experience improvements and new functionality.\n\nNew Features\n\nCover Image Support\n\nNew…",
+      "url": "/en/posts/_releases/astro-minimax-0.8.3/"
+    },
     {
       "id": "en/ai-module-architecture",
       "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
@@ -29,6 +127,18 @@
       ],
       "summary": "The article introduces astro-minimax’s settings panel, explaining how to adjust appearance, reading, layout, and general preferences, then save, share, reset, and automatically restore them for a personalized blog experience.",
       "url": "/en/posts/settings-panel/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.8.3",
+      "title": "astro-minimax 0.8.3",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.3 是一个功能更新版本，带来了多项用户体验改进和新功能。\n\n新功能\n\n封面图支持\n\n新增  字段用于博客文章封面图，与 （社交分享图）区分：\n\n| 字段          | 用途         | 使用场景                          …",
+      "url": "/zh/posts/_releases/astro-minimax-0.8.3/"
     },
     {
       "id": "zh/ai-module-architecture",
@@ -59,6 +169,30 @@
       "url": "/zh/posts/settings-panel/"
     },
     {
+      "id": "en/_releases/astro-minimax-0.8.0",
+      "title": "astro-minimax 0.8.0",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax is a minimal, responsive, accessible and SEO-friendly Astro blog theme. This project is built on top of AstroPaper and has evolved thro…",
+      "url": "/en/posts/_releases/astro-minimax-0.8.0/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.8.1",
+      "title": "astro-minimax 0.8.1",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.1 is a maintenance release that fixes several issues discovered in 0.8.0.\n\nBug Fixes\n\nMermaid Theme Adaptation\n\nFixed an issue wher…",
+      "url": "/en/posts/_releases/astro-minimax-0.8.1/"
+    },
+    {
       "id": "en/how-to-update-dependencies",
       "title": "How to update dependencies of astro-minimax",
       "date": "2026-03-20T00:00:00.000Z",
@@ -69,6 +203,30 @@
       ],
       "summary": "The article explains how to update astro-minimax dependencies and template safely using pnpm, npm-check-updates, and Git workflows, helping users stay current while reducing breakage risk.",
       "url": "/en/posts/how-to-update-dependencies/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.8.0",
+      "title": "astro-minimax 0.8.0",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 是一个极简、响应式、无障碍且对 SEO 友好的 Astro 博客主题。本项目基于 AstroPaper 二次开发，经过多个版本的迭代，现已成为一个功能完善的独立主题。当前版本 0.8.0 基于 Astro v6 构建。\n\n项目起源\n\nastro-minimax 源自对 …",
+      "url": "/zh/posts/_releases/astro-minimax-0.8.0/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.8.1",
+      "title": "astro-minimax 0.8.1",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.1 是一个维护版本，修复了 0.8.0 中发现的若干问题。\n\n修复的问题\n\nMermaid 图表主题适配\n\n修复了 Mermaid 图表在明暗主题切换时不会更新颜色的问题。现在图表会正确地随主题切换重新渲染，使用对应的配色方案。\n\n影响：所有使用 Mermaid…",
+      "url": "/zh/posts/_releases/astro-minimax-0.8.1/"
     },
     {
       "id": "zh/how-to-update-dependencies",
@@ -403,6 +561,76 @@
       "url": "/zh/posts/feature-overview/"
     },
     {
+      "id": "en/_examples/excalidraw-whiteboard",
+      "title": "\"Excalidraw Whiteboard: Hand-Drawn Diagrams in Your Blog\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "excalidraw"
+      ],
+      "summary": "Excalidraw is a virtual whiteboard tool that produces hand-drawn style diagrams. It's perfect for technical illustrations, architecture diagrams, and…",
+      "url": "/en/posts/_examples/excalidraw-whiteboard/"
+    },
+    {
+      "id": "en/_examples/markdown-basics",
+      "title": "\"Markdown Basics: A Complete Syntax Guide\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "This article covers all the fundamental Markdown syntax you need to write rich, well-structured content. Every feature includes a working example so …",
+      "url": "/en/posts/_examples/markdown-basics/"
+    },
+    {
+      "id": "en/_examples/markdown-extended",
+      "title": "\"Markdown Extended: Advanced Syntax Features\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "Beyond the basics, Markdown supports a rich set of extended features. This article demonstrates math typesetting, code blocks with advanced highlight…",
+      "url": "/en/posts/_examples/markdown-extended/"
+    },
+    {
+      "id": "en/_examples/markmap-mindmaps",
+      "title": "\"Markmap Mindmaps: Visual Thinking in Markdown\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markmap"
+      ],
+      "summary": "Mindmaps are a powerful tool for organizing thoughts, planning projects, and visualizing relationships between concepts. With Markmap, you can create…",
+      "url": "/en/posts/_examples/markmap-mindmaps/"
+    },
+    {
+      "id": "en/_examples/mermaid-diagrams",
+      "title": "Mermaid Diagram Examples",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Blog/Tutorial",
+      "tags": [
+        "mermaid",
+        "diagram",
+        "tutorial"
+      ],
+      "summary": "This article demonstrates how to create various Mermaid diagrams using the \n\n---\n\nReferences\nMermaid Official Documentation\nMermaid GitHub\nMermaid Li…",
+      "url": "/en/posts/_examples/mermaid-diagrams/"
+    },
+    {
       "id": "en/getting-started",
       "title": "\"Getting Started: Three Integration Methods\"",
       "date": "2026-03-12T00:00:00.000Z",
@@ -416,6 +644,76 @@
       "url": "/en/posts/getting-started/"
     },
     {
+      "id": "zh/_examples/excalidraw-whiteboard",
+      "title": "\"Excalidraw 白板：在博客中嵌入手绘风格图表\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "excalidraw"
+      ],
+      "summary": "Excalidraw 是一个虚拟白板工具，可以生成手绘风格的图表。它非常适合技术插图、架构图和可视化解释，给人一种亲切自然的感觉。\n\n---\n\n什么是 Excalidraw？\n\nExcalidraw 是一个开源虚拟白板，具有以下核心特性：\n手绘风格 — 图表看起来像手画的草图，给人轻松自然的感觉\n…",
+      "url": "/zh/posts/_examples/excalidraw-whiteboard/"
+    },
+    {
+      "id": "zh/_examples/markdown-basics",
+      "title": "\"Markdown 基础：完整语法指南\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "本文涵盖了所有基础 Markdown 语法，帮助你编写丰富、结构清晰的内容。每个功能都附带可用的示例，让你直观地看到渲染效果。\n\n---\n\n标题\n\nMarkdown 支持六个级别的标题，使用  符号来定义标题层级。\n\n一级标题\n\n二级标题\n\n三级标题\n\n四级标题\n\n五级标题\n\n六级标题\n\n每个标题…",
+      "url": "/zh/posts/_examples/markdown-basics/"
+    },
+    {
+      "id": "zh/_examples/markdown-extended",
+      "title": "\"Markdown 扩展：高级语法功能\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "在基础语法之外，Markdown 还支持丰富的扩展功能。本文展示数学排版、高级代码高亮、GitHub 风格告警等特性。\n\n---\n\n数学公式\n\n行内公式\n\n使用单美元符号输入行内公式。例如，爱因斯坦的著名方程 $E = mc^2$ 改变了物理学。求根公式 $x = \\frac{-b \\pm \\sq…",
+      "url": "/zh/posts/_examples/markdown-extended/"
+    },
+    {
+      "id": "zh/_examples/markmap-mindmaps",
+      "title": "\"Markmap 思维导图：用 Markdown 进行可视化思考\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markmap"
+      ],
+      "summary": "思维导图是组织思路、规划项目和可视化概念关系的强大工具。借助 Markmap，你可以直接在 Markdown 文件中使用  代码块中，即可渲染为精美的交互式 SVG 思维导图。\n\n---\n\n基础思维导图\n\n此示例展示了最基本的结构——一个中心主题，下分三层分支。\n\n每个分支从中心向外展开。点击节点…",
+      "url": "/zh/posts/_examples/markmap-mindmaps/"
+    },
+    {
+      "id": "zh/_examples/mermaid-diagrams",
+      "title": "Mermaid 图表示例",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "博客/教程",
+      "tags": [
+        "mermaid",
+        "图表",
+        "教程"
+      ],
+      "summary": "本文展示如何使用 \n\n---\n\n参考资料\nMermaid 官方文档\nMermaid GitHub\nMermaid Live Editor",
+      "url": "/zh/posts/_examples/mermaid-diagrams/"
+    },
+    {
       "id": "zh/getting-started",
       "title": "\"快速开始：三种使用方式\"",
       "date": "2026-03-12T00:00:00.000Z",
@@ -427,6 +725,118 @@
       ],
       "summary": "文章介绍 astro-minimax 的三种快速上手方式：CLI 创建、GitHub Template 与 NPM 包集成，并说明各自适用场景、配置步骤和更新方式，帮助用户按需求高效搭建博客。",
       "url": "/zh/posts/getting-started/"
+    },
+    {
+      "id": "en/_examples/rust-series-04-concurrency",
+      "title": "\"Rust Concurrency in Practice\"",
+      "date": "2026-03-07T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Concurrency",
+        "async/await"
+      ],
+      "summary": "Rust's Concurrency Safety Guarantee\n\nRust has a famous motto: \"Fearless Concurrency\". Thanks to the ownership system and type system, Rust can elimin…",
+      "url": "/en/posts/_examples/rust-series-04-concurrency/"
+    },
+    {
+      "id": "zh/_examples/rust-series-04-concurrency",
+      "title": "\"Rust 并发编程实战\"",
+      "date": "2026-03-07T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "并发",
+        "async/await"
+      ],
+      "summary": "Rust 的并发安全保证\n\nRust 有一个著名的口号：「无畏并发」（Fearless Concurrency）。得益于所有权系统和类型系统，Rust 在编译时就能排除绝大部分并发错误，如数据竞争。\n\n线程基础\n\n创建线程\n\n使用 move 闭包\n\n当需要在线程间传递数据所有权时：\n\n消息传递\n\n…",
+      "url": "/zh/posts/_examples/rust-series-04-concurrency/"
+    },
+    {
+      "id": "en/_examples/rust-series-03-error-handling",
+      "title": "\"Rust Error Handling Best Practices\"",
+      "date": "2026-03-05T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Error Handling",
+        "Result"
+      ],
+      "summary": "Why is Rust's Error Handling Different?\n\nIn most languages, error handling relies on exception mechanisms (try-catch). Rust takes a completely differ…",
+      "url": "/en/posts/_examples/rust-series-03-error-handling/"
+    },
+    {
+      "id": "zh/_examples/rust-series-03-error-handling",
+      "title": "\"Rust 错误处理最佳实践\"",
+      "date": "2026-03-05T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "错误处理",
+        "Result"
+      ],
+      "summary": "为什么 Rust 的错误处理与众不同？\n\n在大多数语言中，错误处理依赖于异常机制（try-catch）。而 Rust 采用了完全不同的方式——通过类型系统来处理错误。这意味着编译器会强制你处理每一个可能的错误情况，不会有遗漏。\n\n两种错误类型\n\nRust 将错误分为两种：\n可恢复错误（）：如文件未…",
+      "url": "/zh/posts/_examples/rust-series-03-error-handling/"
+    },
+    {
+      "id": "en/_examples/rust-series-02-ownership",
+      "title": "\"Understanding Rust's Ownership System\"",
+      "date": "2026-03-03T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Ownership",
+        "Memory Management"
+      ],
+      "summary": "What is Ownership?\n\nOwnership is Rust's most unique feature, enabling Rust to guarantee memory safety without needing a garbage collector. Understand…",
+      "url": "/en/posts/_examples/rust-series-02-ownership/"
+    },
+    {
+      "id": "zh/_examples/rust-series-02-ownership",
+      "title": "\"理解 Rust 的所有权系统\"",
+      "date": "2026-03-03T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "所有权",
+        "内存管理"
+      ],
+      "summary": "什么是所有权？\n\n所有权是 Rust 最独特的特性，它使 Rust 能在不需要垃圾回收的情况下保证内存安全。理解所有权对于掌握 Rust 至关重要。\n\n所有权规则\n\nRust 的所有权遵循三条简单规则：\nRust 中的每一个值都有一个所有者（owner）\n同一时刻，一个值只能有一个所有者\n当所有者…",
+      "url": "/zh/posts/_examples/rust-series-02-ownership/"
+    },
+    {
+      "id": "en/_examples/rust-series-01-introduction",
+      "title": "\"Rust Getting Started Guide: Why Choose Rust?\"",
+      "date": "2026-03-01T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Programming Language",
+        "Getting Started"
+      ],
+      "summary": "Why Learn Rust?\n\nRust is a systems programming language focused on safety, concurrency, and performance. Since its 1.0 release in 2015, it has been v…",
+      "url": "/en/posts/_examples/rust-series-01-introduction/"
+    },
+    {
+      "id": "zh/_examples/rust-series-01-introduction",
+      "title": "\"Rust 入门指南：为什么选择 Rust？\"",
+      "date": "2026-03-01T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "编程语言",
+        "入门教程"
+      ],
+      "summary": "为什么学习 Rust？\n\nRust 是一门专注于安全性、并发性和性能的系统编程语言。自 2015 年发布 1.0 版本以来，它连续多年在 Stack Overflow 开发者调查中被评为\"最受喜爱的编程语言\"。\n\nRust 的核心优势\n内存安全，无需垃圾回收\n\nRust 通过其独特的所有权系统（O…",
+      "url": "/zh/posts/_examples/rust-series-01-introduction/"
     },
     {
       "id": "en/how-to-add-latex-equations-in-blog-posts",
