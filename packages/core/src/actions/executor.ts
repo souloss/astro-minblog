@@ -1,31 +1,36 @@
-import type { Action, ActionResult, NavigateAction } from './types';
-import { updatePreferences, type Preferences } from '../preferences';
-import { ActionQueue } from './queue';
+import type { Action, ActionResult, NavigateAction } from "./types";
+import { updatePreferences, type Preferences } from "../preferences";
+import { ActionQueue } from "./queue";
+
+type ActionReadingTheme = Preferences["reading"]["theme"];
 
 export const ActionExecutor = {
   async execute(action: Action): Promise<ActionResult> {
     try {
       switch (action.type) {
-        case 'scroll-to-section':
+        case "scroll-to-section":
           return this.scrollToSection(action.payload);
 
-        case 'highlight-text':
+        case "highlight-text":
           return this.highlightText(action.payload);
 
-        case 'toggle-theme':
+        case "toggle-theme":
           return this.toggleTheme(action.payload);
 
-        case 'toggle-reading-mode':
+        case "toggle-reading-mode":
           return this.toggleReadingMode(action.payload);
 
-        case 'set-preference':
+        case "set-preference":
           return this.setPreference(action.payload);
 
-        case 'navigate':
-          return this.navigate(action.payload as NavigateAction['payload']);
+        case "navigate":
+          return this.navigate(action.payload as NavigateAction["payload"]);
 
         default:
-          return { success: false, error: `Unknown action type: ${(action as Action).type}` };
+          return {
+            success: false,
+            error: `Unknown action type: ${(action as Action).type}`,
+          };
       }
     } catch (e) {
       const error = e instanceof Error ? e.message : String(e);
@@ -33,7 +38,9 @@ export const ActionExecutor = {
     }
   },
 
-  async executeAll(actions: Action[]): Promise<{ success: boolean; results: ActionResult[] }> {
+  async executeAll(
+    actions: Action[]
+  ): Promise<{ success: boolean; results: ActionResult[] }> {
     const results = await Promise.all(actions.map(a => this.execute(a)));
     return {
       success: results.every(r => r.success),
@@ -43,21 +50,25 @@ export const ActionExecutor = {
 
   scrollToSection(payload: Record<string, unknown>): ActionResult {
     const sectionId = payload.sectionId as string;
-    const behavior = (payload.behavior as 'smooth' | 'instant') || 'smooth';
+    const behavior = (payload.behavior as "smooth" | "instant") || "smooth";
     const offset = (payload.offset as number) ?? 100;
     const highlight = payload.highlight !== false;
     const highlightDuration = (payload.highlightDuration as number) ?? 3000;
 
     if (!sectionId) {
-      return { success: false, error: 'sectionId is required' };
+      return { success: false, error: "sectionId is required" };
     }
 
-    const sanitizedId = CSS.escape ? CSS.escape(sectionId) : sectionId.replace(/[^\w\u4e00-\u9fff-]/g, '');
-    
+    const sanitizedId = CSS.escape
+      ? CSS.escape(sectionId)
+      : sectionId.replace(/[^\w\u4e00-\u9fff-]/g, "");
+
     const element: HTMLElement | null =
       document.getElementById(sectionId) ||
       document.querySelector(`[data-section-id="${sanitizedId}"]`) ||
-      document.querySelector(`h2[id*="${sanitizedId}"], h3[id*="${sanitizedId}"]`);
+      document.querySelector(
+        `h2[id*="${sanitizedId}"], h3[id*="${sanitizedId}"]`
+      );
 
     if (!element) {
       return { success: false, error: `Section not found: ${sectionId}` };
@@ -67,8 +78,11 @@ export const ActionExecutor = {
     window.scrollTo({ top, behavior });
 
     if (highlight) {
-      element.classList.add('ai-section-highlight');
-      setTimeout(() => element.classList.remove('ai-section-highlight'), highlightDuration);
+      element.classList.add("ai-section-highlight");
+      setTimeout(
+        () => element.classList.remove("ai-section-highlight"),
+        highlightDuration
+      );
     }
 
     return { success: true };
@@ -77,20 +91,27 @@ export const ActionExecutor = {
   highlightText(payload: Record<string, unknown>): ActionResult {
     const selector = payload.selector as string | undefined;
     const text = payload.text as string | undefined;
-    const style = (payload.style as 'accent' | 'warning' | 'info' | 'success') || 'accent';
+    const style =
+      (payload.style as "accent" | "warning" | "info" | "success") || "accent";
     const duration = (payload.duration as number) ?? 3000;
     const scrollIntoView = payload.scrollIntoView === true;
 
-    let elements: Element[] = selector ? Array.from(document.querySelectorAll(selector)) : [];
+    let elements: Element[] = selector
+      ? Array.from(document.querySelectorAll(selector))
+      : [];
 
     if (elements.length === 0 && text) {
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        null
+      );
       const matches: Element[] = [];
       let node: Text | null;
 
       while ((node = walker.nextNode() as Text | null)) {
         if (node.textContent?.includes(text)) {
-          const span = document.createElement('span');
+          const span = document.createElement("span");
           span.className = `ai-highlight ai-highlight-${style}`;
           node.parentNode?.replaceChild(span, node);
           span.appendChild(node);
@@ -101,18 +122,21 @@ export const ActionExecutor = {
     }
 
     if (elements.length === 0) {
-      return { success: false, error: 'No elements found to highlight' };
+      return { success: false, error: "No elements found to highlight" };
     }
 
     elements.forEach(el => {
       el.classList.add(`ai-highlight-${style}`);
 
       if (scrollIntoView) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
 
       if (duration > 0) {
-        setTimeout(() => el.classList.remove(`ai-highlight-${style}`), duration);
+        setTimeout(
+          () => el.classList.remove(`ai-highlight-${style}`),
+          duration
+        );
       }
     });
 
@@ -120,40 +144,46 @@ export const ActionExecutor = {
   },
 
   toggleTheme(payload: Record<string, unknown>): ActionResult {
-    const theme = payload.theme as 'light' | 'dark' | 'system';
+    const theme = payload.theme as "light" | "dark" | "system";
     const animate = payload.animate !== false;
 
     const html = document.documentElement;
-    let resolvedTheme = theme;
-    
-    if (theme === 'system') {
-      resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    
-    html.setAttribute('data-theme', resolvedTheme);
-    localStorage.setItem('theme', theme === 'system' ? '' : theme);
+    const resolvedTheme =
+      theme === "system"
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+        : theme;
 
-    const win = window as unknown as {
-      theme?: {
-        themeValue?: string;
-        setTheme?: (val: string) => void;
-        reflectPreference?: () => void;
-      };
-    };
+    updatePreferences({
+      theme: {
+        mode: theme,
+      },
+    });
+
+    const win = window;
 
     if (win.theme) {
-      if (win.theme.themeValue !== undefined) {
-        win.theme.themeValue = resolvedTheme;
+      if (typeof win.theme.setTheme === "function") {
+        try {
+          win.theme.setTheme(theme);
+        } catch {
+          /* ignore */
+        }
       }
-      if (typeof win.theme.setTheme === 'function') {
-        try { win.theme.setTheme(resolvedTheme); } catch { /* ignore */ }
+      if (typeof win.theme.reflectPreference === "function") {
+        try {
+          win.theme.reflectPreference();
+        } catch {
+          /* ignore */
+        }
       }
     }
 
     if (animate) {
-      html.classList.add('theme-transition');
+      html.classList.add("theme-transition");
       setTimeout(() => {
-        html.classList.remove('theme-transition');
+        html.classList.remove("theme-transition");
       }, 400);
     }
 
@@ -162,18 +192,20 @@ export const ActionExecutor = {
 
   toggleReadingMode(payload: Record<string, unknown>): ActionResult {
     const enabled = payload.enabled as boolean | undefined;
-    const settings = payload.settings as {
-      fontSize?: 'sm' | 'md' | 'lg' | 'xl';
-      theme?: 'light' | 'dark' | 'warm' | 'sepia';
-      fontFamily?: string;
-    } | undefined;
+    const settings = payload.settings as
+        | {
+          fontSize?: "sm" | "md" | "lg" | "xl";
+          theme?: ActionReadingTheme;
+          fontFamily?: string;
+        }
+      | undefined;
 
     const html = document.documentElement;
 
     if (enabled !== undefined) {
-      html.classList.toggle('reading-mode', enabled);
+      html.classList.toggle("reading-mode", enabled);
     } else {
-      html.classList.toggle('reading-mode');
+      html.classList.toggle("reading-mode");
     }
 
     if (settings) {
@@ -183,7 +215,7 @@ export const ActionExecutor = {
         updates.reading = {
           ...(settings.fontSize ? { fontSize: settings.fontSize } : {}),
           ...(settings.theme ? { theme: settings.theme } : {}),
-        } as Preferences['reading'];
+        } as Preferences["reading"];
       }
 
       if (Object.keys(updates).length > 0) {
@@ -199,10 +231,10 @@ export const ActionExecutor = {
     const value = payload.value;
 
     if (!key) {
-      return { success: false, error: 'key is required' };
+      return { success: false, error: "key is required" };
     }
 
-    const keys = key.split('.');
+    const keys = key.split(".");
 
     if (keys.length === 1) {
       updatePreferences({ [key]: value } as Partial<Preferences>);
@@ -216,16 +248,16 @@ export const ActionExecutor = {
     return { success: true };
   },
 
-  async navigate(payload: NavigateAction['payload']): Promise<ActionResult> {
+  async navigate(payload: NavigateAction["payload"]): Promise<ActionResult> {
     const slug = payload.slug;
-    const lang = payload.lang || 'zh';
+    const lang = payload.lang || "zh";
     const then = payload.then;
 
     if (!slug) {
-      return { success: false, error: 'slug is required' };
+      return { success: false, error: "slug is required" };
     }
 
-    const currentSlug = (window as unknown as { __articleContext?: { slug: string } }).__articleContext?.slug;
+    const currentSlug = window.__articleContext?.slug;
     const isSameArticle = currentSlug === slug;
 
     if (isSameArticle) {
@@ -240,7 +272,7 @@ export const ActionExecutor = {
 
     if (then && then.length > 0) {
       const token = ActionQueue.enqueue(then);
-      url.searchParams.set('ai_actions', token);
+      url.searchParams.set("ai_actions", token);
     }
 
     if (document.startViewTransition) {
@@ -255,6 +287,6 @@ export const ActionExecutor = {
   },
 };
 
-if (typeof window !== 'undefined') {
-  (window as unknown as { __actionExecutor: typeof ActionExecutor }).__actionExecutor = ActionExecutor;
+if (typeof window !== "undefined") {
+  window.__actionExecutor = ActionExecutor;
 }
