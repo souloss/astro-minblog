@@ -61,7 +61,7 @@ SITE_URL=https://your-blog.com
 
 ```bash
 astro-minimax ai process       # Generate article summaries and SEO data
-astro-minimax profile build     # Build author profile
+astro-minimax ai profile build  # Build author profile
 ```
 
 ### 4. Start Development Server

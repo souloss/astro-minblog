@@ -117,17 +117,15 @@ Evaluation report is saved to `datas/eval/report.json`.
 ### Complete Build
 
 ```bash
-pnpm run profile:build
+pnpm run ai:profile:build
 ```
 
 Sequentially executes: context build → voice analysis → profile report generation.
 
-### Step-by-Step Build
+### Canonical Build Entry
 
 ```bash
-pnpm run profile:context    # Build author context (aggregate article data)
-pnpm run profile:voice      # Build writing style profile (pure local analysis)
-pnpm run profile:report     # Generate profile report (optional AI enhancement)
+pnpm run ai:profile:build   # Run the retained author profile pipeline
 ```
 
 Generated data files are used by the AI chat feature, helping AI respond in the author's style.
@@ -159,6 +157,6 @@ Clears AI-generated summaries, SEO data, author profiles, and other cache files.
 | `pnpm run post:stats` | `astro-minimax post stats` |
 | `pnpm run ai:process` | `astro-minimax ai process` |
 | `pnpm run ai:eval` | `astro-minimax ai eval` |
-| `pnpm run profile:build` | `astro-minimax profile build` |
+| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |
 | `pnpm run data:status` | `astro-minimax data status` |
 | `pnpm run data:clear` | `astro-minimax data clear` |

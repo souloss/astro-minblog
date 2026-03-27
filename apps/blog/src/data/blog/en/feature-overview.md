@@ -511,7 +511,7 @@ CLI tools are included with the `@astro-minimax/cli` package, or use `npx astro-
 astro-minimax post new "Post Title"   # Create a new post
 astro-minimax ai process               # AI process all articles
 astro-minimax ai eval                  # Evaluate AI chat quality
-astro-minimax profile build            # Build complete author profile
+astro-minimax ai profile build         # Build complete author profile
 astro-minimax data status              # View data status
 ```
 
