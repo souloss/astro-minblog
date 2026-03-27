@@ -1,13 +1,19 @@
 #!/usr/bin/env npx tsx
-/* eslint-disable no-console */
-
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { spawn, execSync } from "node:child_process";
 import sharp from "sharp";
 
-type ColorScheme = 'teal' | 'ocean' | 'rose' | 'forest' | 'midnight' | 'sunset' | 'mono' | 'github';
-type ThemeMode = 'light' | 'dark';
+type ColorScheme =
+  | "teal"
+  | "ocean"
+  | "rose"
+  | "forest"
+  | "midnight"
+  | "sunset"
+  | "mono"
+  | "github";
+type ThemeMode = "light" | "dark";
 
 interface ScreenshotConfig {
   url: string;
@@ -34,23 +40,88 @@ const colSpacing = cardWidth + cardPad * 2 + 80;
 const rowSpacing = cardHeight + cardPad * 2 + 72;
 
 const pages: ScreenshotConfig[] = [
-  { url: "/zh/", colorScheme: "teal", theme: "light", filename: "teal-light.png" },
-  { url: "/zh/", colorScheme: "ocean", theme: "dark", filename: "ocean-dark.png" },
-  { url: "/zh/", colorScheme: "rose", theme: "light", filename: "rose-light.png" },
-  { url: "/zh/", colorScheme: "forest", theme: "dark", filename: "forest-dark.png" },
-  { url: "/zh/", colorScheme: "midnight", theme: "dark", filename: "midnight-dark.png" },
-  { url: "/zh/", colorScheme: "sunset", theme: "light", filename: "sunset-light.png" },
-  { url: "/zh/", colorScheme: "mono", theme: "dark", filename: "mono-dark.png" },
-  { url: "/zh/", colorScheme: "github", theme: "light", filename: "github-light.png" },
-  { url: "/zh/", colorScheme: "ocean", theme: "light", filename: "ocean-light.png" },
-  { url: "/zh/", colorScheme: "teal", theme: "dark", filename: "teal-dark.png" },
-  { url: "/zh/", colorScheme: "forest", theme: "light", filename: "forest-light.png" },
-  { url: "/zh/", colorScheme: "rose", theme: "dark", filename: "rose-dark.png" },
+  {
+    url: "/zh/",
+    colorScheme: "teal",
+    theme: "light",
+    filename: "teal-light.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "ocean",
+    theme: "dark",
+    filename: "ocean-dark.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "rose",
+    theme: "light",
+    filename: "rose-light.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "forest",
+    theme: "dark",
+    filename: "forest-dark.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "midnight",
+    theme: "dark",
+    filename: "midnight-dark.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "sunset",
+    theme: "light",
+    filename: "sunset-light.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "mono",
+    theme: "dark",
+    filename: "mono-dark.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "github",
+    theme: "light",
+    filename: "github-light.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "ocean",
+    theme: "light",
+    filename: "ocean-light.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "teal",
+    theme: "dark",
+    filename: "teal-dark.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "forest",
+    theme: "light",
+    filename: "forest-light.png",
+  },
+  {
+    url: "/zh/",
+    colorScheme: "rose",
+    theme: "dark",
+    filename: "rose-dark.png",
+  },
 ];
 
 const gridLayout: (string | null)[][] = [
   ["teal-light.png", "ocean-dark.png", "rose-light.png", "forest-dark.png"],
-  ["midnight-dark.png", "sunset-light.png", "mono-dark.png", "github-light.png"],
+  [
+    "midnight-dark.png",
+    "sunset-light.png",
+    "mono-dark.png",
+    "github-light.png",
+  ],
   ["ocean-light.png", "teal-dark.png", "forest-light.png", "rose-dark.png"],
 ];
 
@@ -145,7 +216,9 @@ async function renderCard(filename: string) {
     .png()
     .toBuffer();
 
-  const framed = await sharp(Buffer.from(cardSvg(cropped.toString("base64"), isDark)))
+  const framed = await sharp(
+    Buffer.from(cardSvg(cropped.toString("base64"), isDark))
+  )
     .png()
     .toBuffer();
 
@@ -162,25 +235,32 @@ function startPreviewServer(): Promise<{ url: string; kill: () => void }> {
   return new Promise((resolve, reject) => {
     console.log("🚀 Starting preview server...");
     const server = spawn("pnpm", ["run", "preview"], {
-      cwd: rootDir, stdio: ["ignore", "pipe", "pipe"], detached: false,
+      cwd: rootDir,
+      stdio: ["ignore", "pipe", "pipe"],
+      detached: false,
     });
     let url = "";
-    server.stdout.on("data", (data) => {
+    server.stdout.on("data", data => {
       const out = data.toString();
       console.log(out);
       const m = out.match(/localhost:(\d+)/);
       if (m && !url) {
         url = `http://localhost:${m[1]}`;
         console.log(`✅ Server ready at ${url}`);
-        setTimeout(() => resolve({ url, kill: () => server.kill("SIGTERM") }), 2000);
+        setTimeout(
+          () => resolve({ url, kill: () => server.kill("SIGTERM") }),
+          2000
+        );
       }
     });
-    server.stderr.on("data", (d) => {
+    server.stderr.on("data", d => {
       const s = d.toString();
       if (!s.includes("Prebundling") && !s.includes("hmr")) console.error(s);
     });
     server.on("error", reject);
-    setTimeout(() => { if (!url) reject(new Error("Server startup timeout")); }, 30000);
+    setTimeout(() => {
+      if (!url) reject(new Error("Server startup timeout"));
+    }, 30000);
   });
 }
 
@@ -190,41 +270,64 @@ async function captureScreenshots(baseUrl: string) {
 
   const puppeteer = await import("puppeteer-core");
   const chromePaths = [
-    "/opt/google/chrome/chrome", "/usr/bin/google-chrome",
-    "/usr/bin/chromium", "/usr/bin/chromium-browser",
+    "/opt/google/chrome/chrome",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
   ];
   let chromePath = "";
   for (const p of chromePaths) {
-    try { execSync(`ls -f ${p}`, { stdio: "ignore" }); chromePath = p; break; }
-    catch { /* continue */ }
+    try {
+      execSync(`ls -f ${p}`, { stdio: "ignore" });
+      chromePath = p;
+      break;
+    } catch {
+      /* continue */
+    }
   }
-  if (!chromePath) { console.error("Chrome not found"); process.exit(1); }
+  if (!chromePath) {
+    console.error("Chrome not found");
+    process.exit(1);
+  }
 
   const browser = await puppeteer.default.launch({
-    executablePath: chromePath, headless: true,
+    executablePath: chromePath,
+    headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   try {
     for (const cfg of pages) {
-      console.log(`   Capturing: ${cfg.filename} (${cfg.colorScheme}/${cfg.theme})`);
+      console.log(
+        `   Capturing: ${cfg.filename} (${cfg.colorScheme}/${cfg.theme})`
+      );
       const page = await browser.newPage();
       await page.setViewport({ width: 1920, height: 1080 });
-      await page.emulateMediaFeatures([{ name: "prefers-color-scheme", value: cfg.theme }]);
-      await page.goto(`${baseUrl}${cfg.url}`, { waitUntil: "networkidle0", timeout: 30000 });
+      await page.emulateMediaFeatures([
+        { name: "prefers-color-scheme", value: cfg.theme },
+      ]);
+      await page.goto(`${baseUrl}${cfg.url}`, {
+        waitUntil: "networkidle0",
+        timeout: 30000,
+      });
       await new Promise(r => setTimeout(r, 500));
 
-      await page.evaluate((scheme: ColorScheme, theme: ThemeMode) => {
-        const root = document.documentElement;
-        root.setAttribute('data-color-scheme', scheme);
-        root.setAttribute('data-theme', theme);
-        root.offsetHeight;
-      }, cfg.colorScheme, cfg.theme);
+      await page.evaluate(
+        (scheme: ColorScheme, theme: ThemeMode) => {
+          const root = document.documentElement;
+          root.setAttribute("data-color-scheme", scheme);
+          root.setAttribute("data-theme", theme);
+          root.offsetHeight;
+        },
+        cfg.colorScheme,
+        cfg.theme
+      );
 
       await new Promise(r => setTimeout(r, 800));
 
       await page.screenshot({
-        path: path.join(inputDir, cfg.filename) as `${string}.png`, type: "png",
+        path: path.join(inputDir, cfg.filename) as `${string}.png`,
+        type: "png",
       });
       console.log(`   ✅ ${cfg.filename}`);
       await page.close();
@@ -282,4 +385,9 @@ async function main() {
   }
 }
 
-main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
+main()
+  .then(() => process.exit(0))
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  });
