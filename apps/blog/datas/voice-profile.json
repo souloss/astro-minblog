@@ -1,6 +1,6 @@
 {
   "$schema": "voice-profile-v1",
-  "generatedAt": "2026-03-27T14:31:24.500Z",
+  "generatedAt": "2026-03-27T17:43:25.805Z",
   "overall_tone": {
     "description": "技术博客风格，注重实践与可操作性，语言简洁明了",
     "primary_persona": "技术博主",
@@ -27,7 +27,7 @@
     }
   },
   "content_style": {
-    "avgLength": 9385,
+    "avgLength": 9402,
     "codeBlockRate": 95,
     "linkRate": 80,
     "imageRate": 25,
@@ -113,7 +113,7 @@
     },
     "Tutorial/AI": {
       "count": 1,
-      "avgLength": 10802
+      "avgLength": 11478
     },
     "Technical/AI": {
       "count": 1,

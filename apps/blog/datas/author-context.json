@@ -1,6 +1,6 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-03-27T05:50:58.407Z",
+  "generatedAt": "2026-03-27T17:43:22.937Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn/",
@@ -5316,7 +5316,7 @@
     },
     {
       "id": "en/ai-guide",
-      "title": "\"AI Chat Configuration Guide\"",
+      "title": "\"AI Chat Feature Configuration Guide\"",
       "date": "2026-03-17T00:00:00.000Z",
       "lang": "en",
       "category": "Tutorial/AI",
@@ -5340,18 +5340,18 @@
           "id": "en/ai-guide#p0",
           "postId": "en/ai-guide",
           "heading": "",
-          "content": "astro-minimax includes a built-in AI chat assistant with multi-provider failover, RAG retrieval, streaming responses, and Mock fallback. This guide covers the complete setup.",
+          "content": "astro-minimax includes a built-in AI chat assistant with support for automatic failover across multiple providers, RAG-enhanced retrieval, streaming responses, and Mock fallback. This guide walks through the complete AI configuration process.",
           "position": 0,
-          "tokenCount": 44,
+          "tokenCount": 61,
           "headers": {}
         },
         {
           "id": "en/ai-guide#overview",
           "postId": "en/ai-guide",
           "heading": "Overview",
-          "content": "## Overview\n\nThe AI chat system consists of the following modules:\n\n| Module | Description |\n|--------|-------------|\n| `@astro-minimax/ai` | AI core package: RAG pipeline, provider management, chat UI |\n| `@astro-minimax/cli` | CLI tools: AI content processing, author profile building, quality evaluation |\n| `@astro-minimax/notify` | Notification system: Real-time AI chat notifications to Telegram/Email/Webhook |",
+          "content": "## Overview\n\nThe AI chat system consists of the following modules:\n\n| Module | Description |\n|------|------|\n| `@astro-minimax/ai` | AI core package: RAG pipeline, Provider management, chat UI |\n| `@astro-minimax/cli` | CLI tools: AI content processing, author profile building, quality evaluation |\n| `@astro-minimax/notify` | Notification system: real-time AI conversation notifications to Telegram/Email/Webhook |",
           "position": 1,
-          "tokenCount": 105,
+          "tokenCount": 104,
           "headers": {
             "H2": "Overview"
           }
@@ -5360,7 +5360,7 @@
           "id": "en/ai-guide#failover-mechanism",
           "postId": "en/ai-guide",
           "heading": "Failover Mechanism",
-          "content": "### Failover Mechanism\n\n```mermaid\nflowchart LR\n    Request[User Request] --> W{Workers AI}\n    W -->|Success| Response[Streaming Response]\n    W -->|3 failures| O{OpenAI API}\n    O -->|Success| Response\n    O -->|Fail| M[Mock Fallback]\n    M --> Response\n\n    style W fill:#f97316,color:#fff\n    style O fill:#3b82f6,color:#fff\n    style M fill:#6b7280,color:#fff\n    style Response fill:#22c55e,color:#fff\n```\n\n- 3 consecutive failures marks a provider as unhealthy\n- Automatic recovery attempt after 60 seconds\n- When all providers fail, Mock ensures users always receive a response",
+          "content": "### Failover Mechanism\n\n```mermaid\nflowchart LR\n    Request[User Request] --> W{Workers AI}\n    W -->|Success| Response[Streaming Response]\n    W -->|Fails 3 Times| O{OpenAI API}\n    O -->|Success| Response\n    O -->|Fails| M[Mock Fallback]\n    M --> Response\n\n    style W fill:#f97316,color:#fff\n    style O fill:#3b82f6,color:#fff\n    style M fill:#6b7280,color:#fff\n    style Response fill:#22c55e,color:#fff\n```\n\n- Marked unhealthy after 3 consecutive failures\n- Automatically attempts recovery after 60 seconds\n- If all Providers fail, Mock ensures the user always receives a response",
           "position": 2,
           "tokenCount": 54,
           "headers": {
@@ -5372,82 +5372,82 @@
           "id": "en/ai-guide#ai-tool-calling-and-actions",
           "postId": "en/ai-guide",
           "heading": "AI Tool Calling and Actions",
-          "content": "## AI Tool Calling and Actions\n\nWhen users ask things like “switch to dark mode” or “open article X,” the model can **invoke tools** to perform those actions directly, instead of only describing the steps.",
+          "content": "## AI Tool Calling and Actions\n\nWhen a user expresses actions in natural language such as “switch to dark mode”, “open an article”, or “jump to a section”, the model can do more than explain the steps. Through **tool calling**, it can directly drive site behavior, reducing the gap between “telling” and “doing”.",
           "position": 3,
-          "tokenCount": 52,
+          "tokenCount": 78,
           "headers": {
             "H2": "AI Tool Calling and Actions"
           }
         },
         {
-          "id": "en/ai-guide#available-tools",
+          "id": "en/ai-guide#available-tools-at-a-glance",
           "postId": "en/ai-guide",
-          "heading": "Available tools",
-          "content": "### Available tools\n\nThe chat pipeline registers seven tools (names match the implementation):\n\n| Tool | Purpose |\n|------|---------|\n| `toggleTheme` | Switch among light, dark, and system theme |\n| `navigateToArticle` | Go to a post by slug (optional language and section) |\n| `scrollToSection` | Scroll to a heading/section on the current page |\n| `toggleReadingMode` | Turn reading mode on/off and adjust font options |\n| `highlightText` | Highlight text or a target element |\n| `setPreference` | Set a user preference key/value |\n| `searchArticles` | Search posts and projects; returns titles, URLs, summaries |",
+          "heading": "Available Tools at a Glance",
+          "content": "### Available Tools at a Glance\n\nThe current chat pipeline registers 7 tools (names consistent with the codebase):\n\n| Tool Name | Summary |\n|--------|----------|\n| `toggleTheme` | Switch the theme between light / dark / system |\n| `navigateToArticle` | Navigate to an article page by slug (and optional language, section) |\n| `scrollToSection` | Scroll to a specified section on the current page and optionally highlight it |\n| `toggleReadingMode` | Enable or disable reading mode, with adjustable font size and more |\n| `highlightText` | Highlight content in the article by text or selector |\n| `setPreference` | Write user preferences (aligned with the site's preference system key-value model) |\n| `searchArticles` | Search articles and projects by keyword, returning titles, links, summaries, etc. |",
           "position": 4,
-          "tokenCount": 154,
+          "tokenCount": 201,
           "headers": {
             "H2": "AI Tool Calling and Actions",
-            "H3": "Available tools"
+            "H3": "Available Tools at a Glance"
           }
         },
         {
           "id": "en/ai-guide#how-it-works",
           "postId": "en/ai-guide",
-          "heading": "How it works",
-          "content": "### How it works\n\n- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` are defined with schemas on the server; the model emits tool calls, and the **browser** runs them via the theme’s **ActionExecutor** (`@astro-minimax/core`), mapping calls to DOM, routing, and preferences.\n- **Server-side tool**: `searchArticles` includes an `execute` handler that runs **on the server during the chat/RAG request**, calling the same `searchArticles` / `searchProjects` retrieval used by the pipeline so the model can search before answering or suggest links.",
+          "heading": "How It Works",
+          "content": "### How It Works\n\n- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` declare their schemas on the server, and the model generates tool calls; the **actual execution happens in the browser** (via the **ActionExecutor** in the `@astro-minimax/core` theme package, which maps calls to DOM / routing / preference updates).\n- **Server-side tools**: `searchArticles` includes an `execute` implementation and runs **on the server during the RAG request handling process**. It directly calls the same `searchArticles` / `searchProjects` logic used by the main retrieval flow, returning structured results to the model for “search first, then answer” or navigation assistance.",
           "position": 5,
-          "tokenCount": 158,
+          "tokenCount": 189,
           "headers": {
             "H2": "AI Tool Calling and Actions",
-            "H3": "How it works"
+            "H3": "How It Works"
           }
         },
         {
           "id": "en/ai-guide#action-system-and-cross-page-c",
           "postId": "en/ai-guide",
-          "heading": "Action system and cross-page chaining",
-          "content": "### Action system and cross-page chaining\n\nExecution is centralized under `packages/core/src/actions/`: **ActionExecutor** performs each action; **URLHandler** (and related helpers) can carry work across navigations using query parameters (`theme`, `section`, `ai_actions` plus a queued token) so a **chain of actions** can finish after the next page load. The chat UI turns client tool calls into these actions.",
+          "heading": "Action System and Cross-Page Chaining",
+          "content": "### Action System and Cross-Page Chaining\n\nSite behaviors are centrally handled in `packages/core/src/actions/`: **ActionExecutor** performs concrete actions, while modules such as **URLHandler** support continuing a sequence of actions **after navigation** via query parameters (such as `theme`, `section`, `ai_actions`, and queue tokens), enabling cross-page action chaining. When the chat UI receives a client-side tool call, it converts the parameters into the corresponding Action and executes it.",
           "position": 6,
-          "tokenCount": 103,
+          "tokenCount": 126,
           "headers": {
             "H2": "AI Tool Calling and Actions",
-            "H3": "Action system and cross-page chaining"
+            "H3": "Action System and Cross-Page Chaining"
           }
         },
         {
-          "id": "en/ai-guide#source-priority-protocol",
+          "id": "en/ai-guide#source-layering-protocol",
           "postId": "en/ai-guide",
-          "heading": "Source Priority Protocol",
-          "content": "### Source Priority Protocol\n\nAI responses follow L1-L5 source priority:\n\n- **L1**: Blog original content (highest priority)\n- **L2**: Author bio, project list\n- **L3**: Structured factual data\n- **L5**: Writing style (affects expression only)",
+          "heading": "Source Layering Protocol",
+          "content": "### Source Layering Protocol\n\nAI responses follow L1–L5 source priority:\n\n- **L1**: Original blog content (highest priority)\n- **L2**: Author profile, project list\n- **L3**: Structured factual data\n- **L5**: Writing style (affects expression only)",
           "position": 7,
-          "tokenCount": 61,
+          "tokenCount": 62,
           "headers": {
             "H2": "AI Security Features",
-            "H3": "Source Priority Protocol"
+            "H3": "Source Layering Protocol"
           }
         },
         {
-          "id": "en/ai-guide#run-evaluation",
+          "id": "en/ai-guide#run-the-evaluation",
           "postId": "en/ai-guide",
-          "heading": "Run Evaluation",
-          "content": "### Run Evaluation\n\n```bash\npnpm run ai:eval                             # Test local server\npnpm run ai:eval -- --url=https://your-blog.com     # Test production\npnpm run ai:eval -- --category=no_answer     # Evaluate specific category\npnpm run ai:eval -- --verbose                # Detailed output\n```\n\nEvaluation is based on the `datas/eval/gold-set.json` golden test set, automatically checking:\n- Non-empty response\n- Topic coverage\n- Forbidden claims not present\n- Markdown links exist\n- Answer pattern matching\n\nEvaluation report is saved to `datas/eval/report.json`.",
+          "heading": "Run the Evaluation",
+          "content": "### Run the Evaluation\n\n```bash\npnpm run ai:eval                              # Local test\npnpm run ai:eval -- --url=https://your.com   # Remote test\npnpm run ai:eval -- --category=no_answer     # Evaluate a specific category\npnpm run ai:eval -- --verbose                # Verbose output\n```\n\nThe evaluation is based on the golden test set in `datas/eval/gold-set.json` and automatically checks:\n\n- Non-empty response\n- Topic coverage\n- Absence of forbidden claims\n- Markdown link existence\n- Answer mode match\n\nThe evaluation report is saved to `datas/eval/report.json`.",
           "position": 8,
-          "tokenCount": 77,
+          "tokenCount": 81,
           "headers": {
             "H2": "Quality Evaluation",
-            "H3": "Run Evaluation"
+            "H3": "Run the Evaluation"
           }
         },
         {
           "id": "en/ai-guide#extension-types",
           "postId": "en/ai-guide",
           "heading": "Extension Types",
-          "content": "### Extension Types\n\n| Type | Description | Use Case |\n|------|-------------|----------|\n| `searchable` | Searchable documents | Add extra knowledge base content |\n| `facts` | Structured facts | Add verified factual data |\n| `context` | Context injection | Add custom prompt sections |\n| `voice-style` | Voice style | Define AI response style modes |\n| `semantic-fallback` | Semantic fallback | Query rewriting rules |",
+          "content": "### Extension Types\n\n| Type | Description | Use Case |\n|------|------|------|\n| `searchable` | Searchable documents | Add extra knowledge base content |\n| `facts` | Structured facts | Add verified factual data |\n| `context` | Context injection | Add custom prompt sections |\n| `voice-style` | Writing style | Define AI response style modes |\n| `semantic-fallback` | Semantic fallback | Query rewriting rules |",
           "position": 9,
-          "tokenCount": 105,
+          "tokenCount": 103,
           "headers": {
-            "H2": "Extensions System",
+            "H2": "Extension System",
             "H3": "Extension Types"
           }
         },
@@ -5455,11 +5455,11 @@
           "id": "en/ai-guide#extension-priority",
           "postId": "en/ai-guide",
           "heading": "Extension Priority",
-          "content": "### Extension Priority\n\nExtensions use the `priority` field (0-100) to control precedence. Higher values mean higher priority. When multiple extensions provide the same type of data, higher-priority extensions are preferred.",
+          "content": "### Extension Priority\n\nExtensions use the `priority` field (0–100) to control priority. The higher the value, the higher the priority. When multiple extensions provide the same type of data, the higher-priority extension is used first.",
           "position": 10,
-          "tokenCount": 56,
+          "tokenCount": 59,
           "headers": {
-            "H2": "Extensions System",
+            "H2": "Extension System",
             "H3": "Extension Priority"
           }
         },
@@ -5467,31 +5467,31 @@
           "id": "en/ai-guide#notification-integration",
           "postId": "en/ai-guide",
           "heading": "Notification Integration",
-          "content": "## Notification Integration\n\nAI chat completion automatically sends notifications (fire-and-forget):\n\n```bash\n# .env\nNOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token\nNOTIFY_TELEGRAM_CHAT_ID=your-chat-id\n```\n\nNotification content includes: user question, AI response summary, referenced articles, token usage, and phase timing.\n\nSee [Notification System Configuration Guide](/en/posts/notification-guide) for details.",
+          "content": "## Notification Integration\n\nAfter an AI conversation completes, a notification is automatically sent (fire-and-forget):\n\n```bash\n# .env\nNOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token\nNOTIFY_TELEGRAM_CHAT_ID=your-chat-id\n```\n\nNotification content includes: user question, AI answer summary, cited articles, token usage, and timing for each stage.\n\nSee [Notification System Configuration Guide](/zh/posts/notification-guide) for details.",
           "position": 11,
-          "tokenCount": 83,
+          "tokenCount": 88,
           "headers": {
             "H2": "Notification Integration"
           }
         },
         {
-          "id": "en/ai-guide#environment-variables-referenc",
+          "id": "en/ai-guide#environment-variable-reference",
           "postId": "en/ai-guide",
-          "heading": "Environment Variables Reference",
-          "content": "## Environment Variables Reference\n\n| Variable | Description | Required |\n|----------|-------------|----------|\n| `AI_BASE_URL` | OpenAI-compatible API URL | Required when using OpenAI |\n| `AI_API_KEY` | API key | Required when using OpenAI |\n| `AI_MODEL` | Main chat model | No (default `gpt-4o-mini`) |\n| `AI_KEYWORD_MODEL` | Keyword extraction model | No (same as main model) |\n| `AI_EVIDENCE_MODEL` | Evidence analysis model | No (same as keyword model) |\n| `SITE_AUTHOR` | Author name | No |\n| `SITE_URL` | Site URL | No |",
+          "heading": "Environment Variable Reference",
+          "content": "## Environment Variable Reference\n\n| Variable | Description | Required |\n|------|------|------|\n| `AI_BASE_URL` | OpenAI-compatible API endpoint | Required when using OpenAI |\n| `AI_API_KEY` | API key | Required when using OpenAI |\n| `AI_MODEL` | Main chat model | No (default: `gpt-4o-mini`) |\n| `AI_KEYWORD_MODEL` | Keyword extraction model | No (same as main model) |\n| `AI_EVIDENCE_MODEL` | Evidence analysis model | No (same as keyword model) |\n| `SITE_AUTHOR` | Author name | No |\n| `SITE_URL` | Site URL | No |",
           "position": 12,
-          "tokenCount": 132,
+          "tokenCount": 130,
           "headers": {
-            "H2": "Environment Variables Reference"
+            "H2": "Environment Variable Reference"
           }
         },
         {
           "id": "en/ai-guide#next-steps",
           "postId": "en/ai-guide",
           "heading": "Next Steps",
-          "content": "## Next Steps\n\n- [Feature Overview](/en/posts/feature-overview) — Learn about all AI features\n- [CLI Tool Guide](/en/posts/cli-guide) — AI processing commands in detail\n- [Notification System](/en/posts/notification-guide) — Configure AI chat notifications\n- [Deployment Guide](/en/posts/deployment-guide) — Cloudflare Workers AI deployment",
+          "content": "## Next Steps\n\n- [Feature Overview](/zh/posts/feature-overview) — Learn about all AI features\n- [CLI Tool Guide](/zh/posts/cli-guide) — Detailed explanation of AI processing commands\n- [Notification System](/zh/posts/notification-guide) — Configure AI conversation notifications\n- [Deployment Guide](/zh/posts/deployment-guide) — Deploy with Cloudflare Workers AI",
           "position": 13,
-          "tokenCount": 85,
+          "tokenCount": 91,
           "headers": {
             "H2": "Next Steps"
           }
@@ -11238,5 +11238,5 @@
     "model": "gpt-5.4",
     "provider": "openai"
   },
-  "contextHash": "a8feaf81c91874f3"
+  "contextHash": "f2324e87aa0d1b0f"
 }

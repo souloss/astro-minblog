@@ -1,89 +1,125 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-27T14:36:39.506Z",
-    "model": "rule-based-template",
-    "generatedBy": "rule-based"
+    "lastUpdated": "2026-03-27T17:44:07.624Z",
+    "model": "gpt-5.4",
+    "generatedBy": "ai"
   },
   "report": {
     "hero": {
-      "title": "AI 视角下的 Souloss",
-      "summary": "一位专注于教程/博客、教程/配置、Tutorial/Configuration领域的博主，持续输出高质量内容。",
-      "intro": "博客已发布 40 篇文章，涵盖 15 个主题标签。"
+      "title": "AI 视角下的作者",
+      "summary": "该作者以 astro-minimax 相关文档与教程写作为核心，长期围绕博客系统的配置、部署、AI 能力接入和工程维护展开内容生产。其公开内容显示出较强的工程实践导向、文档组织意识与中英双语输出能力。",
+      "intro": "从已选文章看，该作者并非以泛泛而谈的技术评论为主，而是持续产出面向实际落地场景的说明文档、配置指南与架构解读。内容集中在 Astro 博客模板、Cloudflare Pages、Vercel、Neon、Waline、Umami 以及 AI 模块设计等主题，呈现出偏产品文档作者与独立开发者维护者的复合特征。"
     },
     "identities": [
       {
-        "name": "技术博主",
-        "description": "持续分享技术经验与实践心得。",
-        "evidence": "已发布 40 篇文章。"
+        "name": "astro-minimax 生态的文档维护者",
+        "description": "其文章高度围绕 astro-minimax 的使用、更新、配置和部署展开，内容覆盖入门、配置面板、依赖升级、环境变量与完整搭建流程，表现出持续维护同一项目文档体系的特征。",
+        "evidence": "多篇文章标题直接指向 astro-minimax，例如《从零开始：完整博客搭建指南》《如何更新 astro-minimax 的依赖》《设置面板与偏好设置》以及《@astro-minimax/ai 模块技术架构详解》。"
       },
       {
-        "name": "内容创作者",
-        "description": "注重内容质量与读者体验。",
-        "evidence": "近期文章《\"@astro-minimax/ai Module Technical Architecture Deep Dive\"》体现了专业的写作风格。"
+        "name": "注重落地的工程实践作者",
+        "description": "写作重点集中在部署参数、环境变量、依赖升级流程、冲突处理和故障排查等实施细节，说明其关注的是可执行路径，而非抽象概念介绍。",
+        "evidence": "文章多次提到 NODE_VERSION、AI_BINDING_NAME、localStorage、Git 合并、分层升级、数据库导入、PG_SSL 等具体操作项。"
+      },
+      {
+        "name": "具备 AI 应用架构表达能力的技术作者",
+        "description": "其不仅介绍 AI 功能接入，还能系统描述 RAG、流式响应、多供应商抽象、故障降级和提示构建等架构层设计，显示出较强的技术拆解能力。",
+        "evidence": "《@astro-minimax/ai 模块技术架构详解》明确讨论分层架构、Provider Manager、TF-IDF、重排、引用守卫、SSE Streaming 与降级容错。"
+      },
+      {
+        "name": "中英双语内容生产者",
+        "description": "已选内容中中文与英文文章数量均衡，且主题基本成对出现，说明其具备面向双语读者进行同步表达和文档传播的能力。",
+        "evidence": "上下文显示 zhPosts 为 20、enPosts 为 20；所选文章中多组中文与英文版本一一对应，如 AI 模块架构、设置面板、依赖更新、Cloudflare 环境变量与完整搭建指南。"
       }
     ],
     "strengths": [
       {
-        "title": "内容深度",
+        "title": "文档体系化能力",
         "points": [
-          "文章结构清晰，逻辑性强",
-          "注重实践，配合代码示例",
-          "持续更新，覆盖多个技术领域"
+          "内容覆盖从入门、配置到部署、更新和架构说明，主题链条完整。",
+          "文章结构常以关键步骤、必需项、可选项和排障要点展开，便于检索与复用。",
+          "同一主题存在中英文对应版本，说明其有意识建设统一知识库。"
         ]
       },
       {
-        "title": "表达风格",
+        "title": "工程细节表达能力",
         "points": [
-          "语言简洁明了",
-          "注重可读性",
-          "善于总结提炼"
+          "能够明确区分构建时与运行时变量、作用域差异及重新部署要求。",
+          "对依赖升级风险、模板合并冲突和主版本变更保持审慎态度。",
+          "善于将部署链路中的数据库、环境变量、第三方服务与前端配置串联说明。"
+        ]
+      },
+      {
+        "title": "AI 与博客场景结合能力",
+        "points": [
+          "不仅介绍 AI 聊天功能的接入，还解释其在博客中的阅读伴侣与全局对话场景。",
+          "能够将 RAG、重排、缓存、SSE 与多供应商切换组织为可理解的模块化叙述。",
+          "关注高可用、低延迟与降级策略，体现出面向真实产品场景的设计思路。"
         ]
       }
     ],
     "styles": [
       {
-        "trait": "技术导向",
-        "description": "专注于技术内容的深度讲解与实践分享。"
+        "trait": "教程导向",
+        "description": "写作以操作步骤和配置结果为中心，强调“如何完成”而非“为何争论”。"
       },
       {
-        "trait": "结构化表达",
-        "description": "文章结构清晰，便于读者理解和学习。"
+        "trait": "结构清晰",
+        "description": "标题与摘要直接对应主题，关键点列举明确，便于读者快速定位信息。"
+      },
+      {
+        "trait": "工程化表述",
+        "description": "频繁使用版本、变量名、平台名、部署方式和故障点等具体术语，减少模糊表达。"
+      },
+      {
+        "trait": "克制务实",
+        "description": "内容重点放在限制条件、注意事项与验证方法上，较少出现宣传性语言。"
+      },
+      {
+        "trait": "双语同步",
+        "description": "同主题中英文内容并行发布，体现其对跨语言传播一致性的重视。"
       }
     ],
     "proofs": {
       "posts": [
         {
-          "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
-          "url": "/en/posts/ai-module-architecture/",
-          "reason": "The article explains the vendor-agnostic architecture of the",
-          "date": "2026-03-21T00:00:00.000Z"
-        },
-        {
-          "title": "Settings Panel & Preferences",
-          "url": "/en/posts/settings-panel/",
-          "reason": "The article introduces astro-minimax’s settings panel, expla",
-          "date": "2026-03-21T00:00:00.000Z"
-        },
-        {
-          "title": "\"@astro-minimax/ai 模块技术架构详解\"",
-          "url": "/zh/posts/ai-module-architecture/",
-          "reason": "文章详解 @astro-minimax/ai 的分层技术架构，围绕 RAG 流水线、多供应商抽象、流式响应与降级容错设计",
-          "date": "2026-03-21T00:00:00.000Z"
+          "title": "@astro-minimax/ai 模块技术架构详解",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/ai-module-architecture/",
+          "reason": "可作为其具备 AI 架构拆解与技术文档写作能力的直接证据，文章涉及 RAG、Provider Manager、TF-IDF、重排和容错设计。",
+          "date": "2026-03-21"
         },
         {
           "title": "设置面板与偏好设置",
-          "url": "/zh/posts/settings-panel/",
-          "reason": "文章介绍 astro-minimax 的设置面板使用方式，说明外观、阅读、布局与通用偏好的配置项，以及通过 localS",
-          "date": "2026-03-21T00:00:00.000Z"
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/settings-panel/",
+          "reason": "体现其对产品设置项、前端交互与持久化细节的文档化能力，内容覆盖 localStorage、URL 参数分享与界面配置。",
+          "date": "2026-03-21"
         },
         {
-          "title": "How to update dependencies of astro-minimax",
-          "url": "/en/posts/how-to-update-dependencies/",
-          "reason": "The article explains how to update astro-minimax dependencie",
-          "date": "2026-03-20T00:00:00.000Z"
+          "title": "如何更新 astro-minimax 的依赖",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/how-to-update-dependencies/",
+          "reason": "说明其关注工程维护与升级流程，能够系统讲解分层升级、Git 合并和完整测试等实践问题。",
+          "date": "2026-03-20"
+        },
+        {
+          "title": "Cloudflare Pages 环境变量配置指南",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/cloudflare-env-vars/",
+          "reason": "反映其对部署平台与运行环境差异的理解，文中明确区分构建时和运行时变量，并强调 AI 与通知功能所需配置。",
+          "date": "2026-03-18"
+        },
+        {
+          "title": "从零开始：完整博客搭建指南",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/complete-setup-guide/",
+          "reason": "体现其能够将项目初始化、站点配置、部署、评论、统计、通知和 AI 集成为一套完整方案。",
+          "date": "2026-03-18"
+        },
+        {
+          "title": "@astro-minimax/ai Module Technical Architecture Deep Dive",
+          "url": "https://demo-astro-minimax.souloss.cn/en/posts/ai-module-architecture/",
+          "reason": "可作为其中英双语输出能力的补充证据，且英文版本延续了相同的技术架构表达深度。",
+          "date": "2026-03-21"
         }
       ]
     },
-    "disclaimer": "该页面由 AI 归纳与规则模板联合生成，旨在帮助访客快速建立认知，可能存在概括偏差，请以原始文章信息为准。"
+    "disclaimer": "本画像仅基于给定站点的公开文章样本生成，反映的是其内容呈现出的写作取向与技术主题分布，不等同于对作者完整职业背景、项目角色或个人经历的确定性判断。"
   }
 }

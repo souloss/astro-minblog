@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-27T05:50:58.399Z",
+  "generatedAt": "2026-03-27T17:43:22.923Z",
   "count": 70,
   "posts": [
     {
@@ -381,7 +381,7 @@
     },
     {
       "id": "en/ai-guide",
-      "title": "\"AI Chat Configuration Guide\"",
+      "title": "\"AI Chat Feature Configuration Guide\"",
       "date": "2026-03-17T00:00:00.000Z",
       "lang": "en",
       "category": "Tutorial/AI",

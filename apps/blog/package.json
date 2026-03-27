@@ -29,6 +29,7 @@
     "dev": "concurrently -n \"astro,ai\" -c \"blue,green\" \"astro dev\" \"pnpm exec astro-ai-dev\"",
     "dev:astro": "astro dev",
     "dev:ai": "pnpm exec astro-ai-dev",
+    "prebuild": "pnpm run ai:profile:build",
     "build": "astro check && astro build && pagefind --site dist",
     "preview": "wrangler pages dev dist",
     "preview:astro": "astro preview",
