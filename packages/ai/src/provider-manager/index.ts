@@ -1,4 +1,4 @@
-export { ProviderManager, getProviderManager, resetProviderManager } from './manager.js';
+export { ProviderManager, getProviderManager } from './manager.js';
 export { BaseProviderAdapter } from './base.js';
 export { OpenAIAdapter } from './openai.js';
 export { WorkersAIAdapter } from './workers.js';

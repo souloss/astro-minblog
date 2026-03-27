@@ -4,7 +4,7 @@
  * Supports multiple provider types with priority-based fallback.
  */
 
-import type { UIMessage, ToolSet } from 'ai';
+import type { UIMessage, ToolSet } from "ai";
 
 // ============================================================================
 // Provider Configuration Types
@@ -15,7 +15,7 @@ import type { UIMessage, ToolSet } from 'ai';
  */
 export interface BaseProviderConfig {
   id: string;
-  type: 'openai' | 'workers';
+  type: "openai" | "workers";
   weight?: number;
   model: string;
   keywordModel?: string;
@@ -27,8 +27,6 @@ export interface BaseProviderConfig {
    * after this many failures, not retried.
    */
   unhealthyThreshold?: number;
-  /** @deprecated Use unhealthyThreshold instead. This field is misleading. */
-  maxRetries?: number;
   enabled?: boolean;
 }
 
@@ -37,7 +35,7 @@ export interface BaseProviderConfig {
  * Supports DeepSeek, Moonshot, Qwen, OpenAI, and any OpenAI-compatible API.
  */
 export interface OpenAIProviderConfig extends BaseProviderConfig {
-  type: 'openai';
+  type: "openai";
   /** API base URL (e.g., https://api.deepseek.com/v1) */
   baseURL: string;
   /** API key */
@@ -49,7 +47,7 @@ export interface OpenAIProviderConfig extends BaseProviderConfig {
  * Uses AI binding directly from the Cloudflare environment.
  */
 export interface WorkersAIProviderConfig extends BaseProviderConfig {
-  type: 'workers';
+  type: "workers";
   /** AI binding name in Cloudflare environment. Default: 'minimaxAI' */
   bindingName: string;
 }
@@ -192,7 +190,11 @@ export interface ProviderManagerOptions {
   /** Enable mock provider as final fallback. Default: true */
   enableMockFallback?: boolean;
   /** Callback when provider switch occurs */
-  onProviderSwitch?: (fromId: string | null, toId: string, reason: string) => void;
+  onProviderSwitch?: (
+    fromId: string | null,
+    toId: string,
+    reason: string
+  ) => void;
   /** Callback when streaming error occurs */
   onStreamError?: (providerId: string, error: Error) => void;
   /** Callback when health status changes */

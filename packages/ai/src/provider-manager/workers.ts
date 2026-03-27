@@ -1,24 +1,29 @@
-import { createWorkersAI } from 'workers-ai-provider';
-import { streamText, convertToModelMessages } from 'ai';
-import type { WorkersAIProviderConfig, StreamTextOptions, StreamTextResult, ProviderManagerEnv } from './types.js';
-import { BaseProviderAdapter } from './base.js';
+import { createWorkersAI } from "workers-ai-provider";
+import { streamText, convertToModelMessages } from "ai";
+import type { WorkersAISettings } from "workers-ai-provider";
+import type {
+  WorkersAIProviderConfig,
+  StreamTextOptions,
+  StreamTextResult,
+  ProviderManagerEnv,
+} from "./types.js";
+import { BaseProviderAdapter } from "./base.js";
 
 export class WorkersAIAdapter extends BaseProviderAdapter {
   readonly id: string;
-  readonly type = 'workers' as const;
+  readonly type = "workers" as const;
   readonly weight: number;
   readonly model: string;
   readonly keywordModel: string;
   readonly evidenceModel: string;
   readonly timeout: number;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private provider: any;
+  private provider: ReturnType<typeof createWorkersAI>;
   private config: WorkersAIProviderConfig;
 
   constructor(config: WorkersAIProviderConfig, env: ProviderManagerEnv) {
     super({
-      unhealthyThreshold: config.unhealthyThreshold ?? (config.maxRetries ? config.maxRetries + 2 : 3),
+      unhealthyThreshold: config.unhealthyThreshold ?? 3,
     });
 
     this.id = config.id;
@@ -31,25 +36,37 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
 
     const binding = env[config.bindingName];
     if (!binding) {
-      throw new Error(`Workers AI binding '${config.bindingName}' not found in environment`);
+      throw new Error(
+        `Workers AI binding '${config.bindingName}' not found in environment`
+      );
     }
 
-    this.provider = createWorkersAI({ binding: binding as any });
+    type WorkersAIBinding = NonNullable<WorkersAISettings["binding"]>;
+    this.provider = createWorkersAI({ binding: binding as WorkersAIBinding });
   }
 
   async streamText(options: StreamTextOptions): Promise<StreamTextResult> {
-    const { system, messages, temperature = 0.7, maxOutputTokens, topP, abortSignal, onError } = options;
+    const {
+      system,
+      messages,
+      temperature = 0.7,
+      maxOutputTokens,
+      topP,
+      abortSignal,
+      onError,
+      tools,
+    } = options;
 
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), this.timeout);
 
     if (abortSignal) {
-      abortSignal.addEventListener('abort', () => abortController.abort());
+      abortSignal.addEventListener("abort", () => abortController.abort());
     }
 
     try {
       const model = this.provider(this.model, { safePrompt: true });
-      
+
       const result = streamText({
         model,
         system,
@@ -57,6 +74,7 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
         temperature,
         maxOutputTokens,
         topP,
+        tools,
         abortSignal: abortController.signal,
         onError: ({ error }) => {
           onError?.(error instanceof Error ? error : new Error(String(error)));
@@ -64,8 +82,9 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
       });
 
       const streamResult: StreamTextResult = {
-        toUIMessageStreamResponse: (responseOptions?: { headers?: HeadersInit }) =>
-          result.toUIMessageStreamResponse(responseOptions),
+        toUIMessageStreamResponse: (responseOptions?: {
+          headers?: HeadersInit;
+        }) => result.toUIMessageStreamResponse(responseOptions),
         providerId: this.id,
         isMock: false,
       };
@@ -84,7 +103,8 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
 
   getProvider(): { chatModel: (model: string) => unknown } {
     return {
-      chatModel: (modelId: string) => this.provider(modelId, { safePrompt: true }),
+      chatModel: (modelId: string) =>
+        this.provider(modelId, { safePrompt: true }),
     };
   }
 }

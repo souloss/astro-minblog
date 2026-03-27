@@ -166,15 +166,9 @@ export class ProviderManager {
   }
 }
 
-let managerInstance: ProviderManager | null = null;
-
-export function getProviderManager(env: ProviderManagerEnv, options?: ProviderManagerOptions & { forceRecreate?: boolean }): ProviderManager {
-  if (options?.forceRecreate || !managerInstance) {
-    managerInstance = new ProviderManager(env, options);
-  }
-  return managerInstance;
-}
-
-export function resetProviderManager(): void {
-  managerInstance = null;
+export function getProviderManager(
+  env: ProviderManagerEnv,
+  options?: ProviderManagerOptions
+): ProviderManager {
+  return new ProviderManager(env, options);
 }
