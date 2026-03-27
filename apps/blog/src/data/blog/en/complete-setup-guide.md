@@ -138,7 +138,7 @@ Post content goes here...
 | ---------------------- | ---------------- |
 | Framework preset       | Astro            |
 | Build command          | `pnpm run build` |
-| Build output directory | `apps/blog/dist` |
+| Build output directory | `dist` |
 
 ### Step 3.3: Set Environment Variables
 
@@ -311,7 +311,7 @@ ai: {
 
 ```bash
 pnpm run ai:process      # Generate post summaries
-pnpm run profile:build   # Build author profile
+pnpm run ai:profile:build # Build author profile
 ```
 
 ### Step 7.3: Verify AI Binding

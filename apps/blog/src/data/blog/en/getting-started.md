@@ -54,7 +54,7 @@ The CLI also provides handy management commands:
 ```bash
 astro-minimax post new "Post Title"   # Create a new post
 astro-minimax ai process               # AI process articles (summaries + SEO)
-astro-minimax profile build            # Build author profile
+astro-minimax ai profile build         # Build author profile
 astro-minimax data status              # View data status
 ```
 
@@ -175,7 +175,7 @@ astro-minimax supports multiple deployment platforms. Cloudflare Pages is recomm
 ```bash
 # Connect your Git repo to Cloudflare Pages
 # Build command: pnpm run build
-# Build output directory: apps/blog/dist
+# Build output directory: dist
 ```
 
 You can also deploy to Vercel, Netlify, or use Docker. See [Deployment Guide](/en/posts/deployment-guide) for details.

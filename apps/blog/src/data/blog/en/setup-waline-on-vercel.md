@@ -28,7 +28,7 @@ flowchart TB
     subgraph Server
         B --> C[Waline Server<br/>Vercel Deploy]
         C --> D[(Neon PostgreSQL<br/>Vercel Storage)]
-        C --> E[Email Service<br/>SMTP / Resend]
+    C --> E[Waline Mail Service<br/>Resend / SMTP]
         C --> F[Webhook Notification]
     end
 
@@ -57,7 +57,7 @@ Before starting, ensure you have:
 
 - [ ] GitHub account (for Vercel login)
 - [ ] A deployed astro-minimax blog
-- [ ] Optional: SMTP service or Resend account for email notifications
+- [ ] Optional: Waline-side mail service (Resend or SMTP) if you want Waline to send its own emails
 
 ## Step 1: Create Vercel Neon PostgreSQL Database
 
@@ -209,11 +209,11 @@ If you have your own domain, you can bind it in Vercel:
 3. Add CNAME record in your DNS pointing to `cname.vercel-dns.com`
 4. Wait for DNS to propagate
 
-## Step 3: Configure Email Notifications (Optional)
+## Step 3: Configure Waline Mail Notifications (Optional)
 
-Waline supports multiple email notification methods. Recommended: Resend or SMTP.
+This step is about **Waline's own mail delivery**. It is separate from astro-minimax blog notifications. For blog-side notifications handled by `@astro-minimax/notify`, the built-in email path currently uses **Resend only** and is configured later in Step 4.2.
 
-### Option 1: Resend (Recommended)
+### Option 1: Waline Mail via Resend
 
 Resend provides free email sending service:
 
@@ -230,7 +230,7 @@ Add environment variables in Vercel:
 | `SMTP_USER`    | `noreply@yourdomain.com` | Sender email          |
 | `SMTP_PASS`    | Leave empty              | Not needed for Resend |
 
-### Option 2: SMTP
+### Option 2: Waline Mail via SMTP
 
 Use Gmail, QQ Mail, or other SMTP services:
 
@@ -252,7 +252,7 @@ Common SMTP service identifiers:
 
 > QQ Mail requires an authorization code instead of login password. Get it from QQ Mail Settings -> Account -> POP3/SMTP Service.
 
-### Notification Template Configuration
+### Waline Mail Template Configuration
 
 Customize notification email content:
 
