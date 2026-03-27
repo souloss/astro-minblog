@@ -121,14 +121,14 @@ astro-minimax ai process         # AI process articles (summaries + SEO)
 astro-minimax ai eval            # Evaluate AI chat quality
 
 # Author profile
-astro-minimax profile build      # Build complete profile (context + voice + report)
+astro-minimax ai profile build   # Build complete profile (context + voice + facts + report)
 
 # Data management
 astro-minimax data status        # View data file status
 astro-minimax data clear         # Clear generated caches
 ```
 
-Shortcut scripts are also available: `pnpm run ai:process`, `pnpm run profile:build`, etc.
+Shortcut scripts are also available: `pnpm run ai:process`, `pnpm run ai:profile:build`, etc.
 
 ## Packages
 

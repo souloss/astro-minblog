@@ -127,7 +127,7 @@ astro-minimax data status        # 查看数据文件状态
 astro-minimax data clear         # 清理生成的缓存
 ```
 
-在博客目录中也可以使用 `pnpm run` 快捷方式：`pnpm run ai:process`、`pnpm run profile:build` 等。
+在博客目录中也可以使用 `pnpm run` 快捷方式：`pnpm run ai:process`、`pnpm run ai:profile:build` 等。
 
 ## 包说明
 
