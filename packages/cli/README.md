@@ -6,20 +6,21 @@ CLI tool to scaffold a new blog project using the astro-minimax theme.
 
 ```bash
 # npx (recommended)
-npx @astro-minimax/cli my-blog
+npx @astro-minimax/cli init my-blog
 
 # pnpm
-pnpm dlx @astro-minimax/cli my-blog
+pnpm dlx @astro-minimax/cli init my-blog
 
 # yarn
-yarn dlx @astro-minimax/cli my-blog
+yarn dlx @astro-minimax/cli init my-blog
 ```
 
 ## Generated Structure
 
 ```
 my-blog/
-├── astro.config.ts      # Astro + minimax integration config
+├── astro.config.mjs     # Astro + minimax integration config
+├── functions/           # Cloudflare Pages adapters (AI + notify)
 ├── package.json         # Dependencies (core, tailwind, etc.)
 ├── tsconfig.json        # TypeScript configuration
 ├── public/
@@ -137,10 +138,6 @@ All AI-related features are consolidated under the `ai` command:
 | Subcommand | Description |
 | ---------- | ----------- |
 | `profile build` | Build complete profile |
-| `profile context` | Build author context |
-| `profile voice` | Build voice profile |
-| `profile facts` | Build fact registry |
-| `profile report` | Generate profile report |
 
 #### Fact Registry
 
@@ -190,7 +187,7 @@ Update `src/config.ts`:
 
 ```typescript
 features: {
-  ai: true,  // Enable AI feature flag
+  // ...other feature flags
 },
 
 ai: {
@@ -200,18 +197,30 @@ ai: {
 },
 ```
 
-### Step 3: Create API Endpoint
+### Step 3: Use the Scaffolded API Endpoints
 
-Create `functions/api/chat.ts`:
+The generated template already includes `functions/api/chat.ts` and `functions/api/ai-info.ts`.
+Configure the existing endpoint wrappers instead of creating them manually:
 
 ```typescript
-import { handleChatRequest, initializeMetadata } from '@astro-minimax/ai/server';
+import {
+  applyAiConfigDefaults,
+  handleChatRequest,
+  initializeMetadata,
+} from '@astro-minimax/ai/server';
+import knowledgeBundle from '../../datas/knowledge/runtime/knowledge-bundle.json';
+import { SITE } from '../../src/config';
 
 export const onRequest: PagesFunction = async (context) => {
-  initializeMetadata({}, context.env);
-  return handleChatRequest({ env: context.env, request: context.request });
+  const env = applyAiConfigDefaults({ ...context.env }, SITE.ai);
+
+  initializeMetadata({ knowledgeBundle }, env);
+
+  return handleChatRequest({ env, request: context.request });
 };
 ```
+
+Generate `datas/knowledge/runtime/knowledge-bundle.json` before deploying or testing the endpoint so the runtime metadata matches the canonical bundle-based contract.
 
 ### Step 4: Configure Environment
 
@@ -234,7 +243,7 @@ For local development with AI:
 
 ```bash
 # Start AI dev server (port 8787)
-node dev-ai-server.mjs
+pnpm exec astro-ai-dev
 
 # In another terminal, start Astro dev
 pnpm dev
