@@ -1,14 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * 构建作者表达风格画像
- *
- * 从博客标题、正文中提取作者的表达风格特征。
- * 纯本地分析，不调用 AI。
- *
- * 用法:
- *   pnpm voice:build   构建风格画像
- */
-
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
