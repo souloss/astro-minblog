@@ -36,7 +36,7 @@ export const defaultPreferences: Preferences = {
     fontSize: 'md',
     lineHeight: 'comfortable',
     contentWidth: 'medium',
-    theme: 'light',
+    theme: 'default',
     fontFamily: 'system',
     focusMode: false,
   },
@@ -81,21 +81,25 @@ export const READING_WIDTH_VALUES = {
 
 /** Reading mode theme colors */
 export const READING_THEME_COLORS = {
-  light: {
+  default: {
     bg: '#ffffff',
     text: '#1d1d1f',
   },
-  dark: {
-    bg: '#0c0c0e',
-    text: '#f5f5f7',
-  },
-  warm: {
+  eyecare: {
     bg: '#f5f0e6',
     text: '#433422',
   },
-  sepia: {
+  parchment: {
     bg: '#f4ecd8',
     text: '#5c4b37',
+  },
+  night: {
+    bg: '#111827',
+    text: '#f9fafb',
+  },
+  oled: {
+    bg: '#000000',
+    text: '#f5f5f5',
   },
 } as const;
 
