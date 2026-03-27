@@ -37,6 +37,7 @@
     "./plugins/*": "./src/plugins/*.ts",
     "./scripts/*": "./src/scripts/*.ts",
     "./actions": "./src/actions/index.ts",
+    "./preferences/client-init": "./src/preferences/client-init.ts",
     "./types": "./src/types.ts"
   },
   "files": [
