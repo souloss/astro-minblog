@@ -1,5 +1,6 @@
 export {
   allTools,
+  getAllTools,
   registerTool,
   unregisterTool,
   toggleThemeTool,
@@ -12,4 +13,4 @@ export {
   getClientSideTools,
   getServerSideTools,
   type ToolName,
-} from './action-tools.js';
+} from "./action-tools.js";
