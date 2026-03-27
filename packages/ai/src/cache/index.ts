@@ -1,12 +1,9 @@
 export {
   MemoryCacheAdapter,
   type MemoryCacheOptions,
-} from './memory-adapter.js';
+} from "./memory-adapter.js";
 
-export {
-  KVCacheAdapter,
-  type KVCacheOptions,
-} from './kv-adapter.js';
+export { KVCacheAdapter, type KVCacheOptions } from "./kv-adapter.js";
 
 export {
   createCacheKeyBuilder,
@@ -20,11 +17,12 @@ export {
   type CachedSearchContext,
   type CacheResult,
   type CacheKeyBuilder,
-} from './types.js';
+} from "./types.js";
 
 export {
   detectPublicQuestion,
   buildGlobalCacheKey,
+  normalizePublicCacheQuery,
   getGlobalSearchCache,
   setGlobalSearchCache,
   getGlobalCacheTTL,
@@ -32,7 +30,7 @@ export {
   type PublicQuestionType,
   type PublicQuestionPattern,
   type DetectedPublicQuestion,
-} from './global-cache.js';
+} from "./global-cache.js";
 
 export {
   getResponseCache,
@@ -46,25 +44,28 @@ export {
   type ResponseCacheConfig,
   type ResponseCacheEnv,
   type PlaybackChunk,
-} from './response-cache.js';
+} from "./response-cache.js";
 
-export {
-  injectionCache,
-  type InjectionCacheEntry,
-} from './injection-cache.js';
+export { injectionCache, type InjectionCacheEntry } from "./injection-cache.js";
 
-import { MemoryCacheAdapter } from './memory-adapter.js';
-import { KVCacheAdapter } from './kv-adapter.js';
-import type { CacheAdapter, CacheEnv, CacheManagerConfig } from './types.js';
+import { MemoryCacheAdapter } from "./memory-adapter.js";
+import { KVCacheAdapter } from "./kv-adapter.js";
+import type { CacheAdapter, CacheEnv, CacheManagerConfig } from "./types.js";
 
-import { CACHE } from '../constants.js';
+import { CACHE } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("cache");
 
 const DEFAULT_TTL = CACHE.DEFAULT_TTL;
 const DEFAULT_MAX_ENTRIES = 400;
 
 let globalMemoryCache: MemoryCacheAdapter | null = null;
 
-function getGlobalMemoryCache(ttl: number, maxEntries: number): MemoryCacheAdapter {
+function getGlobalMemoryCache(
+  ttl: number,
+  maxEntries: number
+): MemoryCacheAdapter {
   if (!globalMemoryCache) {
     globalMemoryCache = new MemoryCacheAdapter({ defaultTtl: ttl, maxEntries });
   }
@@ -79,20 +80,23 @@ export function createCacheAdapter(
   const maxEntries = config?.maxEntries ?? DEFAULT_MAX_ENTRIES;
 
   if (isCacheDisabled(env)) {
+    log.debug(`createCacheAdapter: cache disabled, using memory ttl=${ttl}`);
     return getGlobalMemoryCache(ttl, maxEntries);
   }
 
   const kvBinding = getKVBinding(env);
   if (kvBinding) {
+    log.debug(`createCacheAdapter: using kv adapter ttl=${ttl}`);
     return new KVCacheAdapter(kvBinding, { defaultTtl: ttl });
   }
 
+  log.debug(`createCacheAdapter: using memory adapter ttl=${ttl}`);
   return getGlobalMemoryCache(ttl, maxEntries);
 }
 
 function isCacheDisabled(env: CacheEnv): boolean {
   const val = env.CACHE_DISABLED;
-  if (val === true || val === 'true' || val === '1') {
+  if (val === true || val === "true" || val === "1") {
     return true;
   }
   return false;
@@ -100,7 +104,7 @@ function isCacheDisabled(env: CacheEnv): boolean {
 
 function getKVBinding(env: CacheEnv): KVNamespace | null {
   const customBinding = env.CACHE_KV_BINDING;
-  if (customBinding && typeof customBinding === 'string') {
+  if (customBinding && typeof customBinding === "string") {
     const binding = (env as Record<string, unknown>)[customBinding];
     return isKVNamespace(binding) ? binding : null;
   }
@@ -109,23 +113,23 @@ function getKVBinding(env: CacheEnv): KVNamespace | null {
     return env.CACHE_KV;
   }
 
-  const defaultBinding = (env as Record<string, unknown>)['CACHE_KV'];
+  const defaultBinding = (env as Record<string, unknown>)["CACHE_KV"];
   return isKVNamespace(defaultBinding) ? defaultBinding : null;
 }
 
 function isKVNamespace(value: unknown): value is KVNamespace {
   return (
-    typeof value === 'object' &&
+    typeof value === "object" &&
     value !== null &&
-    'get' in value &&
-    'put' in value &&
-    'delete' in value
+    "get" in value &&
+    "put" in value &&
+    "delete" in value
   );
 }
 
 function parseTtl(value: string | number | undefined): number | undefined {
   if (value === undefined) return undefined;
-  if (typeof value === 'number') return value;
+  if (typeof value === "number") return value;
   const parsed = parseInt(value, 10);
   return isNaN(parsed) ? undefined : parsed;
 }
