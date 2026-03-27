@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+import { DefaultChatTransport } from 'ai';
 import type { UIMessage } from 'ai';
 import { APICallError } from '@ai-sdk/provider';
 import { getMockResponse, createMockStream } from '../providers/mock.ts';
-import type { ArticleChatContext, ChatStatusData } from '../server/types.ts';
-import { isChatStatusData } from '../server/types.ts';
+import type { ArticleChatContext } from '../server/types.ts';
 import { t, getLang } from '../utils/i18n.ts';
+import { shouldAutoContinueAfterToolCalls } from './tool-auto-continue.ts';
 import { RichText } from './RichText.tsx';
 import { ReasoningBlock } from './ReasoningBlock.tsx';
 import { AssistantMessage, BotAvatar, BotIcon, TypingDots, getTextFromMessage } from './MessageBubble.tsx';
@@ -195,7 +195,6 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
   const lastSendRef = useRef(0);
   const [inputValue, setInputValue] = useState('');
   const [cooldown, setCooldown] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string>();
   
   const [panelSize, setPanelSize] = useState<PanelSize>(() => {
     if (typeof window === 'undefined') return 'S';
@@ -243,10 +242,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
     addToolOutput,
   } = useChat({
     transport,
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
-    onError: (err) => {
-      console.error('[ChatPanel] Chat error:', err.message);
-    },
+    sendAutomaticallyWhen: shouldAutoContinueAfterToolCalls,
     async onToolCall({ toolCall }) {
       const executor = window.__actionExecutor;
       
@@ -255,7 +251,11 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: false, error: 'ActionExecutor not initialized' },
+          output: {
+            success: false,
+            tool: toolCall.toolName,
+            error: 'ActionExecutor not initialized',
+          },
         });
         return;
       }
@@ -294,25 +294,43 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: false, error: `Unknown tool: ${toolCall.toolName}` },
+          output: {
+            success: false,
+            tool: toolCall.toolName,
+            error: `Unknown tool: ${toolCall.toolName}`,
+          },
         });
         return;
       }
 
       try {
-        const action = mapper(toolCall.input as Record<string, unknown>);
-        await executor.execute(action);
+        const toolInput = (toolCall.input ?? {}) as Record<string, unknown>;
+        const action = mapper(toolInput);
+        const result = await executor.execute(action);
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: true },
+          output: {
+            success: result.success,
+            tool: toolCall.toolName,
+            action: action.type,
+            input: toolInput,
+            result,
+            confirmation: result.success
+              ? `Tool ${toolCall.toolName} executed successfully.`
+              : `Tool ${toolCall.toolName} failed: ${result.error ?? 'unknown error'}`,
+          },
         });
       } catch (error) {
         console.error('[ChatPanel] Tool execution error:', error);
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: false, error: String(error) },
+          output: {
+            success: false,
+            tool: toolCall.toolName,
+            error: String(error),
+          },
         });
       }
     },
@@ -332,18 +350,6 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
 
   const isStreaming = isMockMode ? mockChat.isStreaming : (liveStatus === 'streaming' || liveStatus === 'submitted');
   const error = isMockMode ? null : liveError;
-
-  useEffect(() => {
-    if (isMockMode || !liveMessages.length) return;
-    for (let i = liveMessages.length - 1; i >= 0; i--) {
-      const msg = liveMessages[i];
-      if (msg.role === 'assistant' && isChatStatusData(msg.metadata)) {
-        setStatusMessage((msg.metadata as ChatStatusData).message);
-        return;
-      }
-    }
-    setStatusMessage(undefined);
-  }, [liveMessages, isMockMode]);
 
   // ── Scroll ─────────────────────────────────────────────────
 
@@ -380,7 +386,6 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       liveSetMessages([welcomeMessage]);
     }
     setInputValue('');
-    setStatusMessage(undefined);
   }, [isMockMode, mockChat, liveSetMessages, welcomeMessage]);
 
   if (!open) return null;

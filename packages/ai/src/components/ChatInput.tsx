@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from 'preact/hooks';
-import type { RefObject } from 'preact';
 
 export interface ChatInputProps {
   value: string;
