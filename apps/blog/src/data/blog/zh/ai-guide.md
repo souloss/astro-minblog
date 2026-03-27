@@ -61,7 +61,7 @@ SITE_URL=https://your-blog.com
 
 ```bash
 astro-minimax ai process       # 生成文章摘要和 SEO 数据
-astro-minimax profile build     # 构建作者画像
+astro-minimax ai profile build  # 构建作者画像
 ```
 
 ### 4. 启动开发服务器

@@ -541,7 +541,7 @@ CLI 工具随 `@astro-minimax/cli` 包安装，也可以通过 `npx astro-minima
 astro-minimax post new "文章标题"    # 创建新文章
 astro-minimax ai process              # AI 处理所有文章
 astro-minimax ai eval                 # 评估 AI 对话质量
-astro-minimax profile build           # 构建完整作者画像
+astro-minimax ai profile build        # 构建完整作者画像
 astro-minimax data status             # 查看数据状态
 ```
 

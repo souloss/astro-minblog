@@ -117,17 +117,15 @@ pnpm run ai:eval -- --verbose                        # 详细输出
 ### 完整构建
 
 ```bash
-pnpm run profile:build
+pnpm run ai:profile:build
 ```
 
 依次执行：上下文构建 → 风格分析 → 画像报告生成。
 
-### 分步构建
+### 标准构建入口
 
 ```bash
-pnpm run profile:context    # 构建作者上下文（聚合文章数据）
-pnpm run profile:voice      # 构建表达风格画像（纯本地分析）
-pnpm run profile:report     # 生成画像报告（可选 AI 增强）
+pnpm run ai:profile:build   # 执行保留的作者画像构建流程
 ```
 
 生成的数据文件用于 AI 聊天功能，帮助 AI 以作者风格回答问题。
@@ -159,6 +157,6 @@ pnpm run data:clear
 | `pnpm run post:stats` | `astro-minimax post stats` |
 | `pnpm run ai:process` | `astro-minimax ai process` |
 | `pnpm run ai:eval` | `astro-minimax ai eval` |
-| `pnpm run profile:build` | `astro-minimax profile build` |
+| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |
 | `pnpm run data:status` | `astro-minimax data status` |
 | `pnpm run data:clear` | `astro-minimax data clear` |
