@@ -1,66 +1,96 @@
-import { preloadMetadata, getAuthorContext, getAllSummaries } from '../data/index.js';
-import { initArticleIndex, initProjectIndex, initArticleChunks } from '../search/index.js';
-import { getExtensionRegistry } from '../extensions/index.js';
-import { safeJoinUrl } from '../utils/url.js';
-import type { AuthorPost } from '../data/types.js';
-import type { SearchDocument, ArticleChunk } from '../search/types.js';
-import type { MetadataConfig, ChatHandlerEnv } from './types.js';
+import {
+  preloadKnowledgeBundle,
+  getKnowledgeBundle,
+} from "../data/index.js";
+import {
+  initArticleIndex,
+  initProjectIndex,
+  initArticleChunks,
+} from "../search/index.js";
+import { getExtensionRegistry } from "../extensions/index.js";
+import { safeJoinUrl } from "../utils/url.js";
+import type {
+  KnowledgeBundleFile,
+  KnowledgeDocument,
+  KnowledgePassage,
+} from "../data/knowledge-types.js";
+import type { SearchDocument, ArticleChunk } from "../search/types.js";
+import type { MetadataConfig, ChatHandlerEnv } from "./types.js";
 
 let initialized = false;
 let extensionsLoaded = false;
+let initializedBundleRef: unknown = null;
+let initializedSiteUrl = "";
 
-/**
- * Initializes AI metadata: loads summaries, author context, voice profile,
- * and builds search indices. Safe to call multiple times (idempotent).
- */
-export function initializeMetadata(config: MetadataConfig, env?: ChatHandlerEnv): void {
-  if (initialized) return;
+type LoadedKnowledgeBundle = NonNullable<KnowledgeBundleFile>;
+
+export function initializeMetadata(
+  config: MetadataConfig,
+  env?: ChatHandlerEnv
+): void {
+  const siteUrl = config.siteUrl ?? (env?.SITE_URL as string | undefined) ?? "";
+  const bundleRef = config.knowledgeBundle;
+
+  if (
+    initialized &&
+    initializedBundleRef === bundleRef &&
+    initializedSiteUrl === siteUrl
+  ) {
+    return;
+  }
+
   initialized = true;
+  initializedBundleRef = bundleRef;
+  initializedSiteUrl = siteUrl;
 
-  preloadMetadata({
-    summaries: config.summaries as Parameters<typeof preloadMetadata>[0]['summaries'],
-    authorContext: config.authorContext as Parameters<typeof preloadMetadata>[0]['authorContext'],
-    voiceProfile: config.voiceProfile as Parameters<typeof preloadMetadata>[0]['voiceProfile'],
-    factRegistry: (config.factRegistry ?? null) as Parameters<typeof preloadMetadata>[0]['factRegistry'],
-    vectorIndex: (config.vectorIndex ?? null) as Parameters<typeof preloadMetadata>[0]['vectorIndex'],
-  });
+  preloadKnowledgeBundle(
+    config.knowledgeBundle as Parameters<typeof preloadKnowledgeBundle>[0]
+  );
 
-  const authorCtx = getAuthorContext();
-  const allSummaries = getAllSummaries();
-  const summaryMap = new Map(allSummaries.map(s => [s.slug, s]));
+  const knowledgeBundle = getKnowledgeBundle() as LoadedKnowledgeBundle | null;
+  if (!knowledgeBundle) return;
 
-  const siteUrl = config.siteUrl ?? (env?.SITE_URL as string | undefined) ?? '';
-
-  const articleDocs: SearchDocument[] = (authorCtx?.posts ?? []).map((post: AuthorPost) => {
-    const summary = summaryMap.get(post.id);
-    return {
-      id: post.id,
-      title: post.title,
-      url: safeJoinUrl(siteUrl, post.url ?? `/${post.id}`),
-      excerpt: post.summary || summary?.summary || '',
-      content: [...(post.keyPoints ?? []), ...(summary?.keyPoints ?? [])].join(' '),
-      categories: [post.category].filter(Boolean),
-      tags: post.tags ?? [],
-      keyPoints: [...(post.keyPoints ?? []), ...(summary?.keyPoints ?? [])],
-      dateTime: post.date ? new Date(post.date).getTime() : 0,
-      lang: post.lang,
-      summary: summary?.summary,
-    };
-  });
+  const articleDocs: SearchDocument[] = knowledgeBundle.corpus.documents.map(
+    (doc: KnowledgeDocument) => ({
+      id: doc.id,
+      title: doc.title,
+      url: safeJoinUrl(siteUrl, doc.url ?? `/${doc.id}`),
+      excerpt: doc.summary,
+      content: doc.keyPoints.join(" "),
+      categories: [doc.category].filter(Boolean),
+      tags: doc.tags ?? [],
+      keyPoints: doc.keyPoints ?? [],
+      dateTime: doc.publishedAt ? new Date(doc.publishedAt).getTime() : 0,
+      lang: doc.lang,
+      summary: doc.summary,
+      readingTime: doc.readingTime,
+    })
+  );
 
   initArticleIndex(articleDocs);
   initProjectIndex([]);
 
   // Initialize article chunks for paragraph-level retrieval
-  const chunksData: Record<string, ArticleChunk[]> = {};
-  for (const post of authorCtx?.posts ?? []) {
-    if (post.chunks && post.chunks.length > 0) {
-      chunksData[post.id] = post.chunks as ArticleChunk[];
-    }
-  }
-  if (Object.keys(chunksData).length > 0) {
-    initArticleChunks(chunksData);
-  }
+  const chunksData: Record<string, ArticleChunk[]> = Object.fromEntries(
+    knowledgeBundle.passages.passages.reduce<Map<string, ArticleChunk[]>>(
+      (map: Map<string, ArticleChunk[]>, passage: KnowledgePassage) => {
+        const list = map.get(passage.documentId) ?? [];
+        list.push({
+          id: passage.id,
+          postId: passage.documentId,
+          heading: passage.heading,
+          content: passage.text,
+          position: passage.position,
+          tokenCount: passage.tokenCount,
+          headers: passage.headers,
+        });
+        map.set(passage.documentId, list);
+        return map;
+      },
+      new Map()
+    )
+  );
+  initArticleChunks(chunksData);
 }
 
 /**
@@ -69,6 +99,8 @@ export function initializeMetadata(config: MetadataConfig, env?: ChatHandlerEnv)
 export function resetMetadataInit(): void {
   initialized = false;
   extensionsLoaded = false;
+  initializedBundleRef = null;
+  initializedSiteUrl = "";
   getExtensionRegistry().clear();
 }
 
@@ -81,8 +113,8 @@ export async function initializeExtensions(basePath?: string): Promise<void> {
   extensionsLoaded = true;
 
   try {
-    const { loadExtensions } = await import('../extensions/loader.js');
-    await loadExtensions('datas/extensions/*.json', basePath);
+    const { loadExtensions } = await import("../extensions/loader.js");
+    await loadExtensions("datas/extensions/*.json", basePath);
   } catch {
     // Extensions directory may not exist, that's fine
   }
