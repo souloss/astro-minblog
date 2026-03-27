@@ -28,7 +28,7 @@ flowchart TB
     subgraph 服务端
         B --> C[Waline 服务端<br/>Vercel 部署]
         C --> D[(Neon PostgreSQL<br/>Vercel Storage)]
-        C --> E[邮件服务<br/>SMTP / Resend]
+    C --> E[Waline 邮件服务<br/>Resend / SMTP]
         C --> F[Webhook 通知]
     end
 
@@ -57,7 +57,7 @@ flowchart TB
 
 - [ ] GitHub 账号（用于 Vercel 登录）
 - [ ] 一个已部署的 astro-minimax 博客
-- [ ] 可选：用于邮件通知的 SMTP 服务或 Resend 账号
+- [ ] 可选：如果需要 Waline 自身发送邮件，可配置 Waline 侧的 Resend 或 SMTP 服务
 
 ## 第一步：创建 Vercel Neon PostgreSQL 数据库
 
@@ -209,11 +209,11 @@ CREATE INDEX IF NOT EXISTS "idx_users_email" ON "Users" ("email");
 3. 在域名 DNS 添加 CNAME 记录指向 `cname.vercel-dns.com`
 4. 等待 DNS 生效
 
-## 第三步：配置邮件通知（可选）
+## 第三步：配置 Waline 邮件通知（可选）
 
-Waline 支持多种邮件通知方式，推荐使用 Resend 或 SMTP。
+这一步描述的是 **Waline 自身的邮件投递能力**，与 astro-minimax 博客侧通知是两条独立链路。对于由 `@astro-minimax/notify` 负责的博客通知，当前内置邮件通道仅支持 **Resend**，其配置位于后文第 4.2 节。
 
-### 方式一：Resend（推荐）
+### 方式一：Waline 邮件使用 Resend
 
 Resend 提供免费的邮件发送服务：
 
@@ -230,7 +230,7 @@ Resend 提供免费的邮件发送服务：
 | `SMTP_USER`    | `noreply@yourdomain.com` | 发件邮箱       |
 | `SMTP_PASS`    | 留空                     | Resend 不需要  |
 
-### 方式二：SMTP
+### 方式二：Waline 邮件使用 SMTP
 
 使用 Gmail、QQ 邮箱等 SMTP 服务：
 
@@ -252,7 +252,7 @@ Resend 提供免费的邮件发送服务：
 
 > QQ 邮箱需要使用授权码而非登录密码。在 QQ 邮箱设置 -> 账户 -> POP3/SMTP 服务中获取授权码。
 
-### 通知模板配置
+### Waline 邮件模板配置
 
 自定义通知邮件内容：
 

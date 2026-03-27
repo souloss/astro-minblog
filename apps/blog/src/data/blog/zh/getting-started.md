@@ -54,7 +54,7 @@ CLI 还提供实用的管理命令：
 ```bash
 astro-minimax post new "文章标题"    # 创建新文章
 astro-minimax ai process              # AI 处理文章（摘要+SEO）
-astro-minimax profile build           # 构建作者画像
+astro-minimax ai profile build        # 构建作者画像
 astro-minimax data status             # 查看数据状态
 ```
 
@@ -175,7 +175,7 @@ astro-minimax 支持多种部署平台，推荐 Cloudflare Pages：
 ```bash
 # 连接 Git 仓库到 Cloudflare Pages
 # 构建命令：pnpm run build
-# 构建输出目录：apps/blog/dist
+# 构建输出目录：dist
 ```
 
 也可以部署到 Vercel、Netlify 或使用 Docker。详见 [部署指南](/zh/posts/deployment-guide)。

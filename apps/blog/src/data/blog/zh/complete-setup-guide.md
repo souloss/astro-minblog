@@ -138,7 +138,7 @@ category: 随笔
 | ------------ | ---------------- |
 | 框架预设     | Astro            |
 | 构建命令     | `pnpm run build` |
-| 构建输出目录 | `apps/blog/dist` |
+| 构建输出目录 | `dist` |
 
 ### Step 3.3: 设置环境变量
 
@@ -311,7 +311,7 @@ ai: {
 
 ```bash
 pnpm run ai:process      # 生成文章摘要
-pnpm run profile:build   # 构建作者画像
+pnpm run ai:profile:build # 构建作者画像
 ```
 
 ### Step 7.3: 验证 AI Binding
