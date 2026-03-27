@@ -1,16 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * AI 标签与分类自动生成工具
- *
- * 用法:
- *   pnpm run tools:tags <文章路径>              # 分析并推荐标签和分类
- *   pnpm run tools:tags <文章路径> --write      # 推荐并写入 frontmatter
- *   pnpm run tools:tags --all                    # 分析所有文章（dry-run）
- *
- * 环境变量:
- *   AI_API_KEY / OPENAI_API_KEY（可选，无 key 时使用关键词匹配）
- */
-
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { extractFrontmatter } from "./lib/frontmatter.js";
@@ -182,7 +170,7 @@ async function main() {
     });
   } else {
     console.error(
-      "用法: pnpm run tools:tags <文章路径> [--write] 或 pnpm run tools:tags --all"
+  "用法: tsx src/tools/generate-tags.ts <文章路径> [--write] 或 tsx src/tools/generate-tags.ts --all"
     );
     process.exit(1);
   }
