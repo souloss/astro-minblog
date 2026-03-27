@@ -1,16 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * 生成作者画像报告
- *
- * 基于作者上下文数据生成用于 About 页面的结构化简介。
- * 支持 AI 生成和规则模板两种模式。
- *
- * 用法:
- *   pnpm profile:generate              AI 生成画像报告
- *   pnpm profile:generate --no-ai      使用规则模板
- *   pnpm profile:generate --force      强制重新生成（不回退）
- */
-
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
