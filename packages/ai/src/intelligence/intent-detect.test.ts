@@ -2,10 +2,12 @@ import { describe, it, expect } from 'vitest';
 import {
   classifyIntent,
   rankArticlesByIntent,
+} from '../query/intent.js';
+import {
   isLikelyFollowUp,
   hasNewSignificantTokens,
   hasQueryOverlap,
-} from '../intelligence/intent-detect.js';
+} from '../query/followup.js';
 import type { ArticleContext } from '../search/types.js';
 
 describe('classifyIntent', () => {

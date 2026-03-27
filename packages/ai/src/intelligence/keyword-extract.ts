@@ -2,6 +2,7 @@ import { generateText, type LanguageModel } from 'ai';
 import { tokenize } from '../utils/text.js';
 import type { KeywordExtractionResult, QueryComplexity } from './types.js';
 import { TIMEOUTS } from '../constants.js';
+import { classifyQueryComplexity } from './request-interpretation.js';
 
 export const KEYWORD_EXTRACTION_TIMEOUT_MS = TIMEOUTS.KEYWORD_EXTRACTION;
 
@@ -25,16 +26,6 @@ export function shouldRunKeywordExtraction(params: {
 }
 
 /**
- * Classifies the complexity of the user's query.
- */
-function classifyComplexity(text: string): QueryComplexity {
-  const tokens = tokenize(text);
-  if (tokens.length <= 1 || text.length <= 10) return 'simple';
-  if (tokens.length >= 5 || text.length > 80) return 'complex';
-  return 'moderate';
-}
-
-/**
  * Extracts optimized search keywords from the conversation using LLM.
  * Falls back to local tokenization if LLM call fails or times out.
  */
@@ -48,7 +39,7 @@ export async function extractSearchKeywords(params: {
 
   const latestMessage = messages[messages.length - 1];
   const latestText = getMessageText(latestMessage);
-  const complexity = classifyComplexity(latestText);
+  const complexity = classifyQueryComplexity(latestText);
 
   const conversationText = messages
     .slice(-6) // Last 3 turns
