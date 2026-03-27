@@ -44,13 +44,14 @@ const uniqueId = `rough-${randomUUID()}`;
   }
 
   async function loadRough(): Promise<RoughStatic> {
-    const w = window as unknown as Record<string, unknown>;
-    if (w.__roughModule) return w.__roughModule as RoughStatic;
+    const cachedModule = window.__roughModule;
+    if (cachedModule) return cachedModule as RoughStatic;
 
-    // @ts-expect-error CDN dynamic import
-    const mod = await import("https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.esm.js");
-    w.__roughModule = mod.default;
-    return mod.default as RoughStatic;
+    const mod = (await import(
+      "https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.esm.js"
+    )) as { default: RoughStatic };
+    window.__roughModule = mod.default;
+    return mod.default;
   }
 
   type RoughStatic = {

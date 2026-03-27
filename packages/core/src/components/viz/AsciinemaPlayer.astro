@@ -124,8 +124,7 @@ const {
   async function renderPlayer(wrapper: HTMLElement) {
     await Promise.all([loadCSS(), loadJS()]);
 
-    const AsciinemaPlayer = (window as unknown as Record<string, unknown>)
-      .AsciinemaPlayer as AsciinemaPlayerAPI | undefined;
+    const AsciinemaPlayer = window.AsciinemaPlayer as AsciinemaPlayerAPI | undefined;
     if (!AsciinemaPlayer) return;
 
     const placeholder = wrapper.querySelector(".asciinema-placeholder");
