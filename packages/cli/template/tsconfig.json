@@ -5,7 +5,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@astro-minimax/core/types": ["../../core/src/types.ts"],
+      "@astro-minimax/ai": ["../../ai/src/index.ts"],
+      "@astro-minimax/ai/*": ["../../ai/src/*"],
+      "@astro-minimax/notify": ["../../notify/src/index.ts"],
+      "@astro-minimax/notify/*": ["../../notify/src/*"]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
