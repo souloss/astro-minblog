@@ -1,6 +1,6 @@
-import { normalizeText } from './search-utils.js';
-import { buildIDFMap, type IDFMap } from './idf.js';
-import type { SearchDocument, IndexedDocument } from './types.js';
+import { normalizeText } from "../utils/text.js";
+import { buildIDFMap, type IDFMap } from "./idf.js";
+import type { SearchDocument, IndexedDocument } from "./types.js";
 
 let cachedIDFMap: IDFMap | null = null;
 
@@ -11,7 +11,9 @@ let cachedIDFMap: IDFMap | null = null;
  * IDF map is only updated when the document set is non-empty,
  * preventing an empty index (e.g. projects) from wiping article IDF.
  */
-export function buildSearchIndex(documents: SearchDocument[]): IndexedDocument[] {
+export function buildSearchIndex(
+  documents: SearchDocument[]
+): IndexedDocument[] {
   const indexed = documents.map(doc => ({
     ...doc,
     tokens: buildDocumentTokens(doc),
@@ -35,7 +37,9 @@ function buildDocumentTokens(doc: SearchDocument): string[] {
     ...doc.keyPoints,
     ...doc.categories,
     ...doc.tags,
-    doc.summary ?? '',
+    doc.summary ?? "",
   ];
-  return [...new Set(parts.map(normalizeText).join(' ').split(/\s+/).filter(Boolean))];
+  return [
+    ...new Set(parts.map(normalizeText).join(" ").split(/\s+/).filter(Boolean)),
+  ];
 }

@@ -6,7 +6,7 @@
  * Gracefully degrades to a no-op when no vector index is loaded.
  */
 
-import type { ArticleContext } from './types.js';
+import type { ArticleContext } from "./types.js";
 
 // ── Vector Index Types (mirrors cli/lib/vectors.ts) ──────────
 
@@ -21,7 +21,7 @@ export interface VectorChunk {
 
 export interface VectorIndex {
   version: number;
-  method: 'tfidf' | 'openai';
+  method: "tfidf" | "openai";
   createdAt: string;
   vocabulary?: string[];
   chunks: VectorChunk[];
@@ -62,16 +62,18 @@ export function hasVectorIndex(): boolean {
  *
  * @param alpha - Blend factor (0 = ignore vectors, 1 = vectors only). Default 0.3
  */
-export function rerankWithVectors<T extends Pick<ArticleContext, 'url' | 'score'>>(
-  query: string,
-  candidates: T[],
-  alpha = 0.3,
-): T[] {
+export function rerankWithVectors<
+  T extends Pick<ArticleContext, "url" | "score">,
+>(query: string, candidates: T[], alpha = 0.3): T[] {
   if (!loadedIndex || !idfCache || !loadedIndex.vocabulary) {
     return candidates;
   }
 
-  const queryVector = computeQueryVector(query, loadedIndex.vocabulary, idfCache);
+  const queryVector = computeQueryVector(
+    query,
+    loadedIndex.vocabulary,
+    idfCache
+  );
   if (!queryVector) return candidates;
 
   // Map postId → best chunk cosine similarity
@@ -98,15 +100,26 @@ export function rerankWithVectors<T extends Pick<ArticleContext, 'url' | 'score'
 
     return { ...article, score: blended };
   });
-
-  return reranked.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  const sorted = reranked.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  log.debug(
+    `rerankWithVectors: candidates=${candidates.length}, alpha=${alpha}, top=${sorted
+      .slice(0, 5)
+      .map(
+        item =>
+          `${extractSlugFromUrl(item.url)}:${(item.score ?? 0).toFixed(3)}`
+      )
+      .join(" | ")}`
+  );
+  return sorted;
 }
 
 // ── Math Utilities ────────────────────────────────────────────
 
 function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length !== b.length) return 0;
-  let dot = 0, magA = 0, magB = 0;
+  let dot = 0,
+    magA = 0,
+    magB = 0;
   for (let i = 0; i < a.length; i++) {
     dot += a[i] * b[i];
     magA += a[i] * a[i];
@@ -119,7 +132,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
 function computeQueryVector(
   query: string,
   vocabulary: string[],
-  idf: Map<string, number>,
+  idf: Map<string, number>
 ): number[] | null {
   const tokens = tokenizeForVector(query);
   if (!tokens.length) return null;
@@ -143,7 +156,7 @@ function tokenizeForVector(text: string): string[] {
   const CJK = /[\u4e00-\u9fff\u3400-\u4dbf]/g;
   const cjkChars = text.match(CJK) || [];
   const latin = text
-    .replace(CJK, ' ')
+    .replace(CJK, " ")
     .toLowerCase()
     .split(/\W+/)
     .filter(w => w.length > 2);
@@ -152,7 +165,7 @@ function tokenizeForVector(text: string): string[] {
 
 function buildIDFFromVocab(
   vocabulary: string[],
-  chunks: VectorChunk[],
+  chunks: VectorChunk[]
 ): Map<string, number> {
   const N = chunks.length;
   const df = new Map<string, number>();
@@ -178,8 +191,11 @@ function buildIDFFromVocab(
  * Extracts a slug/postId from a URL path like "/zh/posts/some-slug/" → "zh/some-slug"
  */
 function extractSlugFromUrl(url: string): string {
-  const path = url.replace(/^https?:\/\/[^/]+/, '');
+  const path = url.replace(/^https?:\/\/[^/]+/, "");
   const match = path.match(/^\/([\w-]+)\/posts\/(.+?)\/?$/);
   if (match) return `${match[1]}/${match[2]}`;
-  return path.replace(/^\/|\/$/g, '');
+  return path.replace(/^\/|\/$/g, "");
 }
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("vector-reranker");

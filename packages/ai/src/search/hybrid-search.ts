@@ -7,8 +7,8 @@
  * 默认 k=60，源自 Cormack, Clarke, Buettcher 2009 论文。
  */
 
-import type { ArticleContext } from './types.js';
-import { tokenize, normalizeText } from './search-utils.js';
+import type { ArticleContext } from "./types.js";
+import { tokenize, normalizeText, extractCodeAnchors } from "../utils/text.js";
 
 // ─── 类型定义 ─────────────────────────────────────────────────────
 
@@ -48,6 +48,17 @@ export interface ChunkMatchResult {
   article: ArticleWithChunks;
   chunk: ArticleChunk;
   score: number;
+}
+
+export interface ChunkRelevanceOptions {
+  rawQuery?: string;
+  rawAnchors?: string[];
+}
+
+export interface NeighborChunkConfig {
+  includePrevious?: boolean;
+  includeNext?: boolean;
+  rawAnchors?: string[];
 }
 
 // ─── 常量 ──────────────────────────────────────────────────────────
@@ -93,7 +104,7 @@ export function reciprocalRankFusion(
  * @param config - RRF 配置
  */
 export function hybridSearch(
-  query: string,
+  _query: string,
   bm25Results: ArticleContext[],
   vectorResults: ArticleContext[] | null,
   config?: RRFConfig
@@ -168,16 +179,14 @@ export function searchChunks(
     if (!article.chunks?.length) continue;
 
     for (const chunk of article.chunks) {
-      const score = computeChunkRelevance(queryTokens, chunk);
+      const score = computeChunkRelevance(queryTokens, chunk, article);
       if (score > 0) {
         results.push({ article, chunk, score });
       }
     }
   }
 
-  return results
-    .sort((a, b) => b.score - a.score)
-    .slice(0, topK);
+  return results.sort((a, b) => b.score - a.score).slice(0, topK);
 }
 
 /**
@@ -190,17 +199,65 @@ export function searchChunks(
  */
 export function computeChunkRelevance(
   queryTokens: string[],
-  chunk: ArticleChunk
+  chunk: ArticleChunk,
+  article?: Pick<ArticleContext, "title" | "categories" | "keyPoints">,
+  options: ChunkRelevanceOptions = {}
 ): number {
   let score = 0;
+  const rawQuery = options.rawQuery?.trim() ?? "";
+  const rawAnchors =
+    options.rawAnchors && options.rawAnchors.length > 0
+      ? options.rawAnchors
+      : extractCodeAnchors(rawQuery);
 
   const headingTokens = tokenize(chunk.heading);
   const contentTokens = tokenize(chunk.content);
+  const articleTitleTokens = article ? tokenize(article.title) : [];
+  const articleMetaText = article
+    ? normalizeText(
+        [
+          article.title,
+          ...(article.categories ?? []),
+          ...(article.keyPoints ?? []),
+        ].join(" ")
+      )
+    : "";
+  const anchorTokens = queryTokens
+    .filter(token => token.length >= 2)
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 3);
+  const genericTopicTokens = new Set([
+    "ai",
+    "rag",
+    "功能",
+    "特性",
+    "功能特性",
+    "设计",
+    "架构",
+    "模块",
+    "聊天",
+    "配置",
+  ]);
+  const strongAnchorTokens = anchorTokens.filter(
+    token => !genericTopicTokens.has(token)
+  );
+  const headingText = normalizeText(chunk.heading);
+  const titleText = article ? normalizeText(article.title) : "";
+
+  score += scoreExactQueryMatches(rawQuery, chunk);
+  score += scoreExactCodeAnchorMatches(rawAnchors, chunk, article);
 
   // 标题匹配
   for (const token of queryTokens) {
     if (headingTokens.some(h => h.includes(token) || token.includes(h))) {
       score += 2.0;
+    }
+    if (
+      articleTitleTokens.some(
+        title => title.includes(token) || token.includes(title)
+      )
+    ) {
+      score += 1.2;
     }
   }
 
@@ -218,7 +275,122 @@ export function computeChunkRelevance(
     score *= 1.1;
   }
 
+  if (anchorTokens.length > 0) {
+    const anchorHitCount = anchorTokens.filter(term =>
+      articleMetaText.includes(term)
+    ).length;
+    if (anchorHitCount === 0) {
+      score *= 0.72;
+    } else {
+      score *= 1 + Math.min(anchorHitCount, 2) * 0.08;
+    }
+  }
+
+  if (strongAnchorTokens.length > 0) {
+    const strongTitleHits = strongAnchorTokens.filter(token =>
+      titleText.includes(token)
+    ).length;
+    const strongHeadingHits = strongAnchorTokens.filter(token =>
+      headingText.includes(token)
+    ).length;
+
+    if (strongTitleHits === 0 && strongHeadingHits === 0) {
+      score *= 0.58;
+    } else {
+      score *= 1 + Math.min(strongTitleHits + strongHeadingHits, 2) * 0.12;
+    }
+  }
+
   return score;
+}
+
+function scoreExactCodeAnchorMatches(
+  rawAnchors: string[],
+  chunk: ArticleChunk,
+  article?: Pick<ArticleContext, "title">
+): number {
+  if (rawAnchors.length === 0) return 0;
+
+  let bonus = 0;
+  const normalizedContent = normalizeText(chunk.content);
+  const normalizedHeading = normalizeText(chunk.heading);
+  const normalizedTitle = article ? normalizeText(article.title) : "";
+
+  for (const anchor of rawAnchors) {
+    if (anchor.length < 2) continue;
+
+    const normalizedAnchor = normalizeText(anchor);
+    if (!normalizedAnchor) continue;
+
+    if (chunk.content.includes(anchor)) {
+      bonus += 5.5;
+      continue;
+    }
+    if (chunk.heading.includes(anchor)) {
+      bonus += 4.2;
+      continue;
+    }
+    if (article?.title.includes(anchor)) {
+      bonus += 2.5;
+      continue;
+    }
+
+    if (normalizedContent.includes(normalizedAnchor)) {
+      bonus += 3.5;
+    } else if (normalizedHeading.includes(normalizedAnchor)) {
+      bonus += 2.2;
+    } else if (normalizedTitle.includes(normalizedAnchor)) {
+      bonus += 1.4;
+    }
+  }
+
+  return bonus;
+}
+
+function scoreExactQueryMatches(query: string, chunk: ArticleChunk): number {
+  const candidate = extractLikelyQuotedText(query);
+  if (!candidate) return 0;
+
+  const normalizedCandidate = normalizeText(candidate);
+  if (normalizedCandidate.length < 12) return 0;
+
+  const chunkContent = chunk.content;
+  const normalizedContent = normalizeText(chunkContent);
+  const normalizedHeading = normalizeText(chunk.heading);
+
+  let bonus = 0;
+
+  if (chunkContent.includes(candidate)) {
+    bonus += 6;
+  } else if (normalizedContent.includes(normalizedCandidate)) {
+    bonus += 4.5;
+  }
+
+  if (!chunk.heading && normalizedContent.startsWith(normalizedCandidate)) {
+    bonus += 8;
+  }
+
+  if (normalizedHeading.includes(normalizedCandidate)) {
+    bonus += 1.5;
+  }
+
+  return bonus;
+}
+
+function extractLikelyQuotedText(query: string): string {
+  const trimmed = query.trim();
+  if (!trimmed) return "";
+
+  const quotedMatches = [...trimmed.matchAll(/["“”'‘’「」『』《》](.+?)["“”'‘’「」『』《》]/g)]
+    .map(match => match[1]?.trim() ?? "")
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  if (quotedMatches[0]) {
+    return quotedMatches[0];
+  }
+
+  return trimmed;
 }
 
 /**
@@ -231,7 +403,7 @@ export function formatChunksForInjection(
   matches: ChunkMatchResult[],
   maxTokens: number = 2000
 ): string {
-  if (!matches.length) return '';
+  if (!matches.length) return "";
 
   const lines: string[] = [];
   let totalTokens = 0;
@@ -246,12 +418,12 @@ export function formatChunksForInjection(
     totalTokens += chunkTokens;
   }
 
-  return lines.join('\n\n');
+  return lines.join("\n\n");
 }
 
 function formatChunkForInjection(match: ChunkMatchResult): string {
-  const { article, chunk, score } = match;
-  const heading = chunk.heading ? `【${chunk.heading}】` : '';
+  const { article, chunk } = match;
+  const heading = chunk.heading ? `【${chunk.heading}】` : "";
   const source = `来源: [${article.title}](${article.url})`;
 
   return `${heading}\n${chunk.content.slice(0, 500)}\n\n${source}`;
@@ -272,6 +444,8 @@ export interface ChunkInjectionConfig {
   minChunkScore: number;
   /** 每篇文章最多注入段落数 */
   maxChunksPerArticle: number;
+  rawAnchors?: string[];
+  currentArticleId?: string;
 }
 
 const DEFAULT_INJECTION_CONFIG: ChunkInjectionConfig = {
@@ -301,7 +475,10 @@ export function selectRelevantChunks(
     const articleMatches: ChunkMatchResult[] = [];
 
     for (const chunk of article.chunks) {
-      const score = computeChunkRelevance(queryTokens, chunk);
+      const score = computeChunkRelevance(queryTokens, chunk, article, {
+        rawQuery: query,
+        rawAnchors: cfg.rawAnchors,
+      });
       if (score >= cfg.minChunkScore) {
         articleMatches.push({ article, chunk, score });
       }
@@ -313,7 +490,88 @@ export function selectRelevantChunks(
   }
 
   // 全局排序并截断
-  return allMatches
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 20);
+  const globallyRanked = allMatches.sort((a, b) => b.score - a.score);
+  const selected = cfg.currentArticleId
+    ? [
+        ...globallyRanked.filter(match => match.article.id === cfg.currentArticleId),
+        ...globallyRanked.filter(match => match.article.id !== cfg.currentArticleId),
+      ].slice(0, 20)
+    : globallyRanked.slice(0, 20);
+  log.debug(
+    `selectRelevantChunks: queryTokens=${queryTokens.length}, articles=${articles.length}, matched=${allMatches.length}, selected=${selected.length}, maxPerArticle=${cfg.maxChunksPerArticle}, minScore=${cfg.minChunkScore}`
+  );
+  if (selected.length > 0) {
+    log.debug(
+      `selectRelevantChunks top: ${selected
+        .slice(0, 5)
+        .map(
+          match =>
+            `${match.article.title}#${match.chunk.id}:${match.score.toFixed(3)}`
+        )
+        .join(", ")}`
+    );
+  }
+  return selected;
 }
+
+export function expandChunkMatchesWithNeighbors(
+  matches: ChunkMatchResult[],
+  config: NeighborChunkConfig = { includePrevious: true, includeNext: true }
+): ChunkMatchResult[] {
+  const expanded: ChunkMatchResult[] = [];
+  const seen = new Set<string>();
+  const rawAnchors = config.rawAnchors ?? [];
+
+  const candidateHasAnchor = (candidate: ChunkMatchResult): boolean => {
+    if (rawAnchors.length === 0) return true;
+
+    return rawAnchors.some(anchor => {
+      const normalizedAnchor = normalizeText(anchor);
+      return (
+        candidate.chunk.content.includes(anchor) ||
+        candidate.chunk.heading.includes(anchor) ||
+        normalizeText(candidate.chunk.content).includes(normalizedAnchor) ||
+        normalizeText(candidate.chunk.heading).includes(normalizedAnchor)
+      );
+    });
+  };
+
+  for (const match of matches) {
+    const push = (candidate: ChunkMatchResult | undefined) => {
+      if (!candidate) return;
+      if (seen.has(candidate.chunk.id)) return;
+      if (candidate !== match && !candidateHasAnchor(candidate)) return;
+      seen.add(candidate.chunk.id);
+      expanded.push(candidate);
+    };
+
+    push(match);
+
+    const articleChunks = match.article.chunks ?? [];
+    const index = articleChunks.findIndex(chunk => chunk.id === match.chunk.id);
+    if (index === -1) continue;
+
+    if (config.includePrevious && index > 0) {
+      push({
+        article: match.article,
+        chunk: articleChunks[index - 1],
+        score: match.score * 0.85,
+      });
+    }
+
+    if (config.includeNext && index < articleChunks.length - 1) {
+      push({
+        article: match.article,
+        chunk: articleChunks[index + 1],
+        score: match.score * 0.9,
+      });
+    }
+  }
+
+  return expanded.sort(
+    (a, b) => b.score - a.score || a.chunk.position - b.chunk.position
+  );
+}
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("hybrid-search");

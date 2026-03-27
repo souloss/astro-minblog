@@ -1,10 +1,17 @@
-import type { CacheAdapter } from '../cache/types.js';
-import type { CachedSearchContext, ArticleContext, ProjectContext } from './types.js';
-import { MemoryCacheAdapter } from '../cache/memory-adapter.js';
+import type { CacheAdapter } from "../cache/types.js";
+import type {
+  CachedSearchContext,
+} from "./types.js";
+import { MemoryCacheAdapter } from "../cache/memory-adapter.js";
+import { createLogger } from "../utils/logger.js";
 
-export { type CachedSearchContext, type ArticleContext, type ProjectContext } from './types.js';
+export {
+  type CachedSearchContext,
+} from "./types.js";
 
-import { CACHE } from '../constants.js';
+import { CACHE } from "../constants.js";
+
+const log = createLogger("session-cache");
 
 const SESSION_ID_PATTERN = /^[a-z0-9][a-z0-9_-]{7,63}$/i;
 export const SESSION_CACHE_TTL_SECONDS = CACHE.SESSION_TTL;
@@ -23,7 +30,7 @@ function getDefaultCache(): CacheAdapter {
 }
 
 export function getSessionCacheKey(req: Request): string | null {
-  const sessionId = req.headers.get('x-session-id')?.trim();
+  const sessionId = req.headers.get("x-session-id")?.trim();
   if (sessionId && SESSION_ID_PATTERN.test(sessionId)) {
     return `sid:${sessionId}`;
   }
@@ -44,6 +51,9 @@ export async function getCachedContext(
 ): Promise<CachedSearchContext | undefined> {
   const adapter = cache ?? getDefaultCache();
   const entry = await adapter.get<CachedSearchContext>(key);
+  log.debug(
+    `getCachedContext: key=${key}, hit=${Boolean(entry?.value)}, adapter=${adapter.name}`
+  );
   return entry?.value;
 }
 
@@ -54,6 +64,9 @@ export async function setCachedContext(
 ): Promise<void> {
   const adapter = cache ?? getDefaultCache();
   await adapter.set(key, ctx, { ttl: SESSION_CACHE_TTL_SECONDS });
+  log.debug(
+    `setCachedContext: key=${key}, articles=${ctx.articles.length}, projects=${ctx.projects.length}, adapter=${adapter.name}`
+  );
 }
 
 export async function deleteCachedContext(
@@ -61,6 +74,7 @@ export async function deleteCachedContext(
   cache?: CacheAdapter
 ): Promise<boolean> {
   const adapter = cache ?? getDefaultCache();
+  log.debug(`deleteCachedContext: key=${key}, adapter=${adapter.name}`);
   return adapter.delete(key);
 }
 
