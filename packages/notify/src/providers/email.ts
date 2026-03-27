@@ -1,4 +1,14 @@
-import type { EmailConfig, EmailTemplate, SendResult, Logger } from '../types.js';
+import type {
+  EmailConfig,
+  EmailTemplate,
+  SendResult,
+  Logger,
+} from "../types.js";
+import {
+  createFailureResult,
+  getDuration,
+  getErrorMessage,
+} from "../provider-helpers.js";
 
 export interface EmailProvider {
   send(template: EmailTemplate): Promise<SendResult>;
@@ -13,10 +23,10 @@ export function createEmailProvider(
   return {
     async send(template: EmailTemplate): Promise<SendResult> {
       const start = Date.now();
-      
-      if (provider !== 'resend') {
+
+      if (provider !== "resend") {
         return {
-          channel: 'email',
+          channel: "email",
           success: false,
           error: `Unsupported email provider: ${provider}`,
           duration: 0,
@@ -24,11 +34,11 @@ export function createEmailProvider(
       }
 
       try {
-        const response = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
+        const response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             from,
@@ -40,47 +50,46 @@ export function createEmailProvider(
           signal: AbortSignal.timeout(10_000),
         });
 
-        const duration = Date.now() - start;
+        const duration = getDuration(start);
 
         if (!response.ok) {
-          const errorData = await response.json() as { message?: string };
-          const errorMsg = `Resend API error: ${response.status} - ${errorData.message || 'Unknown error'}`;
-          
-          logger?.error('Email send failed', new Error(errorMsg), {
+          const errorData = (await response.json()) as { message?: string };
+          const errorMsg = `Resend API error: ${response.status} - ${errorData.message || "Unknown error"}`;
+
+          logger?.error("Email send failed", new Error(errorMsg), {
             to,
             status: response.status,
           });
-          
+
           return {
-            channel: 'email',
+            channel: "email",
             success: false,
             error: errorMsg,
             duration,
           };
         }
 
-        logger?.info('Email notification sent', { to, duration });
-        
+        logger?.info("Email notification sent", { to, duration });
+
         return {
-          channel: 'email',
+          channel: "email",
           success: true,
           duration,
         };
       } catch (error) {
-        const duration = Date.now() - start;
-        const errorMsg = error instanceof Error ? error.message : String(error);
-        
-        logger?.error('Email send failed', error instanceof Error ? error : undefined, {
-          to,
-          error: errorMsg,
-        });
-        
-        return {
-          channel: 'email',
-          success: false,
-          error: errorMsg,
-          duration,
-        };
+        const duration = getDuration(start);
+        const errorMsg = getErrorMessage(error);
+
+        logger?.error(
+          "Email send failed",
+          error instanceof Error ? error : undefined,
+          {
+            to,
+            error: errorMsg,
+          }
+        );
+
+        return createFailureResult("email", errorMsg, duration);
       }
     },
   };
