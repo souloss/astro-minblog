@@ -35,7 +35,7 @@
     "clean": "pnpm -r clean",
     "kill:dev": "node scripts/kill-dev.js",
     "kill:dev:bash": "bash scripts/kill-dev.sh",
-    "postinstall": "pnpm --filter @astro-minimax/notify build && pnpm --filter @astro-minimax/ai build && pnpm --filter @astro-minimax/cli build",
+    "postinstall": "pnpm --filter @astro-minimax/knowledge-model build && pnpm --filter @astro-minimax/notify build && pnpm --filter @astro-minimax/ai build && pnpm --filter @astro-minimax/cli build",
     "prepare": "husky"
   },
   "pnpm": {

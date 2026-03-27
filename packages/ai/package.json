@@ -33,13 +33,13 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./providers": {
-      "types": "./dist/providers/index.d.ts",
-      "import": "./dist/providers/index.js"
-    },
     "./middleware": {
       "types": "./dist/middleware/index.d.ts",
       "import": "./dist/middleware/index.js"
+    },
+    "./cache": {
+      "types": "./dist/cache/index.d.ts",
+      "import": "./dist/cache/index.js"
     },
     "./search": {
       "types": "./dist/search/index.d.ts",
@@ -61,10 +61,6 @@
       "types": "./dist/fact-registry/index.d.ts",
       "import": "./dist/fact-registry/index.js"
     },
-    "./stream": {
-      "types": "./dist/stream/index.d.ts",
-      "import": "./dist/stream/index.js"
-    },
     "./server": {
       "types": "./dist/server/index.d.ts",
       "import": "./dist/server/index.js"
@@ -76,6 +72,10 @@
     "./structured-output": {
       "types": "./dist/structured-output/index.d.ts",
       "import": "./dist/structured-output/index.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "import": "./dist/tools/index.js"
     },
     "./components/ChatPanel": {
       "types": "./dist/components/ChatPanel.d.ts",
@@ -107,8 +107,8 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
+    "@astro-minimax/knowledge-model": "workspace:*",
     "@ai-sdk/openai-compatible": "^2.0.35",
-    "@astro-minimax/notify": "workspace:*",
     "ai": "^6.0.116",
     "workers-ai-provider": "^3.1.2",
     "zod": "^4.3.6"
@@ -123,7 +123,8 @@
     "shiki": "^1.0.0 || ^2.0.0",
     "mermaid": "^11.0.0",
     "markmap-lib": "^0.18.0",
-    "markmap-view": "^0.18.0"
+    "markmap-view": "^0.18.0",
+    "@astro-minimax/notify": "^0.9.2"
   },
   "peerDependenciesMeta": {
     "@ai-sdk/react": {
@@ -142,6 +143,9 @@
       "optional": true
     },
     "markmap-view": {
+      "optional": true
+    },
+    "@astro-minimax/notify": {
       "optional": true
     }
   },
