@@ -1,6 +1,6 @@
 # Cloudflare Pages Functions
 
-Thin adapter layer for Cloudflare Pages deployment. Core logic lives in `@astro-minimax/ai/server`.
+Thin adapter layer for Cloudflare Pages deployment. Core logic lives in `@astro-minimax/ai/server` and `@astro-minimax/notify`.
 
 ## Structure
 
@@ -12,8 +12,6 @@ functions/
     notify/
       comment.ts      → Comment notification webhook (for Waline)
       status.ts       → Notification config status endpoint
-      test-ai-chat.ts → Test AI chat notification
-      debug.ts        → Debug webhook payload
 ```
 
 ## Local Development
@@ -36,6 +34,8 @@ Configure in `.env` (local) or Cloudflare Dashboard (production):
 | `AI_BINDING_NAME` | Workers AI binding name (default: `minimaxAI`) |
 | `SITE_AUTHOR`     | Author name for AI prompts                     |
 | `SITE_URL`        | Site URL for article links                     |
+
+The AI endpoints initialize runtime data from `datas/knowledge/runtime/knowledge-bundle.json` and optionally use vector data embedded in that bundle.
 
 ### Notification Configuration
 
