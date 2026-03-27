@@ -128,7 +128,8 @@ export function chunkMarkdownByHeaders(
     if (!content) return;
 
     const tokenCount = estimateTokenCount(content);
-    if (!force && tokenCount < minTokens) return;
+    const isLeadingIntro = headerStack.length === 0 && currentPosition === 0;
+    if (!force && tokenCount < minTokens && !isLeadingIntro) return;
 
     // 恢复代码块
     const restoredContent = restoreCodeBlocks(content, codeBlocks);
