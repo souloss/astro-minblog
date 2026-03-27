@@ -1,15 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * 多语言翻译工具 - 将文章翻译为目标语言
- *
- * 用法:
- *   pnpm run tools:translate <源文件> [目标语言]
- *   示例: pnpm run tools:translate src/data/blog/zh/post.md en
- *
- * 环境变量:
- *   AI_API_KEY / OPENAI_API_KEY — API key
- */
-
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { resolve, dirname, basename, join } from "node:path";
 import { chatCompletion } from "./lib/ai-provider.js";
@@ -20,7 +9,7 @@ async function main() {
   const targetLang = args[1] || "en";
 
   if (!filePath) {
-    console.error("用法: pnpm run tools:translate <源文件> [目标语言]");
+console.error("用法: tsx src/tools/translate.ts <源文件> [目标语言]");
     process.exit(1);
   }
 
