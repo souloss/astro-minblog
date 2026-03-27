@@ -183,7 +183,7 @@ function render(mode) {
             ${p.coverSrc ? `
               <div class="px-5 mt-4">
                 <div class="relative aspect-[16/9] overflow-hidden rounded-xl">
-                  <img src="${p.coverSrc}" class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                  <img src="${p.coverSrc}" alt="" class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" width="800" height="450">
                 </div>
               </div>
             ` : ''}
@@ -226,7 +226,7 @@ function render(mode) {
             <!-- 封面图片 -->
             ${p.coverSrc ? `
               <div class="relative w-full h-36 sm:h-40 overflow-hidden shrink-0">
-                <img src="${p.coverSrc}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                 <img src="${p.coverSrc}" alt="" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" width="800" height="450">
                 <div class="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent"></div>
               </div>
             ` : ''}
@@ -269,7 +269,7 @@ function render(mode) {
             <!-- 缩略图（可选） -->
             ${p.coverSrc ? `
               <div class="shrink-0 hidden sm:block w-20 h-14 overflow-hidden rounded-lg">
-                <img src="${p.coverSrc}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                 <img src="${p.coverSrc}" alt="" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" width="800" height="450">
               </div>
             ` : ''}
             
@@ -322,17 +322,8 @@ function render(mode) {
 }
 
 function init() {
-  let m = 'card';
-  try { 
-    const s = localStorage.getItem('astro-minimax-settings'); 
-    if (s) {
-      const settings = JSON.parse(s);
-      // 只接受有效的布局模式
-      if (['card', 'grid', 'list'].includes(settings.layoutMode)) {
-        m = settings.layoutMode;
-      }
-    }
-  } catch {}
+  const rootMode = document.documentElement.getAttribute('data-layout');
+  const m = ['card', 'grid', 'list'].includes(rootMode) ? rootMode : 'card';
   render(m);
 }
 
@@ -340,6 +331,12 @@ document.addEventListener('layout-change', e => {
   // 只接受有效的布局模式
   if (['card', 'grid', 'list'].includes(e.detail.mode)) {
     render(e.detail.mode);
+  }
+});
+window.addEventListener('astro-minimax:preferences-change', e => {
+  const mode = e.detail.preferences?.layout?.postsLayout;
+  if (['card', 'grid', 'list'].includes(mode)) {
+    render(mode);
   }
 });
 document.addEventListener('astro:page-load', init);
