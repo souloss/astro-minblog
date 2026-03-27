@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-import { join, resolve, basename } from "node:path";
-import { fileURLToPath } from "node:url";
 import { initCommand } from "./commands/init.js";
 import { postCommand } from "./commands/post.js";
 import { aiCommand } from "./commands/ai/index.js";
 import { dataCommand } from "./commands/data.js";
 import { hooksCommand } from "./commands/hooks.js";
 
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
-
 import { createRequire } from "node:module";
 const _require = createRequire(import.meta.url);
-const VERSION: string = (_require("../package.json") as { version: string }).version;
+const VERSION: string = (_require("../package.json") as { version: string })
+  .version;
 
 interface Command {
   name: string;
@@ -22,9 +19,17 @@ interface Command {
 const commands: Command[] = [
   { name: "init", description: "Create a new blog project", run: initCommand },
   { name: "post", description: "Manage blog posts", run: postCommand },
-  { name: "ai", description: "AI features (process, profile, facts, extensions, eval)", run: aiCommand },
+  {
+    name: "ai",
+    description: "AI features (process, profile, facts, extensions, eval)",
+    run: aiCommand,
+  },
   { name: "data", description: "Data status and management", run: dataCommand },
-  { name: "hooks", description: "Git hooks setup (install, uninstall)", run: hooksCommand },
+  {
+    name: "hooks",
+    description: "Git hooks setup (install, uninstall)",
+    run: hooksCommand,
+  },
 ];
 
 function printHelp(): void {
@@ -83,9 +88,7 @@ async function main(): Promise<void> {
 
   if (!command) {
     console.error(`Unknown command: ${commandName}`);
-    console.error(
-      "\nAvailable commands: init, post, ai, data, hooks"
-    );
+    console.error("\nAvailable commands: init, post, ai, data, hooks");
     console.error('Run "astro-minimax --help" for usage.');
     process.exit(1);
   }

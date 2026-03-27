@@ -18,7 +18,15 @@ export async function aiCommand(args: string[]): Promise<void> {
   const contentDir = join(blogDir, "src", "data", "blog");
   const datasDir = join(blogDir, "datas");
 
-  const needsBlogDir = ["process", "seo", "summary", "eval", "profile", "facts"];
+  const needsBlogDir = [
+    "process",
+    "seo",
+    "summary",
+    "eval",
+    "profile",
+    "facts",
+    "extensions",
+  ];
   if (needsBlogDir.includes(subcommand) && !existsSync(contentDir)) {
     console.error("Error: Not in an astro-minimax blog directory.");
     console.error("Run this command from your blog's root directory.");
@@ -33,7 +41,7 @@ export async function aiCommand(args: string[]): Promise<void> {
       await handleToolCommand(subcommand, subArgs, blogDir);
       break;
     case "profile":
-      await handleProfileCommand(subArgs, blogDir, datasDir);
+      await handleProfileCommand(subArgs, blogDir);
       break;
     case "facts":
       await handleFactsCommand(subArgs, blogDir, datasDir);
@@ -43,7 +51,9 @@ export async function aiCommand(args: string[]): Promise<void> {
       break;
     default:
       console.error(`Unknown subcommand: ${subcommand}`);
-      console.error("Available: process, seo, summary, eval, profile, facts, extensions");
+      console.error(
+        "Available: process, seo, summary, eval, profile, facts, extensions"
+      );
       process.exit(1);
   }
 }
@@ -65,10 +75,6 @@ Quality & Evaluation:
 
 Author Profile:
   profile build     Build complete author profile (context + voice + facts + report)
-  profile context   Build author context from posts
-  profile voice     Build writing style profile
-  profile facts     Build fact registry for AI accuracy
-  profile report    Generate author profile report
 
 Fact Registry:
   facts build       Build fact registry from blog content
