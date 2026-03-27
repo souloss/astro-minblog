@@ -7,9 +7,6 @@
  * @packageDocumentation
  */
 
-// Provider abstractions
-export * from './providers/index.js';
-
 // Provider Manager (unified multi-provider management)
 export * from './provider-manager/index.js';
 
@@ -34,9 +31,6 @@ export * from './data/index.js';
 // Fact Registry: verified facts for hallucination reduction
 export * from './fact-registry/index.js';
 
-// Stream utilities
-export * from './stream/index.js';
-
 // Server-side API handlers (chat handler, metadata init)
 export * from './server/index.js';
 
@@ -44,5 +38,4 @@ export * from './structured-output/index.js';
 
 export * from './extensions/index.js';
 
-// Domain error types
-export * from './errors/index.js';
+export * from './tools/index.js';

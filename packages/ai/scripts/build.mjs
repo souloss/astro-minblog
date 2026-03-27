@@ -71,6 +71,10 @@ function postProcessCode(code, isJsxFile) {
   return code;
 }
 
+function postProcessDeclaration(code) {
+  return code.replace(/from\s*['"](\.[^'"]+)\.tsx?['"]/g, 'from "$1.js"');
+}
+
 async function getAllFiles(dir, extensions = ['.ts', '.tsx']) {
   const files = [];
   const entries = await readdir(dir, { withFileTypes: true });
@@ -79,7 +83,12 @@ async function getAllFiles(dir, extensions = ['.ts', '.tsx']) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       files.push(...await getAllFiles(fullPath, extensions));
-    } else if (entry.isFile() && extensions.some(ext => entry.name.endsWith(ext))) {
+    } else if (
+      entry.isFile()
+      && extensions.some(ext => entry.name.endsWith(ext))
+      && !entry.name.endsWith('.test.ts')
+      && !entry.name.endsWith('.test.tsx')
+    ) {
       files.push(fullPath);
     }
   }
@@ -113,49 +122,20 @@ async function buildPackage() {
     // Ensure output directory exists
     await mkdir(dirname(outPath), { recursive: true });
     
-    // For components, we need to bundle them to resolve relative imports
-    // For other files, we just compile without bundling
-    if (isComponent) {
-      // Bundle components with their internal dependencies
-      await esbuild.build({
-        entryPoints: [srcPath],
-        outfile: outPath,
-        format: 'esm',
-        platform: 'browser',
-        target: 'es2022',
-        bundle: true,
-        // External: keep peer dependencies and package exports external
-        external: [
-          'preact',
-          'preact/hooks',
-          'preact/jsx-runtime',
-          '@ai-sdk/react',
-          'ai',
-        ],
-        jsx: 'transform',
-        jsxFactory: 'h',
-        jsxFragment: 'Fragment',
-        tsconfig: join(packageRoot, 'tsconfig.components.json'),
-        sourcemap: false,
-        minify: false,
-      });
-    } else {
-      // Non-component files: compile without bundling
-      await esbuild.build({
-        entryPoints: [srcPath],
-        outfile: outPath,
-        format: 'esm',
-        platform: 'browser',
-        target: 'es2022',
-        bundle: false,
-        jsx: 'transform',
-        jsxFactory: 'h',
-        jsxFragment: 'Fragment',
-        tsconfig: join(packageRoot, 'tsconfig.components.json'),
-        sourcemap: false,
-        minify: false,
-      });
-    }
+    await esbuild.build({
+      entryPoints: [srcPath],
+      outfile: outPath,
+      format: 'esm',
+      platform: 'browser',
+      target: 'es2022',
+      bundle: false,
+      jsx: 'transform',
+      jsxFactory: 'h',
+      jsxFragment: 'Fragment',
+      tsconfig: join(packageRoot, 'tsconfig.components.json'),
+      sourcemap: false,
+      minify: false,
+    });
     
     // Post-process to fix imports and add h/Fragment for JSX files
     let code = await readFile(outPath, 'utf-8');
@@ -180,7 +160,17 @@ async function buildPackage() {
       stdio: 'inherit'
     });
   } catch (error) {
-    console.error('Type declaration generation had errors (continuing anyway)');
+    console.error('Type declaration generation failed.');
+    throw error;
+  }
+
+  const declarationFiles = await getAllFiles(distDir, ['.d.ts']);
+  for (const declarationPath of declarationFiles) {
+    const code = await readFile(declarationPath, 'utf-8');
+    const nextCode = postProcessDeclaration(code);
+    if (nextCode !== code) {
+      await writeFile(declarationPath, nextCode, 'utf-8');
+    }
   }
 
   // Make dev-server.js executable
