@@ -1,5 +1,11 @@
-export { createNotifier, getNotifier, resetNotifier } from './notify.js';
+export { createNotifier } from "./core/notifier.js";
+export { handleCommentWebhook } from "./sources/waline-webhook.js";
+export {
+  createNotifyConfigFromEnv,
+  hasNotifyProviderConfig,
+} from "./config.js";
 export type {
+  NotifyEnv,
   NotifyConfig,
   NotifyEvent,
   CommentEvent,
@@ -21,10 +27,7 @@ export type {
   EmailTemplate,
   Channel,
   EventType,
-} from './types.js';
-export { defaultTemplates } from './templates/index.js';
-export {
-  createTelegramProvider,
-  createWebhookProvider,
-  createEmailProvider,
-} from './providers/index.js';
+  SourceKind,
+  EventSourceMeta,
+} from "./types.js";
+export { defaultTemplates } from "./templates/index.js";
