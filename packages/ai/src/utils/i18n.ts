@@ -79,7 +79,8 @@ const translations: Record<string, Record<AITranslationKey, string>> = {
     "ai.reasoning.viewReasoning": "View reasoning",
     "ai.reasoning.waiting": "Waiting for thoughts...",
     // Error messages
-    "ai.error.network": "Network connection failed. Please check your connection.",
+    "ai.error.network":
+      "Network connection failed. Please check your connection.",
     "ai.error.aborted": "Request was cancelled.",
     "ai.error.rateLimit": "Too many requests. Please try again later.",
     "ai.error.unavailable": "AI service is temporarily unavailable.",
@@ -105,12 +106,17 @@ const translations: Record<string, Record<AITranslationKey, string>> = {
     "ai.prompt.explain": 'Explain "{point}"',
     "ai.prompt.related": "What related content should I read next?",
     // Welcome messages
-    "ai.welcome.reading": 'I\'m reading "{title}" with you.\nAsk me to summarize, explain a concept, or explore related topics.',
-    "ai.welcome.canHelp": "Hi! I'm the blog AI assistant. Ask me anything and I'll help you find related articles.",
+    "ai.welcome.reading":
+      'I\'m reading "{title}" with you.\nAsk me to summarize, explain a concept, or explore related topics.',
+    "ai.welcome.canHelp":
+      "Hi! I'm the blog AI assistant. Ask me anything and I'll help you find related articles.",
     "ai.welcome.greeting": "Hi! I'm the blog AI assistant.",
-    "ai.welcome.demo": "I'm running in demo mode. I can recommend blog articles and external resources.",
-    "ai.welcome.demoHint": "For full AI features (RAG search), configure AI_BASE_URL and AI_API_KEY.",
-    "ai.welcome.demoPrompt": 'Try: "Recommend articles?" or "How to build this blog?"',
+    "ai.welcome.demo":
+      "I'm running in demo mode. I can recommend blog articles and external resources.",
+    "ai.welcome.demoHint":
+      "For full AI features (RAG search), configure AI_BASE_URL and AI_API_KEY.",
+    "ai.welcome.demoPrompt":
+      'Try: "Recommend articles?" or "How to build this blog?"',
     // Header
     "ai.header.reading": "Reading:",
     "ai.header.mode": "Demo",
@@ -121,12 +127,15 @@ const translations: Record<string, Record<AITranslationKey, string>> = {
     "ai.error.emptyMessage": "Message cannot be empty.",
     "ai.error.emptyContent": "Message content cannot be empty.",
     "ai.error.inputTooLong": "Message too long, max {max} characters.",
-    "ai.error.timeout": "Response timeout, please retry or simplify your question.",
+    "ai.error.timeout":
+      "Response timeout, please retry or simplify your question.",
     // Rate limit messages
     "ai.error.rateLimit.burst": "Too many requests, please try again later.",
     "ai.error.rateLimit.sustained": "Too many requests, please wait a minute.",
-    "ai.error.rateLimit.daily": "Daily limit reached, please come back tomorrow.",
-    "ai.error.noOutput": "Sorry, I could not generate a valid response. Please try rephrasing your question.",
+    "ai.error.rateLimit.daily":
+      "Daily limit reached, please come back tomorrow.",
+    "ai.error.noOutput":
+      "Sorry, I could not generate a valid response. Please try rephrasing your question.",
     "ai.prompt.section.responsibilities": "Your Responsibilities",
     "ai.prompt.section.format": "Response Format",
     "ai.prompt.section.principles": "Recommendation Principles",
@@ -134,7 +143,8 @@ const translations: Record<string, Record<AITranslationKey, string>> = {
     "ai.prompt.section.sourceLayers": "Source Priority Protocol (must follow)",
     "ai.prompt.section.privacy": "Privacy Protection",
     "ai.prompt.section.answerModes": "Answer Mode Guide (follow detected mode)",
-    "ai.prompt.section.preOutputChecks": "Pre-Output Checks (execute mentally, do not output steps)",
+    "ai.prompt.section.preOutputChecks":
+      "Pre-Output Checks (execute mentally, do not output steps)",
     "ai.semiStatic.blogOverview": "Blog Overview",
     "ai.semiStatic.totalPosts": "{count} posts total",
     "ai.semiStatic.mainCategories": "Main categories: {categories}",
@@ -172,12 +182,16 @@ const translations: Record<string, Record<AITranslationKey, string>> = {
     "ai.prompt.explain": "解释一下「{point}」",
     "ai.prompt.related": "这篇文章和哪些内容相关？",
     // Welcome messages
-    "ai.welcome.reading": "我在结合《{title}》陪你阅读。\n你可以让我总结这篇文章、解释某个观点，或者顺着这篇文章继续延伸到相关主题。",
-    "ai.welcome.canHelp": "你好！我是博客 AI 助手，问我任何关于博客内容的问题，我可以帮你找到相关文章。",
+    "ai.welcome.reading":
+      "我在结合《{title}》陪你阅读。\n你可以让我总结这篇文章、解释某个观点，或者顺着这篇文章继续延伸到相关主题。",
+    "ai.welcome.canHelp":
+      "你好！我是博客 AI 助手，问我任何关于博客内容的问题，我可以帮你找到相关文章。",
     "ai.welcome.greeting": "你好！我是博客 AI 助手。",
     "ai.welcome.demo": "我目前在 Demo 模式下，可以推荐博客文章和外部资源。",
-    "ai.welcome.demoHint": "启用完整 AI 功能（RAG 搜索增强）需要配置 AI_BASE_URL 和 AI_API_KEY 环境变量。",
-    "ai.welcome.demoPrompt": "试试：「有哪些文章推荐？」或「怎么搭建类似的博客？」",
+    "ai.welcome.demoHint":
+      "启用完整 AI 功能（RAG 搜索增强）需要配置 AI_BASE_URL 和 AI_API_KEY 环境变量。",
+    "ai.welcome.demoPrompt":
+      "试试：「有哪些文章推荐？」或「怎么搭建类似的博客？」",
     // Header
     "ai.header.reading": "正在阅读：",
     "ai.header.mode": "演示",
@@ -215,17 +229,21 @@ const translations: Record<string, Record<AITranslationKey, string>> = {
  * @param lang - Language code ('zh' or 'en')
  * @param vars - Optional variables for interpolation (e.g., { count: 5 })
  */
-export function t(key: AITranslationKey, lang: string = 'zh', vars?: Record<string, string | number>): string {
-  const l = lang === 'zh' ? 'zh' : 'en';
-  let text = translations[l]?.[key] ?? translations['en'][key] ?? key;
-  
+export function t(
+  key: AITranslationKey,
+  lang: string = "zh",
+  vars?: Record<string, string | number>
+): string {
+  const l = getLang(lang);
+  let text = translations[l]?.[key] ?? translations["en"][key] ?? key;
+
   // Interpolate variables like {count}, {title}, etc.
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
-      text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+      text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
     }
   }
-  
+
   return text;
 }
 
@@ -233,6 +251,6 @@ export function t(key: AITranslationKey, lang: string = 'zh', vars?: Record<stri
  * Get normalized language code.
  * Returns 'zh' for Chinese, 'en' for everything else.
  */
-export function getLang(lang?: string): string {
-  return lang === 'zh' ? 'zh' : 'en';
+export function getLang(lang?: string): "zh" | "en" {
+  return lang === "zh" ? "zh" : "en";
 }
