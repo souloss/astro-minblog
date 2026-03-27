@@ -1,15 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * 构建作者上下文数据
- *
- * 聚合博客文章数据为统一的 author-context.json，
- * 为 AI 博客分身对话提供上下文。
- *
- * 用法:
- *   pnpm context:build                  构建作者上下文
- *   pnpm context:build --include-body   包含文章正文内容
- */
-
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
@@ -23,8 +12,18 @@ import {
   DATA_DIR,
   BLOG_DIR,
 } from "./lib/utils.js";
+import {
+  KNOWLEDGE_CACHE_DIR,
+  KNOWLEDGE_DERIVED_DIR,
+  KNOWLEDGE_RUNTIME_DIR,
+  KNOWLEDGE_SOURCES_DIR,
+  buildKnowledgeBundle,
+} from "./lib/knowledge.js";
 import { stripMarkdown } from "./lib/markdown.js";
-import { chunkMarkdownByHeaders, type ArticleChunk } from "./lib/markdown-chunker.js";
+import {
+  chunkMarkdownByHeaders,
+  type ArticleChunk,
+} from "./lib/markdown-chunker.js";
 import { extractFrontmatter } from "./lib/frontmatter.js";
 import { hasAPIKey, getConfig } from "./lib/ai-provider.js";
 
@@ -84,22 +83,29 @@ const THEME_STOPWORDS = new Set([
 
 interface CliFlags {
   includeBody: boolean;
+  includeUnderscoreDirs: boolean;
 }
 
 function parseArgs(): CliFlags {
-  return parseCliArgs({ includeBody: false });
+  return parseCliArgs({ includeBody: false, includeUnderscoreDirs: true });
 }
 
 // ─── 文章扫描 ─────────────────────────────────────────────────
 
-async function collectMarkdownFiles(dir: string): Promise<string[]> {
+async function collectMarkdownFiles(
+  dir: string,
+  options: Pick<CliFlags, "includeUnderscoreDirs">
+): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
   const files: string[] = [];
 
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
-    if (entry.isDirectory() && !entry.name.startsWith("_")) {
-      files.push(...(await collectMarkdownFiles(fullPath)));
+    if (
+      entry.isDirectory() &&
+      (options.includeUnderscoreDirs || !entry.name.startsWith("_"))
+    ) {
+      files.push(...(await collectMarkdownFiles(fullPath, options)));
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
       files.push(fullPath);
     }
@@ -125,11 +131,15 @@ interface RawPost {
 
 async function collectPosts(
   _siteUrl: string,
-  includeBody: boolean
+  includeBody: boolean,
+  options: Pick<CliFlags, "includeUnderscoreDirs">
 ): Promise<RawPost[]> {
-  const files = await collectMarkdownFiles(BLOG_DIR);
+  const files = await collectMarkdownFiles(BLOG_DIR, options);
   const aiSummaries = await readJson<{
-    articles?: Record<string, { data?: { summary?: string; keyPoints?: string[] } }>
+    articles?: Record<
+      string,
+      { data?: { summary?: string; keyPoints?: string[] } }
+    >;
   }>(join(DATA_DIR, "ai-summaries.json"), {
     articles: {},
   });
@@ -153,14 +163,14 @@ async function collectPosts(
     // URL 格式: /{lang}/posts/{slug}/
     // slug 是 id 的最后部分（去掉语言前缀）
     const slug = id.split("/").slice(1).join("/");
-    
+
     // 生成段落级 chunks
     const chunks = chunkMarkdownByHeaders(fm.body, id, {
       maxTokens: 512,
       minTokens: 50,
       overlapTokens: 64,
     });
-    
+
     posts.push({
       id,
       title: String(data.title),
@@ -178,9 +188,7 @@ async function collectPosts(
   }
 
   // 按日期降序排列
-  posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return posts;
 }
@@ -189,8 +197,9 @@ async function collectPosts(
 
 function tokenizeThemeText(text: string): string[] {
   const raw = normalizeSpace(text);
-  const tokens = raw.match(/[A-Za-z][A-Za-z0-9.+#-]{1,}|[\u4e00-\u9fa5]{2,6}/g) ?? [];
-  return tokens.filter((token) => {
+  const tokens =
+    raw.match(/[A-Za-z][A-Za-z0-9.+#-]{1,}|[\u4e00-\u9fa5]{2,6}/g) ?? [];
+  return tokens.filter(token => {
     const lower = token.toLowerCase();
     return !THEME_STOPWORDS.has(lower) && token.length >= 2;
   });
@@ -245,11 +254,11 @@ function buildStableFacts(posts: RawPost[]) {
     .map(([category]) => CATEGORY_LABELS[category] || category);
 
   const recurringTopics = buildThemeStats(posts).filter(
-    (topic) => !focusAreas.includes(topic)
+    topic => !focusAreas.includes(topic)
   );
 
   // 代表性文章（取最新的几篇）
-  const flagshipPosts = posts.slice(0, 5).map((post) => ({
+  const flagshipPosts = posts.slice(0, 5).map(post => ({
     title: post.title,
     date: post.date,
     url: post.url,
@@ -257,8 +266,8 @@ function buildStableFacts(posts: RawPost[]) {
 
   // 语言分布
   const langDistribution = {
-    zh: posts.filter((p) => p.lang === "zh").length,
-    en: posts.filter((p) => p.lang === "en").length,
+    zh: posts.filter(p => p.lang === "zh").length,
+    en: posts.filter(p => p.lang === "en").length,
   };
 
   // 标签聚合
@@ -289,7 +298,7 @@ function buildStableFacts(posts: RawPost[]) {
 // ─── 时间线数据 ───────────────────────────────────────────────
 
 function buildTimelineFacts(posts: RawPost[]) {
-  const latestPosts = posts.slice(0, 10).map((post) => ({
+  const latestPosts = posts.slice(0, 10).map(post => ({
     date: post.date,
     title: post.title,
     url: post.url,
@@ -326,20 +335,18 @@ async function main() {
 
   // 收集博客文章
   console.log("📂 扫描博客文章...");
-  const posts = await collectPosts(siteUrl, args.includeBody);
+  const posts = await collectPosts(siteUrl, args.includeBody, {
+    includeUnderscoreDirs: args.includeUnderscoreDirs,
+  });
   console.log(`   找到 ${posts.length} 篇文章`);
-  console.log(
-    `   - 中文: ${posts.filter((p) => p.lang === "zh").length} 篇`
-  );
-  console.log(
-    `   - 英文: ${posts.filter((p) => p.lang === "en").length} 篇`
-  );
+  console.log(`   - 中文: ${posts.filter(p => p.lang === "zh").length} 篇`);
+  console.log(`   - 英文: ${posts.filter(p => p.lang === "en").length} 篇`);
 
   // 保存文章摘要到 sources
   await writeJson(join(SOURCES_DIR, "blog-digest.json"), {
     generatedAt: new Date().toISOString(),
     count: posts.length,
-    posts: posts.slice(0, MAX_RECENT_POSTS).map((p) => ({
+    posts: posts.slice(0, MAX_RECENT_POSTS).map(p => ({
       id: p.id,
       title: p.title,
       date: p.date,
@@ -373,15 +380,15 @@ async function main() {
       siteUrl,
       description: process.env.SITE_DESCRIPTION || "",
     },
-    posts: posts.slice(0, MAX_RECENT_POSTS).map((p) => ({
+    posts: posts.slice(0, MAX_RECENT_POSTS).map(p => ({
       id: p.id,
       title: p.title,
       date: p.date,
       lang: p.lang,
       category: p.category,
       tags: p.tags,
-      summary: p.summary,
-      keyPoints: p.keyPoints,
+      summary: p.summary || "",
+      keyPoints: p.keyPoints || [],
       url: p.url,
       chunks: p.chunks,
       ...(args.includeBody && { body: p.body }),
@@ -402,23 +409,67 @@ async function main() {
   };
 
   await writeJson(OUTPUT_FILE, context);
+  const generatedAt = context.generatedAt;
+  const summaries = await readJson(join(DATA_DIR, "ai-summaries.json"), {
+    meta: { lastUpdated: generatedAt, model: "unknown", totalProcessed: 0 },
+    articles: {},
+  });
+  const voiceProfile = await readJson(
+    join(DATA_DIR, "voice-profile.json"),
+    null
+  );
+  const factRegistry = await readJson(
+    join(DATA_DIR, "fact-registry.json"),
+    null
+  );
+  const bundle = buildKnowledgeBundle({
+    generatedAt,
+    summaries,
+    authorContext: context,
+    voiceProfile,
+    factRegistry,
+    vectorIndex: null,
+  });
+  await writeJson(
+    join(KNOWLEDGE_SOURCES_DIR, "content-manifest.json"),
+    bundle.corpus
+  );
+  await writeJson(
+    join(KNOWLEDGE_RUNTIME_DIR, "article-passages.json"),
+    bundle.passages
+  );
+  await writeJson(join(KNOWLEDGE_RUNTIME_DIR, "knowledge-bundle.json"), bundle);
+  await writeJson(join(KNOWLEDGE_DERIVED_DIR, "site-overview.json"), {
+    generatedAt,
+    stableFacts,
+    timelineFacts,
+  });
+  await writeJson(join(KNOWLEDGE_CACHE_DIR, "build-metadata.json"), {
+    generatedAt,
+    contextHash: context.contextHash,
+    postCount: posts.length,
+    chunkCount: posts.reduce((sum, p) => sum + (p.chunks?.length || 0), 0),
+  });
 
   console.log("\n✅ 构建完成");
   console.log(`📄 输出文件: ${OUTPUT_FILE}`);
   console.log("\n📊 数据概览:");
   console.log(`   文章总数: ${stableFacts.contentFootprint.posts}`);
-  
+
   // 统计 chunks
-  const totalChunks = posts.reduce((sum, p) => sum + (p.chunks?.length || 0), 0);
+  const totalChunks = posts.reduce(
+    (sum, p) => sum + (p.chunks?.length || 0),
+    0
+  );
   if (totalChunks > 0) {
     console.log(`   段落总数: ${totalChunks}`);
   }
-  
+
   console.log(`   聚焦领域: ${stableFacts.focusAreas.join("、")}`);
   console.log(`   热门标签: ${stableFacts.topTags.slice(0, 5).join("、")}`);
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error("❌ 构建失败:", error.message);
   process.exit(1);
 });
