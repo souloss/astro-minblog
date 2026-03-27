@@ -5,7 +5,6 @@
 import type {
   StructuredOutputConfig,
   StructuredOutputResult,
-  StructuredOutputProvider,
   GenerateStructuredOptions,
   TokenUsageStats,
   StructuredOutputStatus,
@@ -75,6 +74,8 @@ export async function generateStructured<T>(
     maxOutputTokens = DEFAULT_MAX_OUTPUT_TOKENS,
     temperature = DEFAULT_TEMPERATURE,
   } = config;
+  const allowTextRepair = repairStrategy !== 'none';
+  const allowFallbackParser = repairStrategy === 'lenient';
 
   const timeoutController = new AbortController();
   const timeoutId = setTimeout(() => timeoutController.abort(), timeoutMs);
@@ -139,7 +140,7 @@ export async function generateStructured<T>(
     }
   }
 
-  if (fallbackParser) {
+  if (allowTextRepair) {
     try {
       const textResult = await provider.generateText({
         systemPrompt,
@@ -156,18 +157,20 @@ export async function generateStructured<T>(
       if (extracted) {
         const validated = validateWithSchema(extracted, schema);
         if (validated !== null) {
-          return { data: validated, success: true, status: 'success', fallbackUsed: true, rawText, usage };
+          return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
         }
         status = 'schema_error';
       } else {
         status = 'parse_error';
       }
 
-      const fallbackData = fallbackParser(rawText);
-      if (fallbackData) {
-        const validated = validateWithSchema(fallbackData, schema);
-        if (validated !== null) {
-          return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
+      if (fallbackParser && allowFallbackParser) {
+        const fallbackData = fallbackParser(rawText);
+        if (fallbackData) {
+          const validated = validateWithSchema(fallbackData, schema);
+          if (validated !== null) {
+            return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
+          }
         }
       }
     } catch { /* fallback failed */ }
