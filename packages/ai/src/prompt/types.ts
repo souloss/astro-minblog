@@ -1,6 +1,6 @@
-import type { ArticleContext, ProjectContext } from '../search/types.js';
-import type { AuthorContextFile, VoiceProfile } from '../data/types.js';
-import type { LoadedExtensions } from '../extensions/types.js';
+import type { ArticleContext, ProjectContext } from "../search/types.js";
+import type { AuthorContextFile } from "../data/types.js";
+import type { LoadedExtensions } from "../extensions/types.js";
 
 export interface StaticLayerConfig {
   authorName: string;
@@ -13,8 +13,8 @@ export interface StaticLayerConfig {
 
 export interface SemiStaticLayerConfig {
   authorContext: AuthorContextFile | null;
-  voiceProfile: VoiceProfile | null;
   lang?: string;
+  preferArticleLocal?: boolean;
 }
 
 export interface DynamicLayerConfig {
@@ -23,11 +23,18 @@ export interface DynamicLayerConfig {
   projects: ProjectContext[];
   evidenceSection?: string;
   factSection?: string;
-  answerMode?: 'fact' | 'count' | 'list' | 'opinion' | 'recommendation' | 'unknown' | 'general';
+  answerMode?:
+    | "fact"
+    | "count"
+    | "list"
+    | "opinion"
+    | "recommendation"
+    | "unknown"
+    | "general";
   lang?: string;
   extensions?: LoadedExtensions;
-  sessionId?: string;
   chunksSection?: string;
+  preferInjectedChunks?: boolean;
 }
 
 export interface PromptBuildConfig {

@@ -188,18 +188,24 @@ function buildToolsSection(lang: string): string {
   const intro = isZh 
     ? '当用户请求执行操作（如切换主题、跳转文章、滚动到章节等）时，请直接调用相应的工具，而不是解释如何操作。'
     : 'When the user requests an action (e.g., toggle theme, navigate to article, scroll to section), call the appropriate tool directly instead of explaining how to do it.';
+
+  const followUpRule = isZh
+    ? '工具执行完成后，你必须根据工具结果继续回复：如果是动作型工具（如切换主题、滚动、跳转、偏好设置），用 1 句简短确认话术说明已经完成的动作，不要再次调用同一个工具，也不要输出“无法回答”之类的兜底文本；如果是查询型工具（如 searchArticles），先利用工具结果回答，再给出推荐或下一步说明。'
+    : 'After a tool finishes, you MUST continue the reply based on the tool result: for action tools (such as theme toggle, scrolling, navigation, or preference updates), give a single short confirmation sentence describing the completed action, do not call the same tool again, and do not output fallback text like “I cannot answer”; for query tools (such as searchArticles), answer using the tool result first, then provide recommendations or next steps.';
   
   const examples = isZh ? [
     '示例：',
     '- 用户: "切换到暗模式" → 调用 toggleTheme({ theme: "dark" })',
+    '- toggleTheme 成功后 → 回复“已为你切换到暗模式。”',
     '- 用户: "帮我找 AI 相关的文章" → 调用 searchArticles({ query: "AI" })，然后根据结果回答',
     '- 用户: "跳到第三章" → 调用 scrollToSection({ sectionId: "三系统架构设计" })',
   ] : [
     'Examples:',
     '- User: "switch to dark mode" → Call toggleTheme({ theme: "dark" })',
+    '- After toggleTheme succeeds → Reply “I’ve switched the theme to dark mode.”',
     '- User: "find articles about AI" → Call searchArticles({ query: "AI" }), then respond based on results',
     '- User: "jump to chapter 3" → Call scrollToSection({ sectionId: "chapter-3" })',
   ];
   
-  return [header, '', intro, '', ...examples].join('\n');
+  return [header, '', intro, '', followUpRule, '', ...examples].join('\n');
 }
