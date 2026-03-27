@@ -1,9 +1,9 @@
 ---
-title: "AI Chat Configuration Guide"
+title: "AI Chat Feature Configuration Guide"
 pubDatetime: 2026-03-17T00:00:00.000Z
 modDatetime: 2026-03-24T00:00:00.000Z
 author: Souloss
-description: "Complete guide to configuring astro-minimax AI chat: providers, RAG search, Mock mode, author profiles, and quality evaluation."
+description: "Comprehensively configure astro-minimax AI chat: Provider setup, RAG search, Mock mode, author profiling, and quality evaluation."
 tags:
   - docs
   - ai
@@ -13,21 +13,21 @@ featured: false
 draft: false
 ---
 
-astro-minimax includes a built-in AI chat assistant with multi-provider failover, RAG retrieval, streaming responses, and Mock fallback. This guide covers the complete setup.
+astro-minimax includes a built-in AI chat assistant with support for automatic failover across multiple providers, RAG-enhanced retrieval, streaming responses, and Mock fallback. This guide walks through the complete AI configuration process.
 
 ## Overview
 
 The AI chat system consists of the following modules:
 
 | Module | Description |
-|--------|-------------|
-| `@astro-minimax/ai` | AI core package: RAG pipeline, provider management, chat UI |
+|------|------|
+| `@astro-minimax/ai` | AI core package: RAG pipeline, Provider management, chat UI |
 | `@astro-minimax/cli` | CLI tools: AI content processing, author profile building, quality evaluation |
-| `@astro-minimax/notify` | Notification system: Real-time AI chat notifications to Telegram/Email/Webhook |
+| `@astro-minimax/notify` | Notification system: real-time AI conversation notifications to Telegram/Email/Webhook |
 
-## Quick Setup
+## Quick Start
 
-### 1. Enable AI Feature
+### 1. Enable AI Features
 
 In `src/config.ts`:
 
@@ -42,9 +42,9 @@ ai: {
 },
 ```
 
-### 2. Configure Provider
+### 2. Configure a Provider
 
-In `.env`:
+Configure your AI Provider in `.env`:
 
 ```bash
 # OpenAI-compatible API (supports DeepSeek, Moonshot, Qwen, etc.)
@@ -60,11 +60,11 @@ SITE_URL=https://your-blog.com
 ### 3. Build AI Data
 
 ```bash
-astro-minimax ai process       # Generate article summaries and SEO data
-astro-minimax ai profile build  # Build author profile
+astro-minimax ai process         # Generate article summaries and SEO data
+astro-minimax ai profile build   # Build the author profile
 ```
 
-### 4. Start Development Server
+### 4. Start the Development Server
 
 ```bash
 pnpm run dev
@@ -76,7 +76,7 @@ The AI chat button will appear in the bottom-right corner of the page.
 
 ### Cloudflare Workers AI
 
-When deploying on Cloudflare Pages, you can use free Workers AI:
+When deploying to Cloudflare Pages, you can use free Workers AI:
 
 ```toml
 # wrangler.toml
@@ -84,11 +84,11 @@ When deploying on Cloudflare Pages, you can use free Workers AI:
 binding = "AI"
 ```
 
-Workers AI is the highest-priority provider and doesn't require an API key.
+Workers AI has the highest provider priority and does not require an API key.
 
 ### OpenAI-Compatible API
 
-Supports any OpenAI-compatible API service:
+Any OpenAI-compatible API service is supported:
 
 ```bash
 AI_BASE_URL=https://api.openai.com/v1
@@ -109,9 +109,9 @@ AI_EVIDENCE_MODEL=gpt-4o-mini   # Evidence analysis model
 flowchart LR
     Request[User Request] --> W{Workers AI}
     W -->|Success| Response[Streaming Response]
-    W -->|3 failures| O{OpenAI API}
+    W -->|Fails 3 Times| O{OpenAI API}
     O -->|Success| Response
-    O -->|Fail| M[Mock Fallback]
+    O -->|Fails| M[Mock Fallback]
     M --> Response
 
     style W fill:#f97316,color:#fff
@@ -120,40 +120,40 @@ flowchart LR
     style Response fill:#22c55e,color:#fff
 ```
 
-- 3 consecutive failures marks a provider as unhealthy
-- Automatic recovery attempt after 60 seconds
-- When all providers fail, Mock ensures users always receive a response
+- Marked unhealthy after 3 consecutive failures
+- Automatically attempts recovery after 60 seconds
+- If all Providers fail, Mock ensures the user always receives a response
 
 ## AI Tool Calling and Actions
 
-When users ask things like “switch to dark mode” or “open article X,” the model can **invoke tools** to perform those actions directly, instead of only describing the steps.
+When a user expresses actions in natural language such as “switch to dark mode”, “open an article”, or “jump to a section”, the model can do more than explain the steps. Through **tool calling**, it can directly drive site behavior, reducing the gap between “telling” and “doing”.
 
-### Available tools
+### Available Tools at a Glance
 
-The chat pipeline registers seven tools (names match the implementation):
+The current chat pipeline registers 7 tools (names consistent with the codebase):
 
-| Tool | Purpose |
-|------|---------|
-| `toggleTheme` | Switch among light, dark, and system theme |
-| `navigateToArticle` | Go to a post by slug (optional language and section) |
-| `scrollToSection` | Scroll to a heading/section on the current page |
-| `toggleReadingMode` | Turn reading mode on/off and adjust font options |
-| `highlightText` | Highlight text or a target element |
-| `setPreference` | Set a user preference key/value |
-| `searchArticles` | Search posts and projects; returns titles, URLs, summaries |
+| Tool Name | Summary |
+|--------|----------|
+| `toggleTheme` | Switch the theme between light / dark / system |
+| `navigateToArticle` | Navigate to an article page by slug (and optional language, section) |
+| `scrollToSection` | Scroll to a specified section on the current page and optionally highlight it |
+| `toggleReadingMode` | Enable or disable reading mode, with adjustable font size and more |
+| `highlightText` | Highlight content in the article by text or selector |
+| `setPreference` | Write user preferences (aligned with the site's preference system key-value model) |
+| `searchArticles` | Search articles and projects by keyword, returning titles, links, summaries, etc. |
 
-### How it works
+### How It Works
 
-- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` are defined with schemas on the server; the model emits tool calls, and the **browser** runs them via the theme’s **ActionExecutor** (`@astro-minimax/core`), mapping calls to DOM, routing, and preferences.
-- **Server-side tool**: `searchArticles` includes an `execute` handler that runs **on the server during the chat/RAG request**, calling the same `searchArticles` / `searchProjects` retrieval used by the pipeline so the model can search before answering or suggest links.
+- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` declare their schemas on the server, and the model generates tool calls; the **actual execution happens in the browser** (via the **ActionExecutor** in the `@astro-minimax/core` theme package, which maps calls to DOM / routing / preference updates).
+- **Server-side tools**: `searchArticles` includes an `execute` implementation and runs **on the server during the RAG request handling process**. It directly calls the same `searchArticles` / `searchProjects` logic used by the main retrieval flow, returning structured results to the model for “search first, then answer” or navigation assistance.
 
-### Action system and cross-page chaining
+### Action System and Cross-Page Chaining
 
-Execution is centralized under `packages/core/src/actions/`: **ActionExecutor** performs each action; **URLHandler** (and related helpers) can carry work across navigations using query parameters (`theme`, `section`, `ai_actions` plus a queued token) so a **chain of actions** can finish after the next page load. The chat UI turns client tool calls into these actions.
+Site behaviors are centrally handled in `packages/core/src/actions/`: **ActionExecutor** performs concrete actions, while modules such as **URLHandler** support continuing a sequence of actions **after navigation** via query parameters (such as `theme`, `section`, `ai_actions`, and queue tokens), enabling cross-page action chaining. When the chat UI receives a client-side tool call, it converts the parameters into the corresponding Action and executes it.
 
 ## Mock Mode
 
-No real API needed during development:
+No real API is needed during development:
 
 ```typescript
 ai: {
@@ -162,16 +162,16 @@ ai: {
 },
 ```
 
-Mock mode returns pre-defined article recommendations and external resource links, simulating real AI responses.
+Mock mode returns predefined article recommendations and external resource links to simulate real AI responses.
 
 ## AI Security Features
 
-### Source Priority Protocol
+### Source Layering Protocol
 
-AI responses follow L1-L5 source priority:
+AI responses follow L1–L5 source priority:
 
-- **L1**: Blog original content (highest priority)
-- **L2**: Author bio, project list
+- **L1**: Original blog content (highest priority)
+- **L2**: Author profile, project list
 - **L3**: Structured factual data
 - **L5**: Writing style (affects expression only)
 
@@ -179,17 +179,17 @@ AI responses follow L1-L5 source priority:
 
 Automatically refuses to answer sensitive personal information:
 
-- Address, income, family members, phone, identity info, age
+- Address, income, family members, phone number, identity information, age
 
 ### Intent Classification
 
-7 intent categories for improved search relevance:
+7 intent categories improve search relevance:
 
 - setup, config, content, feature, deployment, troubleshooting, general
 
 ## Quality Evaluation
 
-### Configure Test Set
+### Configure the Test Set
 
 Edit `datas/eval/gold-set.json` to define test cases:
 
@@ -199,56 +199,57 @@ Edit `datas/eval/gold-set.json` to define test cases:
     {
       "id": "about-001",
       "category": "about",
-      "question": "Tell me about yourself",
+      "question": "Introduce yourself",
       "answerMode": "fact",
       "expectedTopics": ["blog", "AI"],
       "forbiddenClaims": [],
-      "lang": "en"
+      "lang": "zh"
     }
   ]
 }
 ```
 
-### Run Evaluation
+### Run the Evaluation
 
 ```bash
-pnpm run ai:eval                             # Test local server
-pnpm run ai:eval -- --url=https://your-blog.com     # Test production
-pnpm run ai:eval -- --category=no_answer     # Evaluate specific category
-pnpm run ai:eval -- --verbose                # Detailed output
+pnpm run ai:eval                              # Local test
+pnpm run ai:eval -- --url=https://your.com   # Remote test
+pnpm run ai:eval -- --category=no_answer     # Evaluate a specific category
+pnpm run ai:eval -- --verbose                # Verbose output
 ```
 
-Evaluation is based on the `datas/eval/gold-set.json` golden test set, automatically checking:
+The evaluation is based on the golden test set in `datas/eval/gold-set.json` and automatically checks:
+
 - Non-empty response
 - Topic coverage
-- Forbidden claims not present
-- Markdown links exist
-- Answer pattern matching
+- Absence of forbidden claims
+- Markdown link existence
+- Answer mode match
 
-Evaluation report is saved to `datas/eval/report.json`.
+The evaluation report is saved to `datas/eval/report.json`.
 
-## Extensions System
+## Extension System
 
-The extensions system allows you to inject custom data into the AI chat pipeline, enhancing AI response capabilities.
+The extension system allows you to inject custom data into the AI chat flow to enhance the AI’s response capabilities.
 
 ### Extension Types
 
 | Type | Description | Use Case |
-|------|-------------|----------|
+|------|------|------|
 | `searchable` | Searchable documents | Add extra knowledge base content |
 | `facts` | Structured facts | Add verified factual data |
 | `context` | Context injection | Add custom prompt sections |
-| `voice-style` | Voice style | Define AI response style modes |
+| `voice-style` | Writing style | Define AI response style modes |
 | `semantic-fallback` | Semantic fallback | Query rewriting rules |
 
 ### Extension File Structure
 
 Extension files are placed in the `datas/extensions/` directory:
 
-```
+```text
 datas/extensions/
-├── travel.json        # Travel-related extensions
-├── social.json        # Social network extensions
+├── travel.json        # Travel-related extension
+├── social.json        # Social network extension
 └── custom-*.json      # Custom extensions
 ```
 
@@ -263,7 +264,7 @@ datas/extensions/
       "id": "blog-travel",
       "type": "voice-style",
       "name": "Travel Voice",
-      "description": "Voice style for travel topics",
+      "description": "Style mode for travel topics",
       "enabled": true,
       "priority": 80,
       "data": {
@@ -271,17 +272,17 @@ datas/extensions/
           {
             "id": "travel",
             "name": "Travel Mode",
-            "description": "Travel response style",
-            "matchKeywords": ["travel", "trip", "journey"],
+            "description": "Response style for travel-related answers",
+            "matchKeywords": ["旅行", "旅游", "travel"],
             "traits": [
-              "Narrate by timeline",
-              "Mention specific places and experiences",
-              "Occasionally add personal insights"
+              "Narrates in chronological order",
+              "Mentions specific place names and experiences",
+              "Occasionally adds personal reflections"
             ]
           }
         ],
         "defaultMode": "travel",
-        "overallTone": "Casual sharing"
+        "overallTone": "Relaxed sharing"
       }
     },
     {
@@ -294,9 +295,9 @@ datas/extensions/
         "rules": [
           {
             "id": "travel-countries",
-            "patterns": ["visited.{0,6}(countries|cities)", "been to"],
-            "fallbackQuery": "travel journey destinations",
-            "primaryQuery": "travel",
+            "patterns": ["去过.{0,6}(国家|城市)", "都去过"],
+            "fallbackQuery": "旅行 游记 海外 目的地",
+            "primaryQuery": "旅行",
             "complexity": "complex"
           }
         ]
@@ -324,11 +325,11 @@ astro-minimax extensions load
 
 ### Extension Priority
 
-Extensions use the `priority` field (0-100) to control precedence. Higher values mean higher priority. When multiple extensions provide the same type of data, higher-priority extensions are preferred.
+Extensions use the `priority` field (0–100) to control priority. The higher the value, the higher the priority. When multiple extensions provide the same type of data, the higher-priority extension is used first.
 
 ### Data Lifecycle
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ BUILD TIME                                                  │
 │  datas/extensions/*.json ──→ CLI validate ──→ Registry      │
@@ -344,7 +345,7 @@ Extensions use the `priority` field (0-100) to control precedence. Higher values
 
 ## Notification Integration
 
-AI chat completion automatically sends notifications (fire-and-forget):
+After an AI conversation completes, a notification is automatically sent (fire-and-forget):
 
 ```bash
 # .env
@@ -352,17 +353,17 @@ NOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token
 NOTIFY_TELEGRAM_CHAT_ID=your-chat-id
 ```
 
-Notification content includes: user question, AI response summary, referenced articles, token usage, and phase timing.
+Notification content includes: user question, AI answer summary, cited articles, token usage, and timing for each stage.
 
-See [Notification System Configuration Guide](/en/posts/notification-guide) for details.
+See [Notification System Configuration Guide](/zh/posts/notification-guide) for details.
 
-## Environment Variables Reference
+## Environment Variable Reference
 
 | Variable | Description | Required |
-|----------|-------------|----------|
-| `AI_BASE_URL` | OpenAI-compatible API URL | Required when using OpenAI |
+|------|------|------|
+| `AI_BASE_URL` | OpenAI-compatible API endpoint | Required when using OpenAI |
 | `AI_API_KEY` | API key | Required when using OpenAI |
-| `AI_MODEL` | Main chat model | No (default `gpt-4o-mini`) |
+| `AI_MODEL` | Main chat model | No (default: `gpt-4o-mini`) |
 | `AI_KEYWORD_MODEL` | Keyword extraction model | No (same as main model) |
 | `AI_EVIDENCE_MODEL` | Evidence analysis model | No (same as keyword model) |
 | `SITE_AUTHOR` | Author name | No |
@@ -370,7 +371,7 @@ See [Notification System Configuration Guide](/en/posts/notification-guide) for 
 
 ## Next Steps
 
-- [Feature Overview](/en/posts/feature-overview) — Learn about all AI features
-- [CLI Tool Guide](/en/posts/cli-guide) — AI processing commands in detail
-- [Notification System](/en/posts/notification-guide) — Configure AI chat notifications
-- [Deployment Guide](/en/posts/deployment-guide) — Cloudflare Workers AI deployment
+- [Feature Overview](/zh/posts/feature-overview) — Learn about all AI features
+- [CLI Tool Guide](/zh/posts/cli-guide) — Detailed explanation of AI processing commands
+- [Notification System](/zh/posts/notification-guide) — Configure AI conversation notifications
+- [Deployment Guide](/zh/posts/deployment-guide) — Deploy with Cloudflare Workers AI
