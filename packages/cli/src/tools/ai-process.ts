@@ -20,10 +20,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import crypto from "node:crypto";
-import {
-  getAllPosts,
-  type PostMeta,
-  } from "./lib/posts.js";
+import { getAllPosts, type PostMeta } from "./lib/posts.js";
 import { extractFrontmatter } from "./lib/frontmatter.js";
 import { chatCompletion, hasAPIKey, getConfig } from "./lib/ai-provider.js";
 
@@ -69,7 +66,8 @@ function parseArgs(): CliFlags {
     else if (arg === "--no-skip") flags.noSkip = true;
     else if (arg === "--clear-skip") flags.clearSkip = true;
     else if (arg.startsWith("--slug=")) flags.slug = arg.split("=")[1];
-    else if (arg.startsWith("--task=")) flags.task = arg.split("=")[1] as "summary" | "seo";
+    else if (arg.startsWith("--task="))
+      flags.task = arg.split("=")[1] as "summary" | "seo";
     else if (arg.startsWith("--recent="))
       flags.recent = parseInt(arg.split("=")[1], 10);
     else if (arg.startsWith("--concurrency="))
@@ -90,7 +88,7 @@ interface CacheMeta {
 }
 
 interface CacheEntry {
-  data: Record<string, unknown>;
+  data: unknown;
   contentHash: string;
   processedAt: string;
 }
@@ -194,13 +192,13 @@ async function addToSkipList(
 // ─── 工具函数 ────────────────────────────────────────────────
 
 function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /** 去重、去空的字符串数组清洗 */
 function cleanStringArray(arr: unknown): string[] {
   if (!Array.isArray(arr)) return [];
-  return [...new Set(arr.map((s) => String(s).trim()).filter(Boolean))];
+  return [...new Set(arr.map(s => String(s).trim()).filter(Boolean))];
 }
 
 // ─── 文章扫描与处理 ──────────────────────────────────────────
@@ -212,7 +210,10 @@ interface Article extends PostMeta {
 }
 
 async function scanArticles(flags: CliFlags): Promise<Article[]> {
-  const allPosts = await getAllPosts({ includeDrafts: false, stripBody: false });
+  const allPosts = await getAllPosts({
+    includeDrafts: false,
+    stripBody: false,
+  });
   const articles: Article[] = [];
 
   for (const post of allPosts) {
@@ -563,7 +564,7 @@ async function processQueue(
         await cacheManager.writeEntry(
           article.id,
           {
-            data: data as unknown as Record<string, unknown>,
+            data,
             contentHash: article.contentHash,
             processedAt: new Date().toISOString(),
           },
@@ -587,7 +588,12 @@ async function processQueue(
         });
 
         // 将失败的文章加入跳过列表
-        await addToSkipList(skipList, task.name, article.id, (err as Error).message);
+        await addToSkipList(
+          skipList,
+          task.name,
+          article.id,
+          (err as Error).message
+        );
 
         // 429 是限速，不计入连续失败
         const is429 = (err as Error).message?.includes("429");
@@ -637,7 +643,9 @@ async function main() {
     console.error("❌ 缺少 AI API Key，请在 .env 中设置:");
     console.error("   AI_API_KEY=your_api_key_here");
     console.error("   AI_BASE_URL=https://api.openai.com  # 可选，默认 OpenAI");
-    console.error("   AI_MODEL=gpt-4o-mini                # 可选，默认 gpt-4o-mini");
+    console.error(
+      "   AI_MODEL=gpt-4o-mini                # 可选，默认 gpt-4o-mini"
+    );
     process.exit(1);
   }
 
@@ -656,7 +664,7 @@ async function main() {
       reasons.set(key, (reasons.get(key) || 0) + 1);
     }
     const topReason = [...reasons.entries()].sort((a, b) => b[1] - a[1])[0];
-    
+
     console.log(`⚠️  检测到 ${skipListEntries.length} 篇文章在跳过列表中`);
     console.log(`   最常见失败原因: ${topReason[0]}... (${topReason[1]} 次)`);
     console.log(`   `);
@@ -683,7 +691,7 @@ async function main() {
 
   // 2. 过滤
   if (flags.slug) {
-    articles = articles.filter((a) => a.id === flags.slug);
+    articles = articles.filter(a => a.id === flags.slug);
     if (articles.length === 0) {
       console.error(`❌ 未找到文章: ${flags.slug}`);
       console.error(`   提示: 使用完整 ID，如 zh/getting-started`);
@@ -699,7 +707,7 @@ async function main() {
 
   // 3. 确定要运行的任务
   const taskNames = flags.task ? [flags.task] : ["summary", "seo"];
-  const invalidTask = taskNames.find((t) => !TASKS[t]);
+  const invalidTask = taskNames.find(t => !TASKS[t]);
   if (invalidTask) {
     console.error(`❌ 未知任务: ${invalidTask}（可选: summary, seo）`);
     process.exit(1);
@@ -759,7 +767,10 @@ async function main() {
         for (const slug of skippedSlugs) {
           const info = skipList[`${taskName}:${slug}`];
           // 截断错误信息，避免过长
-          const reasonShort = info.reason.length > 80 ? info.reason.slice(0, 80) + '...' : info.reason;
+          const reasonShort =
+            info.reason.length > 80
+              ? info.reason.slice(0, 80) + "..."
+              : info.reason;
           console.log(
             `         - ${slug} (失败 ${info.failCount} 次: ${reasonShort})`
           );
@@ -810,7 +821,7 @@ async function main() {
   console.log("🏁 处理完成");
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error("❌ 致命错误:", err.message);
   process.exit(1);
 });
