@@ -308,9 +308,11 @@ const layoutModes = [
     return window.__astroMinimaxPreferences;
   }
 
-  const themePresets = getPreferencesClient()?.themePresets ?? [];
-
   const radiusValues = { sm: '0.5rem', md: '0.75rem', lg: '1rem', xl: '1.5rem' };
+
+  function getThemePresets() {
+    return getPreferencesClient()?.themePresets ?? [];
+  }
 
   function loadSettings() {
     const preferencesClient = getPreferencesClient();
@@ -568,6 +570,7 @@ const layoutModes = [
   function renderUI() {
     const colorContainer = document.getElementById('color-scheme-options');
     const layoutContainer = document.getElementById('layout-mode-options');
+    const themePresets = getThemePresets();
 
     if (colorContainer) {
       colorContainer.innerHTML = themePresets.map(p => {
@@ -687,6 +690,7 @@ const layoutModes = [
       const btn = e.target.closest('[data-color-scheme]');
       if (!btn) return;
       const schemeId = btn.dataset.colorScheme;
+      const themePresets = getThemePresets();
       const preset = themePresets.find(p => p.id === schemeId);
       if (!preset) return;
       
