@@ -134,10 +134,10 @@ Shortcut scripts are also available: `pnpm run ai:process`, `pnpm run ai:profile
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [`@astro-minimax/core`](packages/core/) | 0.9.0 | Core theme: layouts, components, styles, route injection, virtual modules, visualizations |
-| [`@astro-minimax/ai`](packages/ai/) | 0.9.0 | AI integration: multi-provider failover, RAG, source priority, privacy protection |
-| [`@astro-minimax/notify`](packages/notify/) | 0.9.0 | Notifications: Telegram Bot, Email (Resend), Webhook |
-| [`@astro-minimax/cli`](packages/cli/) | 0.9.0 | CLI tools: scaffolding, AI processing, profile building, quality evaluation |
+| [`@astro-minimax/core`](packages/core/) | 0.9.3 | Core theme: layouts, components, styles, route injection, virtual modules, visualizations |
+| [`@astro-minimax/ai`](packages/ai/) | 0.9.3 | AI integration: multi-provider failover, RAG, source priority, privacy protection |
+| [`@astro-minimax/notify`](packages/notify/) | 0.9.3 | Notifications: Telegram Bot, Email (Resend), Webhook |
+| [`@astro-minimax/cli`](packages/cli/) | 0.9.3 | CLI tools: scaffolding, AI processing, profile building, quality evaluation |
 
 ## Documentation
 
@@ -149,6 +149,7 @@ Shortcut scripts are also available: `pnpm run ai:process`, `pnpm run ai:profile
 - [Notification System](apps/blog/src/data/blog/en/notification-guide.md)
 - [Customize Colors](apps/blog/src/data/blog/en/how-to-configure-astro-minimax-theme.md)
 - [Dynamic OG Images](apps/blog/src/data/blog/en/dynamic-og-images.md)
+- [v0.9.3 Release Notes](apps/blog/src/data/blog/en/_releases/astro-minimax-0.9.3.md)
 
 ## Credits
 

@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.3] - 2026-03-29
+
+### Added
+
+- **Template Runtime Knowledge Bundle**: Added `packages/cli/template/datas/knowledge/runtime/knowledge-bundle.json` so scaffolded projects ship the canonical runtime bundle shape expected by the AI adapters.
+- **Prebuild Profile Hook**: Wired author-profile generation into the example blog and CLI template build flow through `prebuild` so generated AI metadata is refreshed more consistently.
+
+### Changed
+
+- **Workspace Runtime Alignment**: Reworked the blog app configuration and workspace wiring so the example app, template, and shared runtime contract stay aligned.
+- **AI Process Pipeline**: Improved cache reuse and skip handling in `packages/cli/src/tools/ai-process.ts` for more predictable generated-content runs.
+- **Generated Knowledge/Profile Assets**: Refreshed the blog author context, profile context, profile report, digest data, voice profile, and public OG image to match the latest content and runtime bundle shape.
+- **AI Guide Translation**: Updated the generated English AI guide so the docs match the current AI feature set, tool-calling flow, and runtime terminology.
+- **CLI Template Package Pins**: Updated the scaffold template to depend on `^0.9.3` for `@astro-minimax/core`, `@astro-minimax/ai`, `@astro-minimax/notify`, and `@astro-minimax/cli`.
+- **Workspace Version Alignment**: Unified first-party package versions to `0.9.3` across the monorepo root, workspace packages, and the example blog app.
+
+### Accessibility
+
+- **AI Chat Controls**: Improved `ChatInput.tsx` and `ChatPanel.tsx` with stronger labels, roles, and interaction semantics for screen readers and keyboard use.
+- **Settings Panel Semantics**: Added richer ARIA attributes and dialog/tab semantics to `SettingsPanel.astro`.
+- **Supporting UI Cleanup**: Refined `Card.astro`, `PostMeta.astro`, and `PostsContainer.astro` alongside the accessibility-focused UI cleanup.
+
+### Styling
+
+- **Reading Theme Polish**: Refined reading-theme styles and related settings-panel behavior to improve preset consistency and readability.
+
+### Testing
+
+- **Browser Smoke Harness Rewrite**: Rebuilt `tests/e2e-test.py` into a broader Playwright-based smoke harness covering homepage, article detail, taxonomy pages, search, theme toggle, AI widget behavior, and API health checks.
+
+### Documentation
+
+- **Template Runtime Docs**: Updated `packages/cli/template/functions/README.md` to document the runtime knowledge bundle contract more clearly.
+- **README Version Tables**: Synchronized the package version tables in `README.md` and `README.en.md` with the actual `0.9.3` release line.
+- **Release Notes**: Added bilingual `astro-minimax-0.9.3` release posts under `apps/blog/src/data/blog/{zh,en}/_releases/`, grounded in the actual recent commit history.
+- **Release Entry Links**: Added direct links to the latest `v0.9.3` release notes from both root READMEs so the current release is easier to discover.
+
 ## [0.9.2] - 2026-03-24
 
 ### Security

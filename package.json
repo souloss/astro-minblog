@@ -1,6 +1,6 @@
 {
   "name": "astro-minimax-monorepo",
-  "version": "0.0.0",
+  "version": "0.9.3",
   "private": true,
   "type": "module",
   "description": "A minimalist, fast, and modern Astro blog theme with AI-powered features, multi-channel notifications, and rich visualizations.",
