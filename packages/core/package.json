@@ -43,7 +43,9 @@
   "files": [
     "src/"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/preferences/client-init.ts"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules/.cache"
