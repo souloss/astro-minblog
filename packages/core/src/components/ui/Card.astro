@@ -86,19 +86,18 @@ const animationDelay = Math.min(index * 80, 400);
              hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
              focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
       style={`animation-delay: var(--delay)`}
-      data-post-href={postHref}
     >
+      <a href={postHref} class="post-card__link" aria-label={title}></a>
+
       {/* 标题区域 */}
       <div class="p-5 pb-0">
-        <a href={postHref} class="block outline-none" onclick="event.stopPropagation()">
-          <Heading
-            style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
-            class="title-with-underline inline text-lg font-bold leading-snug tracking-tight text-foreground
-                   transition-colors duration-200 group-hover:text-accent"
-          >
-            {title}
-          </Heading>
-        </a>
+        <Heading
+          style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+          class="title-with-underline relative z-0 inline text-lg font-bold leading-snug tracking-tight text-foreground
+                 transition-colors duration-200 group-hover:text-accent"
+        >
+          {title}
+        </Heading>
       </div>
 
       {/* 封面图片 */}
@@ -161,8 +160,9 @@ const animationDelay = Math.min(index * 80, 400);
              hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
              focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
       style={`animation-delay: var(--delay)`}
-      data-post-href={postHref}
     >
+      <a href={postHref} class="post-card__link" aria-label={title}></a>
+
       {/* 封面图片 */}
       {coverSrc && (
         <div class="relative w-full h-36 sm:h-40 overflow-hidden shrink-0">
@@ -182,15 +182,13 @@ const animationDelay = Math.min(index * 80, 400);
       {/* 内容区域 */}
       <div class="flex flex-col flex-1 p-4 min-h-0">
         {/* 标题 */}
-        <a href={postHref} class="block outline-none" onclick="event.stopPropagation()">
-          <Heading
-            style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
-            class="title-with-underline inline text-base font-bold text-foreground line-clamp-2 leading-snug
-                   transition-colors duration-200 group-hover:text-accent"
-          >
-            {title}
-          </Heading>
-        </a>
+        <Heading
+          style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+          class="title-with-underline relative z-0 inline text-base font-bold text-foreground line-clamp-2 leading-snug
+                 transition-colors duration-200 group-hover:text-accent"
+        >
+          {title}
+        </Heading>
         
         {/* 摘要 */}
         <p class="mt-2 text-sm text-foreground-soft/80 line-clamp-2 leading-relaxed flex-1">
@@ -224,8 +222,9 @@ const animationDelay = Math.min(index * 80, 400);
     <article
       class="post-card card-animate relative flex items-start gap-3 sm:gap-4 py-4 px-2 cursor-pointer"
       style={`animation-delay: var(--delay)`}
-      data-post-href={postHref}
     >
+      <a href={postHref} class="post-card__link" aria-label={title}></a>
+
       {/* 缩略图 */}
       {coverSrc && (
         <div class="shrink-0 hidden sm:block w-20 h-14 overflow-hidden rounded-lg">
@@ -249,15 +248,13 @@ const animationDelay = Math.min(index * 80, 400);
       {/* 主内容 */}
       <div class="flex-1 min-w-0">
         {/* 标题 */}
-        <a href={postHref} class="block outline-none" onclick="event.stopPropagation()">
-          <Heading
-            style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
-            class="title-with-underline inline text-sm font-bold text-foreground line-clamp-1
-                   transition-colors duration-200 group-hover:text-accent"
-          >
-            {title}
-          </Heading>
-        </a>
+        <Heading
+          style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+          class="title-with-underline relative z-0 inline text-sm font-bold text-foreground line-clamp-1
+                 transition-colors duration-200 group-hover:text-accent"
+        >
+          {title}
+        </Heading>
         
         {/* 摘要 */}
         <p class="mt-1 text-xs text-foreground-soft/80 line-clamp-1">{description}</p>
@@ -277,7 +274,6 @@ const animationDelay = Math.min(index * 80, 400);
               <a 
                 href={`/${lang}/categories/${encodeURIComponent(category)}/`}
                 class="meta-link text-accent hover:underline"
-                onclick="event.stopPropagation()"
               >
                 {category}
               </a>
@@ -287,7 +283,6 @@ const animationDelay = Math.min(index * 80, 400);
             <a
               href={`/${lang}/tags/${encodeURIComponent(tag)}/`}
               class="meta-link px-1.5 py-0.5 rounded bg-muted/50 text-foreground-soft hover:text-accent"
-              onclick="event.stopPropagation()"
             >
               #{tag}
             </a>
@@ -319,6 +314,27 @@ const animationDelay = Math.min(index * 80, 400);
   /* 卡片基础样式 */
   .post-card {
     border-radius: var(--radius-3xl);
+  }
+
+  .post-card__link {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    border-radius: inherit;
+    text-decoration: none;
+  }
+
+  .post-card__link:focus-visible {
+    outline: none;
+  }
+
+  .post-card :global(.post-meta),
+  .post-card .meta-link,
+  .post-card time,
+  .post-card .updated-dot {
+    position: relative;
+    z-index: 20;
   }
 
   /* 网格卡片高度 */
@@ -357,25 +373,4 @@ const animationDelay = Math.min(index * 80, 400);
     text-decoration: none;
   }
 
-  /* 卡片点击交互 */
-  [data-post-href] {
-    user-select: none;
-  }
-
-  [data-post-href]:active {
-    transform: scale(0.995);
-  }
 </style>
-
-<script>
-  // 点击卡片任意区域跳转到文章页面
-  document.addEventListener('click', (e) => {
-    const article = (e.target as HTMLElement).closest('article[data-post-href]');
-    if (article && !(e.target as HTMLElement).closest('.meta-link') && !(e.target as HTMLElement).closest('a[onclick]')) {
-      const href = article.getAttribute('data-post-href');
-      if (href) {
-        window.location.href = href;
-      }
-    }
-  });
-</script>

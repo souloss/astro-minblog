@@ -111,13 +111,13 @@ function renderMeta(p, compact = false) {
       <time class="flex items-center gap-1.5">${icons.date}<span>${p.dateStr}</span></time>
       ${updatedDot}
       <span class="flex items-center gap-1.5">${icons.clock}<span>${min(p.readingMinutes)}</span></span>
-      ${p.category ? `<a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors" onclick="event.stopPropagation()">${esc(p.category)}</a>` : ''}
+      ${p.category ? `<a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors">${esc(p.category)}</a>` : ''}
     `;
   }
   
   // 完整模式：作者、日期、更新绿点、阅读时长、分类、标签
   return `
-    <a href="/${lang}/about/" class="meta-link flex items-center gap-1.5 hover:text-accent transition-colors" onclick="event.stopPropagation()">
+    <a href="/${lang}/about/" class="meta-link flex items-center gap-1.5 hover:text-accent transition-colors">
       ${icons.author}
       <span>${esc(author)}</span>
     </a>
@@ -131,14 +131,14 @@ function renderMeta(p, compact = false) {
       <span>${min(p.readingMinutes)}</span>
     </span>
     ${p.category ? `
-      <a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors" onclick="event.stopPropagation()">
+      <a href="${catUrl(p.category)}" class="meta-link px-2 py-0.5 rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors">
         ${esc(p.category)}
       </a>
     ` : ''}
     ${p.tags?.length ? `
       <div class="flex flex-wrap items-center gap-1.5">
         ${p.tags.slice(0, 3).map(t => `
-          <a href="${tagUrl(t)}" class="meta-link px-2 py-0.5 rounded-md border border-border/50 text-foreground-soft hover:text-accent hover:border-accent/30 transition-colors" onclick="event.stopPropagation()">
+          <a href="${tagUrl(t)}" class="meta-link px-2 py-0.5 rounded-md border border-border/50 text-foreground-soft hover:text-accent hover:border-accent/30 transition-colors">
             #${esc(t)}
           </a>
         `).join('')}
@@ -161,22 +161,21 @@ function render(mode) {
       return `
         <li class="group h-full w-full">
           <article 
-            class="post-card relative flex h-full w-full flex-col overflow-hidden
-                   rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl cursor-pointer
-                   shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
+             class="post-card relative flex h-full w-full flex-col overflow-hidden
+                    rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl cursor-pointer
+                    shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
                    transition-all duration-300 ease-out
                    hover:border-accent/40 hover:bg-card/90 
-                   hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
-                   focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
-            data-post-href="${p.href}"
+                    hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
+                    focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
           >
+            <a href="${p.href}" class="post-card__link" aria-label="${esc(p.title)}"></a>
+
             <!-- 标题区域 -->
             <div class="p-5 pb-0">
-              <a href="${p.href}" class="block outline-none" onclick="event.stopPropagation()">
-                <h3 class="title-with-underline inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
-                  ${esc(p.title)}
-                </h3>
-              </a>
+              <h3 class="title-with-underline relative z-0 inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
+                ${esc(p.title)}
+              </h3>
             </div>
 
             <!-- 封面图片 -->
@@ -214,15 +213,16 @@ function render(mode) {
       return `
         <li class="group h-full">
           <article 
-            class="post-card grid-card relative flex h-full flex-col overflow-hidden
-                   rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl cursor-pointer
-                   shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
+             class="post-card grid-card relative flex h-full flex-col overflow-hidden
+                    rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl cursor-pointer
+                    shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
                    transition-all duration-300 ease-out
                    hover:border-accent/40 hover:bg-card/90 
-                   hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
-                   focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
-            data-post-href="${p.href}"
+                    hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
+                    focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
           >
+            <a href="${p.href}" class="post-card__link" aria-label="${esc(p.title)}"></a>
+
             <!-- 封面图片 -->
             ${p.coverSrc ? `
               <div class="relative w-full h-36 sm:h-40 overflow-hidden shrink-0">
@@ -234,11 +234,9 @@ function render(mode) {
             <!-- 内容区域 -->
             <div class="flex flex-col flex-1 p-4 min-h-0">
               <!-- 标题 -->
-              <a href="${p.href}" class="block outline-none" onclick="event.stopPropagation()">
-                <h3 class="title-with-underline inline text-base font-bold text-foreground line-clamp-2 leading-snug transition-colors duration-200 group-hover:text-accent">
-                  ${esc(p.title)}
-                </h3>
-              </a>
+              <h3 class="title-with-underline relative z-0 inline text-base font-bold text-foreground line-clamp-2 leading-snug transition-colors duration-200 group-hover:text-accent">
+                ${esc(p.title)}
+              </h3>
               
               <!-- 摘要 -->
               <p class="mt-2 text-sm text-foreground-soft/80 line-clamp-2 leading-relaxed flex-1">${esc(p.description)}</p>
@@ -264,8 +262,9 @@ function render(mode) {
         <li class="group border-b border-border hover:bg-card/40 transition-colors duration-200">
           <article 
             class="post-card relative flex items-start gap-3 sm:gap-4 py-4 px-2 cursor-pointer"
-            data-post-href="${p.href}"
           >
+            <a href="${p.href}" class="post-card__link" aria-label="${esc(p.title)}"></a>
+
             <!-- 缩略图（可选） -->
             ${p.coverSrc ? `
               <div class="shrink-0 hidden sm:block w-20 h-14 overflow-hidden rounded-lg">
@@ -281,11 +280,9 @@ function render(mode) {
             <!-- 主内容 -->
             <div class="flex-1 min-w-0">
               <!-- 标题 -->
-              <a href="${p.href}" class="block outline-none" onclick="event.stopPropagation()">
-                <h3 class="title-with-underline inline text-sm font-bold text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-accent">
-                  ${esc(p.title)}
-                </h3>
-              </a>
+              <h3 class="title-with-underline relative z-0 inline text-sm font-bold text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-accent">
+                ${esc(p.title)}
+              </h3>
               
               <!-- 摘要 -->
               <p class="mt-1 text-xs text-foreground-soft/80 line-clamp-1">${esc(p.description)}</p>
@@ -296,13 +293,13 @@ function render(mode) {
                 <span>${min(p.readingMinutes)}</span>
                 ${p.category ? `
                   <span class="text-border">·</span>
-                  <a href="${catUrl(p.category)}" class="meta-link text-accent hover:underline" onclick="event.stopPropagation()">${esc(p.category)}</a>
-                ` : ''}
-                ${p.tags?.slice(0, 2).map(t => `
-                  <a href="${tagUrl(t)}" class="meta-link px-1.5 py-0.5 rounded bg-muted/50 text-foreground-soft hover:text-accent" onclick="event.stopPropagation()">#${esc(t)}</a>
-                `).join('')}
-              </div>
-            </div>
+                   <a href="${catUrl(p.category)}" class="meta-link text-accent hover:underline">${esc(p.category)}</a>
+                 ` : ''}
+                 ${p.tags?.slice(0, 2).map(t => `
+                   <a href="${tagUrl(t)}" class="meta-link px-1.5 py-0.5 rounded bg-muted/50 text-foreground-soft hover:text-accent">#${esc(t)}</a>
+                 `).join('')}
+               </div>
+             </div>
           </article>
         </li>`;
     }
@@ -358,12 +355,32 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
    卡片基础样式
    ============================================ */
 
-.post-card {
+:global(.post-card) {
   border-radius: var(--card-radius, 1.25rem);
 }
 
+:global(.post-card__link) {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit;
+  text-decoration: none;
+}
+
+:global(.post-card__link:focus-visible) {
+  outline: none;
+}
+
+:global(.post-card .meta-link),
+:global(.post-card time),
+:global(.post-card .updated-dot) {
+  position: relative;
+  z-index: 20;
+}
+
 /* 网格卡片高度 */
-.grid-card {
+:global(.grid-card) {
   min-height: 260px;
 }
 
@@ -371,12 +388,12 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
    标题 hover 下划线动画
    ============================================ */
 
-.title-with-underline {
+:global(.title-with-underline) {
   position: relative;
   text-decoration: none;
 }
 
-.title-with-underline::after {
+:global(.title-with-underline::after) {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -388,7 +405,7 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
   border-radius: 1px;
 }
 
-.group:hover .title-with-underline::after {
+:global(.group:hover .title-with-underline::after) {
   width: 100%;
 }
 
@@ -396,31 +413,19 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
    元信息链接样式
    ============================================ */
 
-.meta-link {
+:global(.meta-link) {
   text-decoration: none;
 }
 
-.meta-link:hover {
+:global(.meta-link:hover) {
   text-decoration: none;
-}
-
-/* ============================================
-   卡片点击交互
-   ============================================ */
-
-[data-post-href] {
-  user-select: none;
-}
-
-[data-post-href]:active {
-  transform: scale(0.995);
 }
 
 /* ============================================
    更新绿点动画 - 更优雅的实现
    ============================================ */
 
-.updated-dot {
+:global(.updated-dot) {
   margin-left: 4px;
 }
 
@@ -454,26 +459,13 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
   }
 }
 
-.animate-pulse-dot {
+:global(.animate-pulse-dot) {
   animation: pulse-once 1.5s ease-out;
   animation-delay: 0.3s;
 }
 
-.animate-glow-dot {
+:global(.animate-glow-dot) {
   animation: glow-pulse 2.5s ease-out infinite;
   animation-delay: 1s;
 }
 </style>
-
-<script>
-  // 点击卡片任意区域跳转到文章页面
-  document.addEventListener('click', (e) => {
-    const article = e.target.closest('article[data-post-href]');
-    if (article && !e.target.closest('.meta-link') && !e.target.closest('a[onclick]')) {
-      const href = article.getAttribute('data-post-href');
-      if (href) {
-        window.location.href = href;
-      }
-    }
-  });
-</script>

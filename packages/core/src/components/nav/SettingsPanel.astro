@@ -78,13 +78,13 @@ const layoutModes = [
 ];
 ---
 
-<div id="settings-panel" class="fixed right-5 bottom-24 z-50 hidden">
+<div id="settings-panel" class="fixed right-5 bottom-24 z-50 hidden" role="dialog" aria-modal="false" aria-labelledby="settings-panel-title" aria-describedby="settings-panel-status">
   <div class="settings-panel-inner w-[340px] max-w-[calc(100vw-2.5rem)] h-[520px] max-h-[calc(100vh-8rem)] flex flex-col overflow-hidden rounded-2xl border border-border/30 bg-surface/98 backdrop-blur-xl shadow-2xl">
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-border/30 px-4 py-3 shrink-0">
-      <h3 class="text-sm font-semibold text-foreground">{labels.title}</h3>
+      <h3 id="settings-panel-title" class="text-sm font-semibold text-foreground">{labels.title}</h3>
       <button id="settings-close-btn" class="rounded-lg p-1 text-muted transition-colors hover:bg-muted/50 hover:text-foreground" aria-label={labels.close}>
-        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -92,17 +92,17 @@ const layoutModes = [
     </div>
 
     <!-- Tabs -->
-    <div class="flex border-b border-border/30 bg-muted/10 shrink-0 overflow-x-auto">
-      <button data-tab="appearance" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-accent border-b-2 border-accent transition-colors whitespace-nowrap">{labels.tabAppearance}</button>
-      <button data-tab="reading" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabReading}</button>
-      <button data-tab="layout" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabLayout}</button>
-      <button data-tab="general" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabGeneral}</button>
+    <div class="flex border-b border-border/30 bg-muted/10 shrink-0 overflow-x-auto" role="tablist" aria-label={labels.title}>
+      <button id="settings-tab-appearance" type="button" role="tab" aria-selected="true" aria-controls="tab-appearance" data-tab="appearance" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-accent border-b-2 border-accent transition-colors whitespace-nowrap">{labels.tabAppearance}</button>
+      <button id="settings-tab-reading" type="button" role="tab" aria-selected="false" aria-controls="tab-reading" data-tab="reading" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabReading}</button>
+      <button id="settings-tab-layout" type="button" role="tab" aria-selected="false" aria-controls="tab-layout" data-tab="layout" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabLayout}</button>
+      <button id="settings-tab-general" type="button" role="tab" aria-selected="false" aria-controls="tab-general" data-tab="general" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabGeneral}</button>
     </div>
 
     <!-- Tab Content -->
     <div class="overflow-y-auto flex-1">
       <!-- Appearance Tab (merged from theme + appearance) -->
-      <div id="tab-appearance" class="tab-content p-4 space-y-4">
+      <div id="tab-appearance" class="tab-content p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-appearance" tabindex="0">
         <div>
           <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.colorScheme}</p>
           <div class="grid grid-cols-8 gap-1.5" id="color-scheme-options"></div>
@@ -147,7 +147,7 @@ const layoutModes = [
       </div>
 
       <!-- Reading Tab -->
-      <div id="tab-reading" class="tab-content hidden p-4 space-y-4">
+      <div id="tab-reading" class="tab-content hidden p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-reading" tabindex="0">
         <!-- Reading Mode Master Toggle -->
         <div class="flex items-center justify-between py-1 border-b border-border/30 pb-3 mb-2">
           <div>
@@ -211,7 +211,7 @@ const layoutModes = [
       </div>
 
       <!-- Layout Tab -->
-      <div id="tab-layout" class="tab-content hidden p-4 space-y-4">
+      <div id="tab-layout" class="tab-content hidden p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-layout" tabindex="0">
         <div>
           <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.postsLayout}</p>
           <div class="flex flex-wrap gap-2" id="layout-mode-options"></div>
@@ -251,7 +251,7 @@ const layoutModes = [
       </div>
 
       <!-- General Tab -->
-      <div id="tab-general" class="tab-content hidden p-4 space-y-3">
+      <div id="tab-general" class="tab-content hidden p-4 space-y-3" role="tabpanel" aria-labelledby="settings-tab-general" tabindex="0">
         <div class="flex items-center justify-between py-1">
           <div>
             <p class="text-sm text-foreground-soft">{labels.animations}</p>
@@ -297,8 +297,8 @@ const layoutModes = [
 </div>
 
 <!-- Toast notification -->
-<div id="settings-toast" class="fixed bottom-32 right-5 z-[60] hidden">
-  <div class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-lg">
+<div id="settings-toast" class="fixed bottom-32 right-5 z-[60] hidden" role="status" aria-live="polite" aria-atomic="true">
+  <div id="settings-panel-status" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-lg">
     {labels.shareCopied}
   </div>
 </div>
@@ -481,7 +481,8 @@ const layoutModes = [
   function showToast(message) {
     const toast = document.getElementById('settings-toast');
     if (toast) {
-      toast.querySelector('div').textContent = message;
+      const content = toast.querySelector('#settings-panel-status');
+      if (content) content.textContent = message;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 2000);
     }
@@ -557,13 +558,17 @@ const layoutModes = [
   function switchTab(tabName) {
     document.querySelectorAll('.settings-tab').forEach(tab => {
       const isActive = tab.dataset.tab === tabName;
+      tab.setAttribute('aria-selected', String(isActive));
+      tab.setAttribute('tabindex', isActive ? '0' : '-1');
       tab.classList.toggle('text-accent', isActive);
       tab.classList.toggle('border-accent', isActive);
       tab.classList.toggle('text-muted', !isActive);
       tab.classList.toggle('border-transparent', !isActive);
     });
     document.querySelectorAll('.tab-content').forEach(content => {
-      content.classList.toggle('hidden', content.id !== `tab-${tabName}`);
+      const isActive = content.id === `tab-${tabName}`;
+      content.classList.toggle('hidden', !isActive);
+      content.toggleAttribute('hidden', !isActive);
     });
   }
 
@@ -599,11 +604,89 @@ const layoutModes = [
     }
   }
 
+  const settingsPanelState = window.__settingsPanelState ?? {
+    lastFocusedElement: null,
+    listenersAttached: false,
+  };
+  window.__settingsPanelState = settingsPanelState;
+
+  function getSettingsPanel() {
+    return document.getElementById('settings-panel');
+  }
+
+  function closeSettingsPanel() {
+    const panel = getSettingsPanel();
+    if (!panel) return;
+    panel.classList.add('hidden');
+    panel.setAttribute('aria-hidden', 'true');
+    settingsPanelState.lastFocusedElement?.focus?.();
+  }
+
+  function openSettingsPanel() {
+    const panel = getSettingsPanel();
+    if (!panel) return;
+    settingsPanelState.lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    panel.classList.remove('hidden');
+    panel.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => {
+      const activeTab = panel.querySelector('.settings-tab[aria-selected="true"]');
+      activeTab?.focus?.();
+    });
+  }
+
   function init() {
     const panel = document.getElementById('settings-panel');
     const closeBtn = document.getElementById('settings-close-btn');
     const resetBtn = document.getElementById('settings-reset-btn');
     const fontSizeSlider = document.getElementById('font-size-slider');
+    const shareBtn = document.getElementById('settings-share-btn');
+
+    if (!panel) return;
+
+    panel.setAttribute('aria-hidden', panel.classList.contains('hidden') ? 'true' : 'false');
+
+    const getFocusableElements = () => Array.from(panel.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(el => !el.hasAttribute('hidden') && !el.classList.contains('hidden'));
+
+    const handlePanelKeydown = (event) => {
+      if (panel.classList.contains('hidden')) return;
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeSettingsPanel();
+        return;
+      }
+
+      if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+        const tabs = Array.from(panel.querySelectorAll('.settings-tab'));
+        const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+        if (currentIndex === -1) return;
+        const direction = event.key === 'ArrowRight' ? 1 : -1;
+        const nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const nextTab = tabs[nextIndex];
+        event.preventDefault();
+        switchTab(nextTab.dataset.tab);
+        nextTab.focus();
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const focusableElements = getFocusableElements();
+        if (focusableElements.length === 0) return;
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+        const activeElement = document.activeElement;
+
+        if (event.shiftKey && activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
     
     const animationToggle = document.getElementById('animation-toggle');
     const cardHoverToggle = document.getElementById('card-hover-toggle');
@@ -612,8 +695,6 @@ const layoutModes = [
     const backToTopToggle = document.getElementById('widget-backtotop-toggle');
     const readingTimeToggle = document.getElementById('widget-readingtime-toggle');
     const stickyBackToTopToggle = document.getElementById('widget-sticky-backtotop-toggle');
-
-    if (!panel) return;
 
     const preferencesClient = getPreferencesClient();
     if (!preferencesClient) {
@@ -682,8 +763,15 @@ const layoutModes = [
 
     // Tab switching
     document.querySelectorAll('.settings-tab').forEach(tab => {
+      if (tab.dataset.settingsTabBound === 'true') return;
       tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      tab.dataset.settingsTabBound = 'true';
     });
+    if (!settingsPanelState.listenersAttached) {
+      panel.addEventListener('keydown', handlePanelKeydown);
+      settingsPanelState.listenersAttached = true;
+    }
+    switchTab('appearance');
 
     // Color scheme handlers
     document.getElementById('color-scheme-options')?.addEventListener('click', (e) => {
@@ -863,10 +951,15 @@ const layoutModes = [
     });
 
     // Share button handler
-    const shareBtn = document.getElementById('settings-share-btn');
-    shareBtn?.addEventListener('click', () => copyShareURL(settings));
+    if (shareBtn && shareBtn.dataset.settingsShareBound !== 'true') {
+      shareBtn.addEventListener('click', () => copyShareURL(settings));
+      shareBtn.dataset.settingsShareBound = 'true';
+    }
 
-    closeBtn?.addEventListener('click', () => panel.classList.add('hidden'));
+    if (closeBtn && closeBtn.dataset.settingsCloseBound !== 'true') {
+      closeBtn.addEventListener('click', closeSettingsPanel);
+      closeBtn.dataset.settingsCloseBound = 'true';
+    }
     
     // Listen for theme mode changes (light/dark) and re-apply color scheme
     window.addEventListener('themechange', () => {
@@ -878,7 +971,11 @@ const layoutModes = [
     toggle: () => {
       const panel = document.getElementById('settings-panel');
       if (panel) {
-        panel.classList.toggle('hidden');
+        if (panel.classList.contains('hidden')) {
+          openSettingsPanel();
+        } else {
+          closeSettingsPanel();
+        }
       }
     },
     getSettings: loadSettings,
