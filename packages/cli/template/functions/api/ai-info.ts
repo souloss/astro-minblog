@@ -36,7 +36,27 @@ export const onRequest: PagesFunction<FunctionEnv> = async context => {
   const responseCacheConfig = getResponseCacheConfig(env);
 
   const hasWorkersBinding = Boolean(env[bindingName]);
-  const configured = hasAnyProviderConfigured(env) || hasWorkersBinding;
+  const mockMode = Boolean(env.AI_MOCK_MODE);
+  const configured = hasAnyProviderConfigured(env) || hasWorkersBinding || mockMode;
+  const providers = providerStatus.length > 0
+    ? providerStatus
+    : mockMode
+      ? [{
+          id: "mock",
+          type: "mock",
+          weight: 0,
+          healthy: true,
+          model: "mock",
+          health: {
+            consecutiveFailures: 0,
+            totalRequests: 0,
+            successfulRequests: 0,
+            lastError: null,
+            lastErrorTime: null,
+            lastSuccessTime: null,
+          },
+        }]
+      : [];
 
   const timeoutConfig = {
     request: asNumber(env.AI_TIMEOUT_REQUEST, 45000),
@@ -71,7 +91,7 @@ export const onRequest: PagesFunction<FunctionEnv> = async context => {
         timestamp: new Date().toISOString(),
         ai: {
           enabled: true,
-          mockMode: Boolean(env.AI_MOCK_MODE),
+          mockMode,
           configured,
           cache: {
             enabled: responseCacheConfig.enabled,
@@ -82,11 +102,11 @@ export const onRequest: PagesFunction<FunctionEnv> = async context => {
           },
           timeouts: timeoutConfig,
           health: healthConfig,
-          providers: providerStatus.map(p => ({
+          providers: providers.map(p => ({
             id: p.id,
             type: p.type,
             weight: p.weight,
-            healthy: p.health.healthy,
+            healthy: "healthy" in p ? p.healthy : p.health.healthy,
             model: p.model,
             healthDetails: {
               consecutiveFailures: p.health.consecutiveFailures,
@@ -99,9 +119,9 @@ export const onRequest: PagesFunction<FunctionEnv> = async context => {
           })),
           dataStatus,
         },
-        hints: manager.hasProviders()
+        hints: manager.hasProviders() || mockMode
           ? [
-              `Providers available: ${manager.getProviderCount()}`,
+              `Providers available: ${providers.length}`,
               "Mock fallback: enabled",
               responseCacheConfig.enabled
                 ? "Response cache: enabled"

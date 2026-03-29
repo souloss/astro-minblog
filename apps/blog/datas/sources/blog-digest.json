@@ -1,7 +1,39 @@
 {
-  "generatedAt": "2026-03-28T14:32:02.015Z",
-  "count": 70,
+  "generatedAt": "2026-03-28T18:50:43.455Z",
+  "count": 72,
   "posts": [
+    {
+      "id": "en/_releases/astro-minimax-0.9.3",
+      "title": "\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"",
+      "date": "2026-03-29T12:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "accessibility",
+        "testing",
+        "docs"
+      ],
+      "summary": "astro-minimax v0.9.3 is not just a version bump. The recent commit history shows a release centered on runtime alignment, generated AI asset refreshe…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.3/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.3",
+      "title": "\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"",
+      "date": "2026-03-29T12:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "accessibility",
+        "testing",
+        "docs"
+      ],
+      "summary": "astro-minimax v0.9.3 并不只是简单地把版本号改成 。结合最近一串提交来看，这个版本真正完成的是一轮运行时对齐、AI 生成资产刷新、浏览器冒烟测试重写与可访问性细化，而版本号同步与发布文档补全只是这轮工作的最后收口。\n\n运行时与数据对齐\n\n示例博客运行时对齐\n\n示例博客在这轮提交…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.3/"
+    },
     {
       "id": "en/_releases/astro-minimax-0.9.2",
       "title": "\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"",

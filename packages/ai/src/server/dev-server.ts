@@ -356,7 +356,27 @@ async function main() {
       if (url.startsWith("/api/ai-info")) {
         const manager = getProviderManager(env, { enableMockFallback: true });
         const providerStatus = manager.getProviderStatus();
-        const configured = hasAnyProviderConfigured(env);
+        const mockMode = !!env.AI_MOCK_MODE;
+        const configured = hasAnyProviderConfigured(env) || mockMode;
+        const providers = providerStatus.length > 0
+          ? providerStatus
+          : mockMode
+            ? [{
+                id: "mock",
+                type: "mock",
+                weight: 0,
+                healthy: true,
+                model: "mock",
+                health: {
+                  consecutiveFailures: 0,
+                  totalRequests: 0,
+                  successfulRequests: 0,
+                  lastError: null,
+                  lastErrorTime: null,
+                  lastSuccessTime: null,
+                },
+              }]
+            : [];
         const responseCacheConfig = getResponseCacheConfig(env);
 
         const timeoutConfig = {
@@ -398,7 +418,7 @@ async function main() {
               timestamp: new Date().toISOString(),
               ai: {
                 enabled: true,
-                mockMode: !!env.AI_MOCK_MODE,
+                mockMode,
                 configured,
                 cache: {
                   enabled: responseCacheConfig.enabled,
@@ -409,11 +429,11 @@ async function main() {
                 },
                 timeouts: timeoutConfig,
                 health: healthConfig,
-                providers: providerStatus.map(p => ({
+                providers: providers.map(p => ({
                   id: p.id,
                   type: p.type,
                   weight: p.weight,
-                  healthy: p.health.healthy,
+                  healthy: "healthy" in p ? p.healthy : p.health.healthy,
                   model: p.model,
                   healthDetails: {
                     consecutiveFailures: p.health.consecutiveFailures,
@@ -426,9 +446,9 @@ async function main() {
                 })),
                 dataStatus,
               },
-              hints: manager.hasProviders()
+              hints: manager.hasProviders() || mockMode
                 ? [
-                    `Providers available: ${manager.getProviderCount()}`,
+                    `Providers available: ${providers.length}`,
                     "Mock fallback: enabled",
                     responseCacheConfig.enabled
                       ? "Response cache: enabled"

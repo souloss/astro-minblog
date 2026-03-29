@@ -1,12 +1,258 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-03-28T14:32:02.023Z",
+  "generatedAt": "2026-03-28T18:50:43.463Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn/",
     "description": ""
   },
   "posts": [
+    {
+      "id": "en/_releases/astro-minimax-0.9.3",
+      "title": "\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"",
+      "date": "2026-03-29T12:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "accessibility",
+        "testing",
+        "docs"
+      ],
+      "summary": "astro-minimax v0.9.3 is not just a version bump. The recent commit history shows a release centered on runtime alignment, generated AI asset refreshe…",
+      "keyPoints": [],
+      "url": "/en/posts/_releases/astro-minimax-0.9.3/",
+      "chunks": [
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#p0",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "",
+          "content": "astro-minimax v0.9.3 is not just a version bump. The recent commit history shows a release centered on **runtime alignment**, **generated AI asset refreshes**, **stronger browser smoke coverage**, and **accessibility polish** across chat and settings surfaces — with the package version sync and release-document updates landing as the final layer.",
+          "position": 0,
+          "tokenCount": 87,
+          "headers": {}
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#blog-app-runtime-alignment",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "Blog App Runtime Alignment",
+          "content": "### Blog App Runtime Alignment\n\nThe example blog was adjusted to match the shared workspace runtime contract more closely. Recent changes aligned the app configuration, trimmed package wiring, refreshed the workspace lockfile, and updated package metadata so the app, template, and workspace packages all point at the same runtime assumptions.",
+          "position": 1,
+          "tokenCount": 86,
+          "headers": {
+            "H2": "Runtime & Data Alignment",
+            "H3": "Blog App Runtime Alignment"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#generated-knowledge-profile-re",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "Generated Knowledge & Profile Refresh",
+          "content": "### Generated Knowledge & Profile Refresh\n\nThe generated AI-facing assets were refreshed in bulk, including:\n\n- `author-context.json`\n- `author-profile-context.json`\n- `author-profile-report.json`\n- `blog-digest.json`\n- `voice-profile.json`\n- the blog OG image under `apps/blog/public/astro-minimax-og.jpg`\n\nThis keeps the AI runtime inputs and public-generated assets aligned with the current content and bundle contract.",
+          "position": 2,
+          "tokenCount": 106,
+          "headers": {
+            "H2": "Runtime & Data Alignment",
+            "H3": "Generated Knowledge & Profile Refresh"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#cli-processing-template-runtim",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "CLI Processing & Template Runtime Docs",
+          "content": "### CLI Processing & Template Runtime Docs\n\nTwo related maintenance tracks also landed in this cycle:\n\n- `packages/cli/src/tools/ai-process.ts` now handles cache reuse and skip logic more cleanly.\n- `packages/cli/template/functions/README.md` and the template runtime bundle were updated so scaffolded projects document and ship the expected `datas/knowledge/runtime/knowledge-bundle.json` structure from the start.",
+          "position": 3,
+          "tokenCount": 104,
+          "headers": {
+            "H2": "Runtime & Data Alignment",
+            "H3": "CLI Processing & Template Runtime Docs"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#ai-chat-accessibility-improvem",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "AI Chat Accessibility Improvements",
+          "content": "### AI Chat Accessibility Improvements\n\nRecent commits improved the accessibility semantics of the AI chat surface:\n\n- clearer `aria-label` coverage in `ChatInput.tsx`\n- stronger roles and status semantics in `ChatPanel.tsx`\n- better keyboard/screen-reader friendliness for message input and controls",
+          "position": 4,
+          "tokenCount": 75,
+          "headers": {
+            "H2": "Accessibility & UI Polish",
+            "H3": "AI Chat Accessibility Improvements"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#settings-panel-reading-theme-r",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "Settings Panel & Reading Theme Refinement",
+          "content": "### Settings Panel & Reading Theme Refinement\n\n`SettingsPanel.astro` received a substantial semantics pass, especially around dialog, tab, and switch behavior. In parallel, reading-theme styles in `theme.css` were refined for better preset consistency, and supporting UI pieces such as cards and post list metadata were cleaned up alongside that work.",
+          "position": 5,
+          "tokenCount": 88,
+          "headers": {
+            "H2": "Accessibility & UI Polish",
+            "H3": "Settings Panel & Reading Theme Refinement"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#browser-smoke-harness-rewrite",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "Browser Smoke Harness Rewrite",
+          "content": "### Browser Smoke Harness Rewrite\n\n`tests/e2e-test.py` was rewritten into a broader Playwright smoke harness. The new script checks more than a homepage render: it now covers article detail pages, taxonomy routes, search, theme toggling, AI widget behavior, and API health endpoints, which makes regressions in the integrated demo app easier to catch.",
+          "position": 6,
+          "tokenCount": 88,
+          "headers": {
+            "H2": "Testing & Documentation",
+            "H3": "Browser Smoke Harness Rewrite"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#ai-guide-release-documentation",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "AI Guide & Release Documentation Sync",
+          "content": "### AI Guide & Release Documentation Sync\n\nThe generated English AI guide was refreshed to better reflect the current AI feature set, tool-calling flow, and runtime terminology. On top of that, the root READMEs and version tables were synchronized to `0.9.3`, and this bilingual release-note entry was added so the public docs line up with the actual release contents.",
+          "position": 7,
+          "tokenCount": 92,
+          "headers": {
+            "H2": "Testing & Documentation",
+            "H3": "AI Guide & Release Documentation Sync"
+          }
+        },
+        {
+          "id": "en/_releases/astro-minimax-0.9.3#upgrade-notes",
+          "postId": "en/_releases/astro-minimax-0.9.3",
+          "heading": "Upgrade Notes",
+          "content": "## Upgrade Notes\n\nThis release is primarily an **alignment and quality** update rather than a breaking feature release. If you are already on the `0.9.x` line, the important follow-up is to pick up the refreshed template/runtime conventions and keep generated AI assets in sync with the current build pipeline.",
+          "position": 8,
+          "tokenCount": 78,
+          "headers": {
+            "H2": "Upgrade Notes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.3",
+      "title": "\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"",
+      "date": "2026-03-29T12:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "accessibility",
+        "testing",
+        "docs"
+      ],
+      "summary": "astro-minimax v0.9.3 并不只是简单地把版本号改成 。结合最近一串提交来看，这个版本真正完成的是一轮运行时对齐、AI 生成资产刷新、浏览器冒烟测试重写与可访问性细化，而版本号同步与发布文档补全只是这轮工作的最后收口。\n\n运行时与数据对齐\n\n示例博客运行时对齐\n\n示例博客在这轮提交…",
+      "keyPoints": [],
+      "url": "/zh/posts/_releases/astro-minimax-0.9.3/",
+      "chunks": [
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#p0",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "",
+          "content": "astro-minimax v0.9.3 并不只是简单地把版本号改成 `0.9.3`。结合最近一串提交来看，这个版本真正完成的是一轮**运行时对齐**、**AI 生成资产刷新**、**浏览器冒烟测试重写**与**可访问性细化**，而版本号同步与发布文档补全只是这轮工作的最后收口。",
+          "position": 0,
+          "tokenCount": 57,
+          "headers": {}
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#示例博客运行时对齐",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "示例博客运行时对齐",
+          "content": "### 示例博客运行时对齐\n\n示例博客在这轮提交中继续向 workspace 统一运行时约定收敛：应用配置被重新整理，部分包接线被清理，锁文件也随新的包 wiring 一并刷新，使 blog app、CLI template 与 workspace 包在运行时契约上更一致。",
+          "position": 1,
+          "tokenCount": 53,
+          "headers": {
+            "H2": "运行时与数据对齐",
+            "H3": "示例博客运行时对齐"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#ai-知识与画像资产刷新",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "AI 知识与画像资产刷新",
+          "content": "### AI 知识与画像资产刷新\n\n这次还集中刷新了一批 AI 运行时依赖的生成产物，包括：\n\n- `author-context.json`\n- `author-profile-context.json`\n- `author-profile-report.json`\n- `blog-digest.json`\n- `voice-profile.json`\n- `apps/blog/public/astro-minimax-og.jpg`\n\n这些更新让 AI 侧的运行时输入、作者画像和公开生成资源重新与当前内容状态对齐。",
+          "position": 2,
+          "tokenCount": 83,
+          "headers": {
+            "H2": "运行时与数据对齐",
+            "H3": "AI 知识与画像资产刷新"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#cli-处理链与模板运行时文档",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "CLI 处理链与模板运行时文档",
+          "content": "### CLI 处理链与模板运行时文档\n\n围绕构建与脚手架，这一版还做了两件很实际的事：\n\n- `packages/cli/src/tools/ai-process.ts` 的缓存与 skip 行为被重新整理，批处理 AI 内容时更稳定、更可预测。\n- CLI 模板补上了 `datas/knowledge/runtime/knowledge-bundle.json`，并同步更新 `functions/README.md`，让新项目从一开始就带有当前约定的 runtime knowledge bundle 说明。",
+          "position": 3,
+          "tokenCount": 86,
+          "headers": {
+            "H2": "运行时与数据对齐",
+            "H3": "CLI 处理链与模板运行时文档"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#ai-聊天可访问性增强",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "AI 聊天可访问性增强",
+          "content": "### AI 聊天可访问性增强\n\n最近几次提交专门补强了 AI 聊天相关组件的可访问性语义：\n\n- `ChatInput.tsx` 增加了更完整的 `aria-label` 与输入语义\n- `ChatPanel.tsx` 补强了角色、状态和交互可达性\n- 对键盘与读屏器用户来说，输入与消息面板的可用性更好",
+          "position": 4,
+          "tokenCount": 59,
+          "headers": {
+            "H2": "可访问性与界面细化",
+            "H3": "AI 聊天可访问性增强"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#设置面板与阅读主题打磨",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "设置面板与阅读主题打磨",
+          "content": "### 设置面板与阅读主题打磨\n\n`SettingsPanel.astro` 在这一版里做了较大幅度的语义补强，特别是 dialog、tab、switch 等交互元素的 ARIA 标注；与此同时，`theme.css` 中的阅读主题样式也做了细化，卡片、文章元信息与文章列表等周边 UI 组件也顺手做了配套整理。",
+          "position": 5,
+          "tokenCount": 60,
+          "headers": {
+            "H2": "可访问性与界面细化",
+            "H3": "设置面板与阅读主题打磨"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#浏览器冒烟测试重写",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "浏览器冒烟测试重写",
+          "content": "### 浏览器冒烟测试重写\n\n`tests/e2e-test.py` 被重写为覆盖面更广的 Playwright 冒烟测试脚本。它不再只验证首页是否能打开，而是继续检查文章页、分类与标签等 taxonomy 页面、搜索、主题切换、AI 聊天组件以及相关 API 健康状态，让 demo app 的整体回归测试更接近真实使用路径。",
+          "position": 6,
+          "tokenCount": 64,
+          "headers": {
+            "H2": "测试与文档",
+            "H3": "浏览器冒烟测试重写"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#ai-指南与发布文档同步",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "AI 指南与发布文档同步",
+          "content": "### AI 指南与发布文档同步\n\n生成版英文 AI 指南也在这轮提交里做了更新，用来对齐当前的 AI 功能、工具调用流程和运行时术语。与此同时，根 README 的版本表被同步到 `0.9.3`，CLI 模板依赖也切到了同一版本线，这份中英文发布说明则作为这轮改动的公开汇总入口。",
+          "position": 7,
+          "tokenCount": 60,
+          "headers": {
+            "H2": "测试与文档",
+            "H3": "AI 指南与发布文档同步"
+          }
+        },
+        {
+          "id": "zh/_releases/astro-minimax-0.9.3#升级说明",
+          "postId": "zh/_releases/astro-minimax-0.9.3",
+          "heading": "升级说明",
+          "content": "## 升级说明\n\n这更像是一次**对齐与质量增强**发布，而不是引入破坏性能力的新版本。如果你已经在使用 `0.9.x`，这次最值得跟进的是新的模板/runtime 约定、更新后的 AI 生成资产流程，以及更完整的浏览器端回归测试覆盖。",
+          "position": 8,
+          "tokenCount": 50,
+          "headers": {
+            "H2": "升级说明"
+          }
+        }
+      ]
+    },
     {
       "id": "en/_releases/astro-minimax-0.9.2",
       "title": "\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"",
@@ -11095,8 +11341,8 @@
     "focusAreas": [
       "Examples",
       "教程/博客",
-      "教程/配置",
       "Release",
+      "教程/配置",
       "Release Notes"
     ],
     "recurringTopics": [
@@ -11114,13 +11360,23 @@
       "article",
       "how",
       "in",
-      "tutorial",
       "The",
+      "tutorial",
       "explains",
       "Astro",
       "configuration"
     ],
     "flagshipPosts": [
+      {
+        "title": "\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"",
+        "date": "2026-03-29T12:00:00.000Z",
+        "url": "/en/posts/_releases/astro-minimax-0.9.3/"
+      },
+      {
+        "title": "\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"",
+        "date": "2026-03-29T12:00:00.000Z",
+        "url": "/zh/posts/_releases/astro-minimax-0.9.3/"
+      },
       {
         "title": "\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"",
         "date": "2026-03-24T12:00:00.000Z",
@@ -11135,22 +11391,12 @@
         "title": "\"astro-minimax v0.9.1: AI Tool Calling & Action System\"",
         "date": "2026-03-24T00:00:00.000Z",
         "url": "/en/posts/_releases/astro-minimax-0.9.1/"
-      },
-      {
-        "title": "\"astro-minimax v0.9.1: AI 工具调用与动作系统\"",
-        "date": "2026-03-24T00:00:00.000Z",
-        "url": "/zh/posts/_releases/astro-minimax-0.9.1/"
-      },
-      {
-        "title": "astro-minimax 0.9.0",
-        "date": "2026-03-22T00:00:00.000Z",
-        "url": "/en/posts/_releases/astro-minimax-0.9.0/"
       }
     ],
     "contentFootprint": {
-      "posts": 70,
-      "zhPosts": 35,
-      "enPosts": 35
+      "posts": 72,
+      "zhPosts": 36,
+      "enPosts": 36
     },
     "topTags": [
       "docs",
@@ -11159,19 +11405,31 @@
       "configuration",
       "examples",
       "Rust",
+      "changelog",
       "ai",
       "deployment",
-      "changelog",
       "architecture",
       "vercel",
       "neon",
       "markdown",
-      "security",
-      "refactoring"
+      "accessibility",
+      "testing"
     ]
   },
   "timelineFacts": {
     "latestPosts": [
+      {
+        "date": "2026-03-29T12:00:00.000Z",
+        "title": "\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"",
+        "url": "/en/posts/_releases/astro-minimax-0.9.3/",
+        "lang": "en"
+      },
+      {
+        "date": "2026-03-29T12:00:00.000Z",
+        "title": "\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"",
+        "url": "/zh/posts/_releases/astro-minimax-0.9.3/",
+        "lang": "zh"
+      },
       {
         "date": "2026-03-24T12:00:00.000Z",
         "title": "\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"",
@@ -11219,18 +11477,6 @@
         "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
         "url": "/en/posts/ai-module-architecture/",
         "lang": "en"
-      },
-      {
-        "date": "2026-03-21T00:00:00.000Z",
-        "title": "Settings Panel & Preferences",
-        "url": "/en/posts/settings-panel/",
-        "lang": "en"
-      },
-      {
-        "date": "2026-03-21T00:00:00.000Z",
-        "title": "astro-minimax 0.8.3",
-        "url": "/zh/posts/_releases/astro-minimax-0.8.3/",
-        "lang": "zh"
       }
     ]
   },
@@ -11238,5 +11484,5 @@
     "model": "gpt-5.4",
     "provider": "openai"
   },
-  "contextHash": "e31dcd7a26fb33a2"
+  "contextHash": "3d28cf1f68ddd4e0"
 }

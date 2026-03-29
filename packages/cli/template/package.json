@@ -3,9 +3,9 @@
   "type": "module",
   "version": "0.1.0",
   "scripts": {
-    "dev": "concurrently -n \"astro,ai\" -c \"blue,green\" \"astro dev\" \"pnpm exec astro-ai-dev\"",
+    "dev": "concurrently -n \"astro,ai\" -c \"blue,green\" \"astro dev\" \"AI_MOCK_MODE=true AI_BASE_URL=http://127.0.0.1:1 AI_API_KEY=demo-key AI_MODEL=demo-model pnpm exec astro-ai-dev\"",
     "dev:astro": "astro dev",
-    "dev:ai": "pnpm exec astro-ai-dev",
+    "dev:ai": "AI_MOCK_MODE=true AI_BASE_URL=http://127.0.0.1:1 AI_API_KEY=demo-key AI_MODEL=demo-model pnpm exec astro-ai-dev",
     "prebuild": "astro-minimax ai profile build",
     "build": "astro check && astro build && pagefind --site dist",
     "clean": "rm -rf dist .astro node_modules/.vite node_modules/.cache",
