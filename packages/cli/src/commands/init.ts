@@ -24,6 +24,12 @@ const localWorkspacePackages = {
   "@astro-minimax/knowledge-model": join(repoRootDir, "packages", "knowledge-model"),
 } as const;
 
+function hasLocalWorkspacePackages(): boolean {
+  return Object.values(localWorkspacePackages).every(packagePath =>
+    existsSync(packagePath)
+  );
+}
+
 export function initCommand(args: string[]): void {
   if (args.length === 0 || args[0] === "--help" || args[0] === "-h") {
     console.log(`
@@ -54,6 +60,8 @@ Examples:
 
   const enablePwa = args.includes("--pwa");
   const useLocalPackages = args.includes("--local-packages");
+  const autoUseLocalPackages = !useLocalPackages && hasLocalWorkspacePackages();
+  const shouldUseLocalPackages = useLocalPackages || autoUseLocalPackages;
   const projectName = args.find(a => !a.startsWith("--"))!;
   const targetDir = resolve(process.cwd(), projectName);
 
@@ -74,7 +82,7 @@ Examples:
   const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
   pkg.name = basename(targetDir);
 
-  if (useLocalPackages) {
+  if (shouldUseLocalPackages) {
     buildLocalWorkspacePackages();
     setupLocalWorkspacePackages(pkg, targetDir);
     copyLocalPackageAssets(targetDir);
@@ -83,6 +91,11 @@ Examples:
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
   console.log(`\n  ✅ Created "${projectName}" successfully!\n`);
+  if (autoUseLocalPackages) {
+    console.log(
+      "  ℹ️  Detected local astro-minimax workspace — scaffolded project is pinned to local packages for consistency.\n"
+    );
+  }
   console.log("  Getting started:\n");
   console.log(`    cd ${projectName}`);
   console.log("    pnpm install");
