@@ -152,6 +152,9 @@ interface MockMessage {
 function useMockChat(lang: string) {
   const [messages, setMessages] = useState<MockMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const mountedRef = useRef(true);
+
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const sendMessage = useCallback(async (text: string) => {
     const userMsg: MockMessage = { id: `u-${Date.now()}`, role: 'user', text };
@@ -165,14 +168,18 @@ function useMockChat(lang: string) {
     let accumulated = '';
     try {
       while (true) {
+        if (!mountedRef.current) break;
         const { done, value } = await reader.read();
         if (done) break;
         accumulated += value;
+        if (!mountedRef.current) break;
         setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, text: accumulated } : m));
       }
     } finally {
-      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, streaming: false } : m));
-      setIsStreaming(false);
+      if (mountedRef.current) {
+        setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, streaming: false } : m));
+        setIsStreaming(false);
+      }
     }
   }, [lang]);
 
@@ -365,10 +372,14 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
     },
   });
 
+  // Initialize welcome message on mount only.
+  // Empty deps is intentional: we only set the welcome message once,
+  // not re-set it every time liveMessages/welcomeMessage changes.
   useEffect(() => {
     if (liveMessages.length === 0) {
       liveSetMessages([welcomeMessage]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Mock Mode ───────────────────────────────────────────────

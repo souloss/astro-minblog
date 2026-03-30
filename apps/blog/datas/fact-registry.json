@@ -1,6 +1,6 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-03-29T06:03:22.204Z",
+  "generatedAt": "2026-03-30T06:32:43.792Z",
   "version": 1,
   "facts": [
     {
@@ -52,7 +52,7 @@
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 72 篇文章（中文 36 篇，英文 36 篇）",
+      "statement": "博客共有 78 篇文章（中文 39 篇，英文 39 篇）",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -72,7 +72,7 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 72 posts (36 in Chinese, 36 in English)",
+      "statement": "The blog has 78 posts (39 in Chinese, 39 in English)",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -88,7 +88,7 @@
     {
       "id": "blog-categories",
       "category": "blog",
-      "statement": "博客的主要分类包括：Examples、教程/博客、Release、教程/配置、Release Notes",
+      "statement": "博客的主要分类包括：Examples、教程/配置、教程/博客、Tutorial/Configuration、Release",
       "evidence": "author-context.json → stableFacts.focusAreas",
       "source": "derived",
       "confidence": 0.95,
@@ -101,17 +101,17 @@
         "area",
         "focus",
         "examples",
-        "教程/博客",
-        "release",
         "教程/配置",
-        "release notes"
+        "教程/博客",
+        "tutorial/configuration",
+        "release"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-top-tags",
       "category": "blog",
-      "statement": "博客最常用的标签有：docs、release、tutorial、configuration、examples、Rust、changelog、ai、deployment、architecture",
+      "statement": "博客最常用的标签有：docs、release、configuration、tutorial、ai、examples、Rust、changelog、deployment、tools",
       "evidence": "author-context.json → stableFacts.topTags",
       "source": "derived",
       "confidence": 0.9,
@@ -122,21 +122,21 @@
         "主题",
         "docs",
         "release",
-        "tutorial",
         "configuration",
+        "tutorial",
+        "ai",
         "examples",
         "rust",
         "changelog",
-        "ai",
         "deployment",
-        "architecture"
+        "tools"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-recurring-topics",
       "category": "blog",
-      "statement": "博客反复讨论的技术话题包括：astro-minimax、and、Rust、to、docs、AI、release、Markdown",
+      "statement": "博客反复讨论的技术话题包括：astro-minimax、and、Rust、docs、to、AI、the、release",
       "evidence": "author-context.json → stableFacts.recurringTopics",
       "source": "aggregated",
       "confidence": 0.85,
@@ -149,19 +149,19 @@
         "astro-minimax",
         "and",
         "rust",
-        "to",
         "docs",
+        "to",
         "ai",
-        "release",
-        "markdown"
+        "the",
+        "release"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-date-range",
       "category": "blog",
-      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-03-29",
-      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: \"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\" (2026-03-29)",
+      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-03-30",
+      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: 安全加固指南 (2026-03-30)",
       "source": "derived",
       "confidence": 1,
       "tags": [
@@ -178,7 +178,7 @@
     {
       "id": "blog-lang-dist",
       "category": "blog",
-      "statement": "博客文章的语言分布：英文 36 篇，中文 36 篇",
+      "statement": "博客文章的语言分布：英文 39 篇，中文 39 篇",
       "evidence": "author-context.json → posts[].lang aggregation",
       "source": "derived",
       "confidence": 1,
@@ -195,7 +195,7 @@
     {
       "id": "content-category-dist",
       "category": "content",
-      "statement": "按分类统计：Examples(8篇)、教程/博客(7篇)、Release(6篇)、教程/配置(5篇)、Release Notes(4篇)、发布说明(4篇)、Tutorial/Configuration(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/AI(1篇)、Tutorial/Tools(1篇)、教程/AI(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
+      "statement": "按分类统计：Examples(8篇)、教程/配置(7篇)、教程/博客(7篇)、Tutorial/Configuration(6篇)、Release(6篇)、Release Notes(4篇)、发布说明(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/AI(2篇)、教程/AI(2篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Tools(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
       "evidence": "author-context.json → posts[].category aggregation",
       "source": "derived",
       "confidence": 1,
@@ -210,7 +210,7 @@
     {
       "id": "content-flagship",
       "category": "content",
-      "statement": "最新的代表性文章：《\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"》(2026-03-29)、《\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"》(2026-03-29)、《\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"》(2026-03-24)、《\"astro-minimax v0.9.2: 安全加固与架构拆分\"》(2026-03-24)、《\"astro-minimax v0.9.1: AI Tool Calling & Action System\"》(2026-03-24)",
+      "statement": "最新的代表性文章：《\"AI Tool Calling and Action System\"》(2026-03-30)、《Search Configuration Guide》(2026-03-30)、《Security Hardening Guide》(2026-03-30)、《\"AI Tool Calling 与 Action 系统\"》(2026-03-30)、《搜索功能配置指南》(2026-03-30)",
       "evidence": "author-context.json → stableFacts.flagshipPosts",
       "source": "derived",
       "confidence": 0.95,
@@ -305,8 +305,8 @@
     {
       "id": "content-tech-mentions",
       "category": "content",
-      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(36次)、configuration(10次)、deployment(6次)、ai(4次)、architecture(4次)、vercel(4次)、neon(4次)",
-      "evidence": "40 markdown files → frontmatter.tags aggregation",
+      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(42次)、configuration(14次)、ai(6次)、deployment(6次)、architecture(4次)、tools(4次)、vercel(4次)、neon(4次)",
+      "evidence": "46 markdown files → frontmatter.tags aggregation",
       "source": "aggregated",
       "confidence": 0.9,
       "tags": [
@@ -317,9 +317,10 @@
         "mention",
         "docs",
         "configuration",
-        "deployment",
         "ai",
+        "deployment",
         "architecture",
+        "tools",
         "vercel",
         "neon"
       ],

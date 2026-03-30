@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-03-29T06:03:23.863Z",
+  "generatedAt": "2026-03-30T06:32:45.067Z",
   "siteUrl": "https://demo-astro-minimax.souloss.cn/",
   "sourceInfo": {
-    "totalPosts": 40,
-    "zhPosts": 20,
-    "enPosts": 20,
+    "totalPosts": 46,
+    "zhPosts": 23,
+    "enPosts": 23,
     "selectedPosts": 12
   },
   "profile": {
@@ -12,6 +12,98 @@
     "siteUrl": "https://demo-astro-minimax.souloss.cn/"
   },
   "posts": [
+    {
+      "title": "\"AI Tool Calling and Action System\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "Tutorial/AI"
+      ],
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax's AI chat is more than text conversation. When you say \"switch to dark mode\" or \"open…",
+      "keyPoints": [],
+      "url": "/en/posts/ai-tool-calling/"
+    },
+    {
+      "title": "Search Configuration Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "Tutorial/Configuration"
+      ],
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax ships with two search providers covering different use cases. Pagefind is the default…",
+      "keyPoints": [],
+      "url": "/en/posts/search-guide/"
+    },
+    {
+      "title": "Security Hardening Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "Tutorial/Configuration"
+      ],
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax has been continuously hardening its security since v0.9.2. There is no single securit…",
+      "keyPoints": [],
+      "url": "/en/posts/security-guide/"
+    },
+    {
+      "title": "\"AI Tool Calling 与 Action 系统\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "教程/AI"
+      ],
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax 的 AI 聊天不只是文字对话。当你说「切换到深色模式」或「打开架构那篇文章」，模型不会只给你一段操作说明，而是直接帮你完成操作。这套能力的核心是 Tool Calling…",
+      "keyPoints": [],
+      "url": "/zh/posts/ai-tool-calling/"
+    },
+    {
+      "title": "搜索功能配置指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax 内置两种搜索方案，覆盖不同的使用场景。Pagefind 是默认的静态搜索引擎，零配置即可使用；Algolia DocSearch 提供云端搜索，适合需要毫秒级响应和搜索分…",
+      "keyPoints": [],
+      "url": "/zh/posts/search-guide/"
+    },
+    {
+      "title": "安全加固指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax 从 v0.9.2 起持续加固安全防护。这些防护不是一个单独的安全模块，而是分散在各个包里的一系列防御措施，覆盖前端渲染、AI 聊天、CLI 工具和通知系统。\n\n这篇文章把…",
+      "keyPoints": [],
+      "url": "/zh/posts/security-guide/"
+    },
     {
       "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
       "date": "2026-03-21T00:00:00.000Z",
@@ -139,172 +231,34 @@
         "主版本升级和模板合并后必须完整测试"
       ],
       "url": "/zh/posts/how-to-update-dependencies/"
-    },
-    {
-      "title": "\"Configuring Environment Variables in Cloudflare Pages\"",
-      "date": "2026-03-18T00:00:00.000Z",
-      "categories": [
-        "Tutorial/Deployment"
-      ],
-      "tags": [
-        "docs",
-        "cloudflare",
-        "deployment",
-        "configuration"
-      ],
-      "summary": "This tutorial shows how to configure Cloudflare Pages environment variables for astro-minimax, including build-time and runtime settings, scope selection, and AI binding alignment, so deployment, AI chat, notifications, and builds work correctly.",
-      "keyPoints": [
-        "Build-time variables need redeployment.",
-        "Runtime secret changes apply immediately.",
-        "Production and Preview scopes should be separated.",
-        "NODE_VERSION 22 is required for builds.",
-        "AI_BINDING_NAME must match wrangler binding.",
-        "Sensitive variables should be encrypted in dashboard."
-      ],
-      "url": "/en/posts/cloudflare-env-vars/"
-    },
-    {
-      "title": "\"Complete Setup Guide: From Zero to Production\"",
-      "date": "2026-03-18T00:00:00.000Z",
-      "categories": [
-        "Tutorial/Getting Started"
-      ],
-      "tags": [
-        "docs",
-        "tutorial",
-        "getting-started"
-      ],
-      "summary": "The article provides a step-by-step tutorial for creating an astro-minimax blog, configuring core features, and deploying it to Cloudflare and Vercel to enable comments, analytics, notifications, and AI chat for a production-ready setup.",
-      "keyPoints": [
-        "Uses CLI to initialize and preview blog",
-        "Configures site metadata in src/config.ts",
-        "Deploys Astro site to Cloudflare Pages",
-        "Sets up Waline with Vercel and Neon PostgreSQL",
-        "Integrates Umami analytics via websiteId and script",
-        "Enables AI chat with build commands and Workers AI"
-      ],
-      "url": "/en/posts/complete-setup-guide/"
-    },
-    {
-      "title": "\"Setup Umami Analytics: Free Vercel Deployment\"",
-      "date": "2026-03-18T00:00:00.000Z",
-      "categories": [
-        "Tutorial/Configuration"
-      ],
-      "tags": [
-        "docs",
-        "analytics",
-        "deployment",
-        "vercel",
-        "neon"
-      ],
-      "summary": "This tutorial explains how to deploy the privacy-friendly Umami analytics platform for free with Vercel and Neon, compares alternative hosting options, and outlines setup, initialization, and blog integration preparation via websiteId retrieval.",
-      "keyPoints": [
-        "Umami offers cookie-free, GDPR-compliant analytics.",
-        "Vercel plus Neon is the recommended free deployment path.",
-        "Initial Vercel deployment may fail before database setup.",
-        "`DATABASE_URL` is the only required environment variable.",
-        "Docker deployment includes PostgreSQL, proxy, and backup setup.",
-        "Default admin password must be changed after first login."
-      ],
-      "url": "/en/posts/setup-umami-analytics/"
-    },
-    {
-      "title": "\"Deploy Waline Comment System on Vercel\"",
-      "date": "2026-03-18T00:00:00.000Z",
-      "categories": [
-        "Tutorial/Configuration"
-      ],
-      "tags": [
-        "docs",
-        "waline",
-        "vercel",
-        "postgresql",
-        "neon"
-      ],
-      "summary": "The article explains how to deploy Waline on Vercel with a built-in Neon PostgreSQL database, configure required environment variables and optional email notifications, then connect it to an astro-minimax blog for a complete comment system.",
-      "keyPoints": [
-        "Waline uses Vercel, Neon PostgreSQL, and blog client.",
-        "Database schema must be imported before use.",
-        "Waline supports both PG_* and POSTGRES_* vars.",
-        "PG_SSL must be enabled for Neon connection.",
-        "Deployment is verified by opening the welcome page.",
-        "Email notifications can be configured with Resend or SMTP."
-      ],
-      "url": "/en/posts/setup-waline-on-vercel/"
-    },
-    {
-      "title": "\"Cloudflare Pages 环境变量配置指南\"",
-      "date": "2026-03-18T00:00:00.000Z",
-      "categories": [
-        "教程/部署"
-      ],
-      "tags": [
-        "docs",
-        "cloudflare",
-        "deployment",
-        "configuration"
-      ],
-      "summary": "本文围绕 astro-minimax 在 Cloudflare Pages 部署时的环境变量配置，说明构建时与运行时变量的设置方法、必需与可选项及排障要点，以确保 AI、通知和站点功能正常启用。",
-      "keyPoints": [
-        "区分构建时与运行时环境变量",
-        "NODE_VERSION=22是构建必需项",
-        "AI_BINDING_NAME需与wrangler配置一致",
-        "变量保存后必须重新部署生效",
-        "通知与OpenAI兼容API均可按需配置",
-        "可通过日志定位AI与通知故障"
-      ],
-      "url": "/zh/posts/cloudflare-env-vars/"
-    },
-    {
-      "title": "\"从零开始：完整博客搭建指南\"",
-      "date": "2026-03-18T00:00:00.000Z",
-      "categories": [
-        "教程/入门"
-      ],
-      "tags": [
-        "docs",
-        "tutorial",
-        "getting-started"
-      ],
-      "summary": "文章围绕 astro-minimax 博客，从项目初始化、站点配置到 Cloudflare 部署，并接入 Waline、Umami、Telegram 通知与 AI 聊天，帮助读者完成一套可用的完整博客系统。",
-      "keyPoints": [
-        "使用 CLI 初始化并本地预览博客",
-        "站点信息与功能在 config.ts 配置",
-        "Cloudflare Pages 需设置构建参数与 NODE_VERSION",
-        "Waline 与 Umami 均依赖 Vercel 和 Neon 数据库",
-        "AI 聊天需启用配置并执行数据构建命令",
-        "故障排查覆盖部署、评论、AI与通知问题"
-      ],
-      "url": "/zh/posts/complete-setup-guide/"
     }
   ],
   "topTags": [
     "docs",
     "configuration",
-    "deployment",
     "ai",
+    "deployment",
+    "tools",
     "architecture",
     "vercel",
     "neon",
+    "actions",
+    "search",
+    "security",
     "technical",
     "FAQ",
     "cloudflare",
-    "tutorial",
-    "getting-started",
-    "analytics",
-    "waline",
-    "postgresql"
+    "tutorial"
   ],
   "topCategories": [
-    "教程/博客",
     "教程/配置",
+    "教程/博客",
     "Tutorial/Configuration",
     "Blog/Tutorial",
-    "Tutorial/Engineering"
+    "Tutorial/AI"
   ],
   "contentStats": {
-    "totalPosts": 40,
+    "totalPosts": 46,
     "avgPostPerMonth": 1
   }
 }

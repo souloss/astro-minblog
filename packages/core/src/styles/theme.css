@@ -903,10 +903,6 @@ article,
   --reading-surface: var(--surface);
   --reading-fg: var(--foreground);
   --reading-muted: var(--muted);
-   --reading-border: color-mix(in srgb, var(--border) 88%, transparent);
-   --reading-shadow:
-     0 18px 42px color-mix(in srgb, var(--shadow-elevated) 14%, transparent),
-     inset 0 1px 0 color-mix(in srgb, white 55%, transparent);
 }
 
 html[data-reading-theme="eyecare"] {
@@ -914,10 +910,6 @@ html[data-reading-theme="eyecare"] {
   --reading-surface: rgba(255, 252, 240, 0.85);
   --reading-fg: #3d3d3d;
   --reading-muted: #7a7a6e;
-   --reading-border: rgba(179, 155, 106, 0.24);
-   --reading-shadow:
-     0 20px 44px rgba(120, 102, 65, 0.12),
-     inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 html[data-theme="dark"][data-reading-theme="eyecare"] {
@@ -925,10 +917,6 @@ html[data-theme="dark"][data-reading-theme="eyecare"] {
   --reading-surface: rgba(38, 35, 28, 0.78);
   --reading-fg: #e8e4d9;
   --reading-muted: #8a8a7e;
-   --reading-border: rgba(169, 148, 104, 0.28);
-   --reading-shadow:
-     0 24px 52px rgba(0, 0, 0, 0.34),
-     inset 0 1px 0 rgba(255, 245, 220, 0.06);
 }
 
 html[data-reading-theme="parchment"] {
@@ -936,10 +924,6 @@ html[data-reading-theme="parchment"] {
   --reading-surface: rgba(252, 248, 235, 0.85);
   --reading-fg: #2d2a20;
   --reading-muted: #7a7562;
-   --reading-border: rgba(160, 125, 74, 0.28);
-   --reading-shadow:
-     0 22px 48px rgba(133, 104, 62, 0.14),
-     inset 0 1px 0 rgba(255, 252, 244, 0.78);
 }
 
 html[data-theme="dark"][data-reading-theme="parchment"] {
@@ -947,58 +931,38 @@ html[data-theme="dark"][data-reading-theme="parchment"] {
   --reading-surface: rgba(35, 32, 22, 0.78);
   --reading-fg: #e8e4c8;
   --reading-muted: #9a9580;
-   --reading-border: rgba(185, 154, 95, 0.3);
-   --reading-shadow:
-     0 24px 54px rgba(0, 0, 0, 0.38),
-     inset 0 1px 0 rgba(255, 239, 200, 0.07);
 }
 
 /* Night theme - always dark for true night reading experience */
 html[data-reading-theme="night"] {
   --reading-bg: #121214;
-   --reading-surface: rgba(24, 25, 31, 0.96);
-   --reading-fg: #d7d9e2;
-   --reading-muted: #8d92a3;
-   --reading-border: rgba(112, 123, 151, 0.28);
-   --reading-shadow:
-     0 24px 56px rgba(4, 6, 12, 0.56),
-     inset 0 1px 0 rgba(148, 163, 184, 0.08);
+  --reading-surface: rgba(24, 25, 31, 0.96);
+  --reading-fg: #d7d9e2;
+  --reading-muted: #8d92a3;
 }
 
 /* Dark mode night theme - same as above (explicit for clarity) */
 html[data-theme="dark"][data-reading-theme="night"] {
   --reading-bg: #121214;
-   --reading-surface: rgba(24, 25, 31, 0.96);
-   --reading-fg: #d7d9e2;
-   --reading-muted: #8d92a3;
-   --reading-border: rgba(112, 123, 151, 0.28);
-   --reading-shadow:
-     0 24px 56px rgba(4, 6, 12, 0.56),
-     inset 0 1px 0 rgba(148, 163, 184, 0.08);
+  --reading-surface: rgba(24, 25, 31, 0.96);
+  --reading-fg: #d7d9e2;
+  --reading-muted: #8d92a3;
 }
 
 /* OLED theme - always pure black for OLED screens */
 html[data-reading-theme="oled"] {
   --reading-bg: #000000;
-   --reading-surface: rgba(0, 0, 0, 0.98);
-   --reading-fg: #f3f4f6;
-   --reading-muted: #737884;
-   --reading-border: rgba(255, 255, 255, 0.12);
-   --reading-shadow:
-     0 0 0 1px rgba(255, 255, 255, 0.04),
-     0 30px 64px rgba(0, 0, 0, 0.72);
+  --reading-surface: rgba(0, 0, 0, 0.98);
+  --reading-fg: #f3f4f6;
+  --reading-muted: #737884;
 }
 
 /* Dark mode OLED theme - same as above (explicit for clarity) */
 html[data-theme="dark"][data-reading-theme="oled"] {
   --reading-bg: #000000;
-   --reading-surface: rgba(0, 0, 0, 0.98);
-   --reading-fg: #f3f4f6;
-   --reading-muted: #737884;
-   --reading-border: rgba(255, 255, 255, 0.12);
-   --reading-shadow:
-     0 0 0 1px rgba(255, 255, 255, 0.04),
-     0 30px 64px rgba(0, 0, 0, 0.72);
+  --reading-surface: rgba(0, 0, 0, 0.98);
+  --reading-fg: #f3f4f6;
+  --reading-muted: #737884;
 }
 
 /* ============================================
@@ -1010,16 +974,9 @@ html[data-theme="dark"][data-reading-theme="oled"] {
   font-family: var(--reading-font-family, ui-sans-serif, system-ui, sans-serif);
 }
 
-/* Reading settings for prose - only when reading-mode is active */
-.app-prose#article {
-  background-color: var(--reading-surface);
-  color: var(--reading-fg);
-  border: 1px solid var(--reading-border);
-  box-shadow: var(--reading-shadow);
-}
 
-.app-prose#article .text-muted,
-.app-prose#article .text-foreground-soft {
+.reading-mode .app-prose#article .text-muted,
+.reading-mode .app-prose#article .text-foreground-soft {
   color: var(--reading-muted);
 }
 

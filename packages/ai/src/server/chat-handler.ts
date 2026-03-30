@@ -114,20 +114,20 @@ export async function handleChatRequest(
   if (env.AI_DEBUG) setLogLevel("debug");
   if (env.CORS_ORIGIN) setCorsOrigin(env.CORS_ORIGIN as string);
   if (req.method === "OPTIONS") return corsPreflightResponse();
-  if (req.method !== "POST") return errors.methodNotAllowed("zh");
+  if (req.method !== "POST") return errors.methodNotAllowed((env.SITE_LANG as string) ?? "zh");
 
   const ip = getClientIP(req);
   const rateCheck = checkRateLimit(
     ip,
     env as Record<string, string | undefined>
   );
-  if (!rateCheck.allowed) return rateLimitResponse(rateCheck, "zh");
+  if (!rateCheck.allowed) return rateLimitResponse(rateCheck, (env.SITE_LANG as string) ?? "zh");
 
   let body: ChatRequestBody;
   try {
     body = await req.json();
   } catch {
-    return errors.invalidRequest(t("ai.error.format", "zh"));
+    return errors.invalidRequest(t("ai.error.format", (env.SITE_LANG as string) ?? "zh"));
   }
 
   const lang = getLang(body.lang ?? (env.SITE_LANG as string | undefined));

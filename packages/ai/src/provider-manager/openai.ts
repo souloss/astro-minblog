@@ -115,8 +115,13 @@ export class OpenAIAdapter extends BaseProviderAdapter {
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), this.timeout);
 
+    const abortHandler = () => abortController.abort();
     if (abortSignal) {
-      abortSignal.addEventListener("abort", () => abortController.abort());
+      if (abortSignal.aborted) {
+        clearTimeout(timeoutId);
+        throw new DOMException('The operation was aborted.', 'AbortError');
+      }
+      abortSignal.addEventListener("abort", abortHandler, { once: true });
     }
 
     try {
@@ -142,11 +147,17 @@ export class OpenAIAdapter extends BaseProviderAdapter {
         isMock: false,
       };
 
-      clearTimeout(timeoutId);
+      // NOTE: We intentionally do NOT clearTimeout here. The timeout guards the
+      // initial connection. The stream lifecycle is managed by the consumer via
+      // abortSignal. Clearing the timeout immediately would make it useless.
       return streamResult;
     } catch (error) {
-      clearTimeout(timeoutId);
       throw error;
+    } finally {
+      clearTimeout(timeoutId);
+      if (abortSignal) {
+        abortSignal.removeEventListener("abort", abortHandler);
+      }
     }
   }
 

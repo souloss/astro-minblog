@@ -1,7 +1,93 @@
 {
-  "generatedAt": "2026-03-29T06:03:19.791Z",
-  "count": 72,
+  "generatedAt": "2026-03-30T06:32:41.816Z",
+  "count": 78,
   "posts": [
+    {
+      "id": "en/ai-tool-calling",
+      "title": "\"AI Tool Calling and Action System\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax's AI chat is more than text conversation. When you say \"switch to dark mode\" or \"open the architecture article\", the model doesn't just…",
+      "url": "/en/posts/ai-tool-calling/"
+    },
+    {
+      "id": "en/search-guide",
+      "title": "Search Configuration Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax ships with two search providers covering different use cases. Pagefind is the default static search engine that works out of the box wi…",
+      "url": "/en/posts/search-guide/"
+    },
+    {
+      "id": "en/security-guide",
+      "title": "Security Hardening Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax has been continuously hardening its security since v0.9.2. There is no single security module. Instead, a series of defensive measures …",
+      "url": "/en/posts/security-guide/"
+    },
+    {
+      "id": "zh/ai-tool-calling",
+      "title": "\"AI Tool Calling 与 Action 系统\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax 的 AI 聊天不只是文字对话。当你说「切换到深色模式」或「打开架构那篇文章」，模型不会只给你一段操作说明，而是直接帮你完成操作。这套能力的核心是 Tool Calling 和客户端 Action 系统。\n\nTool Calling 是什么\n\nTool Calling 让…",
+      "url": "/zh/posts/ai-tool-calling/"
+    },
+    {
+      "id": "zh/search-guide",
+      "title": "搜索功能配置指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax 内置两种搜索方案，覆盖不同的使用场景。Pagefind 是默认的静态搜索引擎，零配置即可使用；Algolia DocSearch 提供云端搜索，适合需要毫秒级响应和搜索分析的站点。\n\n本文介绍两种搜索方案的特点、配置方法，以及与 AI 搜索系统的关系。\n\n两种搜索方案对…",
+      "url": "/zh/posts/search-guide/"
+    },
+    {
+      "id": "zh/security-guide",
+      "title": "安全加固指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax 从 v0.9.2 起持续加固安全防护。这些防护不是一个单独的安全模块，而是分散在各个包里的一系列防御措施，覆盖前端渲染、AI 聊天、CLI 工具和通知系统。\n\n这篇文章把这些措施梳理清楚：哪里做了防护、怎么配置、你需要注意什么。\n\nURL 净化（sanitizeUrl）…",
+      "url": "/zh/posts/security-guide/"
+    },
     {
       "id": "en/_releases/astro-minimax-0.9.3",
       "title": "\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"",

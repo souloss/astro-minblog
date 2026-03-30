@@ -7,6 +7,7 @@ import {
 } from "ai";
 import { t } from "../utils/i18n.js";
 import { CHAT_HANDLER } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
 import { createChatStatusData } from "./types.js";
 import type { NotifyTokenUsage as TokenUsage } from "./types.js";
 import type { ProviderAdapter } from "../provider-manager/types.js";
@@ -16,6 +17,8 @@ import type {
 } from "../cache/response-cache.js";
 import { createResponsePlaybackGenerator } from "../cache/response-cache.js";
 import type { SourceSelection } from "../search/types.js";
+
+const log = createLogger("stream-helpers");
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -161,9 +164,7 @@ export function writeSourceArticles(
         url: article.url ?? "#",
         title: article.title,
       });
-    } catch {
-      /* best-effort */
-    }
+    } catch (e) { log.debug('writeSourceArticles failed:', e instanceof Error ? e.message : String(e)); }
   }
 }
 
@@ -188,9 +189,7 @@ export function writeSourceSnippets(
           matchTerms: article.matchTerms ?? [],
         },
       });
-    } catch {
-      /* best-effort */
-    }
+    } catch (e) { log.debug('writeSourceSnippets failed:', e instanceof Error ? e.message : String(e)); }
   }
 }
 
@@ -278,9 +277,7 @@ export async function streamLLMResponse(
                   })
                   .join("")
               : undefined;
-      } catch {
-        /* reasoning is optional */
-      }
+      } catch (e) { log.debug('reasoning extraction failed:', e instanceof Error ? e.message : String(e)); }
     }
 
     let tokenUsage: TokenUsage | undefined;

@@ -60,8 +60,13 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), this.timeout);
 
+    const abortHandler = () => abortController.abort();
     if (abortSignal) {
-      abortSignal.addEventListener("abort", () => abortController.abort());
+      if (abortSignal.aborted) {
+        clearTimeout(timeoutId);
+        throw new DOMException('The operation was aborted.', 'AbortError');
+      }
+      abortSignal.addEventListener("abort", abortHandler, { once: true });
     }
 
     try {
@@ -89,11 +94,14 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
         isMock: false,
       };
 
-      clearTimeout(timeoutId);
       return streamResult;
     } catch (error) {
-      clearTimeout(timeoutId);
       throw error;
+    } finally {
+      clearTimeout(timeoutId);
+      if (abortSignal) {
+        abortSignal.removeEventListener("abort", abortHandler);
+      }
     }
   }
 

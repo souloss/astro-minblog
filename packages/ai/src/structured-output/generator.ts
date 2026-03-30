@@ -11,6 +11,9 @@ import type {
 } from './types.js';
 
 import { TIMEOUTS } from '../constants.js';
+import { createLogger } from '../utils/logger.js';
+
+const log = createLogger('structured-output');
 
 const DEFAULT_TIMEOUT_MS = TIMEOUTS.EVIDENCE_ANALYSIS;
 const DEFAULT_MAX_OUTPUT_TOKENS = 500;
@@ -29,17 +32,17 @@ function extractJsonFromText(text: string): unknown | null {
   const trimmed = text.trim();
   
   if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-    try { return JSON.parse(trimmed); } catch { /* fallthrough */ }
+    try { return JSON.parse(trimmed); } catch (e) { log.debug('JSON parse failed:', e instanceof Error ? e.message : String(e)); }
   }
   
   const codeBlockMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (codeBlockMatch) {
-    try { return JSON.parse(codeBlockMatch[1].trim()); } catch { /* fallthrough */ }
+    try { return JSON.parse(codeBlockMatch[1].trim()); } catch (e) { log.debug('JSON parse failed:', e instanceof Error ? e.message : String(e)); }
   }
   
   const jsonMatch = trimmed.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
   if (jsonMatch) {
-    try { return JSON.parse(jsonMatch[1]); } catch { /* fallthrough */ }
+    try { return JSON.parse(jsonMatch[1]); } catch (e) { log.debug('JSON parse failed:', e instanceof Error ? e.message : String(e)); }
   }
   
   return null;
@@ -142,38 +145,55 @@ export async function generateStructured<T>(
 
   if (allowTextRepair) {
     try {
-      const textResult = await provider.generateText({
-        systemPrompt,
-        userPrompt,
-        temperature,
-        maxOutputTokens,
-        abortSignal: timeoutController.signal,
-      });
-
-      rawText = textResult.text;
-      usage = toTokenStats(textResult.usage);
-
-      const extracted = extractJsonFromText(rawText);
-      if (extracted) {
-        const validated = validateWithSchema(extracted, schema);
-        if (validated !== null) {
-          return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
-        }
-        status = 'schema_error';
-      } else {
-        status = 'parse_error';
+      const repairAbortController = new AbortController();
+      const repairTimeoutId = setTimeout(
+        () => repairAbortController.abort(),
+        Math.min(timeoutMs, 5000)
+      );
+      const repairAbortHandler = () => repairAbortController.abort();
+      if (abortSignal && !abortSignal.aborted) {
+        abortSignal.addEventListener('abort', repairAbortHandler, { once: true });
       }
 
-      if (fallbackParser && allowFallbackParser) {
-        const fallbackData = fallbackParser(rawText);
-        if (fallbackData) {
-          const validated = validateWithSchema(fallbackData, schema);
+      try {
+        const textResult = await provider.generateText({
+          systemPrompt,
+          userPrompt,
+          temperature,
+          maxOutputTokens,
+          abortSignal: repairAbortController.signal,
+        });
+
+        rawText = textResult.text;
+        usage = toTokenStats(textResult.usage);
+
+        const extracted = extractJsonFromText(rawText);
+        if (extracted) {
+          const validated = validateWithSchema(extracted, schema);
           if (validated !== null) {
             return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
           }
+          status = 'schema_error';
+        } else {
+          status = 'parse_error';
+        }
+
+        if (fallbackParser && allowFallbackParser) {
+          const fallbackData = fallbackParser(rawText);
+          if (fallbackData) {
+            const validated = validateWithSchema(fallbackData, schema);
+            if (validated !== null) {
+              return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
+            }
+          }
+        }
+      } finally {
+        clearTimeout(repairTimeoutId);
+        if (abortSignal && !abortSignal.aborted) {
+          abortSignal.removeEventListener('abort', repairAbortHandler);
         }
       }
-    } catch { /* fallback failed */ }
+    } catch (e) { log.debug('Text repair fallback failed:', e instanceof Error ? e.message : String(e)); }
   }
 
   return {
