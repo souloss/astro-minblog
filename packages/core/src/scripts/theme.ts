@@ -1,45 +1,26 @@
 import { getGlobalEventManager } from "../utils/performance";
 
-const THEME = "theme";
 const LIGHT = "light";
 const DARK = "dark";
-const initialColorScheme = "";
 
-function getPreferTheme(): string {
-  const currentTheme = localStorage.getItem(THEME);
-  if (currentTheme) return currentTheme;
-  if (initialColorScheme) return initialColorScheme;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? DARK
-    : LIGHT;
+function getThemeController() {
+  return window.theme;
 }
 
-let themeValue = window.theme?.themeValue ?? getPreferTheme();
+function getCurrentTheme(): string {
+  return getThemeController()?.getTheme() ??
+    (window.matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT);
+}
 
-function setPreference(): void {
-  localStorage.setItem(THEME, themeValue);
-  reflectPreference();
+function setThemeValue(theme: string): void {
+  const controller = getThemeController();
+  if (!controller) return;
+  controller.setTheme(theme);
+  controller.setPreference();
 }
 
 function reflectPreference(): void {
-  document.firstElementChild?.setAttribute("data-theme", themeValue);
-
-  const body = document.body;
-  if (body) {
-    const computedStyles = window.getComputedStyle(body);
-    const bgColor = computedStyles.backgroundColor;
-    document
-      .querySelector("meta[name='theme-color']")
-      ?.setAttribute("content", bgColor);
-  }
-
-  requestAnimationFrame(() => {
-    window.dispatchEvent(
-      new CustomEvent("themechange", {
-        detail: { isDark: themeValue === DARK, theme: themeValue },
-      })
-    );
-  });
+  getThemeController()?.reflectPreference();
 }
 
 function supportsViewTransitions(): boolean {
@@ -47,7 +28,7 @@ function supportsViewTransitions(): boolean {
 }
 
 function toggleThemeWithTransition(event?: MouseEvent): void {
-  const newTheme = themeValue === LIGHT ? DARK : LIGHT;
+  const newTheme = getCurrentTheme() === LIGHT ? DARK : LIGHT;
 
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
@@ -56,11 +37,8 @@ function toggleThemeWithTransition(event?: MouseEvent): void {
   const x = event?.clientX ?? window.innerWidth / 2;
   const y = event?.clientY ?? window.innerHeight / 2;
 
-  themeValue = newTheme;
-  window.theme?.setTheme(themeValue);
-
   if (prefersReducedMotion) {
-    setPreference();
+    setThemeValue(newTheme);
     return;
   }
 
@@ -78,7 +56,7 @@ function toggleThemeWithTransition(event?: MouseEvent): void {
     }
 
     const transition = document.startViewTransition?.(() => {
-      setPreference();
+      setThemeValue(newTheme);
     });
 
     transition?.finished.then(() => {
@@ -86,27 +64,12 @@ function toggleThemeWithTransition(event?: MouseEvent): void {
     });
   } else {
     document.documentElement.classList.add("no-view-transitions");
-    setPreference();
+    setThemeValue(newTheme);
 
     setTimeout(() => {
       document.documentElement.classList.remove("no-view-transitions");
     }, 400);
   }
-}
-
-if (window.theme) {
-  window.theme.setPreference = setPreference;
-  window.theme.reflectPreference = reflectPreference;
-} else {
-  window.theme = {
-    themeValue,
-    setPreference,
-    reflectPreference,
-    getTheme: () => themeValue,
-    setTheme: (val: string) => {
-      themeValue = val;
-    },
-  };
 }
 
 reflectPreference();
@@ -130,25 +93,21 @@ const manager = getGlobalEventManager();
 manager.add(document, "astro:after-swap", setThemeFeature);
 
 manager.add(document, "astro:before-swap", (event: Event) => {
-  const astroEvent = event;
+  const astroEvent = event as AstroBeforeSwapEvent;
   const bgColor = document
     .querySelector("meta[name='theme-color']")
     ?.getAttribute("content");
 
   if (bgColor) {
-    (astroEvent as unknown as { newDocument: Document }).newDocument
+    astroEvent.newDocument
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", bgColor);
   }
 });
 
-manager.add(
-  window.matchMedia("(prefers-color-scheme: dark)"),
-  "change",
-  ((e: Event) => {
-    const mediaEvent = e as MediaQueryListEvent;
-    themeValue = mediaEvent.matches ? DARK : LIGHT;
-    window.theme?.setTheme(themeValue);
-    setPreference();
-  }) as EventListener
-);
+manager.add(window.matchMedia("(prefers-color-scheme: dark)"), "change", ((
+  e: Event
+) => {
+  const mediaEvent = e as MediaQueryListEvent;
+  setThemeValue(mediaEvent.matches ? DARK : LIGHT);
+}) as EventListener);

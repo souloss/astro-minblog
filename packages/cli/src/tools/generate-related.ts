@@ -1,19 +1,13 @@
 #!/usr/bin/env npx tsx
-/**
- * 关联文章推荐工具
- *
- * 用法:
- *   pnpm run tools:generate-related              # 基于标签/标题的关联推荐
- *   pnpm run tools:generate-related --ai          # 使用 AI 语义分析（需要向量索引）
- *   pnpm run tools:generate-related --verbose      # 显示详细评分
- */
-
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getAllPosts, type PostMeta } from "./lib/posts.js";
 import { cosineSimilarity, type VectorIndex } from "./lib/vectors.js";
 
-const VECTOR_INDEX = join(process.cwd(), "src/data/vectors/index.json");
+const VECTOR_INDEX = join(
+  process.cwd(),
+  "datas/knowledge/runtime/vector-index.json"
+);
 
 function tagSimilarity(a: PostMeta, b: PostMeta): number {
   let score = 0;
@@ -94,7 +88,9 @@ async function main() {
   if (useAI) {
     vectorIndex = await loadVectorIndex();
     if (!vectorIndex) {
-      console.error("❌ 向量索引未找到。请先运行: pnpm run tools:vectorize");
+    console.error(
+      "❌ 向量索引未找到。请先生成 datas/knowledge/runtime/vector-index.json。"
+    );
       process.exit(1);
     }
     console.log(
@@ -130,9 +126,7 @@ async function main() {
       if (scores.length > 0) {
         console.log("   推荐关联:");
         for (const s of scores) {
-          const scoreStr = verbose
-            ? ` (得分: ${s.score.toFixed(2)})`
-            : "";
+          const scoreStr = verbose ? ` (得分: ${s.score.toFixed(2)})` : "";
           console.log(`     - ${s.post.title}${scoreStr}`);
         }
       } else {

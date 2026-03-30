@@ -1,15 +1,8 @@
 /// <reference types="@cloudflare/workers-types" />
-
-interface NotifyStatusEnv {
-  NOTIFY_TELEGRAM_BOT_TOKEN?: string;
-  NOTIFY_TELEGRAM_CHAT_ID?: string;
-  NOTIFY_WEBHOOK_URL?: string;
-  NOTIFY_RESEND_API_KEY?: string;
-  NOTIFY_RESEND_FROM?: string;
-  NOTIFY_RESEND_TO?: string;
-  SITE_URL?: string;
-  [key: string]: unknown;
-}
+import {
+  createNotifyConfigFromEnv,
+  type NotifyEnv,
+} from "@astro-minimax/notify";
 
 interface ProviderStatus {
   configured: boolean;
@@ -18,7 +11,7 @@ interface ProviderStatus {
 
 interface NotifyStatusResponse {
   timestamp: string;
-  environment: 'production' | 'preview' | 'unknown';
+  environment: "production" | "preview" | "unknown";
   providers: {
     telegram: ProviderStatus;
     email: ProviderStatus;
@@ -35,50 +28,66 @@ interface NotifyStatusResponse {
   };
 }
 
-export const onRequest: PagesFunction<NotifyStatusEnv> = async (context) => {
+function isRuntimeEnvironment(
+  value: string | null
+): value is NotifyStatusResponse["environment"] {
+  return value === "production" || value === "preview" || value === "unknown";
+}
+
+function collectMissingFields(fields: Array<string | false>): string[] {
+  return fields.filter((field): field is string => Boolean(field));
+}
+
+export const onRequest: PagesFunction<NotifyEnv> = async context => {
   const env = context.env;
-  
-  const telegramMissing = [
-    !env.NOTIFY_TELEGRAM_BOT_TOKEN && 'NOTIFY_TELEGRAM_BOT_TOKEN',
-    !env.NOTIFY_TELEGRAM_CHAT_ID && 'NOTIFY_TELEGRAM_CHAT_ID',
-  ].filter(Boolean) as string[];
-  
-  const emailMissing = [
-    !env.NOTIFY_RESEND_API_KEY && 'NOTIFY_RESEND_API_KEY',
-    !env.NOTIFY_RESEND_FROM && 'NOTIFY_RESEND_FROM',
-    !env.NOTIFY_RESEND_TO && 'NOTIFY_RESEND_TO',
-  ].filter(Boolean) as string[];
-  
-  const webhookMissing = [
-    !env.NOTIFY_WEBHOOK_URL && 'NOTIFY_WEBHOOK_URL',
-  ].filter(Boolean) as string[];
-  
-  const environment = context.request.headers.get('x-cf-env') || 'unknown';
-  
+  const config = createNotifyConfigFromEnv(env);
+
+  const telegramMissing = collectMissingFields([
+    !env.NOTIFY_TELEGRAM_BOT_TOKEN && "NOTIFY_TELEGRAM_BOT_TOKEN",
+    !env.NOTIFY_TELEGRAM_CHAT_ID && "NOTIFY_TELEGRAM_CHAT_ID",
+  ]);
+
+  const emailMissing = collectMissingFields([
+    !env.NOTIFY_RESEND_API_KEY && "NOTIFY_RESEND_API_KEY",
+    !env.NOTIFY_RESEND_FROM && "NOTIFY_RESEND_FROM",
+    !env.NOTIFY_RESEND_TO && "NOTIFY_RESEND_TO",
+  ]);
+
+  const webhookMissing = collectMissingFields([
+    !env.NOTIFY_WEBHOOK_URL && "NOTIFY_WEBHOOK_URL",
+  ]);
+
+  const requestedEnvironment = context.request.headers.get("x-cf-env");
+  const environment = isRuntimeEnvironment(requestedEnvironment)
+    ? requestedEnvironment
+    : "unknown";
+
   const providers = {
     telegram: {
-      configured: telegramMissing.length === 0,
+      configured: Boolean(config.telegram),
       missingFields: telegramMissing.length > 0 ? telegramMissing : undefined,
     },
     email: {
-      configured: emailMissing.length === 0,
+      configured: Boolean(config.email),
       missingFields: emailMissing.length > 0 ? emailMissing : undefined,
     },
     webhook: {
-      configured: webhookMissing.length === 0,
+      configured: Boolean(config.webhook),
       missingFields: webhookMissing.length > 0 ? webhookMissing : undefined,
     },
   };
-  
-  const configuredProviders = Object.values(providers).filter(p => p.configured).length;
-  
+
+  const configuredProviders = Object.values(providers).filter(
+    p => p.configured
+  ).length;
+
   const response: NotifyStatusResponse = {
     timestamp: new Date().toISOString(),
-    environment: environment as 'production' | 'preview' | 'unknown',
+    environment,
     providers,
     siteUrl: {
       configured: !!env.SITE_URL,
-      value: env.SITE_URL ? '[CONFIGURED]' : undefined,
+      value: env.SITE_URL ? "[CONFIGURED]" : undefined,
     },
     summary: {
       totalProviders: 3,
@@ -86,12 +95,12 @@ export const onRequest: PagesFunction<NotifyStatusEnv> = async (context) => {
       hasAnyProvider: configuredProviders > 0,
     },
   };
-  
+
   return new Response(JSON.stringify(response, null, 2), {
     status: 200,
     headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
     },
   });
 };

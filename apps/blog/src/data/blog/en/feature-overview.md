@@ -1,7 +1,7 @@
 ---
 title: "astro-minimax Feature Overview"
 pubDatetime: 2026-03-14T00:00:00.000Z
-modDatetime: 2026-03-24T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "A comprehensive guide to all astro-minimax features, including content management, visualization components, AI integration, and interactive systems."
 tags:
@@ -115,6 +115,15 @@ ogImage: ./cover.png
 
 See [Adding New Posts](/en/posts/adding-new-post) for details.
 
+### Cover Image
+
+Two image fields in frontmatter serve different purposes:
+
+- `cover` — Post cover image, shown on post cards and the article page banner
+- `ogImage` — Social sharing image (Twitter, Facebook, etc.)
+
+When `cover` is not set but `ogImage` is, the OG image is used as the cover. When neither is set, a dynamic OG image is auto-generated.
+
 ---
 
 ## Search
@@ -154,6 +163,8 @@ search: {
   },
 },
 ```
+
+For a detailed comparison and setup walkthrough of both search providers, see the [Search Configuration Guide](/en/posts/search-guide).
 
 ---
 
@@ -306,6 +317,18 @@ The `@astro-minimax/ai` package provides intelligent conversation capabilities.
 - **ChatPanel** — Resizable panel with S/M/L presets
 - **CodeBlock** — Enhanced visualization toolbar: zoom, fullscreen, copy
 
+### AI Tool Calling
+
+The AI assistant has 7 built-in page interaction tools: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, `setPreference`, `searchArticles`. Users can switch themes, jump to articles, scroll to sections, and more without leaving the chat panel.
+
+See the [AI Tool Calling Guide](/en/posts/ai-tool-calling) for details.
+
+### Action System
+
+A three-stage client-side pipeline: ActionExecutor + ActionQueue + URLHandler. Supports cross-page action chaining and URL-based action sharing. Encode action parameters into a URL, share it, and the recipient's page executes the preset actions automatically. Combined with tool calling, it enables compound actions like "bookmark and navigate."
+
+See the [AI Tool Calling Guide](/en/posts/ai-tool-calling) for details.
+
 ### Usage
 
 The AI chat appears as a floating widget in the bottom-right corner. Click to open the chat window where you can:
@@ -323,7 +346,6 @@ ai: {
   enabled: true,
   mockMode: false,       // Set to false for production
   apiEndpoint: "/api/chat",
-  model: "@cf/zai-org/glm-4.7-flash",
 },
 ```
 
@@ -376,8 +398,8 @@ See [Notification System Configuration Guide](/en/posts/notification-guide) for 
 
 Posts without a specified OG image get one auto-generated:
 
-- Uses [Satori](https://github.com/vercel/satori) at build time
-- Includes post title, author, date
+- Generated at build time as post-level social preview images
+- Built from post title, author, and site information
 - Custom font support
 - 1200x640px dimensions
 
@@ -501,9 +523,10 @@ CLI tools are included with the `@astro-minimax/cli` package, or use `npx astro-
 | ------------------------ | ------------------------------------------------ |
 | `astro-minimax init`     | Create a new blog project                        |
 | `astro-minimax ai`       | AI content processing (summaries, SEO, eval)     |
-| `astro-minimax profile`  | Author profile management (context, voice, report)|
+| `astro-minimax ai profile` | Author profile management (retained canonical entrypoint) |
 | `astro-minimax post`     | Post management (new, list, stats)               |
 | `astro-minimax data`     | Data management (status, clear)                  |
+| `astro-minimax hooks`    | Install, uninstall, and inspect Git hooks        |
 
 ### Usage Examples
 
@@ -511,7 +534,7 @@ CLI tools are included with the `@astro-minimax/cli` package, or use `npx astro-
 astro-minimax post new "Post Title"   # Create a new post
 astro-minimax ai process               # AI process all articles
 astro-minimax ai eval                  # Evaluate AI chat quality
-astro-minimax profile build            # Build complete author profile
+astro-minimax ai profile build         # Build complete author profile
 astro-minimax data status              # View data status
 ```
 

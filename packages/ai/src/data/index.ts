@@ -1,18 +1,21 @@
 export {
-  preloadMetadata,
+  preloadKnowledgeBundle,
   clearMetadataCache,
-  getMetadata,
-  getArticleSummary,
-  getAllSummaries,
   getAuthorContext,
-  getVoiceProfile,
-} from './metadata-loader.js';
+  getKnowledgeBundle,
+} from "./metadata-loader.js";
 export type {
   AISummariesFile,
   AuthorContextFile,
   VoiceProfile,
-  LoadedMetadata,
   ArticleSummaryData,
   AuthorPost,
-} from './types.js';
-export type { FactRegistryFile } from '../fact-registry/types.js';
+} from "./types.js";
+export type {
+  AIKnowledgeBundleFile as KnowledgeBundleFile,
+  KnowledgeCorpusFile,
+  KnowledgePassagesFile,
+  KnowledgeDocument,
+  KnowledgePassage,
+} from "./knowledge-types.js";
+export type { FactRegistryFile } from "../fact-registry/types.js";

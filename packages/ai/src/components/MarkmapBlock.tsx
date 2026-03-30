@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import type { VNode } from 'preact';
 import type { CodeBlockProps } from './CodeBlock.tsx';
-import { SkeletonLoader, VizToolbar } from './VizShared.tsx';
+import { SkeletonLoader, useDragPanScroll, useScaledCanvas, useVizScaleControls, VizToolbar } from './VizShared.tsx';
 
 interface MarkmapResult {
   loading: boolean;
   error?: string;
+  markmapInstanceRef: { current: { destroy?: () => void; fit?: () => void } | null };
 }
 
 function useMarkmap(
@@ -15,7 +16,7 @@ function useMarkmap(
 ): MarkmapResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  const markmapInstanceRef = useRef<{ destroy?: () => void } | null>(null);
+  const markmapInstanceRef = useRef<{ destroy?: () => void; fit?: () => void } | null>(null);
   
   useEffect(() => {
     if (!code || !visible) {
@@ -80,16 +81,19 @@ function useMarkmap(
     };
   }, [code, visible]);
   
-  return { loading, error };
+  return { loading, error, markmapInstanceRef };
 }
 
 export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | null {
   const containerRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [scale, setScale] = useState(1);
+  const { scale, handleZoomIn, handleZoomOut, handleReset, handleWheelZoom } = useVizScaleControls();
   const [showSource, setShowSource] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const showDiagram = !showSource;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -105,11 +109,9 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   }, []);
   
   const resolvedCode = isStreaming ? '' : code;
-  const { loading, error } = useMarkmap(svgRef, resolvedCode, isVisible);
+  const { loading, error, markmapInstanceRef } = useMarkmap(svgRef, resolvedCode, isVisible);
+  const showSkeleton = isStreaming || (loading && !error);
   
-  const handleZoomIn = useCallback(() => setScale(s => Math.min(5, s + 0.2)), []);
-  const handleZoomOut = useCallback(() => setScale(s => Math.max(0.3, s - 0.2)), []);
-  const handleReset = useCallback(() => setScale(1), []);
   const handleShowSource = useCallback(() => setShowSource(v => !v), []);
   
   const handleFullscreen = useCallback(() => {
@@ -122,15 +124,12 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   }, []);
   
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    
     const handleChange = () => {
-      setIsFullscreen(document.fullscreenElement === container);
+      setIsFullscreen(document.fullscreenElement === containerRef.current);
     };
-    
-    container.addEventListener('fullscreenchange', handleChange);
-    return () => container.removeEventListener('fullscreenchange', handleChange);
+
+    document.addEventListener('fullscreenchange', handleChange);
+    return () => document.removeEventListener('fullscreenchange', handleChange);
   }, []);
   
   useEffect(() => {
@@ -145,17 +144,61 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isFullscreen]);
-  
-  const showSkeleton = isStreaming || (loading && !error);
+
+  useEffect(() => {
+    if (isFullscreen) return;
+    const container = containerRef.current;
+    if (!container) return;
+    container.scrollTop = 0;
+    container.scrollLeft = 0;
+  }, [isFullscreen, scale, showSource]);
+
+  const { scaledStyle, transformStyle } = useScaledCanvas(contentRef, scale, [resolvedCode, showSource, isFullscreen, loading, error]);
+
+  useEffect(() => {
+    if (!showDiagram || loading || error || !isVisible || showSkeleton) return;
+
+    const instance = markmapInstanceRef.current;
+    if (!instance?.fit) return;
+
+    const refit = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          instance.fit?.();
+        });
+      });
+    };
+
+    refit();
+
+    const frame = requestAnimationFrame(refit);
+    const settleTimer = window.setTimeout(refit, 180);
+    const lateTimer = window.setTimeout(refit, 420);
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(refit)
+      : null;
+
+    if (viewportRef.current) resizeObserver?.observe(viewportRef.current);
+    if (svgRef.current) resizeObserver?.observe(svgRef.current);
+    if (contentRef.current) resizeObserver?.observe(contentRef.current);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(settleTimer);
+      window.clearTimeout(lateTimer);
+      resizeObserver?.disconnect();
+    };
+  }, [showDiagram, resolvedCode, isFullscreen, loading, error, isVisible, markmapInstanceRef, showSkeleton]);
+
+  useDragPanScroll(viewportRef, showDiagram && !showSkeleton, [resolvedCode, isFullscreen, scale, showSkeleton]);
 
   return (
     <div 
       ref={containerRef}
-      class={`markmap-block group relative overflow-auto rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${
-        isFullscreen ? 'fixed inset-0 z-[100] p-4' : 'p-3'
+      class={`markmap-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${
+        isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
       }`}
       style={{ 
-        maxHeight: isFullscreen ? 'none' : '400px',
         background: isFullscreen ? 'var(--background)' : undefined 
       }}
     >
@@ -171,18 +214,24 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       {!error && (
         <>
           {showSource ? (
-            <pre class="overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft">
+            <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${
+              isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
+            }`}>
               <code>{code}</code>
             </pre>
           ) : (
-            <div 
-              class="markmap-content origin-center transition-transform duration-200"
-              style={{ 
-                transform: `scale(${scale})`,
-                display: showSkeleton ? 'none' : undefined,
-              }}
+            <div
+              ref={viewportRef}
+              class={`overflow-auto cursor-grab active:cursor-grabbing ${isFullscreen ? 'min-h-0 flex-1 pt-10' : 'max-h-[400px]'}`}
+              onWheel={handleWheelZoom}
             >
-              <svg ref={svgRef} class="markmap-svg w-full" style={{ minHeight: '200px' }} />
+              <div class="flex min-h-full min-w-full items-start justify-center">
+                <div style={{ ...scaledStyle, display: showSkeleton ? 'none' : undefined }}>
+                  <div ref={contentRef} class="markmap-content transition-transform duration-200" style={transformStyle}>
+                    <svg ref={svgRef} class="markmap-svg block" style={{ minHeight: '200px' }} />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
           <VizToolbar 

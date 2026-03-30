@@ -33,7 +33,12 @@ export type LayoutModeType = 'card' | 'grid' | 'list';
 export type ReadingFontSizeType = 'sm' | 'md' | 'lg' | 'xl';
 export type ReadingLineHeightType = 'compact' | 'comfortable' | 'relaxed';
 export type ReadingWidthType = 'narrow' | 'medium' | 'wide';
-export type ReadingThemeType = 'light' | 'dark' | 'warm' | 'sepia';
+export type ReadingThemeType =
+  | 'default'
+  | 'eyecare'
+  | 'parchment'
+  | 'night'
+  | 'oled';
 export type ReadingFontFamilyType =
   | 'serif'
   | 'sans'

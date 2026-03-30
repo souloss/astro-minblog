@@ -318,50 +318,86 @@ const structuredData = pubDatetime
     <!-- Minimal inline script to prevent FOUC - sets theme immediately -->
     <script is:inline define:vars={{ defaultColorScheme, defaultRadius, defaultLayout, defaultMode }}>
       (function () {
-        const currentTheme = localStorage.getItem("theme");
+        const getPreferencesClient = () => window.__astroMinimaxPreferences;
+        const settings = getPreferencesClient()?.loadSettings?.();
+        const themeMode = settings?.theme?.mode ?? defaultMode ?? "system";
 
-        function getPreferTheme() {
-          if (currentTheme) return currentTheme;
-          if (defaultMode === "light") return "light";
-          if (defaultMode === "dark") return "dark";
+        function resolveTheme(mode) {
+          if (mode === "light") return "light";
+          if (mode === "dark") return "dark";
           return window.matchMedia("(prefers-color-scheme: dark)").matches
             ? "dark"
             : "light";
         }
 
-        const themeValue = getPreferTheme();
+        const themeValue = resolveTheme(themeMode);
 
         // Set theme immediately to prevent flash
         const root = document.firstElementChild;
         root?.setAttribute("data-theme", themeValue);
 
-        // Set default color scheme and layout from config
-        const storedSettings = localStorage.getItem("astro-minimax-settings");
-        if (!storedSettings) {
-          root?.setAttribute("data-color-scheme", defaultColorScheme || "teal");
-          root?.setAttribute("data-layout", defaultLayout || "card");
-          const radiusMap = { sm: "0.5rem", md: "0.75rem", lg: "1rem", xl: "1.5rem" };
-          root?.style.setProperty("--card-radius", radiusMap[defaultRadius] || "1rem");
-        } else {
-          try {
-            const settings = JSON.parse(storedSettings);
-            if (settings.colorScheme) root?.setAttribute("data-color-scheme", settings.colorScheme);
-            if (settings.layoutMode) root?.setAttribute("data-layout", settings.layoutMode);
-            if (settings.radius) {
-              const radiusMap = { sm: "0.5rem", md: "0.75rem", lg: "1rem", xl: "1.5rem" };
-              root?.style.setProperty("--card-radius", radiusMap[settings.radius] || "1rem");
-            }
-          } catch {}
-        }
+        const radiusMap = { sm: "0.5rem", md: "0.75rem", lg: "1rem", xl: "1.5rem" };
+        const colorScheme = settings?.theme?.colorScheme ?? defaultColorScheme ?? "teal";
+        const layoutMode = settings?.layout?.postsLayout ?? defaultLayout ?? "card";
+        const radius = settings?.theme?.radius ?? defaultRadius ?? "lg";
+
+        root?.setAttribute("data-color-scheme", colorScheme);
+        root?.setAttribute("data-layout", layoutMode);
+        root?.style.setProperty("--card-radius", radiusMap[radius] || "1rem");
 
         // Export minimal API for external script
         window.theme = {
+          themeMode,
           themeValue: themeValue,
           getTheme: () => window.theme.themeValue,
+          getMode: () => window.theme.themeMode,
           setTheme: val => {
-            window.theme.themeValue = val;
+            window.theme.themeMode = val;
+            window.theme.themeValue = resolveTheme(val);
+          },
+          setPreference: () => {
+            const preferencesClient = getPreferencesClient();
+            const currentSettings = preferencesClient?.loadSettings?.();
+            if (!currentSettings || !preferencesClient?.saveSettings) return;
+            preferencesClient.saveSettings({
+              ...currentSettings,
+              theme: {
+                ...currentSettings.theme,
+                mode: window.theme.themeMode,
+              },
+            });
+          },
+          reflectPreference: () => {
+            const resolvedTheme = window.theme.themeValue;
+            document.firstElementChild?.setAttribute("data-theme", resolvedTheme);
+            document.querySelector("#theme-btn")?.setAttribute("aria-label", resolvedTheme);
+            const body = document.body;
+            if (body) {
+              const computedStyles = window.getComputedStyle(body);
+              const bgColor = computedStyles.backgroundColor;
+              document.querySelector("meta[name='theme-color']")?.setAttribute("content", bgColor);
+            }
+            requestAnimationFrame(() => {
+              window.dispatchEvent(new CustomEvent("themechange", { detail: { isDark: resolvedTheme === "dark", theme: resolvedTheme } }));
+            });
+          },
+          resolveTheme,
+          applyMode: mode => {
+            window.theme.setTheme(mode);
+            window.theme.reflectPreference();
+          },
+          persistMode: mode => {
+            window.theme.setTheme(mode);
+            window.theme.setPreference();
+            window.theme.reflectPreference();
+          },
+          syncFromPreferences: () => {
+            const latestSettings = getPreferencesClient()?.loadSettings?.();
+            const latestMode = latestSettings?.theme?.mode ?? defaultMode ?? "system";
+            window.theme.setTheme(latestMode);
           },
         };
+        window.theme.reflectPreference();
       })();
     </script>
   </head>
@@ -373,37 +409,11 @@ const structuredData = pubDatetime
 
     <script is:inline>
       // Theme toggle logic - inlined to ensure bundling works in monorepo setup
-      const THEME = "theme";
       const LIGHT = "light";
       const DARK = "dark";
-      const initialColorScheme = "";
 
-      function getPreferTheme() {
-        const currentTheme = localStorage.getItem(THEME);
-        if (currentTheme) return currentTheme;
-        if (initialColorScheme) return initialColorScheme;
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
-      }
-
-      let themeValue = window.theme?.themeValue ?? getPreferTheme();
-
-      function setPreference() {
-        localStorage.setItem(THEME, themeValue);
-        reflectPreference();
-      }
-
-      function reflectPreference() {
-        document.firstElementChild?.setAttribute("data-theme", themeValue);
-        document.querySelector("#theme-btn")?.setAttribute("aria-label", themeValue);
-        const body = document.body;
-        if (body) {
-          const computedStyles = window.getComputedStyle(body);
-          const bgColor = computedStyles.backgroundColor;
-          document.querySelector("meta[name='theme-color']")?.setAttribute("content", bgColor);
-        }
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new CustomEvent("themechange", { detail: { isDark: themeValue === DARK, theme: themeValue } }));
-        });
+      function getThemeController() {
+        return window.theme;
       }
 
       function supportsViewTransitions() {
@@ -414,17 +424,15 @@ const structuredData = pubDatetime
 
       function toggleThemeWithTransition(event) {
         if (isTransitioning) return;
-        
-        const currentTheme = themeValue;
+
+        const currentTheme = getThemeController()?.getTheme?.() ?? LIGHT;
         const newTheme = currentTheme === LIGHT ? DARK : LIGHT;
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const x = event?.clientX ?? window.innerWidth / 2;
         const y = event?.clientY ?? window.innerHeight / 2;
 
         if (prefersReducedMotion) {
-          themeValue = newTheme;
-          window.theme?.setTheme(themeValue);
-          setPreference();
+          getThemeController()?.persistMode?.(newTheme);
           return;
         }
 
@@ -443,9 +451,7 @@ const structuredData = pubDatetime
           }
           
           const transition = document.startViewTransition(() => {
-            themeValue = newTheme;
-            window.theme?.setTheme(themeValue);
-            setPreference();
+            getThemeController()?.persistMode?.(newTheme);
           });
           
           transition.ready.then(() => {
@@ -481,33 +487,16 @@ const structuredData = pubDatetime
             isTransitioning = false;
           });
         } else {
-          themeValue = newTheme;
-          window.theme?.setTheme(themeValue);
           document.documentElement.classList.add("no-view-transitions");
-          setPreference();
+          getThemeController()?.persistMode?.(newTheme);
           setTimeout(() => {
             document.documentElement.classList.remove("no-view-transitions");
           }, 400);
         }
       }
 
-      if (window.theme) {
-        window.theme.setPreference = setPreference;
-        window.theme.reflectPreference = reflectPreference;
-      } else {
-        window.theme = {
-          themeValue,
-          setPreference,
-          reflectPreference,
-          getTheme: () => themeValue,
-          setTheme: (val) => { themeValue = val; },
-        };
-      }
-
-      reflectPreference();
-
       function setThemeFeature() {
-        reflectPreference();
+        getThemeController()?.reflectPreference?.();
         document.querySelector("#theme-btn")?.addEventListener("click", (e) => toggleThemeWithTransition(e));
       }
 
@@ -522,10 +511,18 @@ const structuredData = pubDatetime
       });
 
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches: isDark }) => {
-        themeValue = isDark ? DARK : LIGHT;
-        window.theme?.setTheme(themeValue);
-        setPreference();
+        if (getThemeController()?.getMode?.() === "system") {
+          getThemeController()?.applyMode?.("system");
+        }
       });
+
+      window.addEventListener("astro-minimax:preferences-change", () => {
+        getThemeController()?.syncFromPreferences?.();
+        getThemeController()?.reflectPreference?.();
+      });
+    </script>
+    <script>
+      import "virtual:astro-minimax/preferences-client-init";
     </script>
     <script>
       import '../scripts/lightbox.ts';

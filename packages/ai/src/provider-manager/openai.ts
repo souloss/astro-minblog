@@ -1,42 +1,56 @@
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
-import { streamText, convertToModelMessages } from 'ai';
-import type { OpenAIProviderConfig, StreamTextOptions, StreamTextResult } from './types.js';
-import { BaseProviderAdapter } from './base.js';
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { streamText, convertToModelMessages } from "ai";
+import type {
+  OpenAIProviderConfig,
+  StreamTextOptions,
+  StreamTextResult,
+} from "./types.js";
+import { BaseProviderAdapter } from "./base.js";
 
 let proxyInitialized = false;
 
 async function setupGlobalProxy(): Promise<void> {
   if (proxyInitialized) return;
-  
+
   // Check if running in a Node.js-like environment with proxy configured
   // In Cloudflare Edge Runtime with nodejs_compat, process exists but undici APIs don't work
-  if (typeof process === 'undefined' || !process.env) {
+  if (typeof process === "undefined" || !process.env) {
     return;
   }
-  
-  const proxyUrl = process.env.https_proxy || process.env.HTTPS_PROXY || 
-                   process.env.http_proxy || process.env.HTTP_PROXY;
+
+  const proxyUrl =
+    process.env.https_proxy ||
+    process.env.HTTPS_PROXY ||
+    process.env.http_proxy ||
+    process.env.HTTP_PROXY;
   if (!proxyUrl) {
     return;
   }
-  
+
   try {
     // Dynamic import - will fail or return stubs in Cloudflare Edge Runtime
-    const undici = await import('undici');
-    
+    const undici = await import("undici");
+
     // Verify the APIs actually exist (they won't in Edge Runtime polyfills)
-    if (typeof undici.setGlobalDispatcher !== 'function' || 
-        typeof undici.ProxyAgent !== 'function') {
-      console.log('[OpenAIAdapter] undici APIs not available, skipping proxy setup (likely Edge Runtime)');
+    if (
+      typeof undici.setGlobalDispatcher !== "function" ||
+      typeof undici.ProxyAgent !== "function"
+    ) {
+      console.log(
+        "[OpenAIAdapter] undici APIs not available, skipping proxy setup (likely Edge Runtime)"
+      );
       return;
     }
-    
+
     undici.setGlobalDispatcher(new undici.ProxyAgent(proxyUrl));
-    console.log('[OpenAIAdapter] Global proxy dispatcher set:', proxyUrl);
+    console.log("[OpenAIAdapter] Global proxy dispatcher set:", proxyUrl);
     proxyInitialized = true;
   } catch (e) {
     // Expected in Cloudflare Edge Runtime - undici import may fail or APIs may not exist
-    console.log('[OpenAIAdapter] Proxy setup skipped:', e instanceof Error ? e.message : String(e));
+    console.log(
+      "[OpenAIAdapter] Proxy setup skipped:",
+      e instanceof Error ? e.message : String(e)
+    );
   }
 }
 
@@ -51,7 +65,7 @@ function ensureProxySetup(): Promise<void> {
 
 export class OpenAIAdapter extends BaseProviderAdapter {
   readonly id: string;
-  readonly type = 'openai' as const;
+  readonly type = "openai" as const;
   readonly weight: number;
   readonly model: string;
   readonly keywordModel: string;
@@ -63,7 +77,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
 
   constructor(config: OpenAIProviderConfig) {
     super({
-      unhealthyThreshold: config.unhealthyThreshold ?? (config.maxRetries ? config.maxRetries + 2 : 3),
+      unhealthyThreshold: config.unhealthyThreshold ?? 3,
     });
 
     this.id = config.id;
@@ -86,14 +100,23 @@ export class OpenAIAdapter extends BaseProviderAdapter {
 
   async streamText(options: StreamTextOptions): Promise<StreamTextResult> {
     await ensureProxySetup();
-    
-    const { system, messages, temperature = 0.7, maxOutputTokens, topP, abortSignal, onError, tools } = options;
+
+    const {
+      system,
+      messages,
+      temperature = 0.7,
+      maxOutputTokens,
+      topP,
+      abortSignal,
+      onError,
+      tools,
+    } = options;
 
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), this.timeout);
 
     if (abortSignal) {
-      abortSignal.addEventListener('abort', () => abortController.abort());
+      abortSignal.addEventListener("abort", () => abortController.abort());
     }
 
     try {
@@ -112,8 +135,9 @@ export class OpenAIAdapter extends BaseProviderAdapter {
       });
 
       const streamResult: StreamTextResult = {
-        toUIMessageStreamResponse: (responseOptions?: { headers?: HeadersInit }) =>
-          result.toUIMessageStreamResponse(responseOptions),
+        toUIMessageStreamResponse: (responseOptions?: {
+          headers?: HeadersInit;
+        }) => result.toUIMessageStreamResponse(responseOptions),
         providerId: this.id,
         isMock: false,
       };

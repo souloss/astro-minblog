@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+import { DefaultChatTransport } from 'ai';
 import type { UIMessage } from 'ai';
 import { APICallError } from '@ai-sdk/provider';
 import { getMockResponse, createMockStream } from '../providers/mock.ts';
-import type { ArticleChatContext, ChatStatusData } from '../server/types.ts';
-import { isChatStatusData } from '../server/types.ts';
+import type { ArticleChatContext } from '../server/types.ts';
 import { t, getLang } from '../utils/i18n.ts';
+import { shouldAutoContinueAfterToolCalls } from './tool-auto-continue.ts';
 import { RichText } from './RichText.tsx';
 import { ReasoningBlock } from './ReasoningBlock.tsx';
 import { AssistantMessage, BotAvatar, BotIcon, TypingDots, getTextFromMessage } from './MessageBubble.tsx';
@@ -31,6 +31,15 @@ interface ChatPanelProps {
 }
 
 const MIN_SEND_INTERVAL_MS = 500;
+let lastChatTrigger: HTMLElement | null = null;
+
+function getChatActionLabel(lang: string, type: 'send' | 'sending'): string {
+  const normalizedLang = getLang(lang);
+  if (type === 'sending') {
+    return normalizedLang === 'zh' ? '正在发送' : 'Sending';
+  }
+  return normalizedLang === 'zh' ? '发送消息' : 'Send message';
+}
 
 function generateSessionId(articleContext?: ArticleChatContext): string {
   if (articleContext?.slug) return `article:${articleContext.slug}`;
@@ -195,7 +204,9 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
   const lastSendRef = useRef(0);
   const [inputValue, setInputValue] = useState('');
   const [cooldown, setCooldown] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string>();
+  const titleId = articleContext ? 'ai-chat-title-reading' : 'ai-chat-title';
+  const descriptionId = articleContext ? 'ai-chat-description-reading' : 'ai-chat-description';
+  const statusId = 'ai-chat-status';
   
   const [panelSize, setPanelSize] = useState<PanelSize>(() => {
     if (typeof window === 'undefined') return 'S';
@@ -214,6 +225,23 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       localStorage.setItem('ai-chat-panel-size', panelSize);
     } catch { /* ignore */ }
   }, [panelSize]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const activeElement = document.activeElement;
+    lastChatTrigger = activeElement instanceof HTMLElement ? activeElement : null;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
 
   const sizeConfig = PANEL_SIZE_CONFIG[panelSize];
 
@@ -243,10 +271,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
     addToolOutput,
   } = useChat({
     transport,
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
-    onError: (err) => {
-      console.error('[ChatPanel] Chat error:', err.message);
-    },
+    sendAutomaticallyWhen: shouldAutoContinueAfterToolCalls,
     async onToolCall({ toolCall }) {
       const executor = window.__actionExecutor;
       
@@ -255,7 +280,11 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: false, error: 'ActionExecutor not initialized' },
+          output: {
+            success: false,
+            tool: toolCall.toolName,
+            error: 'ActionExecutor not initialized',
+          },
         });
         return;
       }
@@ -294,25 +323,43 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: false, error: `Unknown tool: ${toolCall.toolName}` },
+          output: {
+            success: false,
+            tool: toolCall.toolName,
+            error: `Unknown tool: ${toolCall.toolName}`,
+          },
         });
         return;
       }
 
       try {
-        const action = mapper(toolCall.input as Record<string, unknown>);
-        await executor.execute(action);
+        const toolInput = (toolCall.input ?? {}) as Record<string, unknown>;
+        const action = mapper(toolInput);
+        const result = await executor.execute(action);
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: true },
+          output: {
+            success: result.success,
+            tool: toolCall.toolName,
+            action: action.type,
+            input: toolInput,
+            result,
+            confirmation: result.success
+              ? `Tool ${toolCall.toolName} executed successfully.`
+              : `Tool ${toolCall.toolName} failed: ${result.error ?? 'unknown error'}`,
+          },
         });
       } catch (error) {
         console.error('[ChatPanel] Tool execution error:', error);
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
-          output: { success: false, error: String(error) },
+          output: {
+            success: false,
+            tool: toolCall.toolName,
+            error: String(error),
+          },
         });
       }
     },
@@ -332,18 +379,6 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
 
   const isStreaming = isMockMode ? mockChat.isStreaming : (liveStatus === 'streaming' || liveStatus === 'submitted');
   const error = isMockMode ? null : liveError;
-
-  useEffect(() => {
-    if (isMockMode || !liveMessages.length) return;
-    for (let i = liveMessages.length - 1; i >= 0; i--) {
-      const msg = liveMessages[i];
-      if (msg.role === 'assistant' && isChatStatusData(msg.metadata)) {
-        setStatusMessage((msg.metadata as ChatStatusData).message);
-        return;
-      }
-    }
-    setStatusMessage(undefined);
-  }, [liveMessages, isMockMode]);
 
   // ── Scroll ─────────────────────────────────────────────────
 
@@ -380,8 +415,18 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       liveSetMessages([welcomeMessage]);
     }
     setInputValue('');
-    setStatusMessage(undefined);
   }, [isMockMode, mockChat, liveSetMessages, welcomeMessage]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    window.setTimeout(() => lastChatTrigger?.focus(), 0);
+  }, [onClose]);
+
+  const statusMessage = error
+    ? parseErrorMessage(error, lang)
+    : isStreaming
+      ? t('ai.status.generating', lang)
+      : '';
 
   if (!open) return null;
 
@@ -489,6 +534,10 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
 
   return (
     <div ref={panelRef} id="ai-chat-panel" data-ai-chat-panel
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
       class={`fixed z-[90] flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl transition-all duration-300 ease-out ${
         panelSize === 'L' 
           ? 'right-[10vw] bottom-[10vh] z-[100]' 
@@ -500,14 +549,17 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       <div class="flex shrink-0 items-center justify-between border-b border-border px-3.5 py-2.5">
         <div class="flex items-center gap-2">
           <div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15">
-            <BotIcon class="size-3 text-accent" />
+            <BotIcon class="size-3 text-accent" aria-hidden="true" />
           </div>
           <div class="flex flex-col">
-            <span class="text-[13px] font-semibold text-foreground">{t('ai.assistantName', lang)}</span>
+            <span id={titleId} class="text-[13px] font-semibold text-foreground">{t('ai.assistantName', lang)}</span>
             {articleContext && (
-              <span class="max-w-[180px] truncate text-[10px] text-foreground-soft">
+              <span id={descriptionId} class="max-w-[180px] truncate text-[10px] text-foreground-soft">
                 {t('ai.header.reading', lang)}{articleContext.title}
               </span>
+            )}
+            {!articleContext && (
+              <span id={descriptionId} class="sr-only">{placeholder}</span>
             )}
           </div>
           <span class={`rounded-full px-1.5 py-px text-[10px] font-medium ${
@@ -529,35 +581,43 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
                     : 'text-foreground-soft hover:text-foreground'
                 }`}
                 title={size === 'S' ? 'Small' : size === 'M' ? 'Medium' : 'Large'}
+                aria-label={size === 'S' ? 'Small chat panel' : size === 'M' ? 'Medium chat panel' : 'Large chat panel'}
+                aria-pressed={panelSize === size}
               >
                 {size}
               </button>
             ))}
           </div>
           <button type="button" onClick={handleClear}
+            aria-label={t('ai.clear', lang)}
             class="rounded-md p-1 text-foreground-soft transition-colors hover:bg-muted/60 hover:text-foreground"
             title={t('ai.clear', lang)}>
-            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
             </svg>
           </button>
-          <button type="button" onClick={onClose}
+          <button type="button" onClick={handleClose}
+            aria-label={t('ai.close', lang)}
             class="rounded-md p-1 text-foreground-soft transition-colors hover:bg-muted/60 hover:text-foreground"
             title={t('ai.close', lang)}>
-            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M18 6 6 18" /><path d="m6 6 12 12" />
             </svg>
           </button>
         </div>
       </div>
 
+      <div id={statusId} class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {statusMessage}
+      </div>
+
       {/* Messages */}
-      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-3 [scrollbar-width:thin]">
+      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-3 [scrollbar-width:thin]" aria-live="off">
         <div class="space-y-4">
           {isMockMode ? renderMockMessages() : renderLiveMessages()}
 
           {error && (
-            <div class="flex items-start gap-2.5">
+            <div class="flex items-start gap-2.5" role="alert">
               <BotAvatar />
               <div class="flex flex-col gap-1 pt-0.5">
                 <p class="text-[13px] text-amber-600 dark:text-amber-400">{parseErrorMessage(error, lang)}</p>
@@ -583,6 +643,9 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
         isStreaming={isStreaming}
         cooldown={cooldown}
         placeholder={placeholder}
+        label={t('ai.placeholder', lang)}
+        sendLabel={getChatActionLabel(lang, 'send')}
+        sendingLabel={getChatActionLabel(lang, 'sending')}
         focusTrigger={open}
       />
     </div>

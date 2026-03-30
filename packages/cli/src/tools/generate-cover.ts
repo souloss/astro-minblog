@@ -1,16 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * AI 封面图生成工具
- *
- * 用法:
- *   pnpm run tools:cover <文章路径>                    # 生成封面图
- *   pnpm run tools:cover <文章路径> --write            # 生成并写入 frontmatter
- *   pnpm run tools:cover <文章路径> --style <风格>     # 指定风格 (abstract|minimal|tech|illustration)
- *
- * 环境变量:
- *   AI_API_KEY / OPENAI_API_KEY — API key
- */
-
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join, basename } from "node:path";
 import { extractFrontmatter } from "./lib/frontmatter.js";
@@ -34,7 +22,7 @@ function parseArgs(): GenerateOptions {
 
   if (!filePath) {
     console.error(
-      "用法: pnpm run tools:cover <文章路径> [--write] [--style abstract|minimal|tech|illustration]"
+  "用法: tsx src/tools/generate-cover.ts <文章路径> [--write] [--style abstract|minimal|tech|illustration]"
     );
     process.exit(1);
   }

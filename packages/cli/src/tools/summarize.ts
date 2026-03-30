@@ -1,18 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * AI 辅助写作 - 文章摘要生成
- *
- * 用法:
- *   pnpm run tools:summarize <文章路径>                # 为单篇文章生成摘要
- *   pnpm run tools:summarize <文章路径> --write        # 生成并写入 frontmatter
- *   pnpm run tools:summarize --all                      # 分析所有缺少 description 的文章
- *   pnpm run tools:summarize --all --dry-run            # 预览所有推荐但不写入
- *   pnpm run tools:summarize --all --write              # 批量生成并写入
- *
- * 环境变量:
- *   AI_API_KEY / OPENAI_API_KEY（可选，无 key 时使用前 200 字摘录）
- */
-
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
@@ -133,8 +119,8 @@ async function main() {
     }
   } else {
     console.error("用法:");
-    console.error("  pnpm run tools:summarize <文章路径> [--write]");
-    console.error("  pnpm run tools:summarize --all [--dry-run] [--write]");
+  console.error("  tsx src/tools/summarize.ts <文章路径> [--write]");
+  console.error("  tsx src/tools/summarize.ts --all [--dry-run] [--write]");
     process.exit(1);
   }
 }

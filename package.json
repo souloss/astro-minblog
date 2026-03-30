@@ -1,6 +1,6 @@
 {
   "name": "astro-minimax-monorepo",
-  "version": "0.0.0",
+  "version": "0.9.3",
   "private": true,
   "type": "module",
   "description": "A minimalist, fast, and modern Astro blog theme with AI-powered features, multi-channel notifications, and rich visualizations.",
@@ -35,7 +35,7 @@
     "clean": "pnpm -r clean",
     "kill:dev": "node scripts/kill-dev.js",
     "kill:dev:bash": "bash scripts/kill-dev.sh",
-    "postinstall": "pnpm --filter @astro-minimax/notify build && pnpm --filter @astro-minimax/ai build && pnpm --filter @astro-minimax/cli build",
+    "postinstall": "pnpm --filter @astro-minimax/knowledge-model build && pnpm --filter @astro-minimax/notify build && pnpm --filter @astro-minimax/ai build && pnpm --filter @astro-minimax/cli build",
     "prepare": "husky"
   },
   "pnpm": {

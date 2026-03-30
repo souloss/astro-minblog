@@ -1,7 +1,7 @@
 ---
 title: "AI 聊天功能配置指南"
 pubDatetime: 2026-03-17T00:00:00.000Z
-modDatetime: 2026-03-24T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "全面配置 astro-minimax 的 AI 聊天功能：Provider 设置、RAG 搜索、Mock 模式、作者画像和质量评估。"
 tags:
@@ -32,9 +32,6 @@ AI 聊天系统由以下模块组成：
 在 `src/config.ts` 中：
 
 ```typescript
-features: {
-  ai: true,
-},
 ai: {
   enabled: true,
   mockMode: false,
@@ -61,7 +58,7 @@ SITE_URL=https://your-blog.com
 
 ```bash
 astro-minimax ai process       # 生成文章摘要和 SEO 数据
-astro-minimax profile build     # 构建作者画像
+astro-minimax ai profile build  # 构建作者画像
 ```
 
 ### 4. 启动开发服务器
@@ -81,7 +78,7 @@ AI 聊天按钮会出现在页面右下角。
 ```toml
 # wrangler.toml
 [ai]
-binding = "AI"
+binding = "minimaxAI"
 ```
 
 Workers AI 作为最高优先级 Provider，不需要 API Key。
@@ -310,16 +307,16 @@ datas/extensions/
 
 ```bash
 # 查看扩展状态
-astro-minimax extensions status
+astro-minimax ai extensions status
 
 # 验证扩展文件
-astro-minimax extensions validate
+astro-minimax ai extensions validate
 
 # 构建扩展（验证并组织）
-astro-minimax extensions build --verbose
+astro-minimax ai extensions build --verbose
 
 # 测试加载扩展
-astro-minimax extensions load
+astro-minimax ai extensions load
 ```
 
 ### 扩展优先级
@@ -368,9 +365,67 @@ NOTIFY_TELEGRAM_CHAT_ID=your-chat-id
 | `SITE_AUTHOR` | 作者名称 | 否 |
 | `SITE_URL` | 站点 URL | 否 |
 
+## AI 工具调用（Tool Calling）
+
+AI 助手内置 7 个页面交互工具，可通过对话直接操控当前页面：
+
+| 工具 | 说明 |
+|------|------|
+| `toggleTheme` | 切换明暗主题 |
+| `navigateToArticle` | 导航到指定文章 |
+| `scrollToSection` | 滚动到页面章节 |
+| `toggleReadingMode` | 切换阅读模式 |
+| `highlightText` | 高亮页面文本 |
+| `setPreference` | 设置用户偏好 |
+| `searchArticles` | 搜索文章（服务端） |
+
+工具无需额外配置，启用 AI 聊天后自动生效。支持 `registerTool()` / `unregisterTool()` API 注册自定义工具。
+
+详见 [AI 工具调用指南](/zh/posts/ai-tool-calling)。
+
+## Extensions 扩展系统
+
+AI 扩展系统（`packages/ai/src/extensions/`）提供自定义上下文段落、语义回退规则等能力：
+
+```bash
+astro-minimax ai extensions build      # 构建扩展
+astro-minimax ai extensions validate   # 验证扩展
+astro-minimax ai extensions status     # 查看扩展状态
+```
+
+详见 [AI 模块架构详解](/zh/posts/ai-module-architecture)。
+
+## Fact Registry 事实注册表
+
+AI 从博客内容中提取已验证的事实，注入到提示词中以减少幻觉：
+
+```bash
+astro-minimax ai facts build      # 构建事实注册表
+astro-minimax ai facts validate   # 验证事实
+astro-minimax ai facts status     # 查看状态
+```
+
+详见 [AI 模块架构详解](/zh/posts/ai-module-architecture)。
+
+## 混合搜索
+
+AI 搜索系统采用 TF-IDF 评分 + 向量重排序（RRF 融合）的混合搜索策略：
+
+- 段落级索引，从博客内容中提取，供 RAG 使用
+- 会话缓存（10 分钟 TTL）支持上下文复用
+- 可通过 `SearchStrategy` 接口自定义搜索实现
+
+## 结构化输出
+
+`packages/ai/src/structured-output/` 模块支持基于 Schema 的结构化输出，用于证据分析等需要精确 JSON 格式的场景。
+
+详见 [AI 模块架构详解](/zh/posts/ai-module-architecture)。
+
 ## 下一步
 
 - [功能特性总览](/zh/posts/feature-overview) — 了解所有 AI 功能
+- [AI 工具调用指南](/zh/posts/ai-tool-calling) — 工具调用与 Action 系统详解
+- [AI 模块架构](/zh/posts/ai-module-architecture) — 深入了解 AI 系统架构
 - [CLI 工具指南](/zh/posts/cli-guide) — AI 处理命令详解
 - [通知系统](/zh/posts/notification-guide) — 配置 AI 对话通知
 - [部署指南](/zh/posts/deployment-guide) — Cloudflare Workers AI 部署

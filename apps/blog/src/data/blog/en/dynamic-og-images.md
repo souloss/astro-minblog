@@ -10,7 +10,7 @@ category: 教程/博客
 tags:
   - docs
   - release
-description: Built-in dynamic OG image generation using Satori, automatically creating social share images at build time.
+description: Built-in dynamic OG image generation that creates social share images during build for posts without a custom OG image.
 ---
 
 astro-minimax includes built-in dynamic OG image generation. Articles without a specified `ogImage` get one auto-generated at build time.
@@ -53,7 +53,7 @@ astro-minimax already provided a way to add an OG image to a blog post. The auth
 
 Generating a dynamic OG image for each post allows the author to avoid specifying an OG image for every single blog post. Besides, this will prevent the fallback OG image from being identical to all blog posts.
 
-astro-minimax uses Vercel's [Satori](https://github.com/vercel/satori) package for dynamic OG image generation.
+astro-minimax currently generates SVG-based OG templates and renders them into PNG files at build time.
 
 Dynamic OG images will be generated at build time for blog posts that
 
@@ -62,7 +62,7 @@ Dynamic OG images will be generated at build time for blog posts that
 
 ## Anatomy of astro-minimax dynamic OG image
 
-Dynamic OG image of astro-minimax includes _the blog post title_, _author name_ and _site title_. Author name and site title will be retrieved via `SITE.author` and `SITE.title` of **"src/config.ts"** file. The title is generated from the blog post frontmatter `title`.  
+Dynamic OG images in astro-minimax include _the blog post title_, _author name_, and _site title_. Author name and site title are sourced from `SITE.author` and `SITE.title` in **`src/config.ts`**, while the title comes from the post frontmatter `title`.  
 ![Example Dynamic OG Image link](/images/og-image-demo.png)
 
 ### Issue Non-Latin Characters
@@ -108,7 +108,8 @@ For example: If one OG image takes one second to generate, then 60 images will t
 
 ## Limitations
 
-At the time of writing this, [Satori](https://github.com/vercel/satori) is fairly new and has not reached major release yet. So, there are still some limitations to this dynamic OG image feature.
+The current build-time OG pipeline still comes with a few practical limitations.
 
-- Besides, RTL languages are not supported yet.
-- [Using emoji](https://github.com/vercel/satori#emojis) in the title might be a little bit tricky.
+- Build time increases roughly linearly with the number of posts that need generated OG images.
+- Font coverage and special-character rendering still depend on your configured font assets.
+- If the build environment is missing the image rendering dependency, PNG output cannot be generated during build.

@@ -1,6 +1,6 @@
-import type { Action, QueuedActionItem } from './types';
+import type { Action, QueuedActionItem } from "./types";
 
-const QUEUE_KEY = 'ai_action_queue';
+const QUEUE_KEY = "ai_action_queue";
 const DEFAULT_EXPIRY_MS = 60_000;
 
 export const ActionQueue = {
@@ -9,7 +9,7 @@ export const ActionQueue = {
   },
 
   getQueue(): QueuedActionItem[] {
-    if (typeof window === 'undefined') return [];
+    if (typeof window === "undefined") return [];
 
     try {
       const raw = sessionStorage.getItem(QUEUE_KEY);
@@ -20,12 +20,12 @@ export const ActionQueue = {
   },
 
   setQueue(queue: QueuedActionItem[]): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       sessionStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
     } catch (e) {
-      console.warn('[ActionQueue] Failed to save:', e);
+      console.warn("[ActionQueue] Failed to save:", e);
     }
   },
 
@@ -53,7 +53,7 @@ export const ActionQueue = {
     const index = queue.findIndex(item => item.id === id);
 
     if (index === -1) {
-      console.warn('[ActionQueue] Action not found:', id);
+      console.warn("[ActionQueue] Action not found:", id);
       return null;
     }
 
@@ -62,7 +62,7 @@ export const ActionQueue = {
     if (item.expiresAt < Date.now()) {
       queue.splice(index, 1);
       this.setQueue(queue);
-      console.warn('[ActionQueue] Action expired:', id);
+      console.warn("[ActionQueue] Action expired:", id);
       return null;
     }
 
@@ -83,11 +83,11 @@ export const ActionQueue = {
   },
 
   clear(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     sessionStorage.removeItem(QUEUE_KEY);
   },
 };
 
-if (typeof window !== 'undefined') {
-  (window as unknown as { __actionQueue: typeof ActionQueue }).__actionQueue = ActionQueue;
+if (typeof window !== "undefined") {
+  window.__actionQueue = ActionQueue;
 }

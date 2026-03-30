@@ -330,10 +330,13 @@ const enabled = SITE.waline?.enabled;
           
           #waline .wl-btn,
           #waline .wl-card,
-          #waline .wl-reaction-img,
           #waline .wl-page-button,
           #waline .wl-editor,
           #waline .wl-input {
+            transition: none !important;
+          }
+
+          #waline .wl-reaction-img {
             transition: none !important;
           }
           
@@ -488,15 +491,16 @@ const enabled = SITE.waline?.enabled;
         
         #waline .wl-reaction-img {
           transition: filter var(--waline-transition-fast, 0.15s) ease !important;
-          background-color: var(--surface, rgba(255, 255, 255, 0.72)) !important;
-          border: 1px solid var(--border) !important;
-          border-radius: var(--radius-lg, 0.5rem) !important;
+          background-color: transparent !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          padding: 0 !important;
           cursor: pointer;
         }
-        
+
         #waline .wl-reaction-img:hover {
           filter: brightness(1.1);
-          border-color: var(--accent) !important;
         }
         
         #waline .wl-reaction-title {

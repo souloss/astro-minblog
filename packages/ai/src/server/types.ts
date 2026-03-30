@@ -1,11 +1,11 @@
-import type { UIMessage } from 'ai';
-import type { ProviderManagerEnv } from '../provider-manager/types.js';
-import type { CacheEnv } from '../cache/types.js';
+import type { UIMessage } from "ai";
+import type { ProviderManagerEnv } from "../provider-manager/types.js";
+import type { CacheEnv } from "../cache/types.js";
 
 // ── Chat Context ──────────────────────────────────────────────
 
 export interface ChatContext {
-  scope: 'global' | 'article';
+  scope: "global" | "article";
   article?: ArticleChatContext;
 }
 
@@ -48,15 +48,11 @@ export interface AiHealthEnv {
   AI_HEALTH_RECOVERY_TTL?: number | string;
 }
 
-export interface ChatHandlerEnv extends ProviderManagerEnv, CacheEnv, AiCacheEnv, AiTimeoutEnv, AiHealthEnv {
+export interface ChatHandlerEnv
+  extends ProviderManagerEnv, CacheEnv, AiCacheEnv, AiTimeoutEnv, AiHealthEnv {
   SITE_AUTHOR?: string;
   SITE_URL?: string;
   SITE_LANG?: string;
-  AI_RESPONSE_CACHE_ENABLED?: boolean | string;
-  AI_RESPONSE_CACHE_TTL?: number | string;
-  AI_RESPONSE_CACHE_PLAYBACK_DELAY?: number | string;
-  AI_RESPONSE_CACHE_CHUNK_SIZE?: number | string;
-  AI_RESPONSE_CACHE_THINKING_DELAY?: number | string;
   [key: string]: unknown;
 }
 
@@ -68,7 +64,7 @@ export interface ChatHandlerOptions {
 
 // ── Status Metadata ───────────────────────────────────────────
 
-export type ChatStatusStage = 'search' | 'answer' | 'complete';
+export type ChatStatusStage = "search" | "answer" | "complete";
 
 export interface ChatStatusData {
   stage: ChatStatusStage;
@@ -79,19 +75,23 @@ export interface ChatStatusData {
 }
 
 export function createChatStatusData(
-  partial: Omit<ChatStatusData, 'done' | 'at'> & { done?: boolean },
+  partial: Omit<ChatStatusData, "done" | "at"> & { done?: boolean }
 ): ChatStatusData {
   return {
     ...partial,
-    done: partial.done ?? partial.stage === 'complete',
+    done: partial.done ?? partial.stage === "complete",
     at: Date.now(),
   };
 }
 
 export function isChatStatusData(value: unknown): value is ChatStatusData {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
-  return typeof v.stage === 'string' && typeof v.message === 'string' && typeof v.progress === 'number';
+  return (
+    typeof v.stage === "string" &&
+    typeof v.message === "string" &&
+    typeof v.progress === "number"
+  );
 }
 
 // ── Error Response ────────────────────────────────────────────
@@ -106,10 +106,31 @@ export interface ChatErrorResponse {
 // ── Metadata Initialization ───────────────────────────────────
 
 export interface MetadataConfig {
-  summaries: unknown;
-  authorContext: unknown;
-  voiceProfile: unknown;
-  factRegistry?: unknown;
-  vectorIndex?: unknown;
+  knowledgeBundle: unknown;
   siteUrl?: string;
+}
+
+export interface NotifyArticleRef {
+  title: string;
+  url?: string;
+}
+
+export interface NotifyModelInfo {
+  name: string;
+  provider?: string;
+  apiHost?: string;
+}
+
+export interface NotifyTokenUsage {
+  total: number;
+  input: number;
+  output: number;
+}
+
+export interface PhaseTiming {
+  total: number;
+  keywordExtraction?: number;
+  search?: number;
+  evidenceAnalysis?: number;
+  generation?: number;
 }

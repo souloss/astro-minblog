@@ -7,7 +7,6 @@
 export interface InjectionCacheEntry {
   sessionId: string;
   injectedChunks: Set<string>;
-  lastQuery: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -33,13 +32,12 @@ class InjectionCacheManager {
 
     let entry = this.caches.get(sessionId);
     if (!entry) {
-      entry = {
-        sessionId,
-        injectedChunks: new Set(),
-        lastQuery: '',
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
+        entry = {
+          sessionId,
+          injectedChunks: new Set(),
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        };
       this.caches.set(sessionId, entry);
     }
 
@@ -51,7 +49,13 @@ class InjectionCacheManager {
     chunks: Array<{ id: string; content: string }>
   ): Array<{ id: string; content: string }> {
     const entry = this.getOrCreate(sessionId);
-    const newChunks = chunks.filter(chunk => !entry.injectedChunks.has(chunk.id));
+    const newChunks = chunks.filter(
+      chunk => !entry.injectedChunks.has(chunk.id)
+    );
+
+    log.debug(
+      `filterNewChunks: session=${sessionId}, incoming=${chunks.length}, new=${newChunks.length}, existing=${entry.injectedChunks.size}`
+    );
 
     return newChunks;
   }
@@ -62,12 +66,9 @@ class InjectionCacheManager {
       entry.injectedChunks.add(id);
     }
     entry.updatedAt = Date.now();
-  }
-
-  updateLastQuery(sessionId: string, query: string): void {
-    const entry = this.getOrCreate(sessionId);
-    entry.lastQuery = query;
-    entry.updatedAt = Date.now();
+    log.debug(
+      `markAsInjected: session=${sessionId}, added=${chunkIds.length}, total=${entry.injectedChunks.size}`
+    );
   }
 
   cleanup(): void {
@@ -80,8 +81,9 @@ class InjectionCacheManager {
     }
 
     if (this.caches.size > MAX_CACHE_SIZE) {
-      const entries = [...this.caches.entries()]
-        .sort((a, b) => a[1].updatedAt - b[1].updatedAt);
+      const entries = [...this.caches.entries()].sort(
+        (a, b) => a[1].updatedAt - b[1].updatedAt
+      );
 
       const toDelete = entries.slice(0, this.caches.size - MAX_CACHE_SIZE);
       for (const [key] of toDelete) {
@@ -115,3 +117,6 @@ class InjectionCacheManager {
 }
 
 export const injectionCache = new InjectionCacheManager();
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("injection-cache");

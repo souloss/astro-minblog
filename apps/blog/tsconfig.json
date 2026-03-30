@@ -7,8 +7,15 @@
     "paths": {
       "@astro-minimax/ai": ["../../packages/ai/src/index.ts"],
       "@astro-minimax/ai/*": ["../../packages/ai/src/*"],
+      "@astro-minimax/notify": ["../../packages/notify/src/index.ts"],
+      "@astro-minimax/notify/*": ["../../packages/notify/src/*"],
+      "@astro-minimax/knowledge-model": [
+        "../../packages/knowledge-model/src/index.ts"
+      ],
       "@astro-minimax/core/layouts/*": ["../../packages/core/src/layouts/*"],
-      "@astro-minimax/core/components/*": ["../../packages/core/src/components/*"],
+      "@astro-minimax/core/components/*": [
+        "../../packages/core/src/components/*"
+      ],
       "@astro-minimax/core/utils/*": ["../../packages/core/src/utils/*"],
       "@astro-minimax/core/plugins/*": ["../../packages/core/src/plugins/*"],
       "@astro-minimax/core/types": ["../../packages/core/src/types.ts"],

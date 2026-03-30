@@ -1,12 +1,12 @@
-import type { CacheAdapter, CachedSearchContext } from './types.js';
+import type { CacheAdapter, CachedSearchContext } from "./types.js";
 
 export type PublicQuestionType =
-  | 'tech'
-  | 'recommend'
-  | 'build'
-  | 'summary'
-  | 'author'
-  | 'about';
+  | "tech"
+  | "recommend"
+  | "build"
+  | "summary"
+  | "author"
+  | "about";
 
 export interface PublicQuestionPattern {
   type: PublicQuestionType;
@@ -18,8 +18,16 @@ export interface PublicQuestionPattern {
 
 export const PUBLIC_QUESTION_PATTERNS: PublicQuestionPattern[] = [
   {
-    type: 'tech',
-    keywords: ['技术栈', '技术', '框架', '用了什么', 'built with', 'tech stack', 'framework'],
+    type: "tech",
+    keywords: [
+      "技术栈",
+      "技术",
+      "框架",
+      "用了什么",
+      "built with",
+      "tech stack",
+      "framework",
+    ],
     patterns: [
       /这个博客用了什么/,
       /博客.*技术栈/,
@@ -32,8 +40,8 @@ export const PUBLIC_QUESTION_PATTERNS: PublicQuestionPattern[] = [
     needsContext: false,
   },
   {
-    type: 'recommend',
-    keywords: ['推荐', '文章推荐', '好文', 'recommend', 'suggest'],
+    type: "recommend",
+    keywords: ["推荐", "文章推荐", "好文", "recommend", "suggest"],
     patterns: [
       /推荐.*文章/,
       /有哪些推荐/,
@@ -45,8 +53,8 @@ export const PUBLIC_QUESTION_PATTERNS: PublicQuestionPattern[] = [
     needsContext: false,
   },
   {
-    type: 'build',
-    keywords: ['搭建', '部署', '怎么建', 'how to build', 'deploy', 'setup'],
+    type: "build",
+    keywords: ["搭建", "部署", "怎么建", "how to build", "deploy", "setup"],
     patterns: [
       /怎么搭建/,
       /如何搭建/,
@@ -59,8 +67,8 @@ export const PUBLIC_QUESTION_PATTERNS: PublicQuestionPattern[] = [
     needsContext: false,
   },
   {
-    type: 'summary',
-    keywords: ['总结', '概括', '摘要', 'summarize', 'summary', 'tl;dr'],
+    type: "summary",
+    keywords: ["总结", "概括", "摘要", "summarize", "summary", "tl;dr"],
     patterns: [
       /总结(一下|这篇文章)/,
       /概括(一下|这篇文章)/,
@@ -73,8 +81,8 @@ export const PUBLIC_QUESTION_PATTERNS: PublicQuestionPattern[] = [
     needsContext: true,
   },
   {
-    type: 'author',
-    keywords: ['作者', '博主', '谁', 'author', 'who'],
+    type: "author",
+    keywords: ["作者", "博主", "谁", "author", "who"],
     patterns: [
       /作者是谁/,
       /博主是谁/,
@@ -86,14 +94,9 @@ export const PUBLIC_QUESTION_PATTERNS: PublicQuestionPattern[] = [
     needsContext: false,
   },
   {
-    type: 'about',
-    keywords: ['关于', '介绍', 'about', 'intro'],
-    patterns: [
-      /关于.*博客/,
-      /博客介绍/,
-      /about.*blog/,
-      /介绍一下/,
-    ],
+    type: "about",
+    keywords: ["关于", "介绍", "about", "intro"],
+    patterns: [/关于.*博客/, /博客介绍/, /about.*blog/, /介绍一下/],
     ttl: 86400,
     needsContext: false,
   },
@@ -106,8 +109,10 @@ export interface DetectedPublicQuestion {
   needsContext: boolean;
 }
 
-export function detectPublicQuestion(query: string): DetectedPublicQuestion | null {
-  const normalized = normalizeQuery(query);
+export function detectPublicQuestion(
+  query: string
+): DetectedPublicQuestion | null {
+  const normalized = normalizePublicCacheQuery(query);
 
   let bestMatch: DetectedPublicQuestion | null = null;
   let bestScore = 0;
@@ -144,9 +149,9 @@ export function detectPublicQuestion(query: string): DetectedPublicQuestion | nu
 
 export function buildGlobalCacheKey(
   type: PublicQuestionType,
-  context?: { articleSlug?: string; lang?: string }
+  context?: { articleSlug?: string; lang?: string; queryKey?: string }
 ): string {
-  const parts = ['global', type];
+  const parts = ["global", type];
 
   if (context?.articleSlug) {
     parts.push(context.articleSlug);
@@ -156,24 +161,31 @@ export function buildGlobalCacheKey(
     parts.push(context.lang);
   }
 
-  return parts.join(':');
+  if (context?.queryKey) {
+    parts.push(context.queryKey);
+  }
+
+  return parts.join(":");
 }
 
-function normalizeQuery(query: string): string {
+export function normalizePublicCacheQuery(query: string): string {
   return query
     .toLowerCase()
-    .replace(/[？?!！。，,.]/g, '')
-    .replace(/\s+/g, ' ')
+    .replace(/[？?!！。，,.]/g, "")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
 export async function getGlobalSearchCache(
   cache: CacheAdapter,
   type: PublicQuestionType,
-  context?: { articleSlug?: string; lang?: string }
+  context?: { articleSlug?: string; lang?: string; queryKey?: string }
 ): Promise<CachedSearchContext | null> {
   const key = buildGlobalCacheKey(type, context);
   const entry = await cache.get<CachedSearchContext>(key);
+  log.debug(
+    `getGlobalSearchCache: key=${key}, hit=${Boolean(entry?.value)}, adapter=${cache.name}`
+  );
   return entry?.value ?? null;
 }
 
@@ -182,13 +194,19 @@ export async function setGlobalSearchCache(
   type: PublicQuestionType,
   data: CachedSearchContext,
   ttl: number,
-  context?: { articleSlug?: string; lang?: string }
+  context?: { articleSlug?: string; lang?: string; queryKey?: string }
 ): Promise<void> {
   const key = buildGlobalCacheKey(type, context);
   await cache.set(key, data, { ttl });
+  log.debug(
+    `setGlobalSearchCache: key=${key}, articles=${data.articles.length}, projects=${data.projects.length}, ttl=${ttl}, adapter=${cache.name}`
+  );
 }
 
 export function getGlobalCacheTTL(type: PublicQuestionType): number {
   const pattern = PUBLIC_QUESTION_PATTERNS.find(p => p.type === type);
   return pattern?.ttl ?? 3600;
 }
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("global-cache");

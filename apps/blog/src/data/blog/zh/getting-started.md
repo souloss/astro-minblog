@@ -54,7 +54,7 @@ CLI 还提供实用的管理命令：
 ```bash
 astro-minimax post new "文章标题"    # 创建新文章
 astro-minimax ai process              # AI 处理文章（摘要+SEO）
-astro-minimax profile build           # 构建作者画像
+astro-minimax ai profile build        # 构建作者画像
 astro-minimax data status             # 查看数据状态
 ```
 
@@ -121,11 +121,17 @@ export const SITE = {
     tags: true,
     categories: true,
     search: true,
-    darkMode: true,
-    // 按需启用更多功能
-    ai: false,
-    waline: false,
-    sponsor: false,
+  },
+  darkMode: true,
+  ai: {
+    enabled: false,
+  },
+  waline: {
+    enabled: false,
+    serverURL: "",
+  },
+  sponsor: {
+    enabled: false,
   },
   // ...
 };
@@ -175,7 +181,7 @@ astro-minimax 支持多种部署平台，推荐 Cloudflare Pages：
 ```bash
 # 连接 Git 仓库到 Cloudflare Pages
 # 构建命令：pnpm run build
-# 构建输出目录：apps/blog/dist
+# 构建输出目录：dist
 ```
 
 也可以部署到 Vercel、Netlify 或使用 Docker。详见 [部署指南](/zh/posts/deployment-guide)。
@@ -230,31 +236,25 @@ export default defineConfig({
     minimax({
       site: SITE,
       socials: SOCIALS,
-      viz: { mermaid: true, markmap: true },
+      shareLinks: SHARE_LINKS,
+      friends: FRIENDS,
+      blogPath: 'src/data/blog',
     }),
     preact({ compat: true }),
   ],
 });
 ```
 
-### 4. 使用布局和组件
+可视化能力（如 Mermaid、Markmap）由主题内置的 Markdown / 组件支持提供，不需要额外写 `viz` 配置。
 
-```astro
----
-import Layout from '@astro-minimax/core/layouts/Layout.astro';
-import Header from '@astro-minimax/core/components/nav/Header.astro';
-import Footer from '@astro-minimax/core/components/nav/Footer.astro';
-import Card from '@astro-minimax/core/components/ui/Card.astro';
----
+### 4. 关于页面与路由
 
-<Layout title="My Blog">
-  <Header />
-  <main>
-    <slot />
-  </main>
-  <Footer />
-</Layout>
-```
+使用 `@astro-minimax/core` 集成后，主题会自动注入博客所需的页面路由，因此一般**不需要手动创建 `src/pages/` 来拼 Layout / Header / Footer**。你主要维护的是：
+
+- `src/config.ts`：站点配置
+- `src/constants.ts`：社交链接与分享链接
+- `src/data/blog/`：文章内容
+- `src/data/friends.ts`：友链数据（如启用）
 
 ### 5. 更新
 

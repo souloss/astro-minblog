@@ -31,6 +31,7 @@ export function getPostURL(id: string): string {
 export async function getAllPosts(opts?: {
   includeDrafts?: boolean;
   stripBody?: boolean;
+  includeUnderscoreDirs?: boolean;
 }): Promise<PostMeta[]> {
   const posts: PostMeta[] = [];
 
@@ -38,7 +39,10 @@ export async function getAllPosts(opts?: {
     const entries = await readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = join(dir, entry.name);
-      if (entry.isDirectory() && !entry.name.startsWith("_")) {
+      if (
+        entry.isDirectory() &&
+        (opts?.includeUnderscoreDirs || !entry.name.startsWith("_"))
+      ) {
         await walk(fullPath);
       } else if (entry.name.endsWith(".md") || entry.name.endsWith(".mdx")) {
         const content = await readFile(fullPath, "utf-8");

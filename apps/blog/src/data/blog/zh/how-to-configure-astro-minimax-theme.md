@@ -1,7 +1,7 @@
 ---
 author: Souloss
 pubDatetime: 2022-09-23T04:58:53Z
-modDatetime: 2026-03-17T20:44:00Z
+modDatetime: 2026-03-30T00:00:00.000Z
 title: 如何配置 astro-minimax 主题
 featured: true
 draft: false
@@ -126,7 +126,6 @@ ai: {
   enabled: true,
   mockMode: true,
   apiEndpoint: "/api/chat",
-  model: "@cf/zai-org/glm-4.7-flash",
 },
 ```
 
@@ -391,7 +390,6 @@ ai: {
   enabled: true,
   mockMode: true,
   apiEndpoint: "/api/chat",
-  model: "@cf/zai-org/glm-4.7-flash",
   welcomeMessage: undefined,
   placeholder: undefined,
 },
@@ -402,11 +400,45 @@ ai: {
 | `enabled` | 是否启用 AI 聊天（设置为 `true`） |
 | `mockMode` | Mock 模式下返回预设回复，不调用真实 API，适合开发调试 |
 | `apiEndpoint` | API 端点地址。使用 Cloudflare Pages Functions 时为 `/api/chat` |
-| `model` | 使用的模型 ID。默认使用 Cloudflare Workers AI 的 GLM-4.7 Flash |
 | `welcomeMessage` | 自定义欢迎消息 |
 | `placeholder` | 自定义输入框占位文本 |
 
-> AI 聊天功能使用 Cloudflare Pages Functions 作为后端。需要在 Cloudflare 上部署并配置 AI Binding。详见 `apps/blog/functions/` 目录和 `wrangler.toml`。
+### AI 高级配置
+
+`SITE.ai` 还支持以下高级选项：
+
+```js file=src/config.ts
+ai: {
+  // ... 基础配置
+  cache: {
+    enabled: false,    // 启用响应缓存
+    ttl: 3600,         // 缓存过期时间（秒）
+  },
+  timeouts: {
+    request: 45000,           // 总请求超时（毫秒）
+    keywordExtraction: 5000,  // 关键词提取超时
+    evidenceAnalysis: 8000,   // 证据分析超时
+    llmStreaming: 30000,      // LLM 流式响应超时
+  },
+  health: {
+    unhealthyThreshold: 3,    // 标记为不健康前的失败次数
+    recoveryTtl: 60000,       // 恢复检查间隔（毫秒）
+  },
+},
+```
+
+| 选项 | 说明 |
+|------|------|
+| `cache.enabled` | 是否启用 AI 响应缓存 |
+| `cache.ttl` | 缓存存活时间，单位秒 |
+| `timeouts.request` | 总请求超时时间，默认 45 秒 |
+| `timeouts.keywordExtraction` | 关键词提取超时，默认 5 秒 |
+| `timeouts.evidenceAnalysis` | 证据分析超时，默认 8 秒 |
+| `timeouts.llmStreaming` | LLM 流式响应超时，默认 30 秒 |
+| `health.unhealthyThreshold` | 连续失败多少次后标记 Provider 为不健康 |
+| `health.recoveryTtl` | 不健康 Provider 的恢复检查间隔 |
+
+> AI 聊天功能使用 Cloudflare Pages Functions 作为后端。模型与 Provider 优先级通过环境变量和服务端运行时决定，而不是写在 `SITE.ai` 里。详见 `apps/blog/functions/`、`wrangler.toml` 与 [AI 配置指南](/zh/posts/ai-guide)。
 
 ## 配置赞助
 

@@ -1,19 +1,7 @@
 export { handleChatRequest } from './chat-handler.js';
-export { initializeMetadata, resetMetadataInit, initializeExtensions, areExtensionsLoaded } from './metadata-init.js';
+export { initializeMetadata } from './metadata-init.js';
+export { applyAiConfigDefaults } from './env-config.js';
 export { errors, corsPreflightResponse, chatError } from './errors.js';
-export { notifyAiChat } from './notify.js';
-export type { ChatNotifyOptions } from './notify.js';
-export {
-  writeSearchStatus,
-  writeGeneratingStatus,
-  writeDoneStatus,
-  writeSourceArticles,
-  writeTextChunk,
-  writeFinish,
-  streamLLMResponse,
-  streamMockFallback,
-  streamCachedResponse,
-} from './stream-helpers.js';
 export {
   createChatStatusData,
   isChatStatusData,

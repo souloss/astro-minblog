@@ -83,6 +83,7 @@ async function createNewPost(args: string[]): Promise<void> {
 title: "${title.replace(/"/g, '\\"')}"
 pubDatetime: ${now}
 modDatetime: ${now}
+description: "${title.replace(/"/g, '\\"')}"
 category: ${category}
 tags:
   - draft

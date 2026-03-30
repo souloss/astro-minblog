@@ -13,7 +13,6 @@ import { slugifyStr } from "../utils/slugify";
 import IconChevronLeft from "../assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "../assets/icons/IconChevronRight.svg";
 import { SITE } from "virtual:astro-minimax/config";
-import aiSummaries from "virtual:astro-minimax/ai-summaries";
 import aiSeo from "virtual:astro-minimax/ai-seo";
 import FloatingTOC from "../components/blog/FloatingTOC.astro";
 import FloatingSeriesNav from "../components/blog/FloatingSeriesNav.astro";
@@ -76,7 +75,6 @@ const ogImage = ogImageUrl
 
 const slug = getPostSlug(post.id);
 const aiSummaryKey = `${lang}/${slug}`;
-const aiSummary = aiSummaries?.articles?.[aiSummaryKey]?.data;
 const aiSeoData = aiSeo?.articles?.[aiSummaryKey]?.data;
 
 // SEO data with ai-seo priority
@@ -88,9 +86,9 @@ const articleContext = {
   slug,
   title: title ?? '',
   categories: category ? [category] : [],
-  summary: seoDescription ?? aiSummary?.summary ?? '',
-  abstract: aiSummary?.abstract,
-  keyPoints: (aiSummary?.keyPoints ?? []) as string[],
+  summary: seoDescription ?? description ?? '',
+  abstract: undefined,
+  keyPoints: [],
 };
 
 const layoutProps = {
@@ -402,13 +400,9 @@ const nextPost =
 
       applyStickyBackToTopVisibility();
 
-      const originalSetItem = localStorage.setItem.bind(localStorage);
-      localStorage.setItem = function(key, value) {
-        originalSetItem(key, value);
-        if (key === 'astro-minimax-settings') {
-          setTimeout(applyStickyBackToTopVisibility, 0);
-        }
-      };
+      window.addEventListener('astro-minimax:preferences-change', () => {
+        applyStickyBackToTopVisibility();
+      });
 
       let rafId = null;
       scrollHandler = function() {

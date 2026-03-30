@@ -1,5 +1,32 @@
 import type { SiteConfig } from "@astro-minimax/core/types";
 
+const navItems: NonNullable<SiteConfig["nav"]>["items"] = [
+  { key: "home", enabled: true },
+  { key: "posts", enabled: true },
+  { key: "tags", enabled: true },
+  { key: "categories", enabled: true },
+  { key: "series", enabled: true },
+  { key: "projects", enabled: true },
+  { key: "about", enabled: true },
+  { key: "friends", enabled: true },
+  { key: "archives", enabled: true },
+];
+
+const projects: NonNullable<SiteConfig["projects"]> = [
+  { repo: "souloss/astro-minimax", featured: true },
+  { repo: "withastro/astro" },
+];
+
+const sponsorMethods: NonNullable<
+  NonNullable<SiteConfig["sponsor"]>["methods"]
+> = [
+  { name: "微信支付", icon: "wechat", image: "/images/wechat-pay.svg" },
+  { name: "支付宝", icon: "alipay", image: "/images/alipay.svg" },
+];
+
+const sponsors: NonNullable<NonNullable<SiteConfig["sponsor"]>["sponsors"]> =
+  [];
+
 export const SITE: SiteConfig = {
   website: "https://demo-astro-minimax.souloss.cn/",
   author: "Souloss",
@@ -19,7 +46,7 @@ export const SITE: SiteConfig = {
   },
   dynamicOgImage: true,
   dir: "ltr" as const,
-  lang: "zh" as string,
+  lang: "zh",
   timezone: "Asia/Shanghai",
 
   features: {
@@ -35,23 +62,10 @@ export const SITE: SiteConfig = {
   darkMode: true,
 
   nav: {
-    items: [
-      { key: "home", enabled: true },
-      { key: "posts", enabled: true },
-      { key: "tags", enabled: true },
-      { key: "categories", enabled: true },
-      { key: "series", enabled: true },
-      { key: "projects", enabled: true },
-      { key: "about", enabled: true },
-      { key: "friends", enabled: true },
-      { key: "archives", enabled: true },
-    ] as { key: string; enabled: boolean }[],
+    items: navItems,
   },
 
-  projects: [
-    { repo: "souloss/astro-minimax", featured: true },
-    { repo: "withastro/astro" },
-  ] as { repo: string; featured?: boolean; description?: string }[],
+  projects,
 
   umami: {
     enabled: true,
@@ -81,8 +95,6 @@ export const SITE: SiteConfig = {
     enabled: true,
     mockMode: false,
     apiEndpoint: "/api/chat",
-    welcomeMessage: undefined as string | undefined,
-    placeholder: undefined as string | undefined,
     cache: {
       enabled: false,
       ttl: 3600,
@@ -100,16 +112,8 @@ export const SITE: SiteConfig = {
   },
   sponsor: {
     enabled: true,
-    methods: [
-      { name: "微信支付", icon: "wechat", image: "/images/wechat-pay.svg" },
-      { name: "支付宝", icon: "alipay", image: "/images/alipay.svg" },
-    ] as { name: string; icon: string; image: string }[],
-    sponsors: [] as {
-      name: string;
-      platform?: string;
-      amount: number;
-      date: string;
-    }[],
+    methods: sponsorMethods,
+    sponsors,
   },
   copyright: {
     license: "CC BY-NC-SA 4.0",

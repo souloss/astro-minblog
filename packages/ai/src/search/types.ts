@@ -33,8 +33,10 @@ export interface ArticleChunk {
 }
 
 export interface ArticleContext {
+  id?: string;
   title: string;
   url: string;
+  lang?: string;
   summary?: string;
   keyPoints: string[];
   categories: string[];
@@ -46,6 +48,23 @@ export interface ArticleContext {
   rrfScore?: number;
   bm25Rank?: number;
   vectorRank?: number;
+}
+
+export interface SourceSelection {
+  title: string;
+  url?: string;
+  lang?: string;
+  reason:
+    | "chunk"
+    | "evidence"
+    | "article-context"
+    | "retrieval-fallback"
+    | "cache";
+  score?: number;
+  chunkId?: string;
+  heading?: string;
+  snippet?: string;
+  matchTerms?: string[];
 }
 
 export interface ProjectContext {

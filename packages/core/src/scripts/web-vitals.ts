@@ -23,7 +23,9 @@ function getRating(name: string, value: number): WebVitalMetric["rating"] {
 }
 
 function reportMetric(metric: WebVitalMetric) {
-  const isDev = typeof import.meta !== 'undefined' && (import.meta as { env?: { DEV?: boolean } }).env?.DEV;
+  const isDev =
+    typeof import.meta !== "undefined" &&
+    (import.meta as { env?: { DEV?: boolean } }).env?.DEV;
   if (isDev) {
     const color =
       metric.rating === "good"
@@ -31,8 +33,7 @@ function reportMetric(metric: WebVitalMetric) {
         : metric.rating === "needs-improvement"
           ? "#ffa400"
           : "#ff4e42";
-    // eslint-disable-next-line no-console
-    console.log(
+    globalThis.console.log(
       `%c[Web Vitals] ${metric.name}: ${metric.value.toFixed(1)}ms (${metric.rating})`,
       `color: ${color}; font-weight: bold;`
     );
@@ -59,7 +60,7 @@ function observeWebVitals() {
       }
     });
     lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
-    manager.trackObserver(lcpObserver, 'performance');
+    manager.trackObserver(lcpObserver, "performance");
 
     const fcpObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
@@ -74,7 +75,7 @@ function observeWebVitals() {
       }
     });
     fcpObserver.observe({ type: "paint", buffered: true });
-    manager.trackObserver(fcpObserver, 'performance');
+    manager.trackObserver(fcpObserver, "performance");
 
     const clsObserver = new PerformanceObserver(list => {
       let clsValue = 0;
@@ -94,7 +95,7 @@ function observeWebVitals() {
       });
     });
     clsObserver.observe({ type: "layout-shift", buffered: true });
-    manager.trackObserver(clsObserver, 'performance');
+    manager.trackObserver(clsObserver, "performance");
 
     const fidObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
@@ -111,19 +112,21 @@ function observeWebVitals() {
       }
     });
     fidObserver.observe({ type: "first-input", buffered: true });
-    manager.trackObserver(fidObserver, 'performance');
+    manager.trackObserver(fidObserver, "performance");
 
     let inpValue = 0;
     const inpObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
-        const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
+        const eventEntry = entry as PerformanceEventTiming & {
+          interactionId?: number;
+        };
         if (eventEntry.interactionId && eventEntry.duration) {
           inpValue = Math.max(inpValue, eventEntry.duration);
         }
       }
     });
     inpObserver.observe({ type: "event", buffered: true });
-    manager.trackObserver(inpObserver, 'performance');
+    manager.trackObserver(inpObserver, "performance");
 
     const reportINP = () => {
       if (inpValue > 0) {
@@ -136,11 +139,11 @@ function observeWebVitals() {
       }
     };
 
-    if (document.visibilityState === 'hidden') {
+    if (document.visibilityState === "hidden") {
       reportINP();
     } else {
-      manager.add(document, 'visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
+      manager.add(document, "visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
           reportINP();
         }
       });

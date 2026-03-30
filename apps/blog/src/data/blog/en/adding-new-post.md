@@ -1,7 +1,7 @@
 ---
 author: Souloss
 pubDatetime: 2022-09-23T15:22:00Z
-modDatetime: 2026-03-17T20:43:59Z
+modDatetime: 2026-03-30T00:00:00.000Z
 title: Adding new posts in astro-minimax theme
 slug: adding-new-posts-in-astro-minimax-theme
 featured: true
@@ -125,6 +125,21 @@ description: This is the example description of the example post.
 canonicalURL: https://example.org/my-article-was-already-posted-here
 ---
 ```
+
+## Cover Image vs OG Image
+
+The `cover` and `ogImage` fields in the frontmatter serve different purposes:
+
+- **`cover`** — Cover image for post cards and article banners. Supports local image paths or remote URLs.
+- **`ogImage`** — Social sharing image for Twitter, Facebook, and other platforms. Supports local image paths or remote URLs.
+
+### Fallback Behavior
+
+Image display follows this priority:
+
+1. `cover` is set → use `cover` for cards and banners
+2. No `cover`, but `ogImage` is set → `ogImage` is used as the cover image as well
+3. Neither is set → a dynamic OG image is auto-generated at build time, used for both cover and social sharing
 
 ## Headings
 

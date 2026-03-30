@@ -1,14 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * 博客内容向量化与索引生成
- *
- * 用法:
- *   pnpm run tools:vectorize              # TF-IDF 模式（无需 API Key）
- *   pnpm run tools:vectorize --openai     # OpenAI Embeddings 模式
- *
- * 环境变量:
- *   AI_API_KEY / OPENAI_API_KEY（仅 --openai 模式需要）
- */
 
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
@@ -20,16 +10,19 @@ import {
   type ContentChunk,
   type VectorIndex,
 } from "./lib/vectors.js";
+import { KNOWLEDGE_RUNTIME_DIR } from "./lib/knowledge.js";
 
-const OUTPUT_DIR = join(process.cwd(), "src/data/vectors");
-const OUTPUT_FILE = join(OUTPUT_DIR, "index.json");
+const KNOWLEDGE_OUTPUT_FILE = join(KNOWLEDGE_RUNTIME_DIR, "vector-index.json");
 
 async function main() {
   const useOpenAI = process.argv.includes("--openai");
   const method = useOpenAI ? "openai" : "tfidf";
 
   console.log(`📚 读取博客文章...`);
-  const posts = await getAllPosts({ stripBody: false });
+  const posts = await getAllPosts({
+    stripBody: false,
+    includeUnderscoreDirs: true,
+  });
   console.log(`   找到 ${posts.length} 篇文章\n`);
 
   console.log(`📝 按标题分段...`);
@@ -37,7 +30,7 @@ async function main() {
 
   for (const post of posts) {
     const fullText = `# ${post.title}\n\n${post.description}\n\n${post.body}`;
-    
+
     // 使用新的段落分段器
     const articleChunks = chunkMarkdownByHeaders(fullText, post.id, {
       maxTokens: 512,
@@ -73,11 +66,15 @@ async function main() {
       chunks,
     };
 
-    await mkdir(OUTPUT_DIR, { recursive: true });
-    await writeFile(OUTPUT_FILE, JSON.stringify(index, null, 0), "utf-8");
+    await mkdir(KNOWLEDGE_RUNTIME_DIR, { recursive: true });
+    await writeFile(
+      KNOWLEDGE_OUTPUT_FILE,
+      JSON.stringify(index, null, 0),
+      "utf-8"
+    );
 
     const fileSize = (JSON.stringify(index).length / 1024).toFixed(1);
-    console.log(`\n✅ 索引已生成: ${OUTPUT_FILE}`);
+    console.log(`\n✅ 索引已生成: ${KNOWLEDGE_OUTPUT_FILE}`);
     console.log(`   文件大小: ${fileSize} KB`);
     console.log(`   内容块: ${chunks.length}`);
   } else {
@@ -95,18 +92,22 @@ async function main() {
       chunks,
     };
 
-    await mkdir(OUTPUT_DIR, { recursive: true });
-    await writeFile(OUTPUT_FILE, JSON.stringify(index, null, 0), "utf-8");
+    await mkdir(KNOWLEDGE_RUNTIME_DIR, { recursive: true });
+    await writeFile(
+      KNOWLEDGE_OUTPUT_FILE,
+      JSON.stringify(index, null, 0),
+      "utf-8"
+    );
 
     const fileSize = (JSON.stringify(index).length / 1024).toFixed(1);
-    console.log(`\n✅ 索引已生成: ${OUTPUT_FILE}`);
+    console.log(`\n✅ 索引已生成: ${KNOWLEDGE_OUTPUT_FILE}`);
     console.log(`   文件大小: ${fileSize} KB`);
     console.log(`   词汇量: ${vocabulary.length}`);
     console.log(`   内容块: ${chunks.length}`);
   }
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error(err);
   process.exit(1);
 });

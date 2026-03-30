@@ -30,9 +30,15 @@ export function filterValidMessages(messages: UIMessage[]): UIMessage[] {
     lastRole = msg.role;
   }
 
-  if (filtered.length > 0 && filtered[filtered.length - 1].role !== 'user') {
-    filtered.pop();
-  }
-
   return filtered;
+}
+
+export function getLatestUserText(messages: UIMessage[]): string {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i];
+    if (msg?.role !== 'user') continue;
+    const text = getMessageText(msg);
+    if (text.trim()) return text;
+  }
+  return '';
 }

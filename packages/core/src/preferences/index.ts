@@ -26,7 +26,7 @@ export type {
   ReadingWidthType,
   ReadingThemeType,
   ReadingFontFamilyType,
-} from './types';
+} from "./types";
 
 // Defaults
 export {
@@ -38,14 +38,10 @@ export {
   READING_WIDTH_VALUES,
   READING_THEME_COLORS,
   READING_FONT_FAMILY_VALUES,
-} from './defaults';
+} from "./defaults";
 
 // Presets
-export {
-  themePresets,
-  getThemePreset,
-  getPresetIds,
-} from './presets';
+export { themePresetMeta, getThemePresetMeta, getPresetIds } from "./presets";
 
 // Storage
 export {
@@ -57,7 +53,7 @@ export {
   getPreference,
   setPreference,
   getEffectiveDefaults,
-} from './storage';
+} from "./storage";
 
 // Share
 export {
@@ -67,4 +63,6 @@ export {
   clearShareURL,
   copyShareURL,
   mergeSharedPreferences,
-} from './share';
+} from "./share";
+
+export { settingsPanelClient } from "./client";

@@ -1,6 +1,7 @@
 ---
 title: "Configuring Environment Variables in Cloudflare Pages"
 pubDatetime: 2026-03-18T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "A step-by-step guide to configuring environment variables in Cloudflare Pages Dashboard for astro-minimax features including AI chat, notifications, and build settings."
 tags:
@@ -36,12 +37,12 @@ Understanding when variables are accessed is crucial:
 | Variable          | Used At | Effect of Change  |
 | ----------------- | ------- | ----------------- |
 | `NODE_VERSION`    | Build   | Requires redeploy |
-| `AI_BINDING_NAME` | Build   | Requires redeploy |
 
 **Runtime Variables** are accessed when the application runs. Changes take effect on the next request without redeployment.
 
 | Variable                    | Used At | Effect of Change |
 | --------------------------- | ------- | ---------------- |
+| `AI_BINDING_NAME`           | Runtime | Immediate        |
 | `AI_API_KEY`                | Runtime | Immediate        |
 | `NOTIFY_TELEGRAM_BOT_TOKEN` | Runtime | Immediate        |
 | `NOTIFY_RESEND_API_KEY`     | Runtime | Immediate        |
@@ -127,6 +128,15 @@ See the [AI Guide](/en/posts/ai-guide) for detailed configuration.
 | `SITE_URL`    | `https://your-blog.com` | No       | Your site URL for AI context |
 | `SITE_AUTHOR` | `YourName`              | No       | Author name for AI responses |
 
+### CORS Configuration
+
+| Variable        | Example                  | Required | Description                                                         |
+| --------------- | ------------------------ | -------- | ------------------------------------------------------------------- |
+| `CORS_ORIGIN`   | `https://your-blog.com`  | No       | Allowed origin for CORS headers. Replaces the default `*` wildcard. |
+
+- **When to set**: In production to restrict API access to your domain only.
+- **Default behavior**: When unset, the API allows all origins (`*`).
+
 ## Step-by-Step: Adding Variables
 
 Follow these steps to add environment variables in Cloudflare Pages Dashboard.
@@ -206,14 +216,13 @@ The `AI_BINDING_NAME` environment variable must match the `[ai].binding` value:
 | wrangler.toml           | Environment Variable        |
 | ----------------------- | --------------------------- |
 | `binding = "minimaxAI"` | `AI_BINDING_NAME=minimaxAI` |
-| `binding = "AI"`        | `AI_BINDING_NAME=AI`        |
 
 ### How It Works
 
-1. Cloudflare Pages reads `wrangler.toml` during deployment
-2. The `[ai].binding` creates a Workers AI binding
+1. Cloudflare Pages reads `wrangler.toml` and creates the Workers AI binding
+2. Pages Functions receive that binding at runtime
 3. Your code accesses AI via the binding name
-4. The environment variable tells astro-minimax which binding to use
+4. `AI_BINDING_NAME` tells astro-minimax which runtime binding name to resolve
 
 ## KV Namespace Configuration
 

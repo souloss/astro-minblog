@@ -1,10 +1,16 @@
-import type { CommentEvent, TelegramTemplate, WebhookPayload, EmailTemplate } from '../types.js';
-import { escapeHtml, sanitizeUrl } from '../utils.js';
+import type {
+  CommentEvent,
+  TelegramTemplate,
+  WebhookPayload,
+  EmailTemplate,
+} from "../types.js";
+import { escapeHtml, sanitizeUrl } from "../utils.js";
 
 export function telegramTemplate(event: CommentEvent): TelegramTemplate {
-  const content = event.content.length > 200 
-    ? event.content.slice(0, 200) + '...' 
-    : event.content;
+  const content =
+    event.content.length > 200
+      ? event.content.slice(0, 200) + "..."
+      : event.content;
 
   return {
     text: `💬 <b>新评论</b>
@@ -15,14 +21,14 @@ export function telegramTemplate(event: CommentEvent): TelegramTemplate {
 <i>「${escapeHtml(content)}」</i>
 
 🔗 <a href="${sanitizeUrl(event.postUrl)}">查看评论</a>`,
-    parse_mode: 'HTML',
+    parse_mode: "HTML",
   };
 }
 
 export function webhookPayload(event: CommentEvent): WebhookPayload {
   return {
-    event: 'comment',
-    timestamp: new Date().toISOString(),
+    event: "comment",
+    timestamp: event.timestamp?.toISOString() ?? new Date().toISOString(),
     data: {
       author: event.author,
       content: event.content,
@@ -33,9 +39,10 @@ export function webhookPayload(event: CommentEvent): WebhookPayload {
 }
 
 export function emailTemplate(event: CommentEvent): EmailTemplate {
-  const content = event.content.length > 500 
-    ? event.content.slice(0, 500) + '...' 
-    : event.content;
+  const content =
+    event.content.length > 500
+      ? event.content.slice(0, 500) + "..."
+      : event.content;
 
   return {
     subject: `💬 新评论 - ${event.postTitle}`,

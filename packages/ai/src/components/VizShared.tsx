@@ -1,4 +1,197 @@
-import { useCallback, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
+
+interface Size {
+  width: number;
+  height: number;
+}
+
+const VIZ_MIN_SCALE = 0.3;
+const VIZ_MAX_SCALE = 5;
+const VIZ_SCALE_STEP = 0.2;
+
+function clampVizScale(scale: number) {
+  return Math.min(VIZ_MAX_SCALE, Math.max(VIZ_MIN_SCALE, scale));
+}
+
+export function useVizScaleControls(initialScale = 1) {
+  const [scale, setScale] = useState(initialScale);
+
+  const handleZoomIn = useCallback(() => {
+    setScale((current) => clampVizScale(current + VIZ_SCALE_STEP));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setScale((current) => clampVizScale(current - VIZ_SCALE_STEP));
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setScale(initialScale);
+  }, [initialScale]);
+
+  const zoomWithWheelDelta = useCallback((deltaY: number) => {
+    if (deltaY === 0) return;
+    setScale((current) => clampVizScale(current + (deltaY < 0 ? VIZ_SCALE_STEP : -VIZ_SCALE_STEP)));
+  }, []);
+
+  const handleWheelZoom = useCallback((event: WheelEvent) => {
+    event.preventDefault();
+    zoomWithWheelDelta(event.deltaY);
+  }, [zoomWithWheelDelta]);
+
+  return {
+    scale,
+    setScale,
+    handleZoomIn,
+    handleZoomOut,
+    handleReset,
+    handleWheelZoom,
+    zoomWithWheelDelta,
+  };
+}
+
+export function measureElementSize(element: HTMLElement): Size {
+  return {
+    width: Math.max(1, Math.ceil(element.scrollWidth || element.offsetWidth || element.clientWidth || 1)),
+    height: Math.max(1, Math.ceil(element.scrollHeight || element.offsetHeight || element.clientHeight || 1)),
+  };
+}
+
+export function getScaledCanvasStyles(baseSize: Size, scale: number) {
+  return {
+    scaledStyle: {
+      width: `${Math.max(1, Math.ceil(baseSize.width * scale))}px`,
+      height: `${Math.max(1, Math.ceil(baseSize.height * scale))}px`,
+    },
+    transformStyle: {
+      transform: `scale(${scale})`,
+      transformOrigin: 'top left',
+    },
+  };
+}
+
+export function useScaledCanvas(
+  ref: { current: HTMLElement | null },
+  scale: number,
+  deps: readonly unknown[] = []
+) {
+  const [baseSize, setBaseSize] = useState<Size>({ width: 1, height: 1 });
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const updateSize = () => setBaseSize(measureElementSize(element));
+
+    updateSize();
+
+    const frame = requestAnimationFrame(updateSize);
+    const delayedFrame = requestAnimationFrame(() => requestAnimationFrame(updateSize));
+    const settleTimer = window.setTimeout(updateSize, 180);
+    const lateTimer = window.setTimeout(updateSize, 420);
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(updateSize)
+      : null;
+
+    resizeObserver?.observe(element);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(delayedFrame);
+      window.clearTimeout(settleTimer);
+      window.clearTimeout(lateTimer);
+      resizeObserver?.disconnect();
+    };
+  }, deps);
+
+  return {
+    baseSize,
+    ...getScaledCanvasStyles(baseSize, scale),
+  };
+}
+
+export function useDragPanScroll(
+  ref: { current: HTMLElement | null },
+  enabled: boolean,
+  deps: readonly unknown[] = []
+) {
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || !enabled) return;
+
+    let pointerId: number | null = null;
+    let startX = 0;
+    let startY = 0;
+    let startScrollLeft = 0;
+    let startScrollTop = 0;
+
+    const setIdleCursor = () => {
+      element.style.cursor = 'grab';
+    };
+
+    const clearDraggingState = () => {
+      pointerId = null;
+      element.style.cursor = 'grab';
+      element.style.userSelect = '';
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.button !== 0 || event.pointerType === 'touch') return;
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest('button, a, input, textarea, select, summary')) return;
+
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startScrollLeft = element.scrollLeft;
+      startScrollTop = element.scrollTop;
+
+      element.style.cursor = 'grabbing';
+      element.style.userSelect = 'none';
+      element.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (pointerId !== event.pointerId) return;
+
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      element.scrollLeft = startScrollLeft - deltaX;
+      element.scrollTop = startScrollTop - deltaY;
+    };
+
+    const handlePointerUp = (event: PointerEvent) => {
+      if (pointerId !== event.pointerId) return;
+      if (element.hasPointerCapture(event.pointerId)) {
+        element.releasePointerCapture(event.pointerId);
+      }
+      clearDraggingState();
+    };
+
+    const handlePointerCancel = (event: PointerEvent) => {
+      if (pointerId !== event.pointerId) return;
+      clearDraggingState();
+    };
+
+    setIdleCursor();
+    element.addEventListener('pointerdown', handlePointerDown);
+    element.addEventListener('pointermove', handlePointerMove);
+    element.addEventListener('pointerup', handlePointerUp);
+    element.addEventListener('pointercancel', handlePointerCancel);
+    element.addEventListener('lostpointercapture', clearDraggingState);
+
+    return () => {
+      element.removeEventListener('pointerdown', handlePointerDown);
+      element.removeEventListener('pointermove', handlePointerMove);
+      element.removeEventListener('pointerup', handlePointerUp);
+      element.removeEventListener('pointercancel', handlePointerCancel);
+      element.removeEventListener('lostpointercapture', clearDraggingState);
+      element.style.cursor = '';
+      element.style.userSelect = '';
+    };
+  }, [enabled, ...deps]);
+}
 
 // ── Visualization Toolbar Component ─────────────────────────────────
 
@@ -85,26 +278,9 @@ export function CopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
   
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback for older browsers
-      const textarea = document.createElement('textarea');
-      textarea.value = code;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } finally {
-        document.body.removeChild(textarea);
-      }
-    }
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, [code]);
   
   return (

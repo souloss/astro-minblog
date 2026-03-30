@@ -1,33 +1,13 @@
-interface HastElement {
-  type: "element";
-  tagName: string;
-  properties: Record<string, unknown>;
-  children: (HastElement | HastText)[];
-}
+import type { ShikiTransformer } from "@shikijs/types";
 
-interface HastText {
-  type: "text";
-  value: string;
-}
-
-interface ShikiTransformerContext {
-  options: {
-    lang: string;
-    meta?: { __raw?: string; [key: string]: unknown };
-  };
-  source: string;
-  lines: unknown[];
-  addClassToHast?: (node: HastElement, cls: string) => void;
-}
-
-interface ShikiTransformer {
-  name: string;
-  pre?: (this: ShikiTransformerContext, node: HastElement) => void;
-}
+type ShikiPre = NonNullable<ShikiTransformer["pre"]>;
+type ShikiTransformerContext = ThisParameterType<ShikiPre>;
+type HastElement = Parameters<ShikiPre>[0];
+type HastText = Extract<HastElement["children"][number], { type: "text" }>;
 
 function el(
   tag: string,
-  props: Record<string, unknown>,
+  props: HastElement["properties"],
   children: (HastElement | HastText)[] | string = []
 ): HastElement {
   return {
@@ -36,7 +16,7 @@ function el(
     properties: props,
     children:
       typeof children === "string"
-        ? [{ type: "text" as const, value: children }]
+        ? [{ type: "text", value: children }]
         : children,
   };
 }
@@ -57,13 +37,9 @@ function parseMetaString(str = ""): Record<string, string | true> {
   );
 }
 
-/**
- * Wraps the default `<pre>` in a `<div>` container for richer layout
- * (title bar, language label, copy button, collapse toggle).
- */
 export const updateStyle = (): ShikiTransformer => ({
   name: "shiki-transformer-update-style",
-  pre(node) {
+  pre(this: ShikiTransformerContext, node: HastElement) {
     const container: HastElement = {
       type: "element",
       tagName: "pre",
@@ -72,35 +48,31 @@ export const updateStyle = (): ShikiTransformer => ({
     };
     node.children = [container];
     node.tagName = "div";
+    return node;
   },
 });
 
-/**
- * Parses `title="..."` or `file="..."` from the code-fence meta string
- * and prepends a styled title bar to the code block.
- */
 export const addTitle = (): ShikiTransformer => ({
   name: "shiki-transformer-add-title",
-  pre(node) {
+  pre(this: ShikiTransformerContext, node: HastElement) {
     const rawMeta = this.options.meta?.__raw;
     if (!rawMeta) return;
     const meta = parseMetaString(rawMeta);
     const label = meta.title || meta.file;
     if (!label) return;
 
-    node.children.unshift(
-      el("div", { class: "code-title" }, label.toString())
-    );
+    node.children.unshift(el("div", { class: "code-title" }, label.toString()));
+    return node;
   },
 });
 
-/**
- * Appends a language label (e.g. `ts`, `css`) to the top-right of the block.
- */
 export const addLanguage = (): ShikiTransformer => ({
   name: "shiki-transformer-add-language",
-  pre(node) {
-    node.children.push(el("span", { class: "code-language" }, this.options.lang));
+  pre(this: ShikiTransformerContext, node: HastElement) {
+    node.children.push(
+      el("span", { class: "code-language" }, this.options.lang)
+    );
+    return node;
   },
 });
 
@@ -146,12 +118,9 @@ const checkSvg: HastElement = el(
   [el("polyline", { points: "20 6 9 17 4 12" })]
 );
 
-/**
- * Injects a copy-to-clipboard button at build time.
- */
 export const addCopyButton = (timeout = 2000): ShikiTransformer => ({
   name: "shiki-transformer-copy-button",
-  pre(node) {
+  pre(this: ShikiTransformerContext, node: HastElement) {
     node.children.push(
       el(
         "button",
@@ -167,6 +136,7 @@ export const addCopyButton = (timeout = 2000): ShikiTransformer => ({
         ]
       )
     );
+    return node;
   },
 });
 
@@ -185,16 +155,18 @@ const chevronSvg: HastElement = el(
   [el("polyline", { points: "6 9 12 15 18 9" })]
 );
 
-/**
- * Collapses code blocks that exceed `maxLines` lines.
- */
 export const addCollapse = (maxLines = 15): ShikiTransformer => ({
   name: "shiki-transformer-add-collapse",
-  pre(node) {
+  pre(this: ShikiTransformerContext, node: HastElement) {
     if (this.lines.length <= maxLines) return;
+    const existingClass = Array.isArray(node.properties.class)
+      ? node.properties.class.join(" ")
+      : typeof node.properties.class === "string"
+        ? node.properties.class
+        : "";
     node.properties = {
       ...node.properties,
-      class: `${(node.properties?.class as string) || ""} collapsed`,
+      class: `${existingClass} collapsed`.trim(),
     };
     node.children.push(
       el(
@@ -208,5 +180,6 @@ export const addCollapse = (maxLines = 15): ShikiTransformer => ({
       )
     );
     node.children.push(el("div", { class: "code-collapse-fade" }));
+    return node;
   },
 });

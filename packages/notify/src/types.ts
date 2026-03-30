@@ -9,12 +9,12 @@ export interface TelegramConfig {
 
 export interface WebhookConfig {
   url: string;
-  method?: 'POST';
+  method?: "POST";
   headers?: Record<string, string>;
 }
 
 export interface EmailConfig {
-  provider: 'resend';
+  provider: "resend";
   apiKey: string;
   from: string;
   to: string;
@@ -28,19 +28,38 @@ export interface NotifyConfig {
   logger?: Logger;
 }
 
+export interface NotifyEnv {
+  NOTIFY_TELEGRAM_BOT_TOKEN?: string;
+  NOTIFY_TELEGRAM_CHAT_ID?: string;
+  NOTIFY_WEBHOOK_URL?: string;
+  NOTIFY_RESEND_API_KEY?: string;
+  NOTIFY_RESEND_FROM?: string;
+  NOTIFY_RESEND_TO?: string;
+  SITE_URL?: string;
+  [key: string]: unknown;
+}
+
+export type SourceKind = "waline" | "ai-runtime" | "manual";
+
+export interface EventSourceMeta {
+  kind: SourceKind;
+  eventName?: string;
+}
+
 // ============================================================================
 // Event Types
 // ============================================================================
 
-export type EventType = 'comment' | 'ai-chat';
+export type EventType = "comment" | "ai-chat";
 
 export interface BaseEvent {
   type: EventType;
   timestamp?: Date;
+  source?: EventSourceMeta;
 }
 
 export interface CommentEvent extends BaseEvent {
-  type: 'comment';
+  type: "comment";
   author: string;
   content: string;
   postTitle: string;
@@ -73,7 +92,7 @@ export interface PhaseTiming {
 }
 
 export interface AiChatEvent extends BaseEvent {
-  type: 'ai-chat';
+  type: "ai-chat";
   sessionId: string;
   roundNumber: number;
   userMessage: string;
@@ -93,7 +112,7 @@ export type NotifyEvent = CommentEvent | AiChatEvent;
 
 export interface TelegramTemplate {
   text: string;
-  parse_mode?: 'HTML' | 'MarkdownV2';
+  parse_mode?: "HTML" | "MarkdownV2";
 }
 
 export interface WebhookPayload {
@@ -114,7 +133,7 @@ export interface EventTemplates {
     webhook: (event: CommentEvent) => WebhookPayload;
     email: (event: CommentEvent) => EmailTemplate;
   };
-  'ai-chat': {
+  "ai-chat": {
     telegram: (event: AiChatEvent) => TelegramTemplate;
     webhook: (event: AiChatEvent) => WebhookPayload;
     email: (event: AiChatEvent) => EmailTemplate;
@@ -125,7 +144,7 @@ export interface EventTemplates {
 // Result Types
 // ============================================================================
 
-export type Channel = 'telegram' | 'webhook' | 'email';
+export type Channel = "telegram" | "webhook" | "email";
 
 export interface SendResult {
   channel: Channel;
@@ -155,7 +174,7 @@ export interface Logger {
 // ============================================================================
 
 export interface Notifier {
-  comment(event: Omit<CommentEvent, 'type'>): Promise<NotifyResult>;
-  aiChat(event: Omit<AiChatEvent, 'type'>): Promise<NotifyResult>;
+  comment(event: Omit<CommentEvent, "type">): Promise<NotifyResult>;
+  aiChat(event: Omit<AiChatEvent, "type">): Promise<NotifyResult>;
   send(event: NotifyEvent): Promise<NotifyResult>;
 }

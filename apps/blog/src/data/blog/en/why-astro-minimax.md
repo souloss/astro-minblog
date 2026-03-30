@@ -80,7 +80,7 @@ astro-minimax/
 
 1. **Install on demand** — Blogs without AI features don't need 20+ dependencies like `ai` and `workers-ai-provider`
 2. **Independent updates** — Bugs in the AI package don't affect core theme stability
-3. **Feature toggles** — Visualization components can be disabled via `viz: { mermaid: false, markmap: false }`
+3. **Composable packaging** — You can install only `@astro-minimax/core`, then add AI, notifications, and CLI capabilities only when you actually need them
 4. **Replaceability** — Users can replace `@astro-minimax/ai` with their own AI implementation
 
 **Data**: Full installation of all packages is ~1000+ dependencies; core-only is ~300 dependencies.

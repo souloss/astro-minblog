@@ -16,7 +16,7 @@ draft: false
 
 ## Installation
 
-The CLI is installed as a dev dependency:
+In the monorepo / example blog, the CLI is already wired in via a workspace dev dependency. If you're using it in your own project separately, you can install it manually:
 
 ```bash
 pnpm add -D @astro-minimax/cli
@@ -117,20 +117,73 @@ Evaluation report is saved to `datas/eval/report.json`.
 ### Complete Build
 
 ```bash
-pnpm run profile:build
+pnpm run ai:profile:build
 ```
 
-Sequentially executes: context build → voice analysis → profile report generation.
+This is the retained canonical entrypoint for the author profile pipeline. Its output is then used by the runtime knowledge bundle and AI chat flow.
 
-### Step-by-Step Build
+### Canonical Build Entry
 
 ```bash
-pnpm run profile:context    # Build author context (aggregate article data)
-pnpm run profile:voice      # Build writing style profile (pure local analysis)
-pnpm run profile:report     # Generate profile report (optional AI enhancement)
+pnpm run ai:profile:build   # Run the retained author profile pipeline
 ```
 
-Generated data files are used by the AI chat feature, helping AI respond in the author's style.
+If you also need the fact registry or extension system, continue with:
+
+```bash
+pnpm run ai:facts:build
+pnpm run ai:facts:validate
+pnpm run ai:extensions:status
+```
+
+## AI Fact Registry
+
+AI extracts verified facts from blog content and injects them into prompts to reduce hallucinations:
+
+```bash
+# Build fact registry
+pnpm run ai:facts:build
+
+# Validate facts
+pnpm run ai:facts:validate
+
+# Check status
+pnpm run ai:facts:status
+```
+
+## AI Extension System
+
+The extension system provides custom context sections, semantic fallback rules, and other AI enhancements:
+
+```bash
+# Build extensions
+pnpm run ai:extensions:build
+
+# Validate extensions
+pnpm run ai:extensions:validate
+
+# Check extension status
+pnpm run ai:extensions:status
+
+# Load extensions
+pnpm run ai:extensions:load
+```
+
+## Git Hooks
+### Install Hooks
+```bash
+pnpm run hooks:install
+```
+Installs Husky Git hooks with auto `pubDatetime`/`modDatetime` fill on pre-commit.
+
+### Uninstall Hooks
+```bash
+pnpm run hooks:uninstall
+```
+### Check Hook Status
+```bash
+pnpm run hooks:status
+```
 
 ## Data Management
 
@@ -159,6 +212,8 @@ Clears AI-generated summaries, SEO data, author profiles, and other cache files.
 | `pnpm run post:stats` | `astro-minimax post stats` |
 | `pnpm run ai:process` | `astro-minimax ai process` |
 | `pnpm run ai:eval` | `astro-minimax ai eval` |
-| `pnpm run profile:build` | `astro-minimax profile build` |
+| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |
+| `pnpm run ai:facts:build` | `astro-minimax ai facts build` |
+| `pnpm run ai:extensions:status` | `astro-minimax ai extensions status` |
 | `pnpm run data:status` | `astro-minimax data status` |
 | `pnpm run data:clear` | `astro-minimax data clear` |

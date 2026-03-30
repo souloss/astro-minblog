@@ -15,11 +15,11 @@ const VIRTUAL_MODULE_IDS = new Set([
   "virtual:astro-minimax/user-data",
   "virtual:astro-minimax/styles",
   "virtual:astro-minimax/ai-widget",
-  "virtual:astro-minimax/ai-summaries",
   "virtual:astro-minimax/ai-seo",
   "virtual:astro-minimax/viz-mermaid-init",
   "virtual:astro-minimax/viz-markmap-init",
   "virtual:astro-minimax/preferences-defaults",
+  "virtual:astro-minimax/preferences-client-init",
 ]);
 
 export interface VizConfig {
@@ -55,15 +55,30 @@ export default function minimax(
         // NOT using require.resolve which can find monorepo sibling packages
         const installedPkgs = new Set<string>();
         for (const pkg of ["@astro-minimax/ai"]) {
-          const pkgPath = resolve(projectRoot, "node_modules", pkg, "package.json");
+          const pkgPath = resolve(
+            projectRoot,
+            "node_modules",
+            pkg,
+            "package.json"
+          );
           if (existsSync(pkgPath)) {
             installedPkgs.add(pkg);
           }
         }
 
         const vizConfig = userConfig.viz ?? { mermaid: true, markmap: true };
-        const remarkPlugins: (string | RemarkPlugin | [string, unknown] | [RemarkPlugin, unknown])[] = [];
-        const rehypePlugins: (string | RehypePlugin | [string, unknown] | [RehypePlugin, unknown])[] = [];
+        const remarkPlugins: (
+          | string
+          | RemarkPlugin
+          | [string, unknown]
+          | [RemarkPlugin, unknown]
+        )[] = [];
+        const rehypePlugins: (
+          | string
+          | RehypePlugin
+          | [string, unknown]
+          | [RehypePlugin, unknown]
+        )[] = [];
         if (vizConfig.mermaid !== false) {
           remarkPlugins.push(remarkMermaidCodeblock);
           rehypePlugins.push(rehypeMermaidProcessed);
@@ -139,20 +154,12 @@ export default function minimax(
                     }
                     return `export { default } from "@astro-minimax/core/components/Empty.astro";`;
                   }
-                  if (id === "\0virtual:astro-minimax/ai-summaries") {
-                    const summariesPath = resolve(projectRoot, "datas", "ai-summaries.json");
-                    if (installedPkgs.has("@astro-minimax/ai") && existsSync(summariesPath)) {
-                      try {
-                        const data = JSON.parse(readFileSync(summariesPath, "utf-8"));
-                        return `export default ${JSON.stringify(data)};`;
-                      } catch {
-                        // fallback to empty
-                      }
-                    }
-                    return "export default { meta: {}, articles: {} };";
-                  }
                   if (id === "\0virtual:astro-minimax/ai-seo") {
-                    const seoPath = resolve(projectRoot, "datas", "ai-seo.json");
+                    const seoPath = resolve(
+                      projectRoot,
+                      "datas",
+                      "ai-seo.json"
+                    );
                     if (existsSync(seoPath)) {
                       try {
                         const data = JSON.parse(readFileSync(seoPath, "utf-8"));
@@ -166,14 +173,18 @@ export default function minimax(
                   if (id === "\0virtual:astro-minimax/preferences-defaults") {
                     return `export const userDefaults = ${JSON.stringify(userConfig.preferences ?? {})};`;
                   }
+                  if (
+                    id === "\0virtual:astro-minimax/preferences-client-init"
+                  ) {
+                    return `import "@astro-minimax/core/preferences/client-init"; export default null;`;
+                  }
                 },
               },
             ],
           },
         });
 
-        const features =
-          (userConfig.site as SiteConfig).features ?? {};
+        const features = (userConfig.site as SiteConfig).features ?? {};
 
         injectRoute({
           pattern: "/",
@@ -209,8 +220,7 @@ export default function minimax(
         });
         injectRoute({
           pattern: "/[lang]/posts/[...page]",
-          entrypoint:
-            "@astro-minimax/core/pages/[lang]/posts/[...page].astro",
+          entrypoint: "@astro-minimax/core/pages/[lang]/posts/[...page].astro",
         });
         injectRoute({
           pattern: "/[lang]/posts/[...slug]",
@@ -249,8 +259,7 @@ export default function minimax(
         if (features.series !== false) {
           injectRoute({
             pattern: "/[lang]/series",
-            entrypoint:
-              "@astro-minimax/core/pages/[lang]/series/index.astro",
+            entrypoint: "@astro-minimax/core/pages/[lang]/series/index.astro",
           });
           injectRoute({
             pattern: "/[lang]/series/[series]",
@@ -261,8 +270,7 @@ export default function minimax(
         if (features.archives !== false) {
           injectRoute({
             pattern: "/[lang]/archives",
-            entrypoint:
-              "@astro-minimax/core/pages/[lang]/archives/index.astro",
+            entrypoint: "@astro-minimax/core/pages/[lang]/archives/index.astro",
           });
         }
         if (features.search !== false) {
@@ -314,10 +322,6 @@ declare module "virtual:astro-minimax/viz-mermaid-init" {
 declare module "virtual:astro-minimax/viz-markmap-init" {
   const MarkmapInit: import("astro").AstroComponentFactory;
   export default MarkmapInit;
-}
-declare module "virtual:astro-minimax/ai-summaries" {
-  const summaries: { meta: Record<string, unknown>; articles: Record<string, unknown> };
-  export default summaries;
 }
 declare module "virtual:astro-minimax/ai-seo" {
   interface ArticleSeoData {

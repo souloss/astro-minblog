@@ -1,62 +1,86 @@
-import { createNotifier, type Notifier, type NotifyResult, type ArticleRef, type ModelInfo, type TokenUsage, type PhaseTiming } from '@astro-minimax/notify';
-import type { UIMessage } from 'ai';
+import type { UIMessage } from "ai";
+import type {
+  NotifyArticleRef as ArticleRef,
+  NotifyModelInfo as ModelInfo,
+  NotifyTokenUsage as TokenUsage,
+  PhaseTiming,
+} from "./types.js";
 
-interface NotifyEnv {
-  NOTIFY_TELEGRAM_BOT_TOKEN?: string;
-  NOTIFY_TELEGRAM_CHAT_ID?: string;
-  NOTIFY_WEBHOOK_URL?: string;
-  NOTIFY_RESEND_API_KEY?: string;
-  NOTIFY_RESEND_FROM?: string;
-  NOTIFY_RESEND_TO?: string;
-  SITE_URL?: string;
-  [key: string]: unknown;
+type NotifyEnv = Record<string, unknown>;
+
+interface NotifyResult {
+  event: "comment" | "ai-chat";
+  success: boolean;
+  results: Array<{
+    channel: "telegram" | "webhook" | "email";
+    success: boolean;
+    error?: string;
+    duration?: number;
+  }>;
 }
 
-let notifierInstance: Notifier | null = null;
+interface RuntimeNotifier {
+  aiChat(event: {
+    sessionId: string;
+    roundNumber: number;
+    userMessage: string;
+    aiResponse?: string;
+    referencedArticles?: ArticleRef[];
+    model?: ModelInfo;
+    usage?: TokenUsage;
+    timing?: PhaseTiming;
+    siteUrl?: unknown;
+  }): Promise<NotifyResult>;
+}
 
-function getNotifier(env: NotifyEnv): Notifier | null {
-  if (notifierInstance) return notifierInstance;
-  
-  const hasConfig = env.NOTIFY_TELEGRAM_BOT_TOKEN || env.NOTIFY_WEBHOOK_URL || env.NOTIFY_RESEND_API_KEY;
-  if (!hasConfig) {
-    console.warn('[notify] No notification providers configured. Missing environment variables: NOTIFY_TELEGRAM_BOT_TOKEN, NOTIFY_WEBHOOK_URL, or NOTIFY_RESEND_API_KEY');
+interface NotifyRuntimeModule {
+  createNotifier(config: NotifyRuntimeConfig): RuntimeNotifier;
+  createNotifyConfigFromEnv(env: NotifyEnv): NotifyRuntimeConfig;
+}
+
+interface NotifyRuntimeConfig {
+  telegram?: unknown;
+  webhook?: unknown;
+  email?: unknown;
+}
+
+async function loadNotifyRuntime(): Promise<NotifyRuntimeModule | null> {
+  try {
+    return (await import("@astro-minimax/notify")) as unknown as NotifyRuntimeModule;
+  } catch (error) {
+    if (
+      error instanceof Error
+      && ("code" in error)
+      && (error as Error & { code?: string }).code === "ERR_MODULE_NOT_FOUND"
+    ) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+async function createEnvNotifier(env: NotifyEnv): Promise<RuntimeNotifier | null> {
+  const runtime = await loadNotifyRuntime();
+  if (!runtime) {
     return null;
   }
 
-  const providers: string[] = [];
-  if (env.NOTIFY_TELEGRAM_BOT_TOKEN && env.NOTIFY_TELEGRAM_CHAT_ID) providers.push('telegram');
-  if (env.NOTIFY_WEBHOOK_URL) providers.push('webhook');
-  if (env.NOTIFY_RESEND_API_KEY && env.NOTIFY_RESEND_FROM && env.NOTIFY_RESEND_TO) providers.push('email');
-  
-  console.log(`[notify] Initializing notifier with providers: ${providers.join(', ') || 'none'}`);
+  const config = runtime.createNotifyConfigFromEnv(env);
+  if (!config.telegram && !config.webhook && !config.email) {
+    return null;
+  }
 
-  notifierInstance = createNotifier({
-    telegram: env.NOTIFY_TELEGRAM_BOT_TOKEN && env.NOTIFY_TELEGRAM_CHAT_ID ? {
-      botToken: env.NOTIFY_TELEGRAM_BOT_TOKEN,
-      chatId: env.NOTIFY_TELEGRAM_CHAT_ID,
-    } : undefined,
-    webhook: env.NOTIFY_WEBHOOK_URL ? {
-      url: env.NOTIFY_WEBHOOK_URL,
-    } : undefined,
-    email: env.NOTIFY_RESEND_API_KEY && env.NOTIFY_RESEND_FROM && env.NOTIFY_RESEND_TO ? {
-      provider: 'resend',
-      apiKey: env.NOTIFY_RESEND_API_KEY,
-      from: env.NOTIFY_RESEND_FROM,
-      to: env.NOTIFY_RESEND_TO,
-    } : undefined,
-  });
-
-  return notifierInstance;
+  return runtime.createNotifier(config);
 }
 
 function getMessageText(message: UIMessage): string {
   if (Array.isArray(message.parts)) {
     return message.parts
-      .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+      .filter((p): p is { type: "text"; text: string } => p.type === "text")
       .map(p => p.text)
-      .join('');
+      .join("");
   }
-  return '';
+  return "";
 }
 
 export interface ChatNotifyOptions {
@@ -70,38 +94,50 @@ export interface ChatNotifyOptions {
   timing?: PhaseTiming;
 }
 
-export function notifyAiChat(options: ChatNotifyOptions): Promise<NotifyResult | null> {
-  const { env, sessionId, messages, aiResponse, referencedArticles, model, usage, timing } = options;
-  
-  const notifier = getNotifier(env);
-  if (!notifier) {
-    console.warn('[notify] AI chat notification skipped: no notifier available. Check environment variables.');
-    return Promise.resolve(null);
-  }
-
-  const userMessages = messages.filter(m => m.role === 'user');
-  const lastUserMessage = userMessages[userMessages.length - 1];
-  
-  if (!lastUserMessage) {
-    console.warn('[notify] AI chat notification skipped: no user message found in messages array');
-    return Promise.resolve(null);
-  }
-
-  const userMessage = getMessageText(lastUserMessage);
-  const roundNumber = userMessages.length;
-  
-  return notifier.aiChat({
+export function notifyAiChat(
+  options: ChatNotifyOptions
+): Promise<NotifyResult | null> {
+  const {
+    env,
     sessionId,
-    roundNumber,
-    userMessage,
-    aiResponse: aiResponse?.slice(0, 500),
+    messages,
+    aiResponse,
     referencedArticles,
     model,
     usage,
     timing,
-    siteUrl: env.SITE_URL,
-  }).catch((error) => {
-    console.error('[notify] AI chat notification failed:', error);
-    return null;
-  });
+  } = options;
+
+  return createEnvNotifier(env)
+    .then(notifier => {
+      if (!notifier) {
+        return null;
+      }
+
+      const userMessages = messages.filter(m => m.role === "user");
+      const lastUserMessage = userMessages[userMessages.length - 1];
+
+      if (!lastUserMessage) {
+        return null;
+      }
+
+      const userMessage = getMessageText(lastUserMessage);
+      const roundNumber = userMessages.length;
+
+      return notifier.aiChat({
+        sessionId,
+        roundNumber,
+        userMessage,
+        aiResponse: aiResponse?.slice(0, 500),
+        referencedArticles,
+        model,
+        usage,
+        timing,
+        siteUrl: env.SITE_URL,
+      });
+    })
+    .catch(error => {
+      console.error("[notify] AI chat notification failed:", error);
+      return null;
+    });
 }

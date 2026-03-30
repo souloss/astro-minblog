@@ -1,39 +1,39 @@
 {
   "$schema": "voice-profile-v1",
-  "generatedAt": "2026-03-18T14:21:54.689Z",
+  "generatedAt": "2026-03-29T06:03:21.063Z",
   "overall_tone": {
     "description": "技术博客风格，注重实践与可操作性，语言简洁明了",
     "primary_persona": "技术博主",
     "communication_style": "先给结论，再补细节"
   },
   "blog_title_style": {
-    "total": 35,
+    "total": 40,
     "patterns": {
       "usesVerticalBar": 0,
-      "usesColon": 11,
+      "usesColon": 12,
       "usesMiddleDot": 0,
       "usesQuestion": 0,
       "usesEmoji": 0,
-      "usesEnglish": 30,
+      "usesEnglish": 34,
       "usesYear": 2,
       "usesSeriesFormat": 0
     },
     "style": {
       "vertical_bar_rate": 0,
-      "colon_rate": 31,
+      "colon_rate": 30,
       "question_rate": 0,
-      "english_mix_rate": 86,
-      "year_in_title_rate": 6
+      "english_mix_rate": 85,
+      "year_in_title_rate": 5
     }
   },
   "content_style": {
-    "avgLength": 7857,
-    "codeBlockRate": 100,
-    "linkRate": 89,
-    "imageRate": 29,
+    "avgLength": 9437,
+    "codeBlockRate": 95,
+    "linkRate": 80,
+    "imageRate": 25,
     "headingRate": 100,
-    "listRate": 89,
-    "quoteRate": 74
+    "listRate": 93,
+    "quoteRate": 65
   },
   "expression_habits": {
     "frequent_expressions": [
@@ -43,23 +43,27 @@
       },
       {
         "word": "关键",
-        "count": 14
+        "count": 30
       },
       {
         "word": "分享",
-        "count": 11
+        "count": 25
       },
       {
         "word": "体验",
-        "count": 7
+        "count": 15
       },
       {
         "word": "重要",
-        "count": 7
+        "count": 8
       },
       {
         "word": "注意",
         "count": 5
+      },
+      {
+        "word": "总结",
+        "count": 4
       },
       {
         "word": "但是",
@@ -67,10 +71,18 @@
       },
       {
         "word": "然后",
-        "count": 2
+        "count": 3
       },
       {
         "word": "折腾",
+        "count": 1
+      },
+      {
+        "word": "突然",
+        "count": 1
+      },
+      {
+        "word": "顺手",
         "count": 1
       },
       {
@@ -79,10 +91,6 @@
       },
       {
         "word": "所以",
-        "count": 1
-      },
-      {
-        "word": "总结",
         "count": 1
       }
     ],
@@ -96,36 +104,40 @@
   },
   "category_styles": {
     "Tutorial/Blog": {
-      "count": 1,
-      "avgLength": 8024
+      "count": 2,
+      "avgLength": 9944
     },
     "Blog/Tutorial": {
       "count": 3,
-      "avgLength": 11353
+      "avgLength": 11505
     },
     "Tutorial/AI": {
       "count": 1,
-      "avgLength": 2500
+      "avgLength": 11471
+    },
+    "Technical/AI": {
+      "count": 1,
+      "avgLength": 42114
     },
     "Tutorial/Tools": {
       "count": 1,
-      "avgLength": 2525
+      "avgLength": 4048
     },
     "Tutorial/Deployment": {
       "count": 1,
-      "avgLength": 13620
+      "avgLength": 13598
     },
     "Tutorial/Getting Started": {
       "count": 1,
-      "avgLength": 9904
+      "avgLength": 9986
     },
     "Blog/Deployment": {
       "count": 1,
-      "avgLength": 11580
+      "avgLength": 11793
     },
     "教程/博客": {
       "count": 7,
-      "avgLength": 6441
+      "avgLength": 6613
     },
     "教程/前端": {
       "count": 2,
@@ -133,39 +145,43 @@
     },
     "Blog/Configuration": {
       "count": 1,
-      "avgLength": 13798
-    },
-    "教程/工程化": {
-      "count": 3,
-      "avgLength": 4515
-    },
-    "Tutorial/Configuration": {
-      "count": 3,
-      "avgLength": 13223
+      "avgLength": 14162
     },
     "Tutorial/Engineering": {
-      "count": 1,
-      "avgLength": 5065
+      "count": 2,
+      "avgLength": 5922
+    },
+    "Tutorial/Configuration": {
+      "count": 4,
+      "avgLength": 10727
     },
     "教程/AI": {
       "count": 1,
-      "avgLength": 3446
+      "avgLength": 7314
+    },
+    "技术/AI": {
+      "count": 1,
+      "avgLength": 26551
     },
     "教程/工具": {
       "count": 1,
-      "avgLength": 2547
+      "avgLength": 2751
     },
     "教程/部署": {
       "count": 2,
-      "avgLength": 8521
+      "avgLength": 8548
     },
     "教程/入门": {
       "count": 1,
-      "avgLength": 7427
+      "avgLength": 7538
     },
     "教程/配置": {
-      "count": 4,
-      "avgLength": 9481
+      "count": 5,
+      "avgLength": 7940
+    },
+    "教程/工程化": {
+      "count": 2,
+      "avgLength": 3338
     }
   },
   "style_modes": {

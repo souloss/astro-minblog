@@ -25,6 +25,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+*.bak
 
 # macOS-specific files
 .DS_Store
@@ -47,9 +48,13 @@ RELEASE_REPORT.md
 
 # test/eval artifacts
 tests/e2e-results.json
+tests/__pycache__/
+tests/**/*.pyc
 apps/blog/datas/qa-*.json
 apps/blog/datas/qa-*.jsonl
 apps/blog/datas/eval/report.json
+apps/blog/datas/knowledge/
+packages/*/*.tgz
 
 .wrangler
 

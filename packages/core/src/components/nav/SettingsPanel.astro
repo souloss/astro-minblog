@@ -1,6 +1,5 @@
 ---
 import { SITE } from "virtual:astro-minimax/config";
-import { userDefaults } from "virtual:astro-minimax/preferences-defaults";
 import { t } from "../../utils/i18n";
 
 const lang = SITE.lang;
@@ -79,13 +78,13 @@ const layoutModes = [
 ];
 ---
 
-<div id="settings-panel" class="fixed right-5 bottom-24 z-50 hidden">
+<div id="settings-panel" class="fixed right-5 bottom-24 z-50 hidden" role="dialog" aria-modal="false" aria-labelledby="settings-panel-title" aria-describedby="settings-panel-status">
   <div class="settings-panel-inner w-[340px] max-w-[calc(100vw-2.5rem)] h-[520px] max-h-[calc(100vh-8rem)] flex flex-col overflow-hidden rounded-2xl border border-border/30 bg-surface/98 backdrop-blur-xl shadow-2xl">
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-border/30 px-4 py-3 shrink-0">
-      <h3 class="text-sm font-semibold text-foreground">{labels.title}</h3>
+      <h3 id="settings-panel-title" class="text-sm font-semibold text-foreground">{labels.title}</h3>
       <button id="settings-close-btn" class="rounded-lg p-1 text-muted transition-colors hover:bg-muted/50 hover:text-foreground" aria-label={labels.close}>
-        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -93,17 +92,17 @@ const layoutModes = [
     </div>
 
     <!-- Tabs -->
-    <div class="flex border-b border-border/30 bg-muted/10 shrink-0 overflow-x-auto">
-      <button data-tab="appearance" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-accent border-b-2 border-accent transition-colors whitespace-nowrap">{labels.tabAppearance}</button>
-      <button data-tab="reading" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabReading}</button>
-      <button data-tab="layout" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabLayout}</button>
-      <button data-tab="general" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabGeneral}</button>
+    <div class="flex border-b border-border/30 bg-muted/10 shrink-0 overflow-x-auto" role="tablist" aria-label={labels.title}>
+      <button id="settings-tab-appearance" type="button" role="tab" aria-selected="true" aria-controls="tab-appearance" data-tab="appearance" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-accent border-b-2 border-accent transition-colors whitespace-nowrap">{labels.tabAppearance}</button>
+      <button id="settings-tab-reading" type="button" role="tab" aria-selected="false" aria-controls="tab-reading" data-tab="reading" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabReading}</button>
+      <button id="settings-tab-layout" type="button" role="tab" aria-selected="false" aria-controls="tab-layout" data-tab="layout" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabLayout}</button>
+      <button id="settings-tab-general" type="button" role="tab" aria-selected="false" aria-controls="tab-general" data-tab="general" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabGeneral}</button>
     </div>
 
     <!-- Tab Content -->
     <div class="overflow-y-auto flex-1">
       <!-- Appearance Tab (merged from theme + appearance) -->
-      <div id="tab-appearance" class="tab-content p-4 space-y-4">
+      <div id="tab-appearance" class="tab-content p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-appearance" tabindex="0">
         <div>
           <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.colorScheme}</p>
           <div class="grid grid-cols-8 gap-1.5" id="color-scheme-options"></div>
@@ -148,7 +147,7 @@ const layoutModes = [
       </div>
 
       <!-- Reading Tab -->
-      <div id="tab-reading" class="tab-content hidden p-4 space-y-4">
+      <div id="tab-reading" class="tab-content hidden p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-reading" tabindex="0">
         <!-- Reading Mode Master Toggle -->
         <div class="flex items-center justify-between py-1 border-b border-border/30 pb-3 mb-2">
           <div>
@@ -212,7 +211,7 @@ const layoutModes = [
       </div>
 
       <!-- Layout Tab -->
-      <div id="tab-layout" class="tab-content hidden p-4 space-y-4">
+      <div id="tab-layout" class="tab-content hidden p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-layout" tabindex="0">
         <div>
           <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.postsLayout}</p>
           <div class="flex flex-wrap gap-2" id="layout-mode-options"></div>
@@ -252,7 +251,7 @@ const layoutModes = [
       </div>
 
       <!-- General Tab -->
-      <div id="tab-general" class="tab-content hidden p-4 space-y-3">
+      <div id="tab-general" class="tab-content hidden p-4 space-y-3" role="tabpanel" aria-labelledby="settings-tab-general" tabindex="0">
         <div class="flex items-center justify-between py-1">
           <div>
             <p class="text-sm text-foreground-soft">{labels.animations}</p>
@@ -298,113 +297,33 @@ const layoutModes = [
 </div>
 
 <!-- Toast notification -->
-<div id="settings-toast" class="fixed bottom-32 right-5 z-[60] hidden">
-  <div class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-lg">
+<div id="settings-toast" class="fixed bottom-32 right-5 z-[60] hidden" role="status" aria-live="polite" aria-atomic="true">
+  <div id="settings-panel-status" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-lg">
     {labels.shareCopied}
   </div>
 </div>
 
-<script define:vars={{ labels, layoutModes, userDefaults }}>
-  const STORAGE_KEY = 'astro-minimax-settings';
-
-  const baseDefaults = {
-    colorScheme: 'teal',
-    layoutMode: 'card',
-    radius: 'lg',
-    fontSize: 1,
-    animations: true,
-    cardHover: true,
-    smoothScroll: true,
-    widgets: {
-      themeToggle: true,
-      backToTop: true,
-      readingTime: true,
-      stickyBackToTop: true,
-    },
-    reading: {
-      lineHeight: 'comfortable',
-      contentWidth: 'medium',
-      fontFamily: 'system',
-      focusMode: false,
-      readingMode: false,
-      theme: 'default',
-    },
-  };
-
-  function mapUserDefaults(userDefaults) {
-    if (!userDefaults) return {};
-    return {
-      colorScheme: userDefaults.theme?.colorScheme,
-      layoutMode: userDefaults.layout?.postsLayout,
-      radius: userDefaults.theme?.radius,
-      fontSize: userDefaults.appearance?.fontSize,
-      animations: userDefaults.animations?.enabled,
-      cardHover: userDefaults.animations?.cardHover,
-      smoothScroll: userDefaults.animations?.smoothScroll,
-      widgets: userDefaults.widgets ? {
-        themeToggle: userDefaults.widgets.themeToggle,
-        backToTop: userDefaults.widgets.backToTop,
-        readingTime: userDefaults.widgets.readingTime,
-        stickyBackToTop: userDefaults.widgets.stickyBackToTop,
-      } : undefined,
-      reading: userDefaults.reading ? {
-        lineHeight: userDefaults.reading.lineHeight,
-        contentWidth: userDefaults.reading.contentWidth,
-        fontFamily: userDefaults.reading.fontFamily,
-        focusMode: userDefaults.reading.focusMode,
-        readingMode: false,
-        theme: userDefaults.reading.theme,
-      } : undefined,
-    };
+<script define:vars={{ labels, layoutModes }}>
+  function getPreferencesClient() {
+    return window.__astroMinimaxPreferences;
   }
-
-  function deepMerge(target, source) {
-    const result = { ...target };
-    for (const key in source) {
-      if (source[key] !== undefined && source[key] !== null) {
-        if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-          result[key] = deepMerge(target[key] || {}, source[key]);
-        } else {
-          result[key] = source[key];
-        }
-      }
-    }
-    return result;
-  }
-
-  const mappedUserDefaults = mapUserDefaults(userDefaults);
-  const defaultSettings = Object.keys(mappedUserDefaults).length > 0 
-    ? deepMerge(baseDefaults, mappedUserDefaults) 
-    : baseDefaults;
-
-  // Theme presets with accent colors for UI rendering
-  const themePresets = [
-    { id: 'teal', name: 'Teal', nameZh: '青绿', light: { accent: '#0f766e' }, dark: { accent: '#4fd1c5' } },
-    { id: 'ocean', name: 'Ocean', nameZh: '深海', light: { accent: '#0369a1' }, dark: { accent: '#38bdf8' } },
-    { id: 'rose', name: 'Rose', nameZh: '玫瑰', light: { accent: '#e11d48' }, dark: { accent: '#fb7185' } },
-    { id: 'forest', name: 'Forest', nameZh: '森林', light: { accent: '#059669' }, dark: { accent: '#34d399' } },
-    { id: 'midnight', name: 'Midnight', nameZh: '午夜', light: { accent: '#7c3aed' }, dark: { accent: '#a78bfa' } },
-    { id: 'sunset', name: 'Sunset', nameZh: '日落', light: { accent: '#d97706' }, dark: { accent: '#fbbf24' } },
-    { id: 'mono', name: 'Mono', nameZh: '极简', light: { accent: '#525252' }, dark: { accent: '#a3a3a3' } },
-    { id: 'github', name: 'GitHub', nameZh: 'GitHub', light: { accent: '#0969da' }, dark: { accent: '#58a6ff' } },
-  ];
 
   const radiusValues = { sm: '0.5rem', md: '0.75rem', lg: '1rem', xl: '1.5rem' };
 
+  function getThemePresets() {
+    return getPreferencesClient()?.themePresets ?? [];
+  }
+
   function loadSettings() {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? { ...defaultSettings, ...JSON.parse(stored) } : { ...defaultSettings };
-    } catch { return { ...defaultSettings }; }
+    const preferencesClient = getPreferencesClient();
+    if (!preferencesClient) return null;
+    return preferencesClient.loadSettings();
   }
 
   function saveSettings(s) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch {}
-  }
-
-  // Get current theme mode (light/dark)
-  function getThemeMode() {
-    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const preferencesClient = getPreferencesClient();
+    if (!preferencesClient) return;
+    preferencesClient.saveSettings(s);
   }
 
   // Apply color scheme by setting data-color-scheme attribute
@@ -412,13 +331,6 @@ const layoutModes = [
   function applyColorScheme(schemeId) {
     const root = document.documentElement;
     root.setAttribute('data-color-scheme', schemeId);
-  }
-
-  // No longer needed - colors are handled by CSS
-  function handleThemeChange(settings) {
-    return () => {
-      // Theme change is handled automatically by CSS selectors
-    };
   }
 
   function applyLayoutMode(mode) {
@@ -517,7 +429,10 @@ const layoutModes = [
     root.style.setProperty('--reading-font-family', fonts[reading.fontFamily] || fonts.system);
     
     root.classList.toggle('focus-mode', reading.focusMode);
-    root.classList.toggle('reading-mode', reading.readingMode);
+  }
+
+  function applyReadingMode(active) {
+    document.documentElement.classList.toggle('reading-mode', active);
   }
 
   function applyReadingTheme(themeId) {
@@ -539,21 +454,22 @@ const layoutModes = [
     const currentTheme = root.getAttribute('data-theme');
     const isDarkReadingTheme = DARK_READING_THEMES.includes(themeId);
     const wasDarkReadingTheme = DARK_READING_THEMES.includes(root.dataset.previousReadingTheme || '');
+    const applyTheme = value => {
+      if (window.theme?.setTheme) {
+        window.theme.setTheme(value);
+        window.theme.setPreference?.();
+      }
+    };
     
     if (isDarkReadingTheme && currentTheme !== 'dark') {
       // Save current theme before switching (for restoration later)
       root.dataset.themeBeforeDarkReading = currentTheme || 'light';
-      // Directly set data-theme attribute and sync window.theme
-      root.setAttribute('data-theme', 'dark');
-      if (window.theme) window.theme.themeValue = 'dark';
-      localStorage.setItem('theme', 'dark');
+      applyTheme('dark');
     } else if (!isDarkReadingTheme && wasDarkReadingTheme) {
       // Restore previous theme when switching away from dark reading theme
       const previousTheme = root.dataset.themeBeforeDarkReading || 'light';
       if (currentTheme !== previousTheme) {
-        root.setAttribute('data-theme', previousTheme);
-        if (window.theme) window.theme.themeValue = previousTheme;
-        localStorage.setItem('theme', previousTheme);
+        applyTheme(previousTheme);
       }
       delete root.dataset.themeBeforeDarkReading;
     }
@@ -565,51 +481,18 @@ const layoutModes = [
   function showToast(message) {
     const toast = document.getElementById('settings-toast');
     if (toast) {
-      toast.querySelector('div').textContent = message;
+      const content = toast.querySelector('#settings-panel-status');
+      if (content) content.textContent = message;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 2000);
     }
   }
 
-  function exportShareURL(settings) {
-    const defaults = defaultSettings;
-    const compressed = {};
-    
-    for (const key of ['theme', 'appearance', 'layout', 'reading', 'widgets', 'animations']) {
-      if (JSON.stringify(settings[key]) !== JSON.stringify(defaults[key])) {
-        compressed[key] = settings[key];
-      }
-    }
-    
-    if (Object.keys(compressed).length === 0) {
-      return window.location.origin + window.location.pathname;
-    }
-    
-    try {
-      const encoded = btoa(encodeURIComponent(JSON.stringify(compressed)));
-      const url = new URL(window.location.href);
-      url.hash = `#prefs=${encoded}`;
-      url.search = '';
-      return url.toString();
-    } catch {
-      return window.location.href;
-    }
-  }
-
   async function copyShareURL(settings) {
-    const url = exportShareURL(settings);
-    try {
-      await navigator.clipboard.writeText(url);
-      showToast(labels.shareCopied);
-    } catch {
-      const textArea = document.createElement('textarea');
-      textArea.value = url;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      showToast(labels.shareCopied);
-    }
+    const preferencesClient = getPreferencesClient();
+    if (!preferencesClient) return;
+    const copied = await preferencesClient.copyShareURL(settings);
+    if (copied) showToast(labels.shareCopied);
   }
 
   function updateSwitch(btn, checked) {
@@ -675,19 +558,24 @@ const layoutModes = [
   function switchTab(tabName) {
     document.querySelectorAll('.settings-tab').forEach(tab => {
       const isActive = tab.dataset.tab === tabName;
+      tab.setAttribute('aria-selected', String(isActive));
+      tab.setAttribute('tabindex', isActive ? '0' : '-1');
       tab.classList.toggle('text-accent', isActive);
       tab.classList.toggle('border-accent', isActive);
       tab.classList.toggle('text-muted', !isActive);
       tab.classList.toggle('border-transparent', !isActive);
     });
     document.querySelectorAll('.tab-content').forEach(content => {
-      content.classList.toggle('hidden', content.id !== `tab-${tabName}`);
+      const isActive = content.id === `tab-${tabName}`;
+      content.classList.toggle('hidden', !isActive);
+      content.toggleAttribute('hidden', !isActive);
     });
   }
 
   function renderUI() {
     const colorContainer = document.getElementById('color-scheme-options');
     const layoutContainer = document.getElementById('layout-mode-options');
+    const themePresets = getThemePresets();
 
     if (colorContainer) {
       colorContainer.innerHTML = themePresets.map(p => {
@@ -716,11 +604,89 @@ const layoutModes = [
     }
   }
 
+  const settingsPanelState = window.__settingsPanelState ?? {
+    lastFocusedElement: null,
+    listenersAttached: false,
+  };
+  window.__settingsPanelState = settingsPanelState;
+
+  function getSettingsPanel() {
+    return document.getElementById('settings-panel');
+  }
+
+  function closeSettingsPanel() {
+    const panel = getSettingsPanel();
+    if (!panel) return;
+    panel.classList.add('hidden');
+    panel.setAttribute('aria-hidden', 'true');
+    settingsPanelState.lastFocusedElement?.focus?.();
+  }
+
+  function openSettingsPanel() {
+    const panel = getSettingsPanel();
+    if (!panel) return;
+    settingsPanelState.lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    panel.classList.remove('hidden');
+    panel.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => {
+      const activeTab = panel.querySelector('.settings-tab[aria-selected="true"]');
+      activeTab?.focus?.();
+    });
+  }
+
   function init() {
     const panel = document.getElementById('settings-panel');
     const closeBtn = document.getElementById('settings-close-btn');
     const resetBtn = document.getElementById('settings-reset-btn');
     const fontSizeSlider = document.getElementById('font-size-slider');
+    const shareBtn = document.getElementById('settings-share-btn');
+
+    if (!panel) return;
+
+    panel.setAttribute('aria-hidden', panel.classList.contains('hidden') ? 'true' : 'false');
+
+    const getFocusableElements = () => Array.from(panel.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(el => !el.hasAttribute('hidden') && !el.classList.contains('hidden'));
+
+    const handlePanelKeydown = (event) => {
+      if (panel.classList.contains('hidden')) return;
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeSettingsPanel();
+        return;
+      }
+
+      if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+        const tabs = Array.from(panel.querySelectorAll('.settings-tab'));
+        const currentIndex = tabs.findIndex(tab => tab.getAttribute('aria-selected') === 'true');
+        if (currentIndex === -1) return;
+        const direction = event.key === 'ArrowRight' ? 1 : -1;
+        const nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const nextTab = tabs[nextIndex];
+        event.preventDefault();
+        switchTab(nextTab.dataset.tab);
+        nextTab.focus();
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const focusableElements = getFocusableElements();
+        if (focusableElements.length === 0) return;
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+        const activeElement = document.activeElement;
+
+        if (event.shiftKey && activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
     
     const animationToggle = document.getElementById('animation-toggle');
     const cardHoverToggle = document.getElementById('card-hover-toggle');
@@ -730,39 +696,39 @@ const layoutModes = [
     const readingTimeToggle = document.getElementById('widget-readingtime-toggle');
     const stickyBackToTopToggle = document.getElementById('widget-sticky-backtotop-toggle');
 
-    if (!panel) return;
+    const preferencesClient = getPreferencesClient();
+    if (!preferencesClient) {
+      requestAnimationFrame(init);
+      return;
+    }
+
+    const defaultSettings = preferencesClient.getInitialSettings();
 
     renderUI();
     const settings = loadSettings();
-
-    // Auto-disable reading mode when leaving article pages
-    const isArticlePage = !!document.querySelector('article#article');
-    if (!isArticlePage && settings.reading?.readingMode) {
-      settings.reading.readingMode = false;
-      saveSettings(settings);
-    }
+    if (!settings) return;
 
     // Apply all settings
-    applyColorScheme(settings.colorScheme);
-    applyLayoutMode(settings.layoutMode);
-    applyRadius(radiusValues[settings.radius] || '1rem');
-    applyFontSize(settings.fontSize);
-    applyAnimations(settings.animations);
-    applyCardHover(settings.cardHover);
-    applySmoothScroll(settings.smoothScroll);
-    applyWidgets(settings);
-    applyReadingSettings(settings.reading || defaultSettings.reading);
-    applyReadingTheme(settings.reading?.theme || 'default');
+      applyColorScheme(settings.theme.colorScheme);
+      applyLayoutMode(settings.layout.postsLayout);
+      applyRadius(radiusValues[settings.theme.radius] || '1rem');
+      applyFontSize(settings.appearance.fontSize);
+      applyAnimations(settings.animations.enabled);
+      applyCardHover(settings.animations.cardHover);
+      applySmoothScroll(settings.animations.smoothScroll);
+      applyWidgets(settings);
+      applyReadingSettings(settings.reading);
+      applyReadingTheme(settings.reading.theme);
 
     // Update UI
-    updateColorSchemeUI(settings.colorScheme);
-    updateLayoutModeUI(settings.layoutMode);
-    updateRadiusUI(settings.radius);
-    updateFontSizeUI(settings.fontSize);
-    updateReadingThemeUI(settings.reading?.theme || 'default');
-    if (animationToggle) updateSwitch(animationToggle, settings.animations);
-    if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.cardHover);
-    if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.smoothScroll);
+      updateColorSchemeUI(settings.theme.colorScheme);
+      updateLayoutModeUI(settings.layout.postsLayout);
+      updateRadiusUI(settings.theme.radius);
+      updateFontSizeUI(settings.appearance.fontSize);
+      updateReadingThemeUI(settings.reading.theme);
+      if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
+      if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
+      if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
     if (themeToggle) updateSwitch(themeToggle, settings.widgets.themeToggle);
     if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
     if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
@@ -770,10 +736,15 @@ const layoutModes = [
     
     // Reading settings UI
     const focusModeToggle = document.getElementById('focus-mode-toggle');
-    if (focusModeToggle) updateSwitch(focusModeToggle, settings.reading?.focusMode || false);
+      if (focusModeToggle) updateSwitch(focusModeToggle, settings.reading.focusMode);
     
     const readingModeToggle = document.getElementById('reading-mode-toggle');
-    if (readingModeToggle) updateSwitch(readingModeToggle, settings.reading?.readingMode || false);
+    if (readingModeToggle) {
+      updateSwitch(
+        readingModeToggle,
+        document.documentElement.classList.contains('reading-mode')
+      );
+    }
     
     // Update reading settings button states
     const updateReadingBtnUI = (selector, dataKey, value) => {
@@ -786,24 +757,32 @@ const layoutModes = [
         btn.classList.toggle('border-border/50', !isActive);
       });
     };
-    updateReadingBtnUI('.line-height-btn', 'lineHeight', settings.reading?.lineHeight || 'comfortable');
-    updateReadingBtnUI('.reading-width-btn', 'readingWidth', settings.reading?.contentWidth || 'medium');
-    updateReadingBtnUI('.font-family-btn', 'fontFamily', settings.reading?.fontFamily || 'system');
+      updateReadingBtnUI('.line-height-btn', 'lineHeight', settings.reading.lineHeight);
+      updateReadingBtnUI('.reading-width-btn', 'readingWidth', settings.reading.contentWidth);
+      updateReadingBtnUI('.font-family-btn', 'fontFamily', settings.reading.fontFamily);
 
     // Tab switching
     document.querySelectorAll('.settings-tab').forEach(tab => {
+      if (tab.dataset.settingsTabBound === 'true') return;
       tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      tab.dataset.settingsTabBound = 'true';
     });
+    if (!settingsPanelState.listenersAttached) {
+      panel.addEventListener('keydown', handlePanelKeydown);
+      settingsPanelState.listenersAttached = true;
+    }
+    switchTab('appearance');
 
     // Color scheme handlers
     document.getElementById('color-scheme-options')?.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-color-scheme]');
       if (!btn) return;
       const schemeId = btn.dataset.colorScheme;
+      const themePresets = getThemePresets();
       const preset = themePresets.find(p => p.id === schemeId);
       if (!preset) return;
       
-      settings.colorScheme = schemeId;
+      settings.theme.colorScheme = schemeId;
       saveSettings(settings);
       applyColorScheme(schemeId);
       updateColorSchemeUI(schemeId);
@@ -815,7 +794,7 @@ const layoutModes = [
       if (!btn) return;
       const mode = btn.dataset.layoutMode;
       
-      settings.layoutMode = mode;
+      settings.layout.postsLayout = mode;
       saveSettings(settings);
       applyLayoutMode(mode);
       updateLayoutModeUI(mode);
@@ -827,7 +806,7 @@ const layoutModes = [
       if (!btn) return;
       const r = btn.dataset.radius;
       
-      settings.radius = r;
+      settings.theme.radius = r;
       saveSettings(settings);
       applyRadius(radiusValues[r]);
       updateRadiusUI(r);
@@ -839,7 +818,6 @@ const layoutModes = [
       if (!btn) return;
       const themeId = btn.dataset.readingTheme;
       
-      if (!settings.reading) settings.reading = { ...defaultSettings.reading };
       settings.reading.theme = themeId;
       saveSettings(settings);
       applyReadingTheme(themeId);
@@ -849,7 +827,7 @@ const layoutModes = [
     // Font size handler
     fontSizeSlider?.addEventListener('input', (e) => {
       const size = parseFloat(e.target.value);
-      settings.fontSize = size;
+      settings.appearance.fontSize = size;
       saveSettings(settings);
       applyFontSize(size);
       updateFontSizeUI(size);
@@ -857,24 +835,24 @@ const layoutModes = [
 
     // Toggle handlers
     animationToggle?.addEventListener('click', () => {
-      settings.animations = !settings.animations;
+      settings.animations.enabled = !settings.animations.enabled;
       saveSettings(settings);
-      applyAnimations(settings.animations);
-      updateSwitch(animationToggle, settings.animations);
+      applyAnimations(settings.animations.enabled);
+      updateSwitch(animationToggle, settings.animations.enabled);
     });
 
     cardHoverToggle?.addEventListener('click', () => {
-      settings.cardHover = !settings.cardHover;
+      settings.animations.cardHover = !settings.animations.cardHover;
       saveSettings(settings);
-      applyCardHover(settings.cardHover);
-      updateSwitch(cardHoverToggle, settings.cardHover);
+      applyCardHover(settings.animations.cardHover);
+      updateSwitch(cardHoverToggle, settings.animations.cardHover);
     });
 
     smoothScrollToggle?.addEventListener('click', () => {
-      settings.smoothScroll = !settings.smoothScroll;
+      settings.animations.smoothScroll = !settings.animations.smoothScroll;
       saveSettings(settings);
-      applySmoothScroll(settings.smoothScroll);
-      updateSwitch(smoothScrollToggle, settings.smoothScroll);
+      applySmoothScroll(settings.animations.smoothScroll);
+      updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
     });
 
     themeToggle?.addEventListener('click', () => {
@@ -907,28 +885,29 @@ const layoutModes = [
 
     // Reset handler
     resetBtn?.addEventListener('click', () => {
-      Object.assign(settings, JSON.parse(JSON.stringify(defaultSettings)));
+      const resetState = preferencesClient.resetSettings();
+      Object.assign(settings, resetState);
       saveSettings(settings);
       
-      applyColorScheme(settings.colorScheme);
-      applyLayoutMode(settings.layoutMode);
-      applyRadius(radiusValues[settings.radius]);
-      applyFontSize(settings.fontSize);
-      applyAnimations(settings.animations);
-      applyCardHover(settings.cardHover);
-      applySmoothScroll(settings.smoothScroll);
+      applyColorScheme(settings.theme.colorScheme);
+      applyLayoutMode(settings.layout.postsLayout);
+      applyRadius(radiusValues[settings.theme.radius]);
+      applyFontSize(settings.appearance.fontSize);
+      applyAnimations(settings.animations.enabled);
+      applyCardHover(settings.animations.cardHover);
+      applySmoothScroll(settings.animations.smoothScroll);
       applyWidgets(settings);
       applyReadingSettings(settings.reading);
       applyReadingTheme(settings.reading.theme);
 
-      updateColorSchemeUI(settings.colorScheme);
-      updateLayoutModeUI(settings.layoutMode);
-      updateRadiusUI(settings.radius);
-      updateFontSizeUI(settings.fontSize);
+      updateColorSchemeUI(settings.theme.colorScheme);
+      updateLayoutModeUI(settings.layout.postsLayout);
+      updateRadiusUI(settings.theme.radius);
+      updateFontSizeUI(settings.appearance.fontSize);
       updateReadingThemeUI(settings.reading.theme);
-      if (animationToggle) updateSwitch(animationToggle, settings.animations);
-      if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.cardHover);
-      if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.smoothScroll);
+      if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
+      if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
+      if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
       if (themeToggle) updateSwitch(themeToggle, settings.widgets.themeToggle);
       if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
       if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
@@ -946,7 +925,6 @@ const layoutModes = [
       document.querySelectorAll(selector).forEach(btn => {
         btn.addEventListener('click', () => {
           const value = btn.dataset[dataKey];
-          if (!settings.reading) settings.reading = { ...defaultSettings.reading };
           settings.reading[settingKey] = value;
           saveSettings(settings);
           applyReadingSettings(settings.reading);
@@ -960,7 +938,6 @@ const layoutModes = [
     handleReadingBtn('.font-family-btn', 'fontFamily', 'fontFamily', updateReadingBtnUI);
 
     focusModeToggle?.addEventListener('click', () => {
-      if (!settings.reading) settings.reading = { ...defaultSettings.reading };
       settings.reading.focusMode = !settings.reading.focusMode;
       saveSettings(settings);
       applyReadingSettings(settings.reading);
@@ -968,28 +945,37 @@ const layoutModes = [
     });
 
     readingModeToggle?.addEventListener('click', () => {
-      if (!settings.reading) settings.reading = { ...defaultSettings.reading };
-      settings.reading.readingMode = !settings.reading.readingMode;
-      saveSettings(settings);
-      applyReadingSettings(settings.reading);
-      updateSwitch(readingModeToggle, settings.reading.readingMode);
+      const active = !document.documentElement.classList.contains('reading-mode');
+      applyReadingMode(active);
+      updateSwitch(readingModeToggle, active);
     });
 
     // Share button handler
-    const shareBtn = document.getElementById('settings-share-btn');
-    shareBtn?.addEventListener('click', () => copyShareURL(settings));
+    if (shareBtn && shareBtn.dataset.settingsShareBound !== 'true') {
+      shareBtn.addEventListener('click', () => copyShareURL(settings));
+      shareBtn.dataset.settingsShareBound = 'true';
+    }
 
-    closeBtn?.addEventListener('click', () => panel.classList.add('hidden'));
+    if (closeBtn && closeBtn.dataset.settingsCloseBound !== 'true') {
+      closeBtn.addEventListener('click', closeSettingsPanel);
+      closeBtn.dataset.settingsCloseBound = 'true';
+    }
     
     // Listen for theme mode changes (light/dark) and re-apply color scheme
-    window.addEventListener('themechange', handleThemeChange(settings));
+    window.addEventListener('themechange', () => {
+      updateColorSchemeUI(settings.theme.colorScheme);
+    });
   }
 
   window.__settingsPanel = {
     toggle: () => {
       const panel = document.getElementById('settings-panel');
       if (panel) {
-        panel.classList.toggle('hidden');
+        if (panel.classList.contains('hidden')) {
+          openSettingsPanel();
+        } else {
+          closeSettingsPanel();
+        }
       }
     },
     getSettings: loadSettings,
@@ -999,14 +985,13 @@ const layoutModes = [
     applyReadingTheme: applyReadingTheme,
     toggleReadingMode: () => {
       const settings = loadSettings();
-      if (!settings.reading) settings.reading = { ...defaultSettings.reading };
-      settings.reading.readingMode = !settings.reading.readingMode;
-      saveSettings(settings);
+      const active = !document.documentElement.classList.contains('reading-mode');
+      applyReadingMode(active);
       applyReadingSettings(settings.reading);
       
       // Update UI toggle if exists
       const readingModeToggle = document.getElementById('reading-mode-toggle');
-      if (readingModeToggle) updateSwitch(readingModeToggle, settings.reading.readingMode);
+      if (readingModeToggle) updateSwitch(readingModeToggle, active);
     },
   };
 

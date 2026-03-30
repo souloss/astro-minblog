@@ -102,10 +102,7 @@ pnpm run ai:summary         # Generate summaries only
 pnpm run ai:eval            # Evaluate AI chat quality
 
 # Author profile
-pnpm run profile:build      # Build complete profile (context + voice + report)
-pnpm run profile:context    # Build author context
-pnpm run profile:voice      # Build voice profile
-pnpm run profile:report     # Generate author profile report
+pnpm run ai:profile:build   # Build complete profile (context + voice + facts + report)
 
 # Post management
 pnpm run post:new           # Create a new post
@@ -117,7 +114,7 @@ pnpm run data:status        # Show data files status
 pnpm run data:clear         # Clear generated data caches
 ```
 
-These scripts read from `src/data/blog/` and write to `datas/`. The generated JSON files are loaded by the AI server at runtime.
+These scripts read from `src/data/blog/` and write generation-stage artifacts to `datas/`. Runtime AI consumers use `datas/knowledge/runtime/knowledge-bundle.json` as the canonical input, with optional runtime companions such as `vector-index.json` when present.
 
 **URL strategy**: Tool scripts generate relative paths (`/zh/my-post`). The server prepends `SITE_URL` at runtime, making the data deployment-agnostic.
 

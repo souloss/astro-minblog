@@ -96,11 +96,18 @@ export const SITE = {
     tags: true,
     categories: true,
     search: true,
-    darkMode: true,
-    ai: true,        // 启用 AI 聊天
-    waline: true,    // 启用评论
-    sponsor: true,   // 启用赞助
   },
+   darkMode: true,
+   ai: {
+     enabled: true,
+   },
+   waline: {
+     enabled: true,
+     serverURL: "https://your-waline.vercel.app/",
+   },
+   sponsor: {
+     enabled: true,
+   },
   // 其他配置...
 };
 ```
@@ -138,7 +145,7 @@ category: 随笔
 | ------------ | ---------------- |
 | 框架预设     | Astro            |
 | 构建命令     | `pnpm run build` |
-| 构建输出目录 | `apps/blog/dist` |
+| 构建输出目录 | `dist` |
 
 ### Step 3.3: 设置环境变量
 
@@ -297,9 +304,6 @@ astro-minimax 内置 AI 聊天助手，基于 Cloudflare Workers AI。
 
 ```typescript
 // src/config.ts
-features: {
-  ai: true,
-},
 ai: {
   enabled: true,
   mockMode: false,
@@ -311,7 +315,7 @@ ai: {
 
 ```bash
 pnpm run ai:process      # 生成文章摘要
-pnpm run profile:build   # 构建作者画像
+pnpm run ai:profile:build # 构建作者画像
 ```
 
 ### Step 7.3: 验证 AI Binding
@@ -339,6 +343,7 @@ Cloudflare Pages 会自动识别并启用 Workers AI。
 | 变量                        | 值                      | 用途          |
 | --------------------------- | ----------------------- | ------------- |
 | `NODE_VERSION`              | `22`                    | 构建环境      |
+| `AI_BINDING_NAME`           | `minimaxAI`             | Workers AI 绑定名 |
 | `NOTIFY_TELEGRAM_BOT_TOKEN` | `123456:ABC...`         | Telegram 通知 |
 | `NOTIFY_TELEGRAM_CHAT_ID`   | `123456789`             | Telegram 通知 |
 | `SITE_URL`                  | `https://your-blog.com` | 站点 URL      |

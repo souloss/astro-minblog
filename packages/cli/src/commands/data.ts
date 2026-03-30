@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, unlinkSync, rmSync } from "node:fs";
+import { existsSync, readFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 
 export async function dataCommand(args: string[]): Promise<void> {
@@ -14,11 +14,9 @@ Subcommands:
   clear             Clear all generated data caches
 
 Description:
-  View and manage the generated data files in datas/ directory:
-  - AI summaries and SEO metadata
-  - Author profiles and contexts
-  - Voice profiles
-  - Skip lists
+  View and manage generated data files in datas/.
+  Runtime consumers should rely on datas/knowledge/runtime/knowledge-bundle.json
+  plus the optional datas/knowledge/runtime/vector-index.json.
 
 Examples:
   astro-minimax data status
@@ -53,31 +51,54 @@ function showStatus(datasDir: string): void {
   console.log("\n  Data Files Status:\n");
 
   const files = [
-    { name: "ai-summaries.json", desc: "AI-generated summaries" },
-    { name: "ai-seo.json", desc: "SEO metadata" },
-    { name: "ai-skip-list.json", desc: "Skipped posts list" },
-    { name: "author-context.json", desc: "Author context" },
-    { name: "author-profile-context.json", desc: "Profile context" },
-    { name: "author-profile-report.json", desc: "Profile report" },
-    { name: "voice-profile.json", desc: "Writing style profile" },
+    {
+      name: "knowledge/runtime/knowledge-bundle.json",
+      desc: "Canonical runtime bundle",
+    },
+    {
+      name: "knowledge/runtime/vector-index.json",
+      desc: "Optional runtime vector companion",
+    },
+    {
+      name: "knowledge/runtime/article-passages.json",
+      desc: "Optional runtime passage companion",
+    },
+    {
+      name: "knowledge/sources/content-manifest.json",
+      desc: "Canonical source manifest",
+    },
+    {
+      name: "knowledge/derived/site-overview.json",
+      desc: "Derived site overview",
+    },
+    {
+      name: "knowledge/cache/build-metadata.json",
+      desc: "Knowledge pipeline build metadata",
+    },
   ];
 
   for (const file of files) {
-    const path = join(datasDir, file.name);
-    if (existsSync(path)) {
-      const content = readFileSync(path, "utf-8");
-      const stat = JSON.parse(content);
-      const articles = stat.articles ? Object.keys(stat.articles).length : 0;
-      const posts = stat.posts ? stat.posts.length : 0;
-      const updated = stat.meta?.lastUpdated || stat.generatedAt || "never";
+      const path = join(datasDir, file.name);
+      if (existsSync(path)) {
+        const content = readFileSync(path, "utf-8");
+        const stat = JSON.parse(content);
+        const articles = stat.articles
+          ? Object.keys(stat.articles).length
+          : Array.isArray(stat.corpus?.documents)
+            ? stat.corpus.documents.length
+            : 0;
+        const passages = Array.isArray(stat.passages?.passages)
+          ? stat.passages.passages.length
+          : 0;
+        const updated = stat.meta?.lastUpdated || stat.generatedAt || "never";
 
-      console.log(`  ✅ ${file.name}`);
-      console.log(`     ${file.desc}`);
-      if (articles > 0) console.log(`     ${articles} articles processed`);
-      if (posts > 0) console.log(`     ${posts} posts analyzed`);
-      console.log(`     Last updated: ${updated}`);
-      console.log();
-    } else {
+        console.log(`  ✅ ${file.name}`);
+        console.log(`     ${file.desc}`);
+        if (articles > 0) console.log(`     ${articles} articles processed`);
+        if (passages > 0) console.log(`     ${passages} passages indexed`);
+        console.log(`     Last updated: ${updated}`);
+        console.log();
+      } else {
       console.log(`  ⬜ ${file.name}`);
       console.log(`     ${file.desc} - not generated`);
       console.log();
@@ -87,13 +108,12 @@ function showStatus(datasDir: string): void {
 
 async function clearData(datasDir: string): Promise<void> {
   const clearableFiles = [
-    "ai-summaries.json",
-    "ai-seo.json",
-    "ai-skip-list.json",
-    "author-context.json",
-    "author-profile-context.json",
-    "author-profile-report.json",
-    "voice-profile.json",
+    "knowledge/runtime/knowledge-bundle.json",
+    "knowledge/runtime/vector-index.json",
+    "knowledge/runtime/article-passages.json",
+    "knowledge/sources/content-manifest.json",
+    "knowledge/derived/site-overview.json",
+    "knowledge/cache/build-metadata.json",
   ];
 
   console.log("\n  Clearing generated data...\n");

@@ -1,6 +1,6 @@
 {
   "name": "@astro-minimax/core",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "type": "module",
   "description": "Core theme package for astro-minimax — layouts, components, styles, utilities and plugins.",
   "author": "Souloss",
@@ -37,12 +37,15 @@
     "./plugins/*": "./src/plugins/*.ts",
     "./scripts/*": "./src/scripts/*.ts",
     "./actions": "./src/actions/index.ts",
+    "./preferences/client-init": "./src/preferences/client-init.ts",
     "./types": "./src/types.ts"
   },
   "files": [
     "src/"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/preferences/client-init.ts"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules/.cache"

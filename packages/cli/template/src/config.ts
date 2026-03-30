@@ -15,7 +15,7 @@ export const SITE: SiteConfig = {
   dir: "ltr",
 
   postPerIndex: 4,
-  postPerPage: 8,
+  postPerPage: 4,
   scheduledPostMargin: 15 * 60 * 1000,
   showBackButton: true,
   dynamicOgImage: true,
@@ -26,8 +26,8 @@ export const SITE: SiteConfig = {
     series: true,
     archives: true,
     search: true,
-    friends: false,
-    projects: false,
+    friends: true,
+    projects: true,
   },
 
   darkMode: true,
@@ -39,9 +39,9 @@ export const SITE: SiteConfig = {
       { key: "tags", enabled: true },
       { key: "categories", enabled: true },
       { key: "series", enabled: true },
-      { key: "projects", enabled: false },  // Matches features.projects
+      { key: "projects", enabled: true },
       { key: "about", enabled: true },
-      { key: "friends", enabled: false },   // Matches features.friends
+      { key: "friends", enabled: true },
       { key: "archives", enabled: true },
     ],
   },
@@ -53,8 +53,29 @@ export const SITE: SiteConfig = {
   },
 
   projects: [
-    // { repo: "your-username/your-repo", featured: true },
+    { repo: "souloss/astro-minimax", featured: true },
+    { repo: "withastro/astro" },
   ],
+
+  waline: {
+    enabled: true,
+    serverURL: "https://walinejs.souloss.cn/",
+    emoji: [
+      "https://unpkg.com/@waline/emojis@1.2.0/weibo",
+      "https://unpkg.com/@waline/emojis@1.2.0/bilibili",
+      "https://unpkg.com/@waline/emojis@1.2.0/tieba",
+    ],
+    lang: "zh-CN",
+    pageview: true,
+    reaction: true,
+    login: "enable",
+    wordLimit: [0, 1000],
+    imageUploader: false,
+    requiredMeta: ["nick", "mail"],
+    copyright: true,
+    recaptchaV3Key: "",
+    turnstileKey: "",
+  },
 
   // waline: {
   //   enabled: true,
@@ -107,8 +128,8 @@ export const SITE: SiteConfig = {
   },
 
   ai: {
-    enabled: false,
-    mockMode: false,
+    enabled: true,
+    mockMode: true,
     apiEndpoint: "/api/chat",
     // welcomeMessage: "Welcome! How can I help you?",
     // placeholder: "Ask me anything...",

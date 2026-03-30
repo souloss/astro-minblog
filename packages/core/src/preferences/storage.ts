@@ -1,26 +1,21 @@
-import type { Preferences, DeepPartial } from './types';
-import { defaultPreferences, PREFERENCES_VERSION } from './defaults';
+import type { Preferences, DeepPartial } from "./types";
+import { defaultPreferences, PREFERENCES_VERSION } from "./defaults";
+import { userDefaults } from "virtual:astro-minimax/preferences-defaults";
 
-const STORAGE_KEY = 'astro-minimax-settings';
-const OLD_STORAGE_KEY = 'astro-minimax-settings';
+const STORAGE_KEY = "astro-minimax-settings";
+const PREFERENCES_EVENT = "astro-minimax:preferences-change";
 
 let _userDefaults: DeepPartial<Preferences> | undefined;
 
 function getUserDefaults(): DeepPartial<Preferences> {
   if (_userDefaults === undefined) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const module = require('virtual:astro-minimax/preferences-defaults');
-      _userDefaults = module?.userDefaults ?? {};
-    } catch {
-      _userDefaults = {};
-    }
+    _userDefaults = userDefaults ?? {};
   }
   return _userDefaults!;
 }
 
 export function getEffectiveDefaults(): Preferences {
-  const userDefaults = typeof window !== 'undefined' ? getUserDefaults() : {};
+  const userDefaults = typeof window !== "undefined" ? getUserDefaults() : {};
   return deepMerge({ ...defaultPreferences }, userDefaults);
 }
 
@@ -34,10 +29,10 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
 
       if (
         sourceValue &&
-        typeof sourceValue === 'object' &&
+        typeof sourceValue === "object" &&
         !Array.isArray(sourceValue) &&
         targetValue &&
-        typeof targetValue === 'object' &&
+        typeof targetValue === "object" &&
         !Array.isArray(targetValue)
       ) {
         (result as Record<string, unknown>)[key] = deepMerge(
@@ -54,48 +49,40 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
 }
 
 function migratePreferences(oldPrefs: unknown): Preferences {
-  const prefs = oldPrefs as Record<string, unknown>;
-
-  if (!prefs?.version) {
-    return {
-      theme: {
-        colorScheme: (prefs?.colorScheme as Preferences['theme']['colorScheme']) || defaultPreferences.theme.colorScheme,
-        mode: 'system',
-        radius: (prefs?.radius as Preferences['theme']['radius']) || defaultPreferences.theme.radius,
-      },
-      appearance: {
-        fontSize: (prefs?.fontSize as number) || defaultPreferences.appearance.fontSize,
-      },
-      layout: {
-        postsLayout: (prefs?.layoutMode as Preferences['layout']['postsLayout']) || defaultPreferences.layout.postsLayout,
-      },
-      reading: {
-        ...defaultPreferences.reading,
-      },
-      widgets: {
-        themeToggle: (prefs?.widgets as Record<string, boolean>)?.themeToggle ?? true,
-        backToTop: (prefs?.widgets as Record<string, boolean>)?.backToTop ?? true,
-        readingTime: (prefs?.widgets as Record<string, boolean>)?.readingTime ?? true,
-        stickyBackToTop: (prefs?.widgets as Record<string, boolean>)?.stickyBackToTop ?? true,
-      },
-      animations: {
-        enabled: (prefs?.animations as boolean) ?? true,
-        cardHover: (prefs?.cardHover as boolean) ?? true,
-        smoothScroll: (prefs?.smoothScroll as boolean) ?? true,
-      },
-      version: PREFERENCES_VERSION,
-    };
-  }
-
+  const prefs = oldPrefs as Partial<Preferences> | null;
   return {
     ...defaultPreferences,
-    ...(prefs as unknown as Preferences),
+    ...(prefs ?? {}),
+    theme: {
+      ...defaultPreferences.theme,
+      ...(prefs?.theme ?? {}),
+    },
+    appearance: {
+      ...defaultPreferences.appearance,
+      ...(prefs?.appearance ?? {}),
+    },
+    layout: {
+      ...defaultPreferences.layout,
+      ...(prefs?.layout ?? {}),
+    },
+    reading: {
+      ...defaultPreferences.reading,
+      ...(prefs?.reading ?? {}),
+    },
+    widgets: {
+      ...defaultPreferences.widgets,
+      ...(prefs?.widgets ?? {}),
+    },
+    animations: {
+      ...defaultPreferences.animations,
+      ...(prefs?.animations ?? {}),
+    },
     version: PREFERENCES_VERSION,
   };
 }
 
 export function loadPreferences(): Preferences {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return { ...defaultPreferences };
   }
 
@@ -116,13 +103,13 @@ export function loadPreferences(): Preferences {
 
     return migrated;
   } catch (error) {
-    console.warn('Failed to load preferences:', error);
+    console.warn("Failed to load preferences:", error);
     return effectiveDefaults;
   }
 }
 
 export function savePreferences(preferences: Preferences): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -132,12 +119,19 @@ export function savePreferences(preferences: Preferences): void {
       version: PREFERENCES_VERSION,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    window.dispatchEvent(
+      new CustomEvent(PREFERENCES_EVENT, {
+        detail: { preferences: toSave },
+      })
+    );
   } catch (error) {
-    console.warn('Failed to save preferences:', error);
+    console.warn("Failed to save preferences:", error);
   }
 }
 
-export function updatePreferences(updates: DeepPartial<Preferences>): Preferences {
+export function updatePreferences(
+  updates: DeepPartial<Preferences>
+): Preferences {
   const current = loadPreferences();
   const updated = deepMerge(current, updates);
   savePreferences(updated);
@@ -151,23 +145,32 @@ export function resetPreferences(): Preferences {
 }
 
 export function clearPreferences(): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
   try {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(OLD_STORAGE_KEY);
+    window.dispatchEvent(
+      new CustomEvent(PREFERENCES_EVENT, {
+        detail: { preferences: getEffectiveDefaults() },
+      })
+    );
   } catch (error) {
-    console.warn('Failed to clear preferences:', error);
+    console.warn("Failed to clear preferences:", error);
   }
 }
 
-export function getPreference<K extends keyof Preferences>(key: K): Preferences[K] {
+export function getPreference<K extends keyof Preferences>(
+  key: K
+): Preferences[K] {
   const prefs = loadPreferences();
   return prefs[key];
 }
 
-export function setPreference<K extends keyof Preferences>(key: K, value: Preferences[K]): void {
+export function setPreference<K extends keyof Preferences>(
+  key: K,
+  value: Preferences[K]
+): void {
   updatePreferences({ [key]: value } as DeepPartial<Preferences>);
 }

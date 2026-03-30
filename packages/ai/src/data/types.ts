@@ -49,8 +49,14 @@ export interface AuthorProfile {
 }
 
 export interface AuthorContextFile {
+  $schema?: string;
+  generatedAt?: string;
+  contextHash?: string;
   profile: AuthorProfile;
   posts: AuthorPost[];
+  stableFacts?: Record<string, unknown>;
+  timelineFacts?: Record<string, unknown>;
+  aiConfig?: Record<string, unknown> | null;
 }
 
 export interface VoiceProfile {
@@ -63,6 +69,6 @@ export interface LoadedMetadata {
   summaries: AISummariesFile | null;
   authorContext: AuthorContextFile | null;
   voiceProfile: VoiceProfile | null;
-  factRegistry: import('../fact-registry/types.js').FactRegistryFile | null;
-  vectorIndex: import('../search/vector-reranker.js').VectorIndex | null;
+  factRegistry: import("../fact-registry/types.js").FactRegistryFile | null;
+  vectorIndex: import("../search/vector-reranker.js").VectorIndex | null;
 }

@@ -4,11 +4,15 @@ export {
   hasQueryOverlap,
   shouldReuseSearchContext,
   buildLocalSearchQuery,
-  classifyIntent,
-  rankArticlesByIntent,
-} from './intent-detect.js';
+} from '../query/followup.js';
 
-export type { IntentCategory } from './intent-detect.js';
+export {
+  classifyIntent,
+  rankArticlesByCategory,
+  rankArticlesByIntent,
+} from '../query/intent.js';
+
+export type { QueryIntentCategory as IntentCategory } from '../query/types.js';
 
 export {
   shouldRunKeywordExtraction,
@@ -33,6 +37,21 @@ export {
 } from './evidence-budget.js';
 
 export type { EvidenceBudget } from './evidence-budget.js';
+
+export {
+  interpretRequest,
+  resolveInterpretationBudget,
+  classifyQueryComplexity,
+  resolveSearchInterpretation,
+} from './request-interpretation.js';
+
+export type {
+  SafetyDecision,
+  SafetyReason,
+  RequestInterpretation,
+  InterpretRequestArgs,
+  SearchInterpretation,
+} from './request-interpretation.js';
 
 export {
   getCitationGuardPreflight,

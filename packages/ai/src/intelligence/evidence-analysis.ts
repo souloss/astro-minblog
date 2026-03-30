@@ -1,34 +1,43 @@
-import { generateText, type LanguageModel } from 'ai';
-import type { ArticleContext, ProjectContext } from '../search/types.js';
-import type { EvidenceAnalysisResult, TokenUsageStats, QueryComplexity } from './types.js';
+import { generateText, type LanguageModel } from "ai";
+import type { ArticleContext, ProjectContext } from "../search/types.js";
+import type {
+  EvidenceAnalysisResult,
+  TokenUsageStats,
+  QueryComplexity,
+} from "./types.js";
 import {
   EvidenceAnalysisSchema,
   EvidenceAnalysis,
   EVIDENCE_ANALYSIS_SYSTEM_PROMPT,
-} from '../structured-output/index.js';
-import { TIMEOUTS, INTELLIGENCE } from '../constants.js';
+} from "../structured-output/index.js";
+import { TIMEOUTS, INTELLIGENCE } from "../constants.js";
 
 export const EVIDENCE_ANALYSIS_TIMEOUT_MS = TIMEOUTS.EVIDENCE_ANALYSIS;
-export const EVIDENCE_ANALYSIS_MAX_TOKENS = INTELLIGENCE.EVIDENCE_ANALYSIS_MAX_TOKENS;
+export const EVIDENCE_ANALYSIS_MAX_TOKENS =
+  INTELLIGENCE.EVIDENCE_ANALYSIS_MAX_TOKENS;
 
 export function shouldSkipAnalysis(
   latestText: string,
   articleCount: number,
-  complexity: QueryComplexity,
+  complexity: QueryComplexity
 ): boolean {
   if (articleCount < 2) return true;
-  if (complexity === 'simple') return true;
+  if (complexity === "simple") return true;
   if (latestText.length < 15) return true;
   return false;
 }
 
-function buildEvidenceSummary(articles: ArticleContext[], projects: ProjectContext[]): string {
+function buildEvidenceSummary(
+  articles: ArticleContext[],
+  projects: ProjectContext[]
+): string {
   const lines: string[] = [];
 
   for (const article of articles.slice(0, 6)) {
     lines.push(`文章: ${article.title}`);
     if (article.summary) lines.push(`  摘要: ${article.summary}`);
-    if (article.keyPoints.length) lines.push(`  要点: ${article.keyPoints.slice(0, 3).join(', ')}`);
+    if (article.keyPoints.length)
+      lines.push(`  要点: ${article.keyPoints.slice(0, 3).join(", ")}`);
     if (article.url) lines.push(`  URL: ${article.url}`);
   }
 
@@ -37,16 +46,27 @@ function buildEvidenceSummary(articles: ArticleContext[], projects: ProjectConte
     if (project.url) lines.push(`  URL: ${project.url}`);
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
-async function extractUsage(result: unknown): Promise<TokenUsageStats | undefined> {
-  const usagePromise = (result as unknown as {
-    usage?: PromiseLike<{ inputTokens?: number; outputTokens?: number; totalTokens?: number }>
-  }).usage;
-  
+async function extractUsage(
+  result: unknown
+): Promise<TokenUsageStats | undefined> {
+  const usagePromise =
+    typeof result === "object" && result !== null && "usage" in result
+      ? (
+          result as {
+            usage?: PromiseLike<{
+              inputTokens?: number;
+              outputTokens?: number;
+              totalTokens?: number;
+            }>;
+          }
+        ).usage
+      : undefined;
+
   if (!usagePromise) return undefined;
-  
+
   try {
     const u = await Promise.resolve(usagePromise);
     return {
@@ -76,10 +96,11 @@ export async function analyzeRetrievedEvidenceStructured(params: {
   maxOutputTokens?: number;
   abortSignal?: AbortSignal;
 }): Promise<StructuredEvidenceResult> {
-  const { userQuery, articles, projects, provider, model, abortSignal } = params;
+  const { userQuery, articles, projects, provider, model, abortSignal } =
+    params;
 
   if (articles.length === 0 && projects.length === 0) {
-    return { analysis: null, parseStatus: 'no_content' };
+    return { analysis: null, parseStatus: "no_content" };
   }
 
   const evidenceSummary = buildEvidenceSummary(articles, projects);
@@ -89,17 +110,16 @@ export async function analyzeRetrievedEvidenceStructured(params: {
 ${evidenceSummary}`;
 
   try {
-    const { generateObject } = await import('ai');
-    
+    const { generateObject } = await import("ai");
+
     const result = await generateObject({
       model: provider.chatModel(model) as LanguageModel,
       schema: EvidenceAnalysisSchema,
-      schemaName: 'evidence_analysis',
-      schemaDescription: 'Structured evidence analysis for answer planning',
+      schemaName: "evidence_analysis",
+      schemaDescription: "Structured evidence analysis for answer planning",
       system: EVIDENCE_ANALYSIS_SYSTEM_PROMPT,
       prompt: userPrompt,
       temperature: 0,
-      maxRetries: 0,
       abortSignal,
     });
 
@@ -107,14 +127,14 @@ ${evidenceSummary}`;
 
     return {
       analysis: result.object,
-      parseStatus: 'ok',
+      parseStatus: "ok",
       usage,
       rawText: JSON.stringify(result.object),
     };
   } catch (error) {
     return {
       analysis: null,
-      parseStatus: 'error',
+      parseStatus: "error",
       error: error instanceof Error ? error.message : String(error),
     };
   }
@@ -129,7 +149,15 @@ export async function analyzeRetrievedEvidence(params: {
   maxOutputTokens?: number;
   abortSignal?: AbortSignal;
 }): Promise<EvidenceAnalysisResult> {
-  const { userQuery, articles, projects, provider, model, maxOutputTokens = EVIDENCE_ANALYSIS_MAX_TOKENS, abortSignal } = params;
+  const {
+    userQuery,
+    articles,
+    projects,
+    provider,
+    model,
+    maxOutputTokens = EVIDENCE_ANALYSIS_MAX_TOKENS,
+    abortSignal,
+  } = params;
 
   const evidenceSummary = buildEvidenceSummary(articles, projects);
 
@@ -155,67 +183,72 @@ ${evidenceSummary}
       abortSignal,
     });
 
-    const rawText = result.text?.trim() ?? '';
+    const rawText = result.text?.trim() ?? "";
     const match = rawText.match(/<evidence>([\s\S]*?)<\/evidence>/);
     const analysis = match?.[1]?.trim();
     const usage = await extractUsage(result);
 
     return {
       analysis,
-      parseStatus: analysis ? 'ok' : 'no_match',
+      parseStatus: analysis ? "ok" : "no_match",
       rawText,
       usage,
     };
   } catch (error) {
     return {
-      parseStatus: 'error',
+      parseStatus: "error",
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
-export function buildEvidenceSection(analysis: string | EvidenceAnalysis | null): string {
-  if (!analysis) return '';
-  
-  if (typeof analysis === 'string') {
-    if (!analysis.trim()) return '';
+export function buildEvidenceSection(
+  analysis: string | EvidenceAnalysis | null
+): string {
+  if (!analysis) return "";
+
+  if (typeof analysis === "string") {
+    if (!analysis.trim()) return "";
     return `\n## 关键证据分析\n${analysis}\n`;
   }
-  
-  const lines: string[] = ['## 关键证据分析'];
-  
+
+  const lines: string[] = ["## 关键证据分析"];
+
   if (analysis.directAnswer) {
     lines.push(`- 直接结论：${analysis.directAnswer}`);
   }
-  
+
   if (analysis.entities.length > 0) {
-    lines.push('');
-    lines.push('### 相关实体');
+    lines.push("");
+    lines.push("### 相关实体");
     for (const entity of analysis.entities) {
       const parts = [entity.name];
       if (entity.count) {
-        const countStr = entity.countMode === 'at_least' ? `至少 ${entity.count}` : `${entity.count}`;
+        const countStr =
+          entity.countMode === "at_least"
+            ? `至少 ${entity.count}`
+            : `${entity.count}`;
         parts.push(`(${countStr})`);
       }
-      lines.push(`- ${parts.join(' ')}`);
+      lines.push(`- ${parts.join(" ")}`);
     }
   }
-  
+
   if (analysis.keyFindings.length > 0) {
-    lines.push('');
-    lines.push('### 关键发现');
+    lines.push("");
+    lines.push("### 关键发现");
     for (const finding of analysis.keyFindings) {
       lines.push(`- ${finding.claim} (置信度: ${finding.confidence})`);
     }
   }
-  
+
   if (analysis.uncertainties.length > 0) {
-    lines.push('');
-    lines.push('### 不确定项');
+    lines.push("");
+    lines.push("### 不确定项");
     for (const item of analysis.uncertainties) {
       lines.push(`- ${item}`);
     }
   }
-  
-  return lines.join('\n');
+
+  return lines.join("\n");
 }

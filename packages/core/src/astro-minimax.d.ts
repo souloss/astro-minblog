@@ -26,14 +26,27 @@ declare module "virtual:astro-minimax/ai-widget" {
   const AIChatWidget: import("astro").AstroComponentFactory;
   export default AIChatWidget;
 }
-declare module "virtual:astro-minimax/ai-summaries" {
-  interface ArticleSummaryEntry {
-    data: { summary?: string; abstract?: string; keyPoints?: string[] };
-  }
-  const aiSummaries: { meta?: unknown; articles?: Record<string, ArticleSummaryEntry> };
-  export default aiSummaries;
-}
 declare module "virtual:astro-minimax/preferences-defaults" {
   import type { DeepPartial, Preferences } from "@astro-minimax/core/preferences/types";
   export const userDefaults: DeepPartial<Preferences>;
+}
+declare module "virtual:astro-minimax/preferences-client-init" {
+  const init: null;
+  export default init;
+}
+
+declare module "astro:content" {
+  export type CollectionEntry<TCollection extends string> = {
+    id: string;
+    filePath?: string;
+    data: Record<string, any>;
+    body: string;
+    slug?: string;
+    collection?: TCollection;
+  };
+
+  export function getCollection<TCollection extends string>(
+    collection: TCollection,
+    filter?: (entry: CollectionEntry<TCollection>) => boolean | Promise<boolean>
+  ): Promise<CollectionEntry<TCollection>[]>;
 }

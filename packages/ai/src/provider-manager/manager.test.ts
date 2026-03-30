@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ProviderManager, getProviderManager, resetProviderManager } from './manager.js';
+import { ProviderManager, getProviderManager } from './manager.js';
 import type { ProviderAdapter, ProviderHealth } from './types.js';
 
 function createMockAdapter(id: string, weight: number, healthy: boolean = true): ProviderAdapter {
@@ -116,33 +116,28 @@ describe('ProviderManager', () => {
   });
 });
 
-describe('getProviderManager singleton', () => {
-  beforeEach(() => {
-    resetProviderManager();
-  });
-
-  it('should create singleton on first call', () => {
+describe('getProviderManager lifecycle', () => {
+  it('should create a manager on first call', () => {
     const manager1 = getProviderManager({});
     expect(manager1).toBeDefined();
   });
 
-  it('should return same instance on subsequent calls', () => {
+  it('should create a fresh instance by default', () => {
     const manager1 = getProviderManager({});
     const manager2 = getProviderManager({});
-    expect(manager1).toBe(manager2);
-  });
-
-  it('should create new instance with forceRecreate', () => {
-    const manager1 = getProviderManager({});
-    const manager2 = getProviderManager({}, { forceRecreate: true });
     expect(manager1).not.toBe(manager2);
   });
 
-  it('should reset with resetProviderManager', () => {
-    const manager1 = getProviderManager({});
-    resetProviderManager();
+  it('should respect new env inputs by default', () => {
+    const manager1 = getProviderManager({
+      AI_BASE_URL: 'https://example-a.test/v1',
+      AI_API_KEY: 'key-a',
+      AI_MODEL: 'model-a',
+    });
     const manager2 = getProviderManager({});
-    expect(manager1).not.toBe(manager2);
+
+    expect(manager1.getProviderCount()).toBe(1);
+    expect(manager2.getProviderCount()).toBe(0);
   });
 });
 

@@ -181,14 +181,25 @@ const lang = SITE.lang;
 <script>
   import { getGlobalEventManager } from "../../utils/performance";
 
+  type SettingsPanelController = {
+    toggle?: () => void;
+    toggleReadingMode?: () => void;
+  };
+
+  type FloatingActionsWindow = Window & {
+    __aiChatToggle?: () => void;
+    __settingsPanel?: SettingsPanelController;
+  };
+
   function initFloatingActions() {
     const manager = getGlobalEventManager();
+    const appWindow = window as FloatingActionsWindow;
 
     const aiFab = document.getElementById("ai-chat-toggle-fab");
     if (aiFab) {
       manager.add(aiFab, "click", () => {
-        if (typeof (window as any).__aiChatToggle === 'function') {
-          (window as any).__aiChatToggle();
+        if (typeof appWindow.__aiChatToggle === 'function') {
+          appWindow.__aiChatToggle();
         }
       });
     }
@@ -196,8 +207,8 @@ const lang = SITE.lang;
     const settingsBtn = document.getElementById("settings-btn");
     if (settingsBtn) {
       manager.add(settingsBtn, "click", () => {
-        if (typeof (window as any).__settingsPanel?.toggle === 'function') {
-          (window as any).__settingsPanel.toggle();
+        if (typeof appWindow.__settingsPanel?.toggle === 'function') {
+          appWindow.__settingsPanel.toggle();
         }
       });
     }
@@ -237,18 +248,8 @@ const lang = SITE.lang;
       syncReadingModeUI(initialActive);
 
       manager.add(readingModeBtn, "click", () => {
-        if (typeof (window as any).__settingsPanel?.toggleReadingMode === 'function') {
-          (window as any).__settingsPanel.toggleReadingMode();
-        } else {
-          const active = document.documentElement.classList.toggle("reading-mode");
-          syncReadingModeUI(active);
-          try {
-            const stored = localStorage.getItem('astro-minimax-settings');
-            const settings = stored ? JSON.parse(stored) : {};
-            if (!settings.reading) settings.reading = {};
-            settings.reading.readingMode = active;
-            localStorage.setItem('astro-minimax-settings', JSON.stringify(settings));
-          } catch {}
+        if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
+          appWindow.__settingsPanel.toggleReadingMode();
         }
       });
 

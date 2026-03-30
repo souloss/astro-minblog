@@ -33,9 +33,13 @@ Vendor-agnostic AI integration package with full RAG pipeline for astro-minimax 
 | `search/`           | In-memory article/project search with session caching                  |
 | `intelligence/`     | Keyword extraction, evidence analysis, citation guard, answer mode, dynamic evidence budget |
 | `prompt/`           | Three-layer system prompt builder (static → semi-static → dynamic)     |
-| `data/`             | Build-time metadata loading (summaries, author context, voice profile) |
-| `stream/`           | Stream helpers and response utilities                                  |
+| `data/`             | Bundle-backed runtime metadata loading and shared data types            |
 | `components/`       | Preact UI components (ChatPanel, AIChatWidget, AIChatContainer)        |
+| `extensions/`       | Search/prompt extensions and semantic fallback rules                   |
+| `structured-output/`| Schema-validated structured generation helpers                         |
+| `cache/`            | Response/session/injection cache utilities                             |
+| `fact-registry/`    | Verified facts used for grounded prompt assembly                       |
+| `tools/`            | Runtime tool registry and built-in action/search tools                 |
 
 ## Features
 
@@ -143,13 +147,13 @@ export const SITE = {
 
 ### Response Cache Configuration
 
-| Variable                           | Default | Description                               |
-| ---------------------------------- | ------- | ----------------------------------------- |
-| `AI_RESPONSE_CACHE_ENABLED`        | `false` | Enable AI response caching                |
-| `AI_RESPONSE_CACHE_TTL`            | `3600`  | Cache TTL in seconds (1 hour)             |
-| `AI_RESPONSE_CACHE_PLAYBACK_DELAY` | `20`    | Delay between chunks during playback (ms) |
-| `AI_RESPONSE_CACHE_CHUNK_SIZE`     | `15`    | Characters per chunk during playback      |
-| `AI_RESPONSE_CACHE_THINKING_DELAY` | `5`     | Delay for thinking content playback (ms)  |
+| Variable                    | Default | Description                               |
+| --------------------------- | ------- | ----------------------------------------- |
+| `AI_CACHE_ENABLED`          | `false` | Enable AI response caching                |
+| `AI_CACHE_TTL`              | `3600`  | Cache TTL in seconds (1 hour)             |
+| `AI_CACHE_PLAYBACK_DELAY`   | `20`    | Delay between chunks during playback (ms) |
+| `AI_CACHE_CHUNK_SIZE`       | `15`    | Characters per chunk during playback      |
+| `AI_CACHE_THINKING_DELAY`   | `5`     | Delay for thinking content playback (ms)  |
 
 When enabled, the system caches complete AI responses (including thinking/reasoning content) for public questions like "What tech stack does this blog use?". Subsequent identical queries are served from cache with simulated streaming playback, reducing API costs and response time.
 
@@ -162,12 +166,11 @@ The server module provides reusable request handlers, decoupled from any specifi
 ```typescript
 // functions/api/chat.ts
 import { handleChatRequest, initializeMetadata } from '@astro-minimax/ai/server';
-import summaries from '../../datas/ai-summaries.json';
-import authorContext from '../../datas/author-context.json';
-import voiceProfile from '../../datas/voice-profile.json';
+import knowledgeBundle from '../../datas/knowledge/runtime/knowledge-bundle.json';
 
 export const onRequest: PagesFunction = async (context) => {
-  initializeMetadata({ summaries, authorContext, voiceProfile }, context.env);
+  initializeMetadata({ knowledgeBundle }, context.env);
+
   return handleChatRequest({ env: context.env, request: context.request });
 };
 ```
@@ -279,14 +282,19 @@ Core chat UI built on `useChat` from `@ai-sdk/react`:
 | ---------------- | --------------------------------------------------------------- |
 | `.`              | All modules                                                     |
 | `./server`       | `handleChatRequest`, `initializeMetadata`, error helpers, types |
-| `./providers`    | Mock response/stream utilities                                  |
 | `./middleware`   | Rate limiting                                                   |
 | `./search`       | Article/project search, session cache                           |
 | `./intelligence` | Keyword extraction, evidence analysis, citation guard, answer mode, evidence budget |
 | `./prompt`       | System prompt builder                                           |
+| `./cache`        | Cache adapters and response/session cache utilities             |
 | `./data`         | Metadata loading                                                |
-| `./stream`       | Stream utilities                                                |
-| `./components/*` | Astro/Preact components                                         |
+| `./fact-registry`| Verified facts registry                                         |
+| `./extensions`   | Extension registry, loader, and injector                        |
+| `./structured-output` | Structured output helpers                                   |
+| `./tools`        | Tool registry and built-in AI tools                             |
+| `./components/ChatPanel` | Preact chat panel component                             |
+| `./components/AIChatContainer` | Preact chat container component                   |
+| `./components/AIChatWidget.astro` | Astro chat widget entry point                  |
 
 ## Testing
 

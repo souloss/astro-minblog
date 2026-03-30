@@ -1,6 +1,6 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-03-22T17:55:43.266Z",
+  "generatedAt": "2026-03-29T06:03:22.204Z",
   "version": 1,
   "facts": [
     {
@@ -52,7 +52,7 @@
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 35 篇文章（中文 18 篇，英文 17 篇）",
+      "statement": "博客共有 72 篇文章（中文 36 篇，英文 36 篇）",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -72,7 +72,7 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 35 posts (18 in Chinese, 17 in English)",
+      "statement": "The blog has 72 posts (36 in Chinese, 36 in English)",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -88,7 +88,7 @@
     {
       "id": "blog-categories",
       "category": "blog",
-      "statement": "博客的主要分类包括：教程/博客、教程/配置、Tutorial/Configuration、Blog/Tutorial、教程/工程化",
+      "statement": "博客的主要分类包括：Examples、教程/博客、Release、教程/配置、Release Notes",
       "evidence": "author-context.json → stableFacts.focusAreas",
       "source": "derived",
       "confidence": 0.95,
@@ -100,18 +100,18 @@
         "category",
         "area",
         "focus",
+        "examples",
         "教程/博客",
+        "release",
         "教程/配置",
-        "tutorial/configuration",
-        "blog/tutorial",
-        "教程/工程化"
+        "release notes"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-top-tags",
       "category": "blog",
-      "statement": "博客最常用的标签有：docs、configuration、deployment、vercel、neon、cloudflare、tutorial、getting-started、analytics、waline",
+      "statement": "博客最常用的标签有：docs、release、tutorial、configuration、examples、Rust、changelog、ai、deployment、architecture",
       "evidence": "author-context.json → stableFacts.topTags",
       "source": "derived",
       "confidence": 0.9,
@@ -121,22 +121,22 @@
         "topic",
         "主题",
         "docs",
-        "configuration",
-        "deployment",
-        "vercel",
-        "neon",
-        "cloudflare",
+        "release",
         "tutorial",
-        "getting-started",
-        "analytics",
-        "waline"
+        "configuration",
+        "examples",
+        "rust",
+        "changelog",
+        "ai",
+        "deployment",
+        "architecture"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-recurring-topics",
       "category": "blog",
-      "statement": "博客反复讨论的技术话题包括：astro-minimax、docs、to、blog、AI、in、guide、Guide",
+      "statement": "博客反复讨论的技术话题包括：astro-minimax、and、Rust、to、docs、AI、release、Markdown",
       "evidence": "author-context.json → stableFacts.recurringTopics",
       "source": "aggregated",
       "confidence": 0.85,
@@ -147,21 +147,21 @@
         "topic",
         "recurring",
         "astro-minimax",
-        "docs",
+        "and",
+        "rust",
         "to",
-        "blog",
+        "docs",
         "ai",
-        "in",
-        "guide",
-        "guide"
+        "release",
+        "markdown"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-date-range",
       "category": "blog",
-      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-03-18",
-      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: \"在 Vercel 部署 Waline 评论系统\" (2026-03-18)",
+      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-03-29",
+      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: \"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\" (2026-03-29)",
       "source": "derived",
       "confidence": 1,
       "tags": [
@@ -178,7 +178,7 @@
     {
       "id": "blog-lang-dist",
       "category": "blog",
-      "statement": "博客文章的语言分布：中文 18 篇，英文 17 篇",
+      "statement": "博客文章的语言分布：英文 36 篇，中文 36 篇",
       "evidence": "author-context.json → posts[].lang aggregation",
       "source": "derived",
       "confidence": 1,
@@ -195,7 +195,7 @@
     {
       "id": "content-category-dist",
       "category": "content",
-      "statement": "按分类统计：教程/博客(7篇)、教程/配置(4篇)、Tutorial/Configuration(3篇)、Blog/Tutorial(3篇)、教程/工程化(3篇)、教程/部署(2篇)、教程/前端(2篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Blog(1篇)、Tutorial/AI(1篇)、Tutorial/Tools(1篇)、教程/AI(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、Tutorial/Engineering(1篇)、Blog/Configuration(1篇)",
+      "statement": "按分类统计：Examples(8篇)、教程/博客(7篇)、Release(6篇)、教程/配置(5篇)、Release Notes(4篇)、发布说明(4篇)、Tutorial/Configuration(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/AI(1篇)、Tutorial/Tools(1篇)、教程/AI(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
       "evidence": "author-context.json → posts[].category aggregation",
       "source": "derived",
       "confidence": 1,
@@ -210,7 +210,7 @@
     {
       "id": "content-flagship",
       "category": "content",
-      "statement": "最新的代表性文章：《\"Configuring Environment Variables in Cloudflare Pages\"》(2026-03-18)、《\"Complete Setup Guide: From Zero to Production\"》(2026-03-18)、《\"Setup Umami Analytics: Free Vercel Deployment\"》(2026-03-18)、《\"Deploy Waline Comment System on Vercel\"》(2026-03-18)、《\"Cloudflare Pages 环境变量配置指南\"》(2026-03-18)",
+      "statement": "最新的代表性文章：《\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"》(2026-03-29)、《\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"》(2026-03-29)、《\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"》(2026-03-24)、《\"astro-minimax v0.9.2: 安全加固与架构拆分\"》(2026-03-24)、《\"astro-minimax v0.9.1: AI Tool Calling & Action System\"》(2026-03-24)",
       "evidence": "author-context.json → stableFacts.flagshipPosts",
       "source": "derived",
       "confidence": 0.95,
@@ -274,8 +274,8 @@
     {
       "id": "content-ai-tags",
       "category": "content",
-      "statement": "AI 分析得出的高频主题标签：astro-minimax、Astro、CSS、Markdown、SEO、Git、GitHub Template、LaTeX、npm、配色方案、配置、博客、Husky、自动化、NPM包集成",
-      "evidence": "ai-summaries.json → 18 articles aggregated tags",
+      "statement": "AI 分析得出的高频主题标签：astro-minimax、Astro、Waline、RAG、Cloudflare Pages、Pagefind、Vercel、CLI、Monorepo、pnpm、CSS、Neon PostgreSQL、Umami、Docker、Markdown",
+      "evidence": "ai-summaries.json → 44 articles aggregated tags",
       "source": "aggregated",
       "confidence": 0.85,
       "tags": [
@@ -286,35 +286,19 @@
         "topic",
         "astro-minimax",
         "astro",
+        "waline",
+        "rag",
+        "cloudflare pages",
+        "pagefind",
+        "vercel",
+        "cli",
+        "monorepo",
+        "pnpm",
         "css",
-        "markdown",
-        "seo",
-        "git",
-        "github template",
-        "latex",
-        "npm",
-        "配色方案",
-        "配置",
-        "博客",
-        "husky",
-        "自动化",
-        "npm包集成"
-      ],
-      "lang": "zh"
-    },
-    {
-      "id": "content-recurring-kp",
-      "category": "content",
-      "statement": "在多篇文章中反复出现的要点：更新项目依赖的重要性；为新文件添加创建日期；修改astro配置允许空日期",
-      "evidence": "ai-summaries.json → keyPoints cross-article aggregation",
-      "source": "aggregated",
-      "confidence": 0.8,
-      "tags": [
-        "要点",
-        "核心",
-        "反复",
-        "key point",
-        "recurring"
+        "neon postgresql",
+        "umami",
+        "docker",
+        "markdown"
       ],
       "lang": "zh"
     },
@@ -343,14 +327,14 @@
     }
   ],
   "stats": {
-    "total": 17,
+    "total": 16,
     "byCategory": {
       "author": 3,
       "blog": 7,
-      "content": 5,
+      "content": 4,
       "project": 0,
       "tech": 2
     },
-    "avgConfidence": 0.953
+    "avgConfidence": 0.962
   }
 }

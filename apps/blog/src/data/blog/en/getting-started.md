@@ -54,7 +54,7 @@ The CLI also provides handy management commands:
 ```bash
 astro-minimax post new "Post Title"   # Create a new post
 astro-minimax ai process               # AI process articles (summaries + SEO)
-astro-minimax profile build            # Build author profile
+astro-minimax ai profile build         # Build author profile
 astro-minimax data status              # View data status
 ```
 
@@ -121,11 +121,17 @@ export const SITE = {
     tags: true,
     categories: true,
     search: true,
-    darkMode: true,
-    // Enable more features as needed
-    ai: false,
-    waline: false,
-    sponsor: false,
+  },
+  darkMode: true,
+  ai: {
+    enabled: false,
+  },
+  waline: {
+    enabled: false,
+    serverURL: "",
+  },
+  sponsor: {
+    enabled: false,
   },
   // ...
 };
@@ -175,7 +181,7 @@ astro-minimax supports multiple deployment platforms. Cloudflare Pages is recomm
 ```bash
 # Connect your Git repo to Cloudflare Pages
 # Build command: pnpm run build
-# Build output directory: apps/blog/dist
+# Build output directory: dist
 ```
 
 You can also deploy to Vercel, Netlify, or use Docker. See [Deployment Guide](/en/posts/deployment-guide) for details.
@@ -228,31 +234,25 @@ export default defineConfig({
     minimax({
       site: SITE,
       socials: SOCIALS,
-      viz: { mermaid: true, markmap: true },
+      shareLinks: SHARE_LINKS,
+      friends: FRIENDS,
+      blogPath: 'src/data/blog',
     }),
     preact({ compat: true }),
   ],
 });
 ```
 
-### 4. Use Layouts & Components
+Visualization support such as Mermaid and Markmap is already handled by the theme's built-in Markdown/component pipeline, so you don't need a separate `viz` config block.
 
-```astro
----
-import Layout from '@astro-minimax/core/layouts/Layout.astro';
-import Header from '@astro-minimax/core/components/nav/Header.astro';
-import Footer from '@astro-minimax/core/components/nav/Footer.astro';
-import Card from '@astro-minimax/core/components/ui/Card.astro';
----
+### 4. Pages & Routes
 
-<Layout title="My Blog">
-  <Header />
-  <main>
-    <slot />
-  </main>
-  <Footer />
-</Layout>
-```
+After integrating `@astro-minimax/core`, the theme injects the blog routes for you. In most setups, you **do not need to hand-build `src/pages/` with Layout / Header / Footer wiring**. What you primarily maintain is:
+
+- `src/config.ts` for site configuration
+- `src/constants.ts` for social and share links
+- `src/data/blog/` for content
+- `src/data/friends.ts` for friend links, if enabled
 
 ### 5. Update
 

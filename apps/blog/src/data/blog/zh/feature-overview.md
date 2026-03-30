@@ -1,7 +1,7 @@
 ---
 title: "astro-minimax 功能特性总览"
 pubDatetime: 2026-03-14T00:00:00.000Z
-modDatetime: 2026-03-24T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "完整介绍 astro-minimax 的所有功能特性，包括内容管理、可视化组件、AI 集成、互动系统等。"
 tags:
@@ -143,6 +143,15 @@ ogImage: ./cover.png
 
 详见 [添加文章指南](/zh/posts/adding-new-post)。
 
+### 封面图片
+
+Frontmatter 中的两个图片字段各有用途：
+
+- `cover` — 文章封面图，显示在文章卡片和文章页顶部横幅
+- `ogImage` — 社交分享图（Twitter、Facebook 等）
+
+未设置 `cover` 但设置了 `ogImage` 时，`ogImage` 会作为封面图使用；两者都未设置时，系统自动生成动态 OG 图片。
+
 ---
 
 ## 搜索
@@ -182,6 +191,8 @@ search: {
   },
 },
 ```
+
+两种搜索方案的详细配置和对比，详见 [搜索配置指南](/zh/posts/search-guide)。
 
 ---
 
@@ -334,6 +345,18 @@ import AsciinemaPlayer from '@astro-minimax/core/components/viz/AsciinemaPlayer.
 - **ChatPanel** — 可调整大小的对话面板，提供 S/M/L 三档预设
 - **CodeBlock** — 增强可视化工具栏：缩放、全屏、复制按钮
 
+### AI 工具调用
+
+AI 助手内置 7 个页面交互工具，可直接操控当前页面：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleReadingMode`、`highlightText`、`setPreference`、`searchArticles`。用户无需离开对话窗口就能完成主题切换、文章跳转、章节滚动等操作。
+
+详见 [AI 工具调用指南](/zh/posts/ai-tool-calling)。
+
+### 动作系统
+
+客户端 ActionExecutor + ActionQueue + URLHandler 三级管线。支持跨页动作链，也支持把动作参数编码到 URL 中分享给他人，接收者打开链接后自动执行预设操作。配合工具调用使用，能实现"一键收藏并跳转"等复合动作。
+
+详见 [AI 工具调用指南](/zh/posts/ai-tool-calling)。
+
 ### 使用方式
 
 AI 聊天以浮动组件形式出现在页面右下角。点击打开对话窗口，可以：
@@ -351,7 +374,6 @@ ai: {
   enabled: true,
   mockMode: false,       // 生产环境设为 false
   apiEndpoint: "/api/chat",
-  model: "@cf/zai-org/glm-4.7-flash",
 },
 ```
 
@@ -404,8 +426,8 @@ ai: {
 
 未指定 OG 图片的文章会自动生成：
 
-- 使用 [Satori](https://github.com/vercel/satori) 在构建时生成
-- 包含文章标题、作者、日期
+- 在构建时生成文章级社交分享图
+- 基于文章标题、作者与站点信息生成
 - 支持自定义字体
 - 尺寸 1200x640px
 
@@ -531,9 +553,10 @@ CLI 工具随 `@astro-minimax/cli` 包安装，也可以通过 `npx astro-minima
 | ---------------------- | --------------------------------------------- |
 | `astro-minimax init`   | 创建新博客项目                                |
 | `astro-minimax ai`     | AI 内容处理（摘要、SEO、评估）                |
-| `astro-minimax profile`| 作者画像管理（上下文、风格、报告）            |
+| `astro-minimax ai profile` | 作者画像管理（保留的标准构建入口）        |
 | `astro-minimax post`   | 文章管理（新建、列表、统计）                  |
 | `astro-minimax data`   | 数据管理（状态查看、缓存清理）                |
+| `astro-minimax hooks`  | Git 钩子安装、卸载与状态检查                  |
 
 ### 使用示例
 
@@ -541,7 +564,7 @@ CLI 工具随 `@astro-minimax/cli` 包安装，也可以通过 `npx astro-minima
 astro-minimax post new "文章标题"    # 创建新文章
 astro-minimax ai process              # AI 处理所有文章
 astro-minimax ai eval                 # 评估 AI 对话质量
-astro-minimax profile build           # 构建完整作者画像
+astro-minimax ai profile build        # 构建完整作者画像
 astro-minimax data status             # 查看数据状态
 ```
 

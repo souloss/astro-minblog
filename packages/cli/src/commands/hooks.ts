@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { join, dirname, relative, resolve } from "node:path";
+import { join, dirname, relative } from "node:path";
 import { readFile, writeFile, mkdir, rm } from "node:fs/promises";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
@@ -197,7 +197,9 @@ async function installCommand(): Promise<void> {
 
   if (!ctx) {
     console.error("\n  Error: Could not find a valid blog project.");
-    console.error("  Make sure you're in an astro-minimax blog directory with git initialized.\n");
+    console.error(
+      "  Make sure you're in an astro-minimax blog directory with git initialized.\n"
+    );
     process.exit(1);
   }
 
@@ -208,7 +210,9 @@ async function installCommand(): Promise<void> {
   }
 
   const pm = detectPackageManager(ctx.installPath);
-  console.log(`\n  Project type: ${ctx.isMonorepo ? "Monorepo" : "Single project"}`);
+  console.log(
+    `\n  Project type: ${ctx.isMonorepo ? "Monorepo" : "Single project"}`
+  );
   console.log(`  Git root: ${ctx.gitRoot}`);
   console.log(`  Blog path: ${ctx.blogPath}`);
   console.log(`  Package manager: ${pm}`);
@@ -293,7 +297,9 @@ fi
     await writeFile(ctx.installPkgPath, JSON.stringify(pkg, null, 2) + "\n");
     console.log('  ✅ Added "prepare": "husky" script\n');
   } catch {
-    console.warn('  ⚠️  Could not update package.json. Add "prepare": "husky" manually.\n');
+    console.warn(
+      '  ⚠️  Could not update package.json. Add "prepare": "husky" manually.\n'
+    );
   }
 
   console.log("  ═══════════════════════════════════════");
@@ -315,7 +321,9 @@ async function uninstallCommand(): Promise<void> {
   }
 
   const pm = detectPackageManager(ctx.installPath);
-  console.log(`\n  Project type: ${ctx.isMonorepo ? "Monorepo" : "Single project"}`);
+  console.log(
+    `\n  Project type: ${ctx.isMonorepo ? "Monorepo" : "Single project"}`
+  );
   console.log(`  Package manager: ${pm}`);
   console.log("\n  Uninstalling husky...\n");
 
@@ -347,8 +355,7 @@ async function uninstallCommand(): Promise<void> {
       await writeFile(ctx.installPkgPath, JSON.stringify(pkg, null, 2) + "\n");
       console.log('  ✅ Removed "prepare" script\n');
     }
-  } catch {
-  }
+  } catch {}
 
   console.log("  Git hooks uninstalled successfully!\n");
 }
@@ -367,7 +374,9 @@ async function statusCommand(): Promise<void> {
   const hasPreCommit = existsSync(preCommitPath);
 
   console.log("\n  Git Hooks Status\n");
-  console.log(`  Project type:     ${ctx.isMonorepo ? "Monorepo" : "Single project"}`);
+  console.log(
+    `  Project type:     ${ctx.isMonorepo ? "Monorepo" : "Single project"}`
+  );
   console.log(`  Git root:         ${ctx.gitRoot}`);
   console.log(`  Blog path:        ${ctx.blogPath}`);
   console.log(`  Install location: ${ctx.installPath}`);

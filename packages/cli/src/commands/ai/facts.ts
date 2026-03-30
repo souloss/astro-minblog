@@ -1,7 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { FactCategory, FactSource, FactRegistryFile, ValidationResult } from "./types.js";
-import { runTool } from "./run-tool.js";
+import type {
+  FactCategory,
+  FactSource,
+  FactRegistryFile,
+  ValidationResult,
+} from "./types.js";
 
 export async function handleFactsCommand(
   args: string[],
@@ -25,7 +29,6 @@ Description:
 
 Examples:
   astro-minimax ai facts build
-  astro-minimax ai facts build --verbose
   astro-minimax ai facts validate
   astro-minimax ai facts status
 `);
@@ -37,7 +40,7 @@ Examples:
 
   switch (subcommand) {
     case "build":
-      await buildFacts(subArgs, cwd, datasDir);
+      await buildFacts(cwd, datasDir);
       break;
     case "validate":
       await validateFacts(datasDir);
@@ -52,16 +55,13 @@ Examples:
   }
 }
 
-async function buildFacts(
-  args: string[],
-  cwd: string,
-  datasDir: string
-): Promise<void> {
+async function buildFacts(cwd: string, datasDir: string): Promise<void> {
   console.log("\n📊 构建事实注册表 (Fact Registry)");
   console.log("━".repeat(50));
 
   try {
-    const { buildFactRegistry } = await import("../../tools/build-fact-registry.js");
+    const { buildFactRegistry } =
+      await import("../../tools/build-fact-registry.js");
     const result = await buildFactRegistry({ cwd });
 
     console.log(`\n✅ 事实注册表构建完成`);

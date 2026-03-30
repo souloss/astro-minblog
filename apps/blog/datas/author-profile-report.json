@@ -1,89 +1,115 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-18T14:22:06.776Z",
-    "model": "rule-based-template",
-    "generatedBy": "rule-based"
+    "lastUpdated": "2026-03-29T06:03:55.852Z",
+    "model": "gpt-5.4",
+    "generatedBy": "ai"
   },
   "report": {
     "hero": {
-      "title": "AI 视角下的 Souloss",
-      "summary": "一位专注于教程/博客、教程/配置、Tutorial/Configuration领域的博主，持续输出高质量内容。",
-      "intro": "博客已发布 35 篇文章，涵盖 15 个主题标签。"
+      "title": "AI 视角下的作者",
+      "summary": "该作者呈现出以技术文档与教程写作为核心的创作者特征，长期围绕 astro-minimax 生态、部署配置、工程化维护和 AI 能力设计展开内容输出。",
+      "intro": "从已选文章看，其内容覆盖中英文双语，主题集中在博客系统的实际搭建、部署排障、依赖升级、第三方服务接入，以及 AI 模块的架构说明。文章多采用步骤化、模块化表达，强调配置边界、运行条件和故障处理，显示出较强的工程实践导向。"
     },
     "identities": [
       {
-        "name": "技术博主",
-        "description": "持续分享技术经验与实践心得。",
-        "evidence": "已发布 35 篇文章。"
+        "name": "技术文档型作者",
+        "description": "其写作重点放在产品说明、配置解释和使用指导上，内容结构接近官方文档或维护文档。",
+        "evidence": "高频标签包含 docs、configuration、deployment、tutorial；文章《设置面板与偏好设置》《Cloudflare Pages 环境变量配置指南》《从零开始：完整博客搭建指南》均以功能说明和操作指引为主。"
       },
       {
-        "name": "内容创作者",
-        "description": "注重内容质量与读者体验。",
-        "evidence": "近期文章《\"Configuring Environment Variables in Cloudflare Pages\"》体现了专业的写作风格。"
+        "name": "博客工程实践者",
+        "description": "其关注点不仅是内容发布，还包括博客系统从初始化、部署到周边服务接入的完整工程链路。",
+        "evidence": "文章涉及 Cloudflare Pages、Vercel、Neon、Waline、Umami、AI Chat 等具体组件，且《从零开始：完整博客搭建指南》直接覆盖从初始化到生产部署的全流程。"
+      },
+      {
+        "name": "AI 功能架构说明者",
+        "description": "其对 AI 相关内容不止停留在使用层，而是进一步拆解模块设计、检索流程、容错与降级机制。",
+        "evidence": "《@astro-minimax/ai 模块技术架构详解》明确讨论 RAG 流水线、多供应商切换、Streaming、SSE、检索重排、引用守卫和提示构建。"
+      },
+      {
+        "name": "双语输出的技术内容维护者",
+        "description": "其具备面向中英文受众同步组织内容的能力，主题在两种语言中保持一致。",
+        "evidence": "数据中共有中文 20 篇、英文 20 篇；《@astro-minimax/ai 模块技术架构详解》《设置面板与偏好设置》《如何更新 astro-minimax 的依赖》等均存在对应英文版本。"
       }
     ],
     "strengths": [
       {
-        "title": "内容深度",
+        "title": "将复杂系统拆解为可执行步骤",
         "points": [
-          "文章结构清晰，逻辑性强",
-          "注重实践，配合代码示例",
-          "持续更新，覆盖多个技术领域"
+          "文章常将配置项、前置条件、部署步骤和验证方法分层说明。",
+          "内容覆盖初始化、环境变量、数据库、评论系统、统计系统和 AI 接入，具备端到端连贯性。",
+          "常补充常见失败点与排障提示，降低读者实际操作门槛。"
         ]
       },
       {
-        "title": "表达风格",
+        "title": "工程细节表达较为扎实",
         "points": [
-          "语言简洁明了",
-          "注重可读性",
-          "善于总结提炼"
+          "能明确区分构建时与运行时变量，以及作用域和生效方式。",
+          "关注版本升级策略，如 patch、minor、major 分层处理。",
+          "在 AI 架构文章中展示了缓存、检索、重排、故障切换等实现层细节。"
+        ]
+      },
+      {
+        "title": "内容体系化程度较高",
+        "points": [
+          "标签集中于 docs、configuration、deployment、ai、architecture，主题边界清晰。",
+          "教程、FAQ、架构说明相互补充，形成从入门到深入的内容序列。",
+          "双语内容增强了同一知识体系的复用性和传播范围。"
         ]
       }
     ],
     "styles": [
       {
-        "trait": "技术导向",
-        "description": "专注于技术内容的深度讲解与实践分享。"
+        "trait": "说明书式表达",
+        "description": "其写作偏向直接说明功能、参数、依赖和结果，较少铺陈背景，重视信息可检索性。"
       },
       {
-        "trait": "结构化表达",
-        "description": "文章结构清晰，便于读者理解和学习。"
+        "trait": "工程问题导向",
+        "description": "文章常围绕“如何配置”“如何部署”“如何更新”“如何排障”等实际问题展开，目标明确。"
+      },
+      {
+        "trait": "结构化与模块化",
+        "description": "从摘要与要点可见，其内容通常按模块、步骤或场景拆分，便于读者逐项执行。"
+      },
+      {
+        "trait": "克制且偏技术文风",
+        "description": "标题与摘要多使用中性技术语言，强调准确描述与实现机制，而非观点输出或情绪表达。"
       }
     ],
     "proofs": {
       "posts": [
         {
-          "title": "\"Configuring Environment Variables in Cloudflare Pages\"",
-          "url": "/en/posts/cloudflare-env-vars/",
-          "reason": "This guide explains how to configure environment variables i",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "@astro-minimax/ai 模块技术架构详解",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/ai-module-architecture/",
+          "reason": "可作为其具备 AI 架构拆解能力的直接证据，文章涉及 RAG、供应商抽象、流式响应和容错设计。",
+          "date": "2026-03-21"
         },
         {
-          "title": "\"Complete Setup Guide: From Zero to Production\"",
-          "url": "/en/posts/complete-setup-guide/",
-          "reason": "This guide walks you through building a complete blog from s",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "设置面板与偏好设置",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/settings-panel/",
+          "reason": "体现其文档化写作方式，聚焦具体功能入口、配置项范围、持久化和分享机制。",
+          "date": "2026-03-21"
         },
         {
-          "title": "\"Setup Umami Analytics: Free Vercel Deployment\"",
-          "url": "/en/posts/setup-umami-analytics/",
-          "reason": "Umami is an open-source, privacy-friendly web analytics tool",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "如何更新 astro-minimax 的依赖",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/how-to-update-dependencies/",
+          "reason": "反映其工程维护视角，强调依赖升级分层、模板同步和完整测试等实践细节。",
+          "date": "2026-03-20"
         },
         {
-          "title": "\"Deploy Waline Comment System on Vercel\"",
-          "url": "/en/posts/setup-waline-on-vercel/",
-          "reason": "Waline is a simple, safe comment system with Markdown suppor",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "Cloudflare Pages 环境变量配置指南",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/cloudflare-env-vars/",
+          "reason": "体现其部署与配置方向的专长，覆盖变量类型、生效条件、绑定一致性和日志排障。",
+          "date": "2026-03-18"
         },
         {
-          "title": "\"Cloudflare Pages 环境变量配置指南\"",
-          "url": "/zh/posts/cloudflare-env-vars/",
-          "reason": "astro-minimax 博客在 Cloudflare Pages 部署时，需要正确配置环境变量才能启用完整功能。本文",
-          "date": "2026-03-18T00:00:00.000Z"
+          "title": "从零开始：完整博客搭建指南",
+          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/complete-setup-guide/",
+          "reason": "可证明其擅长组织端到端教程，将初始化、部署和多项外围服务接入整合成完整流程。",
+          "date": "2026-03-18"
         }
       ]
     },
-    "disclaimer": "该页面由 AI 归纳与规则模板联合生成，旨在帮助访客快速建立认知，可能存在概括偏差，请以原始文章信息为准。"
+    "disclaimer": "该画像基于所提供的站点资料、标签分布和已选文章摘要生成，只反映当前样本中可见的写作主题与表达特征，不等同于作者完整经历、职业身份或全部创作范围。"
   }
 }

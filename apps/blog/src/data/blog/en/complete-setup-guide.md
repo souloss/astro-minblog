@@ -96,10 +96,17 @@ export const SITE = {
     tags: true,
     categories: true,
     search: true,
-    darkMode: true,
-    ai: true,        // Enable AI chat
-    waline: true,    // Enable comments
-    sponsor: true,   // Enable sponsor
+  },
+  darkMode: true,
+  ai: {
+    enabled: true,
+  },
+  waline: {
+    enabled: true,
+    serverURL: "https://your-waline.vercel.app/",
+  },
+  sponsor: {
+    enabled: true,
   },
   // Other config...
 };
@@ -138,7 +145,7 @@ Post content goes here...
 | ---------------------- | ---------------- |
 | Framework preset       | Astro            |
 | Build command          | `pnpm run build` |
-| Build output directory | `apps/blog/dist` |
+| Build output directory | `dist` |
 
 ### Step 3.3: Set Environment Variables
 
@@ -297,9 +304,6 @@ astro-minimax has built-in AI chat assistant powered by Cloudflare Workers AI.
 
 ```typescript
 // src/config.ts
-features: {
-  ai: true,
-},
 ai: {
   enabled: true,
   mockMode: false,
@@ -311,7 +315,7 @@ ai: {
 
 ```bash
 pnpm run ai:process      # Generate post summaries
-pnpm run profile:build   # Build author profile
+pnpm run ai:profile:build # Build author profile
 ```
 
 ### Step 7.3: Verify AI Binding
@@ -339,6 +343,7 @@ Add all required environment variables in Cloudflare Dashboard:
 | Variable                    | Value                   | Purpose                |
 | --------------------------- | ----------------------- | ---------------------- |
 | `NODE_VERSION`              | `22`                    | Build environment      |
+| `AI_BINDING_NAME`           | `minimaxAI`             | Workers AI binding name |
 | `NOTIFY_TELEGRAM_BOT_TOKEN` | `123456:ABC...`         | Telegram notifications |
 | `NOTIFY_TELEGRAM_CHAT_ID`   | `123456789`             | Telegram notifications |
 | `SITE_URL`                  | `https://your-blog.com` | Site URL               |

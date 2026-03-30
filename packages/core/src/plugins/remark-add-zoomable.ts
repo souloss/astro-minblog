@@ -1,28 +1,27 @@
-interface MdastNode {
-  type: string;
-  children?: MdastNode[];
-  data?: { hProperties?: Record<string, unknown>; [key: string]: unknown };
-}
+import type { Root, Image } from "mdast";
+import type { Plugin } from "unified";
+import { visit } from "unist-util-visit";
 
-function visitImages(node: MdastNode, fn: (n: MdastNode) => void) {
-  if (node.type === "image") fn(node);
-  if (node.children) {
-    for (const child of node.children) {
-      visitImages(child, fn);
-    }
-  }
-}
+type ZoomableOptions = {
+  className?: string;
+};
 
-/**
- * Remark plugin that adds a `zoomable` class to all images,
- * enabling click-to-zoom via the lightbox script.
- */
-export function remarkAddZoomable({ className = "zoomable" } = {}) {
-  return function (tree: MdastNode) {
-    visitImages(tree, node => {
-      node.data = node.data || {};
-      node.data.hProperties = node.data.hProperties || {};
-      (node.data.hProperties as Record<string, unknown>).class = className;
+type ImageWithData = Image & {
+  data?: {
+    hProperties?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+};
+
+export const remarkAddZoomable: Plugin<[ZoomableOptions?], Root> = ({
+  className = "zoomable",
+} = {}) => {
+  return tree => {
+    visit(tree, "image", node => {
+      const imageNode = node as ImageWithData;
+      imageNode.data = imageNode.data || {};
+      imageNode.data.hProperties = imageNode.data.hProperties || {};
+      imageNode.data.hProperties.class = className;
     });
   };
-}
+};

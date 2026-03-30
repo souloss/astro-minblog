@@ -5,6 +5,8 @@
  * Supports both in-page actions (no refresh) and cross-page navigation.
  */
 
+import type { Preferences } from "../preferences/types";
+
 /**
  * All action type identifiers
  */
@@ -90,9 +92,9 @@ export interface ReadingModeAction extends BaseAction {
     enabled?: boolean;
     /** Reading mode settings */
     settings?: {
-      fontSize?: 'sm' | 'md' | 'lg' | 'xl';
-      theme?: 'light' | 'dark' | 'warm' | 'sepia';
-      fontFamily?: string;
+      fontSize?: Preferences['reading']['fontSize'];
+      theme?: Preferences['reading']['theme'];
+      fontFamily?: Preferences['reading']['fontFamily'];
     };
   };
 }
