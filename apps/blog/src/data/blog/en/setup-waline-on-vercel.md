@@ -322,21 +322,12 @@ Enabling Waline comments in astro-minimax is straightforward.
 
 ### 5.1 Enable Waline Feature
 
-Edit `src/config.ts` and enable `waline` in `features`:
+Edit `src/config.ts` and configure the `waline` object directly:
 
 ```typescript file=src/config.ts
-features: {
-  tags: true,
-  categories: true,
-  series: true,
-  archives: true,
-  friends: true,
-  projects: true,
-  search: true,
-  darkMode: true,
-  ai: true,
-  waline: true,    // Enable Waline comments
-  sponsor: true,
+waline: {
+  enabled: true,
+  serverURL: "https://your-waline.vercel.app/",
 },
 ```
 

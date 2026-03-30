@@ -1,6 +1,7 @@
 ---
 title: "Cloudflare Pages 环境变量配置指南"
 pubDatetime: 2026-03-18T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "详细介绍如何在 Cloudflare Pages Dashboard 中配置 astro-minimax 博客的环境变量，包括构建配置、AI 功能、通知系统等。"
 tags:
@@ -148,6 +149,16 @@ Cloudflare Dashboard → Workers & Pages → [your-project] → Settings → Env
 | ------------- | ----------------------- | ------------ |
 | `SITE_URL`    | `https://your-blog.com` | 站点完整 URL |
 | `SITE_AUTHOR` | `YourName`              | 作者名称     |
+
+### CORS 配置
+
+| 变量名         | 示例值                   | 说明                                                   |
+| -------------- | ------------------------ | ------------------------------------------------------ |
+| `CORS_ORIGIN`  | `https://your-blog.com`  | API 允许的请求来源域名，替换默认的 `*` 通配符          |
+
+- **是否必需**：否
+- **何时设置**：在生产环境中建议设置，限制 API 接口只接受来自你自己域名的请求
+- **默认行为**：未设置时 API 允许所有来源（`*`）
 
 ---
 
@@ -367,7 +378,7 @@ Workers & Pages → [your-project] → Logs → Real-time Logs
 | 变量名                      | 必需 | 环境   | 说明               |
 | --------------------------- | ---- | ------ | ------------------ |
 | `NODE_VERSION`              | 是   | 构建时 | Node.js 版本       |
-| `AI_BINDING_NAME`           | 条件 | 构建时 | AI Binding 名称    |
+| `AI_BINDING_NAME`           | 条件 | 运行时 | AI Binding 名称    |
 | `NOTIFY_TELEGRAM_BOT_TOKEN` | 否   | 运行时 | Telegram Bot Token |
 | `NOTIFY_TELEGRAM_CHAT_ID`   | 否   | 运行时 | Telegram Chat ID   |
 | `NOTIFY_RESEND_API_KEY`     | 否   | 运行时 | Resend API Key     |

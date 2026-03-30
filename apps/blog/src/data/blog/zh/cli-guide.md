@@ -16,7 +16,7 @@ draft: false
 
 ## 安装
 
-CLI 工具作为开发依赖自动安装：
+在 monorepo / 示例博客里，CLI 已通过 workspace 开发依赖接入；如果你是在自己的项目里单独使用，也可以手动安装：
 
 ```bash
 pnpm add -D @astro-minimax/cli
@@ -120,7 +120,7 @@ pnpm run ai:eval -- --verbose                        # 详细输出
 pnpm run ai:profile:build
 ```
 
-依次执行：上下文构建 → 风格分析 → 画像报告生成。
+这是当前保留的标准作者画像构建入口，生成结果会进入运行时知识包，供 AI 聊天使用。
 
 ### 标准构建入口
 
@@ -128,7 +128,74 @@ pnpm run ai:profile:build
 pnpm run ai:profile:build   # 执行保留的作者画像构建流程
 ```
 
-生成的数据文件用于 AI 聊天功能，帮助 AI 以作者风格回答问题。
+如果你还需要事实注册表或扩展系统，可以继续使用：
+
+```bash
+pnpm run ai:facts:build
+pnpm run ai:facts:validate
+pnpm run ai:extensions:status
+```
+
+## AI 事实注册表
+
+AI 从博客内容中提取已验证的事实，注入到提示词中以减少幻觉：
+
+```bash
+# 构建事实注册表
+pnpm run ai:facts:build
+
+# 验证事实
+pnpm run ai:facts:validate
+
+# 查看状态
+pnpm run ai:facts:status
+```
+
+事实注册表位于 `datas/knowledge/runtime/`，供 AI 聊天运行时使用。
+
+## AI 扩展系统
+
+扩展系统提供自定义上下文段落、语义回退规则等 AI 增强能力：
+
+```bash
+# 构建扩展
+pnpm run ai:extensions:build
+
+# 验证扩展
+pnpm run ai:extensions:validate
+
+# 查看扩展状态
+pnpm run ai:extensions:status
+
+# 加载扩展
+pnpm run ai:extensions:load
+```
+
+扩展来源：`packages/ai/src/extensions/`，提供语音风格提示、语义回退规则等。
+
+## Git 钩子
+
+### 安装钩子
+
+```bash
+pnpm run hooks:install
+```
+
+安装 Husky Git 钩子，支持 `pre-commit` 自动填充 `pubDatetime`/`modDatetime` 字段。
+
+### 卸载钩子
+
+```bash
+pnpm run hooks:uninstall
+```
+
+### 查看状态
+
+```bash
+pnpm run hooks:status
+```
+
+检查钩子安装状态和可用性。
 
 ## 数据管理
 
@@ -158,5 +225,13 @@ pnpm run data:clear
 | `pnpm run ai:process` | `astro-minimax ai process` |
 | `pnpm run ai:eval` | `astro-minimax ai eval` |
 | `pnpm run ai:profile:build` | `astro-minimax ai profile build` |
+| `pnpm run ai:facts:build` | `astro-minimax ai facts build` |
+| `pnpm run ai:extensions:status` | `astro-minimax ai extensions status` |
+| `pnpm run ai:facts:validate` | `astro-minimax ai facts validate` |
+| `pnpm run ai:facts:status` | `astro-minimax ai facts status` |
+| `pnpm run ai:extensions:build` | `astro-minimax ai extensions build` |
+| `pnpm run hooks:install` | `astro-minimax hooks install` |
+| `pnpm run hooks:uninstall` | `astro-minimax hooks uninstall` |
+| `pnpm run hooks:status` | `astro-minimax hooks status` |
 | `pnpm run data:status` | `astro-minimax data status` |
 | `pnpm run data:clear` | `astro-minimax data clear` |

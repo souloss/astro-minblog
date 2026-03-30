@@ -80,7 +80,7 @@ astro-minimax/
 
 1. **按需安装** — 不需要 AI 功能的博客不需要安装 `ai` 和 `workers-ai-provider` 等 20+ 依赖
 2. **独立更新** — AI 包的 bug 不影响核心主题的稳定性
-3. **功能开关** — 可通过 `viz: { mermaid: false, markmap: false }` 禁用可视化组件
+3. **按包组合** — 可以只安装 `@astro-minimax/core`，把 AI、通知、CLI 作为可选能力按需接入
 4. **可替换性** — 用户可以用自己的 AI 实现替换 `@astro-minimax/ai`
 
 **数据**：完整安装所有包约 1000+ 依赖，只安装 core 约 300 依赖。

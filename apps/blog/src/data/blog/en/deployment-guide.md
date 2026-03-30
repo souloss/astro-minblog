@@ -1,6 +1,7 @@
 ---
 title: "Deployment Guide: Deploy astro-minimax to Multiple Platforms"
 pubDatetime: 2026-03-14T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "A comprehensive guide to deploying your astro-minimax blog to Cloudflare Pages, Vercel, Netlify, Docker, and more."
 tags:
@@ -66,7 +67,7 @@ pnpm run build
 
 ## Cloudflare Pages (Recommended)
 
-Cloudflare Pages is the recommended platform because astro-minimax's AI chat feature is built on Cloudflare Workers AI.
+Cloudflare Pages is the recommended platform because astro-minimax ships with a runtime path that aligns naturally with Cloudflare Pages Functions and Cloudflare Workers AI.
 
 ### Git Integration
 
@@ -132,6 +133,8 @@ Cloudflare Pages automatically detects this configuration and enables Workers AI
 
 > `compatibility_flags = ["nodejs_compat"]` enables Node.js compatibility mode for proper AI functionality.
 
+> **CORS Configuration**: In production, set the `CORS_ORIGIN` environment variable to restrict API access to your domain. For example: `CORS_ORIGIN=https://your-blog.com`. See the [Cloudflare Environment Variables Guide](/en/posts/cloudflare-env-vars) for details.
+
 ### Custom Domain
 
 After deployment, add a custom domain in Cloudflare Pages settings. Cloudflare automatically provisions SSL certificates.
@@ -180,8 +183,8 @@ For detailed environment variable configuration, see [Cloudflare Environment Var
 
 ### Notes
 
-- Vercel doesn't support Cloudflare Workers AI. The AI chat feature needs an alternative AI provider (e.g., OpenAI) on Vercel
-- You'll need to modify `ai.apiEndpoint` in `src/config.ts` to point to your AI API
+- Vercel does not provide Cloudflare Workers AI bindings. If you still want AI chat on Vercel, use an OpenAI-compatible provider and make sure the `/api/chat` backend is actually available on that platform
+- In many cases, `ai.apiEndpoint` can still remain `/api/chat`; the real requirement is that the deployment target must expose a working handler behind that route
 
 ---
 

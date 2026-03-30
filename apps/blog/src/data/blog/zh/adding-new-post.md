@@ -1,7 +1,7 @@
 ---
 author: Souloss
 pubDatetime: 2022-09-23T15:22:00Z
-modDatetime: 2026-03-17T20:44:00Z
+modDatetime: 2026-03-30T00:00:00.000Z
 title: 在 astro-minimax 主题中添加新文章
 featured: true
 draft: false
@@ -122,6 +122,21 @@ description: This is the example description of the example post.
 canonicalURL: https://example.org/my-article-was-already-posted-here
 ---
 ```
+
+## 封面图与 OG 图片
+
+frontmatter 中的 `cover` 和 `ogImage` 用于不同场景，了解它们的区别有助于正确使用：
+
+- **`cover`** — 文章封面图。用于首页卡片展示和文章页顶部横幅。支持本地图片路径或远程 URL。
+- **`ogImage`** — 社交分享图。用于 Twitter、Facebook 等社交媒体分享时展示的预览图。支持本地图片路径或远程 URL。
+
+### 回退行为
+
+图片展示遵循以下优先级：
+
+1. 设置了 `cover` → 使用 `cover` 作为卡片和横幅图片
+2. 未设置 `cover`，但设置了 `ogImage` → `ogImage` 同时用作封面图
+3. 两者均未设置 → 构建时自动生成动态 OG 图片，同时用于封面和社交分享
 
 ## 标题
 

@@ -1,7 +1,7 @@
 ---
 author: Souloss
 pubDatetime: 2026-03-21T00:00:00.000Z
-modDatetime: 2026-03-24T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 title: Settings Panel & Preferences
 featured: false
 category: Tutorial/Configuration
@@ -31,11 +31,13 @@ Click the settings icon (gear icon) in the bottom-right corner of the page to op
 
 | Option | Description | Values |
 |--------|-------------|--------|
+| **Reading Mode** | Toggle a more focused reading experience | On / Off |
 | **Font Size** | Article body font size | Small, Medium, Large, XL |
 | **Line Height** | Article body line height | Compact, Comfortable, Relaxed |
 | **Content Width** | Article content area width | Narrow, Medium, Wide |
 | **Reading Theme** | Article reading theme | Default, Eye Care, Parchment, Night, OLED |
-| **Font Family** | Article body font | Serif, Sans, Mono, System, Code, LXGW, ZCOOL |
+| **Font Family** | Article body font | Serif, Sans, Mono, System, Code, LXGW, ZCOOL, Readable, Classic |
+| **Focus Mode** | Highlight the current reading paragraph | On / Off |
 
 ### Layout Settings
 
@@ -47,6 +49,7 @@ Click the settings icon (gear icon) in the bottom-right corner of the page to op
 
 | Option | Description |
 |--------|-------------|
+| **Sticky Back to Top** | Show/hide the sticky in-article back-to-top button |
 | **Back to Top** | Show/hide back to top button |
 | **Theme Toggle** | Show/hide theme toggle button |
 | **Reading Time** | Show/hide article reading time |
@@ -71,8 +74,12 @@ Your choice is persisted in `localStorage` and restored on your next visit.
 You can share your current settings with others:
 
 1. Click the "Share" button at the bottom of the settings panel
-2. Settings will be copied to clipboard as URL parameters
+2. Your current preferences are encoded and copied to the clipboard for link sharing
 3. Others will automatically apply your settings when opening the link
+
+### Technical Implementation
+
+Settings are encoded as Base64 JSON in the URL hash: `#prefs=<base64-encoded-json>`. When someone opens a shared URL, preferences are automatically decoded and applied.
 
 ## Resetting Settings
 

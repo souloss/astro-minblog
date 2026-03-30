@@ -1,6 +1,6 @@
 {
   "$schema": "voice-profile-v1",
-  "generatedAt": "2026-03-29T04:01:30.566Z",
+  "generatedAt": "2026-03-29T06:03:21.063Z",
   "overall_tone": {
     "description": "技术博客风格，注重实践与可操作性，语言简洁明了",
     "primary_persona": "技术博主",
@@ -27,7 +27,7 @@
     }
   },
   "content_style": {
-    "avgLength": 9402,
+    "avgLength": 9437,
     "codeBlockRate": 95,
     "linkRate": 80,
     "imageRate": 25,
@@ -43,15 +43,15 @@
       },
       {
         "word": "关键",
-        "count": 29
+        "count": 30
       },
       {
         "word": "分享",
-        "count": 23
+        "count": 25
       },
       {
         "word": "体验",
-        "count": 14
+        "count": 15
       },
       {
         "word": "重要",
@@ -105,15 +105,15 @@
   "category_styles": {
     "Tutorial/Blog": {
       "count": 2,
-      "avgLength": 9921
+      "avgLength": 9944
     },
     "Blog/Tutorial": {
       "count": 3,
-      "avgLength": 11401
+      "avgLength": 11505
     },
     "Tutorial/AI": {
       "count": 1,
-      "avgLength": 11478
+      "avgLength": 11471
     },
     "Technical/AI": {
       "count": 1,
@@ -121,23 +121,23 @@
     },
     "Tutorial/Tools": {
       "count": 1,
-      "avgLength": 3645
+      "avgLength": 4048
     },
     "Tutorial/Deployment": {
       "count": 1,
-      "avgLength": 13620
+      "avgLength": 13598
     },
     "Tutorial/Getting Started": {
       "count": 1,
-      "avgLength": 9894
+      "avgLength": 9986
     },
     "Blog/Deployment": {
       "count": 1,
-      "avgLength": 11580
+      "avgLength": 11793
     },
     "教程/博客": {
       "count": 7,
-      "avgLength": 6620
+      "avgLength": 6613
     },
     "教程/前端": {
       "count": 2,
@@ -145,7 +145,7 @@
     },
     "Blog/Configuration": {
       "count": 1,
-      "avgLength": 14212
+      "avgLength": 14162
     },
     "Tutorial/Engineering": {
       "count": 2,
@@ -153,11 +153,11 @@
     },
     "Tutorial/Configuration": {
       "count": 4,
-      "avgLength": 10693
+      "avgLength": 10727
     },
     "教程/AI": {
       "count": 1,
-      "avgLength": 7322
+      "avgLength": 7314
     },
     "技术/AI": {
       "count": 1,
@@ -165,19 +165,19 @@
     },
     "教程/工具": {
       "count": 1,
-      "avgLength": 2463
+      "avgLength": 2751
     },
     "教程/部署": {
       "count": 2,
-      "avgLength": 8521
+      "avgLength": 8548
     },
     "教程/入门": {
       "count": 1,
-      "avgLength": 7417
+      "avgLength": 7538
     },
     "教程/配置": {
       "count": 5,
-      "avgLength": 7963
+      "avgLength": 7940
     },
     "教程/工程化": {
       "count": 2,

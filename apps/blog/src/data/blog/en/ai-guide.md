@@ -1,7 +1,7 @@
 ---
 title: "AI Chat Feature Configuration Guide"
 pubDatetime: 2026-03-17T00:00:00.000Z
-modDatetime: 2026-03-24T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "Comprehensively configure astro-minimax AI chat: Provider setup, RAG search, Mock mode, author profiling, and quality evaluation."
 tags:
@@ -32,9 +32,6 @@ The AI chat system consists of the following modules:
 In `src/config.ts`:
 
 ```typescript
-features: {
-  ai: true,
-},
 ai: {
   enabled: true,
   mockMode: false,
@@ -81,7 +78,7 @@ When deploying to Cloudflare Pages, you can use free Workers AI:
 ```toml
 # wrangler.toml
 [ai]
-binding = "AI"
+binding = "minimaxAI"
 ```
 
 Workers AI has the highest provider priority and does not require an API key.
@@ -311,16 +308,16 @@ datas/extensions/
 
 ```bash
 # View extension status
-astro-minimax extensions status
+astro-minimax ai extensions status
 
 # Validate extension files
-astro-minimax extensions validate
+astro-minimax ai extensions validate
 
 # Build extensions (validate and organize)
-astro-minimax extensions build --verbose
+astro-minimax ai extensions build --verbose
 
 # Test loading extensions
-astro-minimax extensions load
+astro-minimax ai extensions load
 ```
 
 ### Extension Priority
@@ -355,10 +352,9 @@ NOTIFY_TELEGRAM_CHAT_ID=your-chat-id
 
 Notification content includes: user question, AI answer summary, cited articles, token usage, and timing for each stage.
 
-See [Notification System Configuration Guide](/zh/posts/notification-guide) for details.
+See [Notification System Configuration Guide](/en/posts/notification-guide) for details.
 
 ## Environment Variable Reference
-
 | Variable | Description | Required |
 |------|------|------|
 | `AI_BASE_URL` | OpenAI-compatible API endpoint | Required when using OpenAI |
@@ -369,9 +365,49 @@ See [Notification System Configuration Guide](/zh/posts/notification-guide) for 
 | `SITE_AUTHOR` | Author name | No |
 | `SITE_URL` | Site URL | No |
 
+## AI Tool Calling
+The AI assistant has 7 built-in page interaction tools, cont can control the current page through conversation:
+| Tool | Description |
+|------|------|
+| `toggleTheme` | Toggle light/dark theme |
+| `navigateToArticle` | Navigate to a specific article |
+| `scrollToSection` | Scroll to a page section |
+| `toggleReadingMode` | Toggle reading mode |
+| `highlightText` | Highlight text on page |
+| `setPreference` | Set user preference |
+| `searchArticles` | Search articles (server-side) |
+
+No additional configuration needed — tools are enabled automatically when AI chat is enabled. Supports `registerTool()` / `unregisterTool()` API for registering custom tools.
+
+See [AI Tool Calling Guide](/en/posts/ai-tool-calling).
+## Extensions System
+
+The AI chat extension system (`packages/ai/src/extensions/`) provides custom context sections, semantic fallback rules, and more:
+```bash
+astro-minimax ai extensions build      # Build extensions
+astro-minimax ai extensions validate  # Validate extensions
+astro-minimax ai extensions status    # Check extension status
+```
+See [AI Module Architecture](/en/posts/ai-module-architecture).
+## Fact Registry
+AI extracts verified facts from blog content and injects them into prompts to reduce hallucinations:
+```bash
+astro-minimax ai facts build      # Build fact registry
+astro-minimax ai facts validate  # Validate facts
+astro-minimax ai facts status    # Check status
+```
+See [AI Module Architecture](/en/posts/ai-module-architecture).
+## Hybrid Search
+The AI search system uses a TF-IDF scoring + vector reranking (RRF fusion) for hybrid search:
+- Paragraph-level indexing from blog content for RAG usage
+- Session cache (10-minute TTL) for context reuse across follow-ups questions
+- Extensible via `SearchStrategy` interface for custom implementations
+## Structured Output
+The `packages/ai/src/structured-output/` module supports Schema-validated structured generation for evidence analysis and other scenarios requiring precise JSON formats.
+See [AI Module Architecture](/en/posts/ai-module-architecture).
 ## Next Steps
 
-- [Feature Overview](/zh/posts/feature-overview) — Learn about all AI features
-- [CLI Tool Guide](/zh/posts/cli-guide) — Detailed explanation of AI processing commands
-- [Notification System](/zh/posts/notification-guide) — Configure AI conversation notifications
-- [Deployment Guide](/zh/posts/deployment-guide) — Deploy with Cloudflare Workers AI
+- [Feature Overview](/en/posts/feature-overview) — Learn about all AI features
+- [CLI Tool Guide](/en/posts/cli-guide) — Detailed explanation of AI processing commands
+- [Notification System](/en/posts/notification-guide) — Configure AI conversation notifications
+- [Deployment Guide](/en/posts/deployment-guide) — Deploy with Cloudflare Workers AI

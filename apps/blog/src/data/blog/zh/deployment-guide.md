@@ -1,6 +1,7 @@
 ---
 title: "部署指南：多平台部署 astro-minimax"
 pubDatetime: 2026-03-14T00:00:00.000Z
+modDatetime: 2026-03-30T00:00:00.000Z
 author: Souloss
 description: "详细介绍如何将 astro-minimax 博客部署到 Cloudflare Pages、Vercel、Netlify 以及 Docker。"
 tags:
@@ -66,7 +67,7 @@ pnpm run build
 
 ## Cloudflare Pages（推荐）
 
-Cloudflare Pages 是推荐的部署平台，因为 astro-minimax 的 AI 聊天功能基于 Cloudflare Workers AI 实现。
+Cloudflare Pages 是推荐的部署平台，因为 astro-minimax 原生提供了与 Cloudflare Workers AI 和 Pages Functions 对齐的运行时接入。
 
 ### Git 集成部署
 
@@ -132,6 +133,8 @@ Cloudflare Pages 会自动识别此配置并启用 Workers AI。
 
 > `compatibility_flags = ["nodejs_compat"]` 启用 Node.js 兼容模式，确保 AI 功能正常运行。
 
+> **CORS 配置**: 在生产环境中，建议设置 `CORS_ORIGIN` 环境变量以限制 API 访问来源。例如：`CORS_ORIGIN=https://your-blog.com`。详见 [Cloudflare 环境变量配置指南](/zh/posts/cloudflare-env-vars)。
+
 ### 自定义域名
 
 部署成功后，在 Cloudflare Pages 设置中添加自定义域名，Cloudflare 会自动配置 SSL 证书。
@@ -180,8 +183,8 @@ Cloudflare Pages 会自动识别此配置并启用 Workers AI。
 
 ### 注意事项
 
-- Vercel 默认不支持 Cloudflare Workers AI，AI 聊天功能在 Vercel 上需要使用其他 AI 提供商（如 OpenAI）
-- 需要在 `src/config.ts` 中修改 `ai.apiEndpoint` 指向你的 AI API
+- Vercel 默认不提供 Cloudflare Workers AI binding；如果仍要启用 AI 聊天，需要改用 OpenAI 兼容 Provider，并保证 `/api/chat` 对应的后端运行时可用
+- 前端 `ai.apiEndpoint` 默认仍可保持 `/api/chat`，关键在于部署平台是否真的提供该接口
 
 ---
 

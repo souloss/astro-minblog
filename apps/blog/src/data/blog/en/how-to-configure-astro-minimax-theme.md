@@ -1,7 +1,7 @@
 ---
 author: Souloss
 pubDatetime: 2022-09-23T04:58:53Z
-modDatetime: 2026-03-17T20:44:00Z
+modDatetime: 2026-03-30T00:00:00.000Z
 title: How to configure astro-minimax theme
 slug: how-to-configure-astro-minimax-theme
 featured: true
@@ -127,7 +127,6 @@ ai: {
   enabled: true,
   mockMode: true,
   apiEndpoint: "/api/chat",
-  model: "@cf/zai-org/glm-4.7-flash",
 },
 ```
 
@@ -392,7 +391,6 @@ ai: {
   enabled: true,
   mockMode: true,
   apiEndpoint: "/api/chat",
-  model: "@cf/zai-org/glm-4.7-flash",
   welcomeMessage: undefined,
   placeholder: undefined,
 },
@@ -403,11 +401,45 @@ ai: {
 | `enabled` | Enable AI chat (set to `true`) |
 | `mockMode` | Returns preset responses without calling a real API, useful for development |
 | `apiEndpoint` | API endpoint URL. Use `/api/chat` for Cloudflare Pages Functions |
-| `model` | Model ID. Defaults to Cloudflare Workers AI GLM-4.7 Flash |
 | `welcomeMessage` | Custom welcome message |
 | `placeholder` | Custom input placeholder text |
 
-> The AI chat feature uses Cloudflare Pages Functions as the backend. Deployment on Cloudflare with AI Binding configuration is required. See the `apps/blog/functions/` directory and `wrangler.toml` for details.
+### Advanced AI Configuration
+
+`SITE.ai` also supports these advanced options:
+
+```js file=src/config.ts
+ai: {
+  // ... basic config
+  cache: {
+    enabled: false,    // Enable response caching
+    ttl: 3600,         // Cache TTL in seconds
+  },
+  timeouts: {
+    request: 45000,           // Total request timeout (ms)
+    keywordExtraction: 5000,  // Keyword extraction timeout
+    evidenceAnalysis: 8000,   // Evidence analysis timeout
+    llmStreaming: 30000,      // LLM streaming timeout
+  },
+  health: {
+    unhealthyThreshold: 3,    // Failures before marking unhealthy
+    recoveryTtl: 60000,       // Recovery check interval (ms)
+  },
+},
+```
+
+| Option | Description |
+|--------|-------------|
+| `cache.enabled` | Enable AI response caching |
+| `cache.ttl` | Cache time-to-live in seconds |
+| `timeouts.request` | Total request timeout, default 45 seconds |
+| `timeouts.keywordExtraction` | Keyword extraction timeout, default 5 seconds |
+| `timeouts.evidenceAnalysis` | Evidence analysis timeout, default 8 seconds |
+| `timeouts.llmStreaming` | LLM streaming timeout, default 30 seconds |
+| `health.unhealthyThreshold` | Consecutive failures before marking a provider unhealthy |
+| `health.recoveryTtl` | Recovery check interval for unhealthy providers |
+
+> The AI chat feature uses Cloudflare Pages Functions as the backend. Provider/model selection is handled through environment variables and server runtime configuration, not a `model` field inside `SITE.ai`. See `apps/blog/functions/`, `wrangler.toml`, and the [AI chat guide](/en/posts/ai-guide) for details.
 
 ## Configuring Sponsorship
 

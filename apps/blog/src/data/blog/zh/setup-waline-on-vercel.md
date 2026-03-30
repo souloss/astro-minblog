@@ -322,21 +322,12 @@ sequenceDiagram
 
 ### 5.1 启用 Waline 功能
 
-编辑 `src/config.ts`，在 `features` 中启用 `waline`：
+编辑 `src/config.ts`，直接配置 `waline` 对象即可：
 
 ```typescript file=src/config.ts
-features: {
-  tags: true,
-  categories: true,
-  series: true,
-  archives: true,
-  friends: true,
-  projects: true,
-  search: true,
-  darkMode: true,
-  ai: true,
-  waline: true,    // 启用 Waline 评论
-  sponsor: true,
+waline: {
+  enabled: true,
+  serverURL: "https://your-waline.vercel.app/",
 },
 ```
 

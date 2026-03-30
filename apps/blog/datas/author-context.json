@@ -1,6 +1,6 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-03-29T04:01:29.556Z",
+  "generatedAt": "2026-03-29T06:03:19.800Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn/",
@@ -1700,9 +1700,9 @@
           "id": "en/settings-panel#reading-settings",
           "postId": "en/settings-panel",
           "heading": "Reading Settings",
-          "content": "### Reading Settings\n\n| Option | Description | Values |\n|--------|-------------|--------|\n| **Font Size** | Article body font size | Small, Medium, Large, XL |\n| **Line Height** | Article body line height | Compact, Comfortable, Relaxed |\n| **Content Width** | Article content area width | Narrow, Medium, Wide |\n| **Reading Theme** | Article reading theme | Default, Eye Care, Parchment, Night, OLED |\n| **Font Family** | Article body font | Serif, Sans, Mono, System, Code, LXGW, ZCOOL |",
+          "content": "### Reading Settings\n\n| Option | Description | Values |\n|--------|-------------|--------|\n| **Reading Mode** | Toggle a more focused reading experience | On / Off |\n| **Font Size** | Article body font size | Small, Medium, Large, XL |\n| **Line Height** | Article body line height | Compact, Comfortable, Relaxed |\n| **Content Width** | Article content area width | Narrow, Medium, Wide |\n| **Reading Theme** | Article reading theme | Default, Eye Care, Parchment, Night, OLED |\n| **Font Family** | Article body font | Serif, Sans, Mono, System, Code, LXGW, ZCOOL, Readable, Classic |\n| **Focus Mode** | Highlight the current reading paragraph | On / Off |",
           "position": 2,
-          "tokenCount": 123,
+          "tokenCount": 164,
           "headers": {
             "H2": "Settings Options",
             "H3": "Reading Settings"
@@ -1724,9 +1724,9 @@
           "id": "en/settings-panel#general-settings",
           "postId": "en/settings-panel",
           "heading": "General Settings",
-          "content": "### General Settings\n\n| Option | Description |\n|--------|-------------|\n| **Back to Top** | Show/hide back to top button |\n| **Theme Toggle** | Show/hide theme toggle button |\n| **Reading Time** | Show/hide article reading time |\n| **Animations** | Enable/disable page animations |\n| **Card Hover** | Enable/disable card hover effects |\n| **Smooth Scroll** | Enable/disable smooth scrolling |",
+          "content": "### General Settings\n\n| Option | Description |\n|--------|-------------|\n| **Sticky Back to Top** | Show/hide the sticky in-article back-to-top button |\n| **Back to Top** | Show/hide back to top button |\n| **Theme Toggle** | Show/hide theme toggle button |\n| **Reading Time** | Show/hide article reading time |\n| **Animations** | Enable/disable page animations |\n| **Card Hover** | Enable/disable card hover effects |\n| **Smooth Scroll** | Enable/disable smooth scrolling |",
           "position": 4,
-          "tokenCount": 98,
+          "tokenCount": 118,
           "headers": {
             "H2": "Settings Options",
             "H3": "General Settings"
@@ -1748,9 +1748,9 @@
           "id": "en/settings-panel#sharing-settings",
           "postId": "en/settings-panel",
           "heading": "Sharing Settings",
-          "content": "## Sharing Settings\n\nYou can share your current settings with others:\n\n1. Click the \"Share\" button at the bottom of the settings panel\n2. Settings will be copied to clipboard as URL parameters\n3. Others will automatically apply your settings when opening the link",
+          "content": "## Sharing Settings\n\nYou can share your current settings with others:\n\n1. Click the \"Share\" button at the bottom of the settings panel\n2. Your current preferences are encoded and copied to the clipboard for link sharing\n3. Others will automatically apply your settings when opening the link",
           "position": 6,
-          "tokenCount": 66,
+          "tokenCount": 73,
           "headers": {
             "H2": "Sharing Settings"
           }
@@ -2517,9 +2517,9 @@
           "id": "zh/settings-panel#阅读设置",
           "postId": "zh/settings-panel",
           "heading": "阅读设置",
-          "content": "### 阅读设置\n\n| 选项 | 说明 | 可选值 |\n|------|------|--------|\n| **字号** | 文章正文字号 | 小、中、大、超大 |\n| **行高** | 文章正文行高 | 紧凑、舒适、宽松 |\n| **内容宽度** | 文章内容区域宽度 | 窄、中、宽 |\n| **阅读主题** | 文章阅读主题 | 默认、护眼、羊皮纸、夜间、OLED |\n| **字体** | 文章正文字体 | 衬线、无衬线、等宽、系统、代码、霞鹜文楷、站酷字体 |",
+          "content": "### 阅读设置\n\n| 选项 | 说明 | 可选值 |\n|------|------|--------|\n| **阅读模式** | 开启后进入更专注的阅读体验 | 开 / 关 |\n| **字号** | 文章正文字号 | 小、中、大、超大 |\n| **行高** | 文章正文行高 | 紧凑、舒适、宽松 |\n| **内容宽度** | 文章内容区域宽度 | 窄、中、宽 |\n| **阅读主题** | 文章阅读主题 | 默认、护眼、羊皮纸、夜间、OLED |\n| **字体** | 文章正文字体 | 衬线、无衬线、等宽、系统、代码、霞鹜文楷、站酷字体、Readable、Classic |\n| **专注模式** | 突出当前阅读段落 | 开 / 关 |",
           "position": 2,
-          "tokenCount": 85,
+          "tokenCount": 114,
           "headers": {
             "H2": "设置选项",
             "H3": "阅读设置"
@@ -2529,9 +2529,9 @@
           "id": "zh/settings-panel#通用设置",
           "postId": "zh/settings-panel",
           "heading": "通用设置",
-          "content": "### 通用设置\n\n| 选项 | 说明 |\n|------|------|\n| **返回顶部** | 显示/隐藏返回顶部按钮 |\n| **主题切换** | 显示/隐藏主题切换按钮 |\n| **阅读时长** | 显示/隐藏文章阅读时长 |\n| **动画效果** | 开启/关闭页面动画 |\n| **卡片悬停** | 开启/关闭卡片悬停效果 |\n| **平滑滚动** | 开启/关闭平滑滚动 |",
+          "content": "### 通用设置\n\n| 选项 | 说明 |\n|------|------|\n| **吸附返回顶部** | 显示/隐藏文章页内的吸附式返回顶部按钮 |\n| **返回顶部** | 显示/隐藏返回顶部按钮 |\n| **主题切换** | 显示/隐藏主题切换按钮 |\n| **阅读时长** | 显示/隐藏文章阅读时长 |\n| **动画效果** | 开启/关闭页面动画 |\n| **卡片悬停** | 开启/关闭卡片悬停效果 |\n| **平滑滚动** | 开启/关闭平滑滚动 |",
           "position": 3,
-          "tokenCount": 71,
+          "tokenCount": 86,
           "headers": {
             "H2": "设置选项",
             "H3": "通用设置"
@@ -3264,9 +3264,9 @@
           "id": "en/cloudflare-env-vars#build-time-vs-runtime-variable",
           "postId": "en/cloudflare-env-vars",
           "heading": "Build-time vs Runtime Variables",
-          "content": "### Build-time vs Runtime Variables\n\nUnderstanding when variables are accessed is crucial:\n\n**Build-time Variables** are used during the build process. Changes require a new deployment to take effect.\n\n| Variable          | Used At | Effect of Change  |\n| ----------------- | ------- | ----------------- |\n| `NODE_VERSION`    | Build   | Requires redeploy |\n| `AI_BINDING_NAME` | Build   | Requires redeploy |\n\n**Runtime Variables** are accessed when the application runs. Changes take effect on the next request without redeployment.\n\n| Variable                    | Used At | Effect of Change |\n| --------------------------- | ------- | ---------------- |\n| `AI_API_KEY`                | Runtime | Immediate        |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | Runtime | Immediate        |\n| `NOTIFY_RESEND_API_KEY`     | Runtime | Immediate        |",
+          "content": "### Build-time vs Runtime Variables\n\nUnderstanding when variables are accessed is crucial:\n\n**Build-time Variables** are used during the build process. Changes require a new deployment to take effect.\n\n| Variable          | Used At | Effect of Change  |\n| ----------------- | ------- | ----------------- |\n| `NODE_VERSION`    | Build   | Requires redeploy |\n\n**Runtime Variables** are accessed when the application runs. Changes take effect on the next request without redeployment.\n\n| Variable                    | Used At | Effect of Change |\n| --------------------------- | ------- | ---------------- |\n| `AI_BINDING_NAME`           | Runtime | Immediate        |\n| `AI_API_KEY`                | Runtime | Immediate        |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | Runtime | Immediate        |\n| `NOTIFY_RESEND_API_KEY`     | Runtime | Immediate        |",
           "position": 2,
-          "tokenCount": 210,
+          "tokenCount": 213,
           "headers": {
             "H2": "Overview",
             "H3": "Build-time vs Runtime Variables"
@@ -3410,9 +3410,9 @@
           "id": "en/cloudflare-env-vars#matching-environment-variable",
           "postId": "en/cloudflare-env-vars",
           "heading": "Matching Environment Variable",
-          "content": "### Matching Environment Variable\n\nThe `AI_BINDING_NAME` environment variable must match the `[ai].binding` value:\n\n| wrangler.toml           | Environment Variable        |\n| ----------------------- | --------------------------- |\n| `binding = \"minimaxAI\"` | `AI_BINDING_NAME=minimaxAI` |\n| `binding = \"AI\"`        | `AI_BINDING_NAME=AI`        |",
+          "content": "### Matching Environment Variable\n\nThe `AI_BINDING_NAME` environment variable must match the `[ai].binding` value:\n\n| wrangler.toml           | Environment Variable        |\n| ----------------------- | --------------------------- |\n| `binding = \"minimaxAI\"` | `AI_BINDING_NAME=minimaxAI` |",
           "position": 14,
-          "tokenCount": 87,
+          "tokenCount": 73,
           "headers": {
             "H2": "AI Binding Configuration",
             "H3": "Matching Environment Variable"
@@ -3422,9 +3422,9 @@
           "id": "en/cloudflare-env-vars#how-it-works",
           "postId": "en/cloudflare-env-vars",
           "heading": "How It Works",
-          "content": "### How It Works\n\n1. Cloudflare Pages reads `wrangler.toml` during deployment\n2. The `[ai].binding` creates a Workers AI binding\n3. Your code accesses AI via the binding name\n4. The environment variable tells astro-minimax which binding to use",
+          "content": "### How It Works\n\n1. Cloudflare Pages reads `wrangler.toml` and creates the Workers AI binding\n2. Pages Functions receive that binding at runtime\n3. Your code accesses AI via the binding name\n4. `AI_BINDING_NAME` tells astro-minimax which runtime binding name to resolve",
           "position": 15,
-          "tokenCount": 61,
+          "tokenCount": 68,
           "headers": {
             "H2": "AI Binding Configuration",
             "H3": "How It Works"
@@ -3740,9 +3740,9 @@
           "id": "en/complete-setup-guide#part-8-environment-variables-s",
           "postId": "en/complete-setup-guide",
           "heading": "Part 8: Environment Variables Summary",
-          "content": "## Part 8: Environment Variables Summary\n\nAdd all required environment variables in Cloudflare Dashboard:\n\n**Path**: `Workers & Pages → [your-project] → Settings → Environment variables`\n\n| Variable                    | Value                   | Purpose                |\n| --------------------------- | ----------------------- | ---------------------- |\n| `NODE_VERSION`              | `22`                    | Build environment      |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | `123456:ABC...`         | Telegram notifications |\n| `NOTIFY_TELEGRAM_CHAT_ID`   | `123456789`             | Telegram notifications |\n| `SITE_URL`                  | `https://your-blog.com` | Site URL               |\n| `SITE_AUTHOR`               | `Your Name`             | Author name            |\n\nRedeploy after adding variables.\n\n> [!TIP]\n> See [Environment Variables Guide](/en/posts/cloudflare-env-vars) for complete instructions.\n\n---",
+          "content": "## Part 8: Environment Variables Summary\n\nAdd all required environment variables in Cloudflare Dashboard:\n\n**Path**: `Workers & Pages → [your-project] → Settings → Environment variables`\n\n| Variable                    | Value                   | Purpose                |\n| --------------------------- | ----------------------- | ---------------------- |\n| `NODE_VERSION`              | `22`                    | Build environment      |\n| `AI_BINDING_NAME`           | `minimaxAI`             | Workers AI binding name |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | `123456:ABC...`         | Telegram notifications |\n| `NOTIFY_TELEGRAM_CHAT_ID`   | `123456789`             | Telegram notifications |\n| `SITE_URL`                  | `https://your-blog.com` | Site URL               |\n| `SITE_AUTHOR`               | `Your Name`             | Author name            |\n\nRedeploy after adding variables.\n\n> [!TIP]\n> See [Environment Variables Guide](/en/posts/cloudflare-env-vars) for complete instructions.\n\n---",
           "position": 13,
-          "tokenCount": 228,
+          "tokenCount": 249,
           "headers": {
             "H2": "Part 8: Environment Variables Summary"
           }
@@ -4698,7 +4698,7 @@
           "id": "zh/cloudflare-env-vars#完整变量列表",
           "postId": "zh/cloudflare-env-vars",
           "heading": "完整变量列表",
-          "content": "### 完整变量列表\n\n| 变量名                      | 必需 | 环境   | 说明               |\n| --------------------------- | ---- | ------ | ------------------ |\n| `NODE_VERSION`              | 是   | 构建时 | Node.js 版本       |\n| `AI_BINDING_NAME`           | 条件 | 构建时 | AI Binding 名称    |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | 否   | 运行时 | Telegram Bot Token |\n| `NOTIFY_TELEGRAM_CHAT_ID`   | 否   | 运行时 | Telegram Chat ID   |\n| `NOTIFY_RESEND_API_KEY`     | 否   | 运行时 | Resend API Key     |\n| `NOTIFY_RESEND_FROM`        | 否   | 运行时 | 发件人邮箱         |\n| `NOTIFY_RESEND_TO`          | 否   | 运行时 | 收件人邮箱         |\n| `NOTIFY_WEBHOOK_URL`        | 否   | 运行时 | Webhook URL        |\n| `AI_API_KEY`                | 条件 | 运行时 | AI API 密钥        |\n| `AI_BASE_URL`               | 条件 | 运行时 | AI API URL         |\n| `AI_MODEL`                  | 否   | 运行时 | AI 模型名称        |\n| `SITE_URL`                  | 否   | 运行时 | 站点 URL           |\n| `SITE_AUTHOR`               | 否   | 运行时 | 作者名称           |\n\n> [!NOTE]\n> 标记为「条件」的变量在某些配置下必需。例如，启用 AI 功能但未使用 Workers AI 时，需要配置 `AI_API_KEY` 等。\n\n---",
+          "content": "### 完整变量列表\n\n| 变量名                      | 必需 | 环境   | 说明               |\n| --------------------------- | ---- | ------ | ------------------ |\n| `NODE_VERSION`              | 是   | 构建时 | Node.js 版本       |\n| `AI_BINDING_NAME`           | 条件 | 运行时 | AI Binding 名称    |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | 否   | 运行时 | Telegram Bot Token |\n| `NOTIFY_TELEGRAM_CHAT_ID`   | 否   | 运行时 | Telegram Chat ID   |\n| `NOTIFY_RESEND_API_KEY`     | 否   | 运行时 | Resend API Key     |\n| `NOTIFY_RESEND_FROM`        | 否   | 运行时 | 发件人邮箱         |\n| `NOTIFY_RESEND_TO`          | 否   | 运行时 | 收件人邮箱         |\n| `NOTIFY_WEBHOOK_URL`        | 否   | 运行时 | Webhook URL        |\n| `AI_API_KEY`                | 条件 | 运行时 | AI API 密钥        |\n| `AI_BASE_URL`               | 条件 | 运行时 | AI API URL         |\n| `AI_MODEL`                  | 否   | 运行时 | AI 模型名称        |\n| `SITE_URL`                  | 否   | 运行时 | 站点 URL           |\n| `SITE_AUTHOR`               | 否   | 运行时 | 作者名称           |\n\n> [!NOTE]\n> 标记为「条件」的变量在某些配置下必需。例如，启用 AI 功能但未使用 Workers AI 时，需要配置 `AI_API_KEY` 等。\n\n---",
           "position": 16,
           "tokenCount": 293,
           "headers": {
@@ -4849,9 +4849,9 @@
           "id": "zh/complete-setup-guide#part-8-配置环境变量汇总",
           "postId": "zh/complete-setup-guide",
           "heading": "Part 8: 配置环境变量汇总",
-          "content": "## Part 8: 配置环境变量汇总\n\n在 Cloudflare Dashboard 中添加所有需要的环境变量：\n\n**路径**：`Workers & Pages → [your-project] → Settings → Environment variables`\n\n| 变量                        | 值                      | 用途          |\n| --------------------------- | ----------------------- | ------------- |\n| `NODE_VERSION`              | `22`                    | 构建环境      |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | `123456:ABC...`         | Telegram 通知 |\n| `NOTIFY_TELEGRAM_CHAT_ID`   | `123456789`             | Telegram 通知 |\n| `SITE_URL`                  | `https://your-blog.com` | 站点 URL      |\n| `SITE_AUTHOR`               | `Your Name`             | 作者名称      |\n\n添加后需要重新部署才能生效。\n\n> [!TIP]\n> 完整配置请参考 [环境变量配置指南](/zh/posts/cloudflare-env-vars)。\n\n---",
+          "content": "## Part 8: 配置环境变量汇总\n\n在 Cloudflare Dashboard 中添加所有需要的环境变量：\n\n**路径**：`Workers & Pages → [your-project] → Settings → Environment variables`\n\n| 变量                        | 值                      | 用途          |\n| --------------------------- | ----------------------- | ------------- |\n| `NODE_VERSION`              | `22`                    | 构建环境      |\n| `AI_BINDING_NAME`           | `minimaxAI`             | Workers AI 绑定名 |\n| `NOTIFY_TELEGRAM_BOT_TOKEN` | `123456:ABC...`         | Telegram 通知 |\n| `NOTIFY_TELEGRAM_CHAT_ID`   | `123456789`             | Telegram 通知 |\n| `SITE_URL`                  | `https://your-blog.com` | 站点 URL      |\n| `SITE_AUTHOR`               | `Your Name`             | 作者名称      |\n\n添加后需要重新部署才能生效。\n\n> [!TIP]\n> 完整配置请参考 [环境变量配置指南](/zh/posts/cloudflare-env-vars)。\n\n---",
           "position": 9,
-          "tokenCount": 198,
+          "tokenCount": 218,
           "headers": {
             "H2": "Part 8: 配置环境变量汇总"
           }
@@ -5713,7 +5713,7 @@
           "id": "en/ai-guide#notification-integration",
           "postId": "en/ai-guide",
           "heading": "Notification Integration",
-          "content": "## Notification Integration\n\nAfter an AI conversation completes, a notification is automatically sent (fire-and-forget):\n\n```bash\n# .env\nNOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token\nNOTIFY_TELEGRAM_CHAT_ID=your-chat-id\n```\n\nNotification content includes: user question, AI answer summary, cited articles, token usage, and timing for each stage.\n\nSee [Notification System Configuration Guide](/zh/posts/notification-guide) for details.",
+          "content": "## Notification Integration\n\nAfter an AI conversation completes, a notification is automatically sent (fire-and-forget):\n\n```bash\n# .env\nNOTIFY_TELEGRAM_BOT_TOKEN=your-bot-token\nNOTIFY_TELEGRAM_CHAT_ID=your-chat-id\n```\n\nNotification content includes: user question, AI answer summary, cited articles, token usage, and timing for each stage.\n\nSee [Notification System Configuration Guide](/en/posts/notification-guide) for details.",
           "position": 11,
           "tokenCount": 88,
           "headers": {
@@ -5735,7 +5735,7 @@
           "id": "en/ai-guide#next-steps",
           "postId": "en/ai-guide",
           "heading": "Next Steps",
-          "content": "## Next Steps\n\n- [Feature Overview](/zh/posts/feature-overview) — Learn about all AI features\n- [CLI Tool Guide](/zh/posts/cli-guide) — Detailed explanation of AI processing commands\n- [Notification System](/zh/posts/notification-guide) — Configure AI conversation notifications\n- [Deployment Guide](/zh/posts/deployment-guide) — Deploy with Cloudflare Workers AI",
+          "content": "## Next Steps\n\n- [Feature Overview](/en/posts/feature-overview) — Learn about all AI features\n- [CLI Tool Guide](/en/posts/cli-guide) — Detailed explanation of AI processing commands\n- [Notification System](/en/posts/notification-guide) — Configure AI conversation notifications\n- [Deployment Guide](/en/posts/deployment-guide) — Deploy with Cloudflare Workers AI",
           "position": 13,
           "tokenCount": 91,
           "headers": {
@@ -5776,11 +5776,22 @@
           "headers": {}
         },
         {
+          "id": "en/cli-guide#installation",
+          "postId": "en/cli-guide",
+          "heading": "Installation",
+          "content": "## Installation\n\nIn the monorepo / example blog, the CLI is already wired in via a workspace dev dependency. If you're using it in your own project separately, you can install it manually:\n\n```bash\npnpm add -D @astro-minimax/cli\n```\n\nUse via `astro-minimax` command or `pnpm run` shortcuts.",
+          "position": 1,
+          "tokenCount": 66,
+          "headers": {
+            "H2": "Installation"
+          }
+        },
+        {
           "id": "en/cli-guide#ai-quality-evaluation",
           "postId": "en/cli-guide",
           "heading": "AI Quality Evaluation",
           "content": "### AI Quality Evaluation\n\n```bash\npnpm run ai:eval                                    # Evaluate local server\npnpm run ai:eval -- --url=https://your-blog.com     # Evaluate production\npnpm run ai:eval -- --category=no_answer             # Evaluate specific category\npnpm run ai:eval -- --verbose                        # Detailed output\n```\n\nEvaluation is based on `datas/eval/gold-set.json` golden test set, automatically checking:\n- Non-empty response\n- Topic coverage\n- Forbidden claims not present\n- Markdown link existence\n- Answer pattern matching\n\nEvaluation report is saved to `datas/eval/report.json`.",
-          "position": 1,
+          "position": 2,
           "tokenCount": 79,
           "headers": {
             "H2": "AI Content Processing",
@@ -5791,9 +5802,9 @@
           "id": "en/cli-guide#command-reference",
           "postId": "en/cli-guide",
           "heading": "Command Reference",
-          "content": "## Command Reference\n\n| Shortcut | Equivalent Command |\n|----------|-------------------|\n| `pnpm run post:new -- \"Title\"` | `astro-minimax post new \"Title\"` |\n| `pnpm run post:list` | `astro-minimax post list` |\n| `pnpm run post:stats` | `astro-minimax post stats` |\n| `pnpm run ai:process` | `astro-minimax ai process` |\n| `pnpm run ai:eval` | `astro-minimax ai eval` |\n| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |\n| `pnpm run data:status` | `astro-minimax data status` |\n| `pnpm run data:clear` | `astro-minimax data clear` |",
-          "position": 2,
-          "tokenCount": 138,
+          "content": "## Command Reference\n\n| Shortcut | Equivalent Command |\n|----------|-------------------|\n| `pnpm run post:new -- \"Title\"` | `astro-minimax post new \"Title\"` |\n| `pnpm run post:list` | `astro-minimax post list` |\n| `pnpm run post:stats` | `astro-minimax post stats` |\n| `pnpm run ai:process` | `astro-minimax ai process` |\n| `pnpm run ai:eval` | `astro-minimax ai eval` |\n| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |\n| `pnpm run ai:facts:build` | `astro-minimax ai facts build` |\n| `pnpm run ai:extensions:status` | `astro-minimax ai extensions status` |\n| `pnpm run data:status` | `astro-minimax data status` |\n| `pnpm run data:clear` | `astro-minimax data clear` |",
+          "position": 3,
+          "tokenCount": 172,
           "headers": {
             "H2": "Command Reference"
           }
@@ -6002,9 +6013,9 @@
           "id": "en/why-astro-minimax#why-monorepo-4-packages",
           "postId": "en/why-astro-minimax",
           "heading": "Why Monorepo + 4 Packages",
-          "content": "### Why Monorepo + 4 Packages\n\nTraditional blog themes are single repositories:\n\n```\ntypical-theme/\n└── src/          # All code mixed together\n    ├── layouts/\n    ├── components/\n    ├── ai/       # AI code coupled with theme code\n    └── styles/\n```\n\nastro-minimax is split into 4 independent packages:\n\n```\nastro-minimax/\n├── packages/core/    # Required: layouts, components, routes, visualizations\n├── packages/ai/      # Optional: AI chat, RAG\n├── packages/notify/  # Optional: notification system\n└── packages/cli/     # Recommended: command-line tools\n```\n\n**Why this split**:\n\n1. **Install on demand** — Blogs without AI features don't need 20+ dependencies like `ai` and `workers-ai-provider`\n2. **Independent updates** — Bugs in the AI package don't affect core theme stability\n3. **Feature toggles** — Visualization components can be disabled via `viz: { mermaid: false, markmap: false }`\n4. **Replaceability** — Users can replace `@astro-minimax/ai` with their own AI implementation\n\n**Data**: Full installation of all packages is ~1000+ dependencies; core-only is ~300 dependencies.",
+          "content": "### Why Monorepo + 4 Packages\n\nTraditional blog themes are single repositories:\n\n```\ntypical-theme/\n└── src/          # All code mixed together\n    ├── layouts/\n    ├── components/\n    ├── ai/       # AI code coupled with theme code\n    └── styles/\n```\n\nastro-minimax is split into 4 independent packages:\n\n```\nastro-minimax/\n├── packages/core/    # Required: layouts, components, routes, visualizations\n├── packages/ai/      # Optional: AI chat, RAG\n├── packages/notify/  # Optional: notification system\n└── packages/cli/     # Recommended: command-line tools\n```\n\n**Why this split**:\n\n1. **Install on demand** — Blogs without AI features don't need 20+ dependencies like `ai` and `workers-ai-provider`\n2. **Independent updates** — Bugs in the AI package don't affect core theme stability\n3. **Composable packaging** — You can install only `@astro-minimax/core`, then add AI, notifications, and CLI capabilities only when you actually need them\n4. **Replaceability** — Users can replace `@astro-minimax/ai` with their own AI implementation\n\n**Data**: Full installation of all packages is ~1000+ dependencies; core-only is ~300 dependencies.",
           "position": 4,
-          "tokenCount": 176,
+          "tokenCount": 187,
           "headers": {
             "H2": "Architecture Decisions",
             "H3": "Why Monorepo + 4 Packages"
@@ -6581,11 +6592,22 @@
           "headers": {}
         },
         {
+          "id": "zh/cli-guide#安装",
+          "postId": "zh/cli-guide",
+          "heading": "安装",
+          "content": "## 安装\n\n在 monorepo / 示例博客里，CLI 已通过 workspace 开发依赖接入；如果你是在自己的项目里单独使用，也可以手动安装：\n\n```bash\npnpm add -D @astro-minimax/cli\n```\n\n安装后可通过 `astro-minimax` 命令使用，也可以通过 `pnpm run` 快捷脚本调用。",
+          "position": 1,
+          "tokenCount": 52,
+          "headers": {
+            "H2": "安装"
+          }
+        },
+        {
           "id": "zh/cli-guide#ai-质量评估",
           "postId": "zh/cli-guide",
           "heading": "AI 质量评估",
           "content": "### AI 质量评估\n\n```bash\npnpm run ai:eval                                    # 评估本地服务\npnpm run ai:eval -- --url=https://your-blog.com     # 评估生产环境\npnpm run ai:eval -- --category=no_answer             # 评估特定分类\npnpm run ai:eval -- --verbose                        # 详细输出\n```\n\n评估基于 `datas/eval/gold-set.json` 黄金测试集，自动检查：\n- 回答非空\n- 主题覆盖率\n- 禁止声明未出现\n- Markdown 链接存在性\n- 回答模式匹配\n\n评估报告保存到 `datas/eval/report.json`。",
-          "position": 1,
+          "position": 2,
           "tokenCount": 54,
           "headers": {
             "H2": "AI 内容处理",
@@ -6596,9 +6618,9 @@
           "id": "zh/cli-guide#命令速查表",
           "postId": "zh/cli-guide",
           "heading": "命令速查表",
-          "content": "## 命令速查表\n\n| 快捷脚本 | 等效命令 |\n|----------|----------|\n| `pnpm run post:new -- \"标题\"` | `astro-minimax post new \"标题\"` |\n| `pnpm run post:list` | `astro-minimax post list` |\n| `pnpm run post:stats` | `astro-minimax post stats` |\n| `pnpm run ai:process` | `astro-minimax ai process` |\n| `pnpm run ai:eval` | `astro-minimax ai eval` |\n| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |\n| `pnpm run data:status` | `astro-minimax data status` |\n| `pnpm run data:clear` | `astro-minimax data clear` |",
-          "position": 2,
-          "tokenCount": 131,
+          "content": "## 命令速查表\n\n| 快捷脚本 | 等效命令 |\n|----------|----------|\n| `pnpm run post:new -- \"标题\"` | `astro-minimax post new \"标题\"` |\n| `pnpm run post:list` | `astro-minimax post list` |\n| `pnpm run post:stats` | `astro-minimax post stats` |\n| `pnpm run ai:process` | `astro-minimax ai process` |\n| `pnpm run ai:eval` | `astro-minimax ai eval` |\n| `pnpm run ai:profile:build` | `astro-minimax ai profile build` |\n| `pnpm run ai:facts:build` | `astro-minimax ai facts build` |\n| `pnpm run ai:extensions:status` | `astro-minimax ai extensions status` |\n| `pnpm run data:status` | `astro-minimax data status` |\n| `pnpm run data:clear` | `astro-minimax data clear` |",
+          "position": 3,
+          "tokenCount": 166,
           "headers": {
             "H2": "命令速查表"
           }
@@ -6757,9 +6779,9 @@
           "id": "zh/why-astro-minimax#为什么-monorepo-4-个包",
           "postId": "zh/why-astro-minimax",
           "heading": "为什么 Monorepo + 4 个包",
-          "content": "### 为什么 Monorepo + 4 个包\n\n传统博客主题是单一仓库：\n\n```\ntypical-theme/\n└── src/          # 所有代码混在一起\n    ├── layouts/\n    ├── components/\n    ├── ai/       # AI 代码和主题代码耦合\n    └── styles/\n```\n\nastro-minimax 拆分为 4 个独立包：\n\n```\nastro-minimax/\n├── packages/core/    # 必需：布局、组件、路由、可视化\n├── packages/ai/      # 可选：AI 聊天、RAG\n├── packages/notify/  # 可选：通知系统\n└── packages/cli/     # 推荐：命令行工具\n```\n\n**为什么这样拆**：\n\n1. **按需安装** — 不需要 AI 功能的博客不需要安装 `ai` 和 `workers-ai-provider` 等 20+ 依赖\n2. **独立更新** — AI 包的 bug 不影响核心主题的稳定性\n3. **功能开关** — 可通过 `viz: { mermaid: false, markmap: false }` 禁用可视化组件\n4. **可替换性** — 用户可以用自己的 AI 实现替换 `@astro-minimax/ai`\n\n**数据**：完整安装所有包约 1000+ 依赖，只安装 core 约 300 依赖。",
+          "content": "### 为什么 Monorepo + 4 个包\n\n传统博客主题是单一仓库：\n\n```\ntypical-theme/\n└── src/          # 所有代码混在一起\n    ├── layouts/\n    ├── components/\n    ├── ai/       # AI 代码和主题代码耦合\n    └── styles/\n```\n\nastro-minimax 拆分为 4 个独立包：\n\n```\nastro-minimax/\n├── packages/core/    # 必需：布局、组件、路由、可视化\n├── packages/ai/      # 可选：AI 聊天、RAG\n├── packages/notify/  # 可选：通知系统\n└── packages/cli/     # 推荐：命令行工具\n```\n\n**为什么这样拆**：\n\n1. **按需安装** — 不需要 AI 功能的博客不需要安装 `ai` 和 `workers-ai-provider` 等 20+ 依赖\n2. **独立更新** — AI 包的 bug 不影响核心主题的稳定性\n3. **按包组合** — 可以只安装 `@astro-minimax/core`，把 AI、通知、CLI 作为可选能力按需接入\n4. **可替换性** — 用户可以用自己的 AI 实现替换 `@astro-minimax/ai`\n\n**数据**：完整安装所有包约 1000+ 依赖，只安装 core 约 300 依赖。",
           "position": 3,
-          "tokenCount": 126,
+          "tokenCount": 127,
           "headers": {
             "H2": "架构决策",
             "H3": "为什么 Monorepo + 4 个包"
@@ -6988,11 +7010,22 @@
           }
         },
         {
+          "id": "en/deployment-guide#cloudflare-pages-recommended",
+          "postId": "en/deployment-guide",
+          "heading": "Cloudflare Pages (Recommended)",
+          "content": "## Cloudflare Pages (Recommended)\n\nCloudflare Pages is the recommended platform because astro-minimax ships with a runtime path that aligns naturally with Cloudflare Pages Functions and Cloudflare Workers AI.",
+          "position": 3,
+          "tokenCount": 52,
+          "headers": {
+            "H2": "Cloudflare Pages (Recommended)"
+          }
+        },
+        {
           "id": "en/deployment-guide#git-integration",
           "postId": "en/deployment-guide",
           "heading": "Git Integration",
           "content": "### Git Integration\n\n1. Push your code to GitHub / GitLab\n2. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/) → Pages → Create a project\n3. Connect your Git repository\n4. Configure build settings:",
-          "position": 3,
+          "position": 4,
           "tokenCount": 53,
           "headers": {
             "H2": "Cloudflare Pages (Recommended)",
@@ -7004,7 +7037,7 @@
           "postId": "en/deployment-guide",
           "heading": "Monorepo Type",
           "content": "#### Monorepo Type\n\n| Setting                | Value                                                 |\n| ---------------------- | ----------------------------------------------------- |\n| Framework preset       | Astro                                                 |\n| Build command          | `pnpm run build`                                      |\n| Build output directory | `apps/blog/dist`                                      |\n| Root directory         | `/` (keep default)                                    |\n| Node.js version        | `22` (set `NODE_VERSION=22` in environment variables) |",
-          "position": 4,
+          "position": 5,
           "tokenCount": 150,
           "headers": {
             "H2": "Cloudflare Pages (Recommended)",
@@ -7017,7 +7050,7 @@
           "postId": "en/deployment-guide",
           "heading": "CLI Created Type",
           "content": "#### CLI Created Type\n\n| Setting                | Value                                                 |\n| ---------------------- | ----------------------------------------------------- |\n| Framework preset       | Astro                                                 |\n| Build command          | `pnpm run build`                                      |\n| Build output directory | `dist`                                                |\n| Root directory         | `/` (keep default)                                    |\n| Node.js version        | `22` (set `NODE_VERSION=22` in environment variables) |\n\n5. Click **Save and Deploy**",
-          "position": 5,
+          "position": 6,
           "tokenCount": 159,
           "headers": {
             "H2": "Cloudflare Pages (Recommended)",
@@ -7030,7 +7063,7 @@
           "postId": "en/deployment-guide",
           "heading": "Environment Variables",
           "content": "### Environment Variables\n\nIf AI chat is enabled, configure in Cloudflare Pages:\n\n| Variable          | Description                               |\n| ----------------- | ----------------------------------------- |\n| `NODE_VERSION`    | `22` (recommended)                        |\n| `AI_BINDING_NAME` | AI Binding name (defaults to `minimaxAI`) |",
-          "position": 6,
+          "position": 7,
           "tokenCount": 87,
           "headers": {
             "H2": "Cloudflare Pages (Recommended)",
@@ -7042,7 +7075,7 @@
           "postId": "en/deployment-guide",
           "heading": "AI Binding Configuration",
           "content": "### AI Binding Configuration\n\nThe project includes a `wrangler.toml` file that defines the AI Binding:\n\n**Monorepo Type**: File located at `apps/blog/wrangler.toml`\n\n**CLI Created Type**: File located at `wrangler.toml` (project root)\n\n```toml\nname = \"astro-minimax\"\npages_build_output_dir = \"dist\"\ncompatibility_date = \"2026-03-12\"\ncompatibility_flags = [\"nodejs_compat\"]\n\n[ai]\nbinding = \"minimaxAI\"\n\n[[kv_namespaces]]\nbinding = \"CACHE_KV\"\nid = \"your-kv-namespace-id\"\n```\n\nCloudflare Pages automatically detects this configuration and enables Workers AI.\n\n> `compatibility_flags = [\"nodejs_compat\"]` enables Node.js compatibility mode for proper AI functionality.",
-          "position": 7,
+          "position": 8,
           "tokenCount": 111,
           "headers": {
             "H2": "Cloudflare Pages (Recommended)",
@@ -7054,7 +7087,7 @@
           "postId": "en/deployment-guide",
           "heading": "Related Guides",
           "content": "### Related Guides\n\n- [Waline Comments Setup](/en/posts/setup-waline-on-vercel) — Deploy comment system on Vercel\n- [Umami Analytics Setup](/en/posts/setup-umami-analytics) — Configure privacy-friendly analytics\n- [Complete Setup Guide](/en/posts/complete-setup-guide) — End-to-end tutorial\n\n---",
-          "position": 8,
+          "position": 9,
           "tokenCount": 74,
           "headers": {
             "H2": "Cloudflare Pages (Recommended)",
@@ -7066,7 +7099,7 @@
           "postId": "en/deployment-guide",
           "heading": "Monorepo Type",
           "content": "#### Monorepo Type\n\n| Setting          | Value              |\n| ---------------- | ------------------ |\n| Framework preset | Astro              |\n| Build command    | `pnpm run build`   |\n| Output directory | `apps/blog/dist`   |\n| Install command  | `pnpm install`     |\n| Root directory   | `.` (keep default) |",
-          "position": 9,
+          "position": 10,
           "tokenCount": 79,
           "headers": {
             "H2": "Vercel",
@@ -7079,7 +7112,7 @@
           "postId": "en/deployment-guide",
           "heading": "CLI Created Type",
           "content": "#### CLI Created Type\n\n| Setting          | Value              |\n| ---------------- | ------------------ |\n| Framework preset | Astro              |\n| Build command    | `pnpm run build`   |\n| Output directory | `dist`             |\n| Install command  | `pnpm install`     |\n| Root directory   | `.` (keep default) |\n\n3. Set `NODE_VERSION=22` in environment variables\n4. Click **Deploy**",
-          "position": 10,
+          "position": 11,
           "tokenCount": 97,
           "headers": {
             "H2": "Vercel",
@@ -7091,9 +7124,9 @@
           "id": "en/deployment-guide#notes",
           "postId": "en/deployment-guide",
           "heading": "Notes",
-          "content": "### Notes\n\n- Vercel doesn't support Cloudflare Workers AI. The AI chat feature needs an alternative AI provider (e.g., OpenAI) on Vercel\n- You'll need to modify `ai.apiEndpoint` in `src/config.ts` to point to your AI API\n\n---",
-          "position": 11,
-          "tokenCount": 57,
+          "content": "### Notes\n\n- Vercel does not provide Cloudflare Workers AI bindings. If you still want AI chat on Vercel, use an OpenAI-compatible provider and make sure the `/api/chat` backend is actually available on that platform\n- In many cases, `ai.apiEndpoint` can still remain `/api/chat`; the real requirement is that the deployment target must expose a working handler behind that route\n\n---",
+          "position": 12,
+          "tokenCount": 96,
           "headers": {
             "H2": "Vercel",
             "H3": "Notes"
@@ -7104,7 +7137,7 @@
           "postId": "en/deployment-guide",
           "heading": "CLI Created Type",
           "content": "#### CLI Created Type\n\n| Setting           | Value            |\n| ----------------- | ---------------- |\n| Build command     | `pnpm run build` |\n| Publish directory | `dist`           |\n\n3. Set `NODE_VERSION=22` in environment variables\n4. Click **Deploy site**",
-          "position": 12,
+          "position": 13,
           "tokenCount": 66,
           "headers": {
             "H2": "Netlify",
@@ -7117,7 +7150,7 @@
           "postId": "en/deployment-guide",
           "heading": "GitHub Pages",
           "content": "### GitHub Pages\n\n1. Create `.github/workflows/deploy.yml`:\n\n**Monorepo Type**:\n\n```yaml\nname: Deploy to GitHub Pages\non:\n  push:\n    branches: [main]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      pages: write\n      id-token: write\n    steps:\n      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: pnpm\n      - run: pnpm install --frozen-lockfile\n      - run: pnpm run build\n      - uses: actions/upload-pages-artifact@v3\n        with:\n          path: apps/blog/dist\n      - uses: actions/deploy-pages@v4\n```\n\n**CLI Created Type**:\n\n```yaml\nname: Deploy to GitHub Pages\non:\n  push:\n    branches: [main]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      pages: write\n      id-token: write\n    steps:\n      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: pnpm\n      - run: pnpm install --frozen-lockfile\n      - run: pnpm run build\n      - uses: actions/upload-pages-artifact@v3\n        with:\n          path: dist\n      - uses: actions/deploy-pages@v4\n```\n\n2. In repo Settings → Pages, select **GitHub Actions** as the Source",
-          "position": 13,
+          "position": 14,
           "tokenCount": 53,
           "headers": {
             "H2": "Static File Hosting",
@@ -7129,7 +7162,7 @@
           "postId": "en/deployment-guide",
           "heading": "Deployment Checklist",
           "content": "## Deployment Checklist\n\nBefore deploying, verify:\n\n- [ ] `SITE.website` in `src/config.ts` is set to your correct domain\n- [ ] `pnpm run build` succeeds locally\n- [ ] Build output directory is set correctly (Monorepo: `apps/blog/dist`, CLI: `dist`)\n- [ ] Environment variable `NODE_VERSION` is set to `22`\n- [ ] If using AI features, API configuration is correctly set\n- [ ] `public/robots.txt` content is appropriate\n- [ ] OG images are properly configured",
-          "position": 14,
+          "position": 15,
           "tokenCount": 115,
           "headers": {
             "H2": "Deployment Checklist"
@@ -7140,7 +7173,7 @@
           "postId": "en/deployment-guide",
           "heading": "wrangler.toml Location",
           "content": "### wrangler.toml Location\n\n| Project Type | File Path                      |\n| ------------ | ------------------------------ |\n| Monorepo     | `apps/blog/wrangler.toml`      |\n| CLI Created  | `wrangler.toml` (project root) |\n\n---",
-          "position": 15,
+          "position": 16,
           "tokenCount": 58,
           "headers": {
             "H2": "Quick Reference",
@@ -7152,7 +7185,7 @@
           "postId": "en/deployment-guide",
           "heading": "AI chat doesn't work",
           "content": "### AI chat doesn't work\n\nThe AI chat feature depends on Cloudflare Workers AI. If deploying to other platforms:\n\n1. Set `ai.mockMode` to `true` (shows preset responses only), or\n2. Configure an alternative AI API endpoint",
-          "position": 16,
+          "position": 17,
           "tokenCount": 56,
           "headers": {
             "H2": "FAQ",
@@ -7356,9 +7389,9 @@
           "id": "en/feature-overview#dynamic-og-images",
           "postId": "en/feature-overview",
           "heading": "Dynamic OG Images",
-          "content": "### Dynamic OG Images\n\nPosts without a specified OG image get one auto-generated:\n\n- Uses [Satori](https://github.com/vercel/satori) at build time\n- Includes post title, author, date\n- Custom font support\n- 1200x640px dimensions\n\nSee [Dynamic OG Images](/en/posts/dynamic-og-images) for details.",
+          "content": "### Dynamic OG Images\n\nPosts without a specified OG image get one auto-generated:\n\n- Generated at build time as post-level social preview images\n- Built from post title, author, and site information\n- Custom font support\n- 1200x640px dimensions\n\nSee [Dynamic OG Images](/en/posts/dynamic-og-images) for details.",
           "position": 14,
-          "tokenCount": 74,
+          "tokenCount": 78,
           "headers": {
             "H1": "Central Topic",
             "H2": "SEO & Performance",
@@ -7433,9 +7466,9 @@
           "id": "en/feature-overview#main-commands",
           "postId": "en/feature-overview",
           "heading": "Main Commands",
-          "content": "### Main Commands\n\n| Command                  | Description                                      |\n| ------------------------ | ------------------------------------------------ |\n| `astro-minimax init`     | Create a new blog project                        |\n| `astro-minimax ai`       | AI content processing (summaries, SEO, eval)     |\n| `astro-minimax profile`  | Author profile management (context, voice, report)|\n| `astro-minimax post`     | Post management (new, list, stats)               |\n| `astro-minimax data`     | Data management (status, clear)                  |",
+          "content": "### Main Commands\n\n| Command                  | Description                                      |\n| ------------------------ | ------------------------------------------------ |\n| `astro-minimax init`     | Create a new blog project                        |\n| `astro-minimax ai`       | AI content processing (summaries, SEO, eval)     |\n| `astro-minimax ai profile` | Author profile management (retained canonical entrypoint) |\n| `astro-minimax post`     | Post management (new, list, stats)               |\n| `astro-minimax data`     | Data management (status, clear)                  |\n| `astro-minimax hooks`    | Install, uninstall, and inspect Git hooks        |",
           "position": 20,
-          "tokenCount": 145,
+          "tokenCount": 168,
           "headers": {
             "H1": "Central Topic",
             "H2": "CLI Tools",
@@ -7610,11 +7643,23 @@
           }
         },
         {
+          "id": "zh/deployment-guide#注意事项",
+          "postId": "zh/deployment-guide",
+          "heading": "注意事项",
+          "content": "### 注意事项\n\n- Vercel 默认不提供 Cloudflare Workers AI binding；如果仍要启用 AI 聊天，需要改用 OpenAI 兼容 Provider，并保证 `/api/chat` 对应的后端运行时可用\n- 前端 `ai.apiEndpoint` 默认仍可保持 `/api/chat`，关键在于部署平台是否真的提供该接口\n\n---",
+          "position": 10,
+          "tokenCount": 62,
+          "headers": {
+            "H2": "Vercel",
+            "H3": "注意事项"
+          }
+        },
+        {
           "id": "zh/deployment-guide#cli-创建形式-2",
           "postId": "zh/deployment-guide",
           "heading": "CLI 创建形式",
           "content": "#### CLI 创建形式\n\n| 设置     | 值               |\n| -------- | ---------------- |\n| 构建命令 | `pnpm run build` |\n| 发布目录 | `dist`           |\n\n3. 环境变量中设置 `NODE_VERSION=22`\n4. 点击 **Deploy site**",
-          "position": 10,
+          "position": 11,
           "tokenCount": 52,
           "headers": {
             "H2": "Netlify",
@@ -7627,7 +7672,7 @@
           "postId": "zh/deployment-guide",
           "heading": "GitHub Pages",
           "content": "### GitHub Pages\n\n1. 在 `.github/workflows/deploy.yml` 中配置 GitHub Actions：\n\n**Monorepo 形式**：\n\n```yaml\nname: Deploy to GitHub Pages\non:\n  push:\n    branches: [main]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      pages: write\n      id-token: write\n    steps:\n      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: pnpm\n      - run: pnpm install --frozen-lockfile\n      - run: pnpm run build\n      - uses: actions/upload-pages-artifact@v3\n        with:\n          path: apps/blog/dist\n      - uses: actions/deploy-pages@v4\n```\n\n**CLI 创建形式**：\n\n```yaml\nname: Deploy to GitHub Pages\non:\n  push:\n    branches: [main]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      pages: write\n      id-token: write\n    steps:\n      - uses: actions/checkout@v4\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: pnpm\n      - run: pnpm install --frozen-lockfile\n      - run: pnpm run build\n      - uses: actions/upload-pages-artifact@v3\n        with:\n          path: dist\n      - uses: actions/deploy-pages@v4\n```\n\n2. 在仓库 Settings → Pages 中选择 **GitHub Actions** 作为 Source",
-          "position": 11,
+          "position": 12,
           "tokenCount": 55,
           "headers": {
             "H2": "静态文件托管",
@@ -7639,7 +7684,7 @@
           "postId": "zh/deployment-guide",
           "heading": "部署检查清单",
           "content": "## 部署检查清单\n\n部署前请确认：\n\n- [ ] `src/config.ts` 中 `SITE.website` 已设置为正确的域名\n- [ ] 构建命令 `pnpm run build` 在本地执行成功\n- [ ] 构建输出目录设置正确（Monorepo: `apps/blog/dist`，CLI: `dist`）\n- [ ] 环境变量 `NODE_VERSION` 设置为 `22`\n- [ ] 如使用 AI 功能，相关 API 配置已正确设置\n- [ ] `public/robots.txt` 内容符合你的需求\n- [ ] OG 图片已正确配置",
-          "position": 12,
+          "position": 13,
           "tokenCount": 90,
           "headers": {
             "H2": "部署检查清单"
@@ -7650,7 +7695,7 @@
           "postId": "zh/deployment-guide",
           "heading": "wrangler.toml 位置",
           "content": "### wrangler.toml 位置\n\n| 项目形式 | 文件路径                      |\n| -------- | ----------------------------- |\n| Monorepo | `apps/blog/wrangler.toml`     |\n| CLI 创建 | `wrangler.toml`（项目根目录） |",
-          "position": 13,
+          "position": 14,
           "tokenCount": 51,
           "headers": {
             "H2": "快速参考表",
@@ -7662,7 +7707,7 @@
           "postId": "zh/deployment-guide",
           "heading": "AI 聊天不工作",
           "content": "### AI 聊天不工作\n\nAI 聊天功能依赖 Cloudflare Workers AI。如果部署在其他平台，需要：\n\n1. 将 `ai.mockMode` 设为 `true`（仅显示预设回复），或\n2. 配置替代的 AI API 端点",
-          "position": 14,
+          "position": 15,
           "tokenCount": 40,
           "headers": {
             "H2": "常见问题",
@@ -7828,9 +7873,9 @@
           "id": "zh/feature-overview#动态-og-图片",
           "postId": "zh/feature-overview",
           "heading": "动态 OG 图片",
-          "content": "### 动态 OG 图片\n\n未指定 OG 图片的文章会自动生成：\n\n- 使用 [Satori](https://github.com/vercel/satori) 在构建时生成\n- 包含文章标题、作者、日期\n- 支持自定义字体\n- 尺寸 1200x640px\n\n详见 [动态 OG 图片](/zh/posts/dynamic-og-images)。",
+          "content": "### 动态 OG 图片\n\n未指定 OG 图片的文章会自动生成：\n\n- 在构建时生成文章级社交分享图\n- 基于文章标题、作者与站点信息生成\n- 支持自定义字体\n- 尺寸 1200x640px\n\n详见 [动态 OG 图片](/zh/posts/dynamic-og-images)。",
           "position": 11,
-          "tokenCount": 56,
+          "tokenCount": 51,
           "headers": {
             "H1": "中心主题",
             "H2": "SEO 与性能",
@@ -7867,9 +7912,9 @@
           "id": "zh/feature-overview#主要命令",
           "postId": "zh/feature-overview",
           "heading": "主要命令",
-          "content": "### 主要命令\n\n| 命令                   | 说明                                          |\n| ---------------------- | --------------------------------------------- |\n| `astro-minimax init`   | 创建新博客项目                                |\n| `astro-minimax ai`     | AI 内容处理（摘要、SEO、评估）                |\n| `astro-minimax profile`| 作者画像管理（上下文、风格、报告）            |\n| `astro-minimax post`   | 文章管理（新建、列表、统计）                  |\n| `astro-minimax data`   | 数据管理（状态查看、缓存清理）                |",
+          "content": "### 主要命令\n\n| 命令                   | 说明                                          |\n| ---------------------- | --------------------------------------------- |\n| `astro-minimax init`   | 创建新博客项目                                |\n| `astro-minimax ai`     | AI 内容处理（摘要、SEO、评估）                |\n| `astro-minimax ai profile` | 作者画像管理（保留的标准构建入口）        |\n| `astro-minimax post`   | 文章管理（新建、列表、统计）                  |\n| `astro-minimax data`   | 数据管理（状态查看、缓存清理）                |\n| `astro-minimax hooks`  | Git 钩子安装、卸载与状态检查                  |",
           "position": 14,
-          "tokenCount": 131,
+          "tokenCount": 151,
           "headers": {
             "H1": "中心主题",
             "H2": "CLI 工具链",
@@ -8797,7 +8842,7 @@
           "id": "en/getting-started#4-configure-your-site",
           "postId": "en/getting-started",
           "heading": "4. Configure Your Site",
-          "content": "### 4. Configure Your Site\n\nEdit `apps/blog/src/config.ts` with your blog details:\n\n```typescript\nexport const SITE = {\n  website: \"https://your-domain.com/\",\n  author: \"Your Name\",\n  title: \"My Blog\",\n  desc: \"A personal tech blog\",\n  lang: \"en\",\n  timezone: \"Asia/Shanghai\",\n  features: {\n    tags: true,\n    categories: true,\n    search: true,\n    darkMode: true,\n    // Enable more features as needed\n    ai: false,\n    waline: false,\n    sponsor: false,\n  },\n  // ...\n};\n```\n\nSee [Configure Theme](/en/posts/how-to-configure-astro-minimax-theme) for the full configuration reference.",
+          "content": "### 4. Configure Your Site\n\nEdit `apps/blog/src/config.ts` with your blog details:\n\n```typescript\nexport const SITE = {\n  website: \"https://your-domain.com/\",\n  author: \"Your Name\",\n  title: \"My Blog\",\n  desc: \"A personal tech blog\",\n  lang: \"en\",\n  timezone: \"Asia/Shanghai\",\n  features: {\n    tags: true,\n    categories: true,\n    search: true,\n  },\n  darkMode: true,\n  ai: {\n    enabled: false,\n  },\n  waline: {\n    enabled: false,\n    serverURL: \"\",\n  },\n  sponsor: {\n    enabled: false,\n  },\n  // ...\n};\n```\n\nSee [Configure Theme](/en/posts/how-to-configure-astro-minimax-theme) for the full configuration reference.",
           "position": 2,
           "tokenCount": 53,
           "headers": {
@@ -8841,11 +8886,35 @@
           }
         },
         {
+          "id": "en/getting-started#3-configure-astro",
+          "postId": "en/getting-started",
+          "heading": "3. Configure Astro",
+          "content": "### 3. Configure Astro\n\n```typescript\nimport { defineConfig } from 'astro/config';\nimport minimax from '@astro-minimax/core';\nimport preact from '@astrojs/preact';\n\nexport default defineConfig({\n  integrations: [\n    minimax({\n      site: SITE,\n      socials: SOCIALS,\n      shareLinks: SHARE_LINKS,\n      friends: FRIENDS,\n      blogPath: 'src/data/blog',\n    }),\n    preact({ compat: true }),\n  ],\n});\n```\n\nVisualization support such as Mermaid and Markmap is already handled by the theme's built-in Markdown/component pipeline, so you don't need a separate `viz` config block.",
+          "position": 6,
+          "tokenCount": 54,
+          "headers": {
+            "H2": "Method 3: NPM Package Integration",
+            "H3": "3. Configure Astro"
+          }
+        },
+        {
+          "id": "en/getting-started#4-pages-routes",
+          "postId": "en/getting-started",
+          "heading": "4. Pages & Routes",
+          "content": "### 4. Pages & Routes\n\nAfter integrating `@astro-minimax/core`, the theme injects the blog routes for you. In most setups, you **do not need to hand-build `src/pages/` with Layout / Header / Footer wiring**. What you primarily maintain is:\n\n- `src/config.ts` for site configuration\n- `src/constants.ts` for social and share links\n- `src/data/blog/` for content\n- `src/data/friends.ts` for friend links, if enabled",
+          "position": 7,
+          "tokenCount": 104,
+          "headers": {
+            "H2": "Method 3: NPM Package Integration",
+            "H3": "4. Pages & Routes"
+          }
+        },
+        {
           "id": "en/getting-started#content-directory-structure",
           "postId": "en/getting-started",
           "heading": "Content Directory Structure",
           "content": "## Content Directory Structure\n\nRegardless of integration method, your blog content structure stays consistent:\n\n```\nsrc/data/blog/\n├── zh/                # Chinese articles\n│   ├── my-post.md\n│   └── _examples/     # Example articles (directories starting with _ are excluded from URLs)\n├── en/                # English articles\n│   ├── my-post.md\n│   └── _examples/\n```\n\n> GitHub Template users: content lives at `apps/blog/src/data/blog/`. NPM integration users: at `src/data/blog/` in your project root.",
-          "position": 6,
+          "position": 8,
           "tokenCount": 67,
           "headers": {
             "H2": "Content Directory Structure"
@@ -8856,7 +8925,7 @@
           "postId": "en/getting-started",
           "heading": "Next Steps",
           "content": "## Next Steps\n\n- [Configure Theme](/en/posts/how-to-configure-astro-minimax-theme) — Full configuration reference\n- [Add Posts](/en/posts/adding-new-post) — Frontmatter format reference\n- [Feature Overview](/en/posts/feature-overview) — Complete feature guide\n- [Deployment Guide](/en/posts/deployment-guide) — Multi-platform deployment\n- [Customize Colors](/en/posts/how-to-configure-astro-minimax-theme) — Theme color customization",
-          "position": 7,
+          "position": 9,
           "tokenCount": 109,
           "headers": {
             "H2": "Next Steps"
@@ -9544,11 +9613,23 @@
           }
         },
         {
+          "id": "zh/getting-started#4-关于页面与路由",
+          "postId": "zh/getting-started",
+          "heading": "4. 关于页面与路由",
+          "content": "### 4. 关于页面与路由\n\n使用 `@astro-minimax/core` 集成后，主题会自动注入博客所需的页面路由，因此一般**不需要手动创建 `src/pages/` 来拼 Layout / Header / Footer**。你主要维护的是：\n\n- `src/config.ts`：站点配置\n- `src/constants.ts`：社交链接与分享链接\n- `src/data/blog/`：文章内容\n- `src/data/friends.ts`：友链数据（如启用）",
+          "position": 3,
+          "tokenCount": 78,
+          "headers": {
+            "H2": "方式三：NPM 包集成",
+            "H3": "4. 关于页面与路由"
+          }
+        },
+        {
           "id": "zh/getting-started#下一步",
           "postId": "zh/getting-started",
           "heading": "下一步",
           "content": "## 下一步\n\n- [配置主题](/zh/posts/how-to-configure-astro-minimax-theme) — 详细配置指南\n- [添加文章](/zh/posts/adding-new-post) — Frontmatter 格式说明\n- [功能特性](/zh/posts/feature-overview) — 完整功能介绍\n- [部署指南](/zh/posts/deployment-guide) — 多平台部署方案\n- [自定义配色](/zh/posts/how-to-configure-astro-minimax-theme) — 主题颜色定制",
-          "position": 3,
+          "position": 4,
           "tokenCount": 86,
           "headers": {
             "H2": "下一步"
@@ -10459,9 +10540,9 @@
           "id": "en/dynamic-og-images#dynamic-og-image",
           "postId": "en/dynamic-og-images",
           "heading": "Dynamic OG Image",
-          "content": "## Dynamic OG Image\n\nGenerating a dynamic OG image for each post allows the author to avoid specifying an OG image for every single blog post. Besides, this will prevent the fallback OG image from being identical to all blog posts.\n\nastro-minimax uses Vercel's [Satori](https://github.com/vercel/satori) package for dynamic OG image generation.\n\nDynamic OG images will be generated at build time for blog posts that\n\n- don't include OG image in the frontmatter\n- are not marked as draft.",
+          "content": "## Dynamic OG Image\n\nGenerating a dynamic OG image for each post allows the author to avoid specifying an OG image for every single blog post. Besides, this will prevent the fallback OG image from being identical to all blog posts.\n\nastro-minimax currently generates SVG-based OG templates and renders them into PNG files at build time.\n\nDynamic OG images will be generated at build time for blog posts that\n\n- don't include OG image in the frontmatter\n- are not marked as draft.",
           "position": 5,
-          "tokenCount": 122,
+          "tokenCount": 120,
           "headers": {
             "H2": "Dynamic OG Image"
           }
@@ -10470,9 +10551,9 @@
           "id": "en/dynamic-og-images#anatomy-of-astro-minimax-dynam",
           "postId": "en/dynamic-og-images",
           "heading": "Anatomy of astro-minimax dynamic OG image",
-          "content": "## Anatomy of astro-minimax dynamic OG image\n\nDynamic OG image of astro-minimax includes _the blog post title_, _author name_ and _site title_. Author name and site title will be retrieved via `SITE.author` and `SITE.title` of **\"src/config.ts\"** file. The title is generated from the blog post frontmatter `title`.  \n![Example Dynamic OG Image link](/images/og-image-demo.png)",
+          "content": "## Anatomy of astro-minimax dynamic OG image\n\nDynamic OG images in astro-minimax include _the blog post title_, _author name_, and _site title_. Author name and site title are sourced from `SITE.author` and `SITE.title` in **`src/config.ts`**, while the title comes from the post frontmatter `title`.  \n![Example Dynamic OG Image link](/images/og-image-demo.png)",
           "position": 6,
-          "tokenCount": 95,
+          "tokenCount": 91,
           "headers": {
             "H2": "Anatomy of astro-minimax dynamic OG image"
           }
@@ -10504,9 +10585,9 @@
           "id": "en/dynamic-og-images#limitations",
           "postId": "en/dynamic-og-images",
           "heading": "Limitations",
-          "content": "## Limitations\n\nAt the time of writing this, [Satori](https://github.com/vercel/satori) is fairly new and has not reached major release yet. So, there are still some limitations to this dynamic OG image feature.\n\n- Besides, RTL languages are not supported yet.\n- [Using emoji](https://github.com/vercel/satori#emojis) in the title might be a little bit tricky.",
+          "content": "## Limitations\n\nThe current build-time OG pipeline still comes with a few practical limitations.\n\n- Build time increases roughly linearly with the number of posts that need generated OG images.\n- Font coverage and special-character rendering still depend on your configured font assets.\n- If the build environment is missing the image rendering dependency, PNG output cannot be generated during build.",
           "position": 9,
-          "tokenCount": 90,
+          "tokenCount": 101,
           "headers": {
             "H2": "Limitations"
           }
@@ -10592,9 +10673,9 @@
           "id": "zh/dynamic-og-images#动态-og-图片",
           "postId": "zh/dynamic-og-images",
           "heading": "动态 OG 图片",
-          "content": "## 动态 OG 图片\n\n为每篇文章生成动态 OG 图片可以让作者避免为每篇博客文章指定 OG 图片。此外，这还可以防止后备 OG 图片在所有博客文章中重复。\n\nastro-minimax 使用 Vercel 的 [Satori](https://github.com/vercel/satori) 包进行动态 OG 图片生成。\n\n动态 OG 图片将在构建时为以下博客文章生成：\n\n- frontmatter 中不包含 OG 图片\n- 未标记为草稿",
+          "content": "## 动态 OG 图片\n\n为每篇文章生成动态 OG 图片可以让作者避免为每篇博客文章指定 OG 图片。此外，这还可以防止后备 OG 图片在所有博客文章中重复。\n\nastro-minimax 当前通过 OG 模板生成 SVG，再在构建阶段结合 `@resvg/resvg-js` 渲染为 PNG 输出。\n\n动态 OG 图片将在构建时为以下博客文章生成：\n\n- frontmatter 中不包含 OG 图片\n- 未标记为草稿",
           "position": 5,
-          "tokenCount": 81,
+          "tokenCount": 79,
           "headers": {
             "H2": "动态 OG 图片"
           }
@@ -10603,9 +10684,9 @@
           "id": "zh/dynamic-og-images#astro-minimax-动态-og-图片的组成",
           "postId": "zh/dynamic-og-images",
           "heading": "astro-minimax 动态 OG 图片的组成",
-          "content": "## astro-minimax 动态 OG 图片的组成\n\nastro-minimax 的动态 OG 图片包含 _博客文章标题_、_作者名称_ 和 _网站标题_。作者名称和网站标题将通过 **\"src/config.ts\"** 文件中的 `SITE.author` 和 `SITE.title` 获取。标题从博客文章 frontmatter 的 `title` 字段生成。\n\n![示例动态 OG 图片](/images/og-image-demo.png)",
+          "content": "## astro-minimax 动态 OG 图片的组成\n\nastro-minimax 的动态 OG 图片会基于文章元数据生成，核心信息包括 _博客文章标题_、_作者名称_ 和 _网站标题_。作者名称和网站标题通过 **`src/config.ts`** 文件中的 `SITE.author` 和 `SITE.title` 获取，标题则来自文章 frontmatter 的 `title` 字段。\n\n![示例动态 OG 图片](/images/og-image-demo.png)",
           "position": 6,
-          "tokenCount": 74,
+          "tokenCount": 80,
           "headers": {
             "H2": "astro-minimax 动态 OG 图片的组成"
           }
@@ -10625,9 +10706,9 @@
           "id": "zh/dynamic-og-images#限制",
           "postId": "zh/dynamic-og-images",
           "heading": "限制",
-          "content": "## 限制\n\n在撰写本文时，[Satori](https://github.com/vercel/satori) 还比较新，尚未发布主要版本。因此，这个动态 OG 图片功能仍有一些限制。\n\n- 此外，尚不支持 RTL（从右到左）语言。\n- 在标题中[使用 emoji](https://github.com/vercel/satori#emojis) 可能会有一些问题。",
+          "content": "## 限制\n\n当前这套构建期 OG 方案依然有一些实际限制：\n\n- 构建时间会随着需要生成的文章数量线性增加\n- 字体与特殊字符支持仍取决于模板与字体资源配置\n- 如果构建环境缺少 `@resvg/resvg-js`，则无法在构建期产出 PNG",
           "position": 8,
-          "tokenCount": 62,
+          "tokenCount": 51,
           "headers": {
             "H2": "限制"
           }
@@ -11104,9 +11185,9 @@
           "id": "en/how-to-configure-astro-minimax-theme#configuring-ai-chat",
           "postId": "en/how-to-configure-astro-minimax-theme",
           "heading": "Configuring AI Chat",
-          "content": "## Configuring AI Chat\n\nastro-minimax includes a built-in AI chat assistant powered by `@astro-minimax/ai`. Configure it in `SITE.ai`:\n\n```js file=src/config.ts\nai: {\n  enabled: true,\n  mockMode: true,\n  apiEndpoint: \"/api/chat\",\n  model: \"@cf/zai-org/glm-4.7-flash\",\n  welcomeMessage: undefined,\n  placeholder: undefined,\n},\n```\n\n| Option | Description |\n|--------|-------------|\n| `enabled` | Enable AI chat (set to `true`) |\n| `mockMode` | Returns preset responses without calling a real API, useful for development |\n| `apiEndpoint` | API endpoint URL. Use `/api/chat` for Cloudflare Pages Functions |\n| `model` | Model ID. Defaults to Cloudflare Workers AI GLM-4.7 Flash |\n| `welcomeMessage` | Custom welcome message |\n| `placeholder` | Custom input placeholder text |\n\n> The AI chat feature uses Cloudflare Pages Functions as the backend. Deployment on Cloudflare with AI Binding configuration is required. See the `apps/blog/functions/` directory and `wrangler.toml` for details.",
+          "content": "## Configuring AI Chat\n\nastro-minimax includes a built-in AI chat assistant powered by `@astro-minimax/ai`. Configure it in `SITE.ai`:\n\n```js file=src/config.ts\nai: {\n  enabled: true,\n  mockMode: true,\n  apiEndpoint: \"/api/chat\",\n  welcomeMessage: undefined,\n  placeholder: undefined,\n},\n```\n\n| Option | Description |\n|--------|-------------|\n| `enabled` | Enable AI chat (set to `true`) |\n| `mockMode` | Returns preset responses without calling a real API, useful for development |\n| `apiEndpoint` | API endpoint URL. Use `/api/chat` for Cloudflare Pages Functions |\n| `welcomeMessage` | Custom welcome message |\n| `placeholder` | Custom input placeholder text |\n\n> The AI chat feature uses Cloudflare Pages Functions as the backend. Provider/model selection is handled through environment variables and server runtime configuration, not a `model` field inside `SITE.ai`. See `apps/blog/functions/`, `wrangler.toml`, and the [AI chat guide](/en/posts/ai-guide) for details.",
           "position": 9,
-          "tokenCount": 203,
+          "tokenCount": 209,
           "headers": {
             "H2": "Configuring AI Chat"
           }
@@ -11271,9 +11352,9 @@
           "id": "zh/how-to-configure-astro-minimax-theme#配置-ai-聊天",
           "postId": "zh/how-to-configure-astro-minimax-theme",
           "heading": "配置 AI 聊天",
-          "content": "## 配置 AI 聊天\n\nastro-minimax 内置 AI 聊天助手，基于 `@astro-minimax/ai` 包实现。在 `SITE.ai` 中配置：\n\n```js file=src/config.ts\nai: {\n  enabled: true,\n  mockMode: true,\n  apiEndpoint: \"/api/chat\",\n  model: \"@cf/zai-org/glm-4.7-flash\",\n  welcomeMessage: undefined,\n  placeholder: undefined,\n},\n```\n\n| 选项 | 说明 |\n|------|------|\n| `enabled` | 是否启用 AI 聊天（设置为 `true`） |\n| `mockMode` | Mock 模式下返回预设回复，不调用真实 API，适合开发调试 |\n| `apiEndpoint` | API 端点地址。使用 Cloudflare Pages Functions 时为 `/api/chat` |\n| `model` | 使用的模型 ID。默认使用 Cloudflare Workers AI 的 GLM-4.7 Flash |\n| `welcomeMessage` | 自定义欢迎消息 |\n| `placeholder` | 自定义输入框占位文本 |\n\n> AI 聊天功能使用 Cloudflare Pages Functions 作为后端。需要在 Cloudflare 上部署并配置 AI Binding。详见 `apps/blog/functions/` 目录和 `wrangler.toml`。",
+          "content": "## 配置 AI 聊天\n\nastro-minimax 内置 AI 聊天助手，基于 `@astro-minimax/ai` 包实现。在 `SITE.ai` 中配置：\n\n```js file=src/config.ts\nai: {\n  enabled: true,\n  mockMode: true,\n  apiEndpoint: \"/api/chat\",\n  welcomeMessage: undefined,\n  placeholder: undefined,\n},\n```\n\n| 选项 | 说明 |\n|------|------|\n| `enabled` | 是否启用 AI 聊天（设置为 `true`） |\n| `mockMode` | Mock 模式下返回预设回复，不调用真实 API，适合开发调试 |\n| `apiEndpoint` | API 端点地址。使用 Cloudflare Pages Functions 时为 `/api/chat` |\n| `welcomeMessage` | 自定义欢迎消息 |\n| `placeholder` | 自定义输入框占位文本 |\n\n> AI 聊天功能使用 Cloudflare Pages Functions 作为后端。模型与 Provider 优先级通过环境变量和服务端运行时决定，而不是写在 `SITE.ai` 里。详见 `apps/blog/functions/`、`wrangler.toml` 与 [AI 配置指南](/zh/posts/ai-guide)。",
           "position": 7,
-          "tokenCount": 165,
+          "tokenCount": 162,
           "headers": {
             "H2": "配置 AI 聊天"
           }
@@ -11484,5 +11565,5 @@
     "model": "gpt-5.4",
     "provider": "openai"
   },
-  "contextHash": "3c7f6234ba7b9d58"
+  "contextHash": "2d12c3d71069b8cb"
 }
