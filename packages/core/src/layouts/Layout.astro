@@ -318,9 +318,28 @@ const structuredData = pubDatetime
     <!-- Minimal inline script to prevent FOUC - sets theme immediately -->
     <script is:inline define:vars={{ defaultColorScheme, defaultRadius, defaultLayout, defaultMode }}>
       (function () {
+        // Helper to read sessionStorage backup
+        function getStoredThemeBackup() {
+          try {
+            const stored = sessionStorage.getItem('__astroMinimax_theme');
+            if (stored) {
+              const data = JSON.parse(stored);
+              // Check if backup is recent (within 5 minutes)
+              if (data && data.timestamp && Date.now() - data.timestamp < 300000) {
+                return data;
+              }
+            }
+          } catch (e) {}
+          return null;
+        }
+
         const getPreferencesClient = () => window.__astroMinimaxPreferences;
         const settings = getPreferencesClient()?.loadSettings?.();
-        const themeMode = settings?.theme?.mode ?? defaultMode ?? "system";
+        
+        // Fall back to sessionStorage backup if preferences client unavailable
+        const storedBackup = !settings ? getStoredThemeBackup() : null;
+        
+        const themeMode = settings?.theme?.mode ?? storedBackup?.mode ?? defaultMode ?? "system";
 
         function resolveTheme(mode) {
           if (mode === "light") return "light";
@@ -337,13 +356,25 @@ const structuredData = pubDatetime
         root?.setAttribute("data-theme", themeValue);
 
         const radiusMap = { sm: "0.5rem", md: "0.75rem", lg: "1rem", xl: "1.5rem" };
-        const colorScheme = settings?.theme?.colorScheme ?? defaultColorScheme ?? "teal";
-        const layoutMode = settings?.layout?.postsLayout ?? defaultLayout ?? "card";
-        const radius = settings?.theme?.radius ?? defaultRadius ?? "lg";
+        const colorScheme = settings?.theme?.colorScheme ?? storedBackup?.colorScheme ?? defaultColorScheme ?? "teal";
+        const layoutMode = settings?.layout?.postsLayout ?? storedBackup?.layout ?? defaultLayout ?? "card";
+        const radius = settings?.theme?.radius ?? storedBackup?.radius ?? defaultRadius ?? "lg";
 
         root?.setAttribute("data-color-scheme", colorScheme);
         root?.setAttribute("data-layout", layoutMode);
         root?.style.setProperty("--card-radius", radiusMap[radius] || "1rem");
+
+        // Store current state as backup for page transitions
+        // This ensures theme persists even if preferences client initializes after page swap
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('__astroMinimax_theme', JSON.stringify({
+            theme: themeValue,
+            colorScheme: colorScheme,
+            layout: layoutMode,
+            radius: radius,
+            timestamp: Date.now()
+          }));
+        }
 
         // Export minimal API for external script
         window.theme = {

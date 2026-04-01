@@ -17,6 +17,21 @@ function setThemeValue(theme: string): void {
   if (!controller) return;
   controller.setTheme(theme);
   controller.setPreference();
+
+  // Also update sessionStorage backup for page transitions
+  if (typeof sessionStorage !== 'undefined') {
+    try {
+      const stored = sessionStorage.getItem('__astroMinimax_theme');
+      const data = stored ? JSON.parse(stored) : {};
+      sessionStorage.setItem('__astroMinimax_theme', JSON.stringify({
+        ...data,
+        theme: theme,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Silently fail if sessionStorage is unavailable
+    }
+  }
 }
 
 function reflectPreference(): void {
@@ -102,6 +117,43 @@ manager.add(document, "astro:before-swap", (event: Event) => {
     astroEvent.newDocument
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", bgColor);
+  }
+
+  // Preserve theme attributes across page transitions to prevent theme flashing
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const currentColorScheme = document.documentElement.getAttribute("data-color-scheme");
+  const currentLayout = document.documentElement.getAttribute("data-layout");
+  const cardRadius = document.documentElement.style.getPropertyValue("--card-radius");
+
+  if (currentTheme) {
+    astroEvent.newDocument.documentElement.setAttribute("data-theme", currentTheme);
+  }
+  if (currentColorScheme) {
+    astroEvent.newDocument.documentElement.setAttribute("data-color-scheme", currentColorScheme);
+  }
+  if (currentLayout) {
+    astroEvent.newDocument.documentElement.setAttribute("data-layout", currentLayout);
+  }
+  if (cardRadius) {
+    astroEvent.newDocument.documentElement.style.setProperty("--card-radius", cardRadius);
+  }
+
+  // Update sessionStorage backup with current theme state for transition reliability
+  if (typeof sessionStorage !== 'undefined') {
+    try {
+      const currentMode = getThemeController()?.getMode?.() ?? LIGHT;
+      const themeData = {
+        theme: currentTheme || getCurrentTheme(),
+        mode: currentMode,
+        colorScheme: currentColorScheme,
+        layout: currentLayout,
+        radius: cardRadius?.split('rem')[0] || 'lg',
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('__astroMinimax_theme', JSON.stringify(themeData));
+    } catch (e) {
+      // Silently fail if sessionStorage is unavailable
+    }
   }
 });
 

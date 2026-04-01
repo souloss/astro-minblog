@@ -114,13 +114,22 @@ const progressPct = (currentOrder / seriesInfo.totalPosts) * 100;
 
     const items = container.querySelectorAll<HTMLAnchorElement>(".series-item");
     
+    // Let ClientRouter handle navigation naturally - no need for manual window.location
+    // This ensures view transitions and theme persistence work correctly
     items.forEach(item => {
       item.addEventListener("click", (e) => {
         const href = item.getAttribute("href");
-        if (href) {
+        // Only prevent default for anchor links with hash (same-page anchors)
+        // Allow normal navigation for full page navigation
+        if (href && href.startsWith('#')) {
           e.preventDefault();
-          window.location.href = href;
+          const targetId = href.slice(1);
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
+          }
         }
+        // For normal links, let them propagate to ClientRouter
       });
     });
   }
