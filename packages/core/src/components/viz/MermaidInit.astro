@@ -15,7 +15,169 @@
 
 <script>
   import mermaid from "mermaid";
-  import "./viz-container-init.ts";
+  import { getGlobalEventManager } from "../../utils/performance";
+
+  // Viz container initialization code (inlined to prevent tree-shaking)
+  const trackedListeners: Array<{
+    target: EventTarget;
+    type: string;
+    handler: EventListenerOrEventListenerObject;
+    options?: AddEventListenerOptions | boolean;
+  }> = [];
+
+  function addTrackedListener(
+    target: EventTarget,
+    type: string,
+    handler: EventListenerOrEventListenerObject,
+    options?: AddEventListenerOptions | boolean
+  ) {
+    target.addEventListener(type, handler, options);
+    trackedListeners.push({ target, type, handler, options });
+  }
+
+  function cleanupListeners() {
+    for (const { target, type, handler, options } of trackedListeners) {
+      target.removeEventListener(type, handler, options);
+    }
+    trackedListeners.length = 0;
+  }
+
+  function initVizContainers() {
+    document.querySelectorAll<HTMLElement>(".viz-container").forEach(container => {
+      if (container.dataset.vizCtrlInit === "initialized") return;
+      
+      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
+      if (!viewport) return;
+
+      container.dataset.vizCtrlInit = "initialized";
+
+      let scale = 1;
+      let translateX = 0;
+      let translateY = 0;
+      const MIN_SCALE = 0.3;
+      const MAX_SCALE = 5;
+      const ZOOM_STEP = 0.2;
+
+      function applyTransform() {
+        viewport!.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+      }
+
+      const zoomInBtn = container.querySelector(".viz-zoom-in");
+      if (zoomInBtn) {
+        addTrackedListener(zoomInBtn, "click", (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+          scale = Math.min(MAX_SCALE, scale + ZOOM_STEP);
+          applyTransform();
+        });
+      }
+
+      const zoomOutBtn = container.querySelector(".viz-zoom-out");
+      if (zoomOutBtn) {
+        addTrackedListener(zoomOutBtn, "click", (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+          scale = Math.max(MIN_SCALE, scale - ZOOM_STEP);
+          applyTransform();
+        });
+      }
+
+      const resetBtn = container.querySelector(".viz-reset");
+      if (resetBtn) {
+        addTrackedListener(resetBtn, "click", (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+          scale = 1;
+          translateX = 0;
+          translateY = 0;
+          applyTransform();
+        });
+      }
+
+      if (container.dataset.vizZoom === "true") {
+        addTrackedListener(container, "wheel", (e: Event) => {
+          const wheelEvent = e as WheelEvent;
+          const isZoomIntent = wheelEvent.ctrlKey || wheelEvent.metaKey || wheelEvent.deltaMode === 0;
+          if (!isZoomIntent) return;
+          e.preventDefault();
+          e.stopPropagation();
+          const delta = wheelEvent.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+          scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
+          applyTransform();
+        }, { passive: false });
+
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+
+        addTrackedListener(container, "mousedown", (e: Event) => {
+          const mouseEvent = e as MouseEvent;
+          if (!mouseEvent.shiftKey && mouseEvent.button !== 1) return;
+          e.preventDefault();
+          isPanning = true;
+          startX = mouseEvent.clientX;
+          startY = mouseEvent.clientY;
+          container.style.cursor = "grabbing";
+        });
+
+        addTrackedListener(window, "mousemove", (e: Event) => {
+          if (!isPanning) return;
+          const mouseEvent = e as MouseEvent;
+          translateX += (mouseEvent.clientX - startX) / scale;
+          translateY += (mouseEvent.clientY - startY) / scale;
+          startX = mouseEvent.clientX;
+          startY = mouseEvent.clientY;
+          applyTransform();
+        });
+
+        addTrackedListener(window, "mouseup", () => {
+          if (!isPanning) return;
+          isPanning = false;
+          container.style.cursor = "";
+        });
+      }
+
+      const fsBtn = container.querySelector<HTMLElement>(".viz-fullscreen");
+      if (fsBtn && container.dataset.vizFullscreen === "true") {
+        const enterIcon = fsBtn.querySelector(".viz-fs-enter");
+        const exitIcon = fsBtn.querySelector(".viz-fs-exit");
+
+        addTrackedListener(fsBtn, "click", (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (document.fullscreenElement === container) {
+            document.exitFullscreen().catch(() => {});
+          } else {
+            container.requestFullscreen().catch(() => {});
+          }
+        });
+
+        const handleFullscreenChange = () => {
+          const isFs = document.fullscreenElement === container;
+          if (isFs) {
+            enterIcon?.classList.add("hidden");
+            exitIcon?.classList.remove("hidden");
+            container.style.background = "var(--background)";
+            container.classList.add("p-4");
+          } else {
+            enterIcon?.classList.remove("hidden");
+            exitIcon?.classList.add("hidden");
+            container.style.background = "";
+            container.classList.remove("p-4");
+          }
+        };
+
+        // fullscreenchange 事件应该绑定到 document 而不是 container
+        addTrackedListener(document, "fullscreenchange", handleFullscreenChange);
+      }
+    });
+  }
+
+  const manager = getGlobalEventManager();
+  manager.onCleanup(cleanupListeners);
+
+  document.addEventListener("astro:page-load", initVizContainers);
+  window.addEventListener("viz:init", initVizContainers);
 
   function getIsDark(): boolean {
     return document.documentElement.getAttribute("data-theme") === "dark";
@@ -113,7 +275,7 @@
    */
   function createToolbarHTML(): string {
     return `
-      <div class="viz-controls absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 shadow-sm backdrop-blur-sm">
+      <div class="viz-controls absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
         <button
           class="viz-btn viz-zoom-in flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
           aria-label="Zoom in"
@@ -226,28 +388,37 @@
     container.appendChild(codeScript);
     container.appendChild(codeView);
     
-    // Add toolbar using innerHTML for cleaner code
+    // Add toolbar using innerHTML for cleaner code - CRITICAL: Add to container BEFORE replacing in DOM
     const toolbarContainer = document.createElement("div");
     toolbarContainer.innerHTML = createToolbarHTML();
     container.appendChild(toolbarContainer.firstElementChild!);
 
-    // Replace pre with container
+    // Replace pre with container - This adds to DOM
     pre.parentNode?.replaceChild(container, pre);
 
-    try {
-      renderCounter++;
-      const svgId = `${uniqueId}-svg-${renderCounter}`;
-      const { svg } = await mermaid.render(svgId, code);
-      output.innerHTML = svg;
-      
-      // Initialize viz controls for the new container
-      window.dispatchEvent(new CustomEvent("viz:init"));
-      
-      // Setup code toggle button
-      setupCodeToggle(container, output, codeView);
-    } catch (error) {
-      output.innerHTML = `<p class="mermaid-error">Render error: ${error instanceof Error ? error.message : "unknown"}</p>`;
-    }
+    // Use requestAnimationFrame to ensure DOM is ready before initializing controls
+    requestAnimationFrame(() => {
+      try {
+        renderCounter++;
+        const svgId = `${uniqueId}-svg-${renderCounter}`;
+        mermaid.render(svgId, code).then(({ svg }) => {
+          output.innerHTML = svg;
+          
+          // Setup code toggle button first
+          setupCodeToggle(container, output, codeView);
+          
+          // Initialize viz controls for the new container with a small delay
+          // to ensure DOM mutation is complete
+          Promise.resolve().then(() => {
+            window.dispatchEvent(new CustomEvent("viz:init"));
+          });
+        }).catch((error: Error) => {
+          output.innerHTML = `<p class="mermaid-error">Render error: ${error?.message || "unknown"}</p>`;
+        });
+      } catch (error) {
+        output.innerHTML = `<p class="mermaid-error">Render error: ${error instanceof Error ? error.message : "unknown"}</p>`;
+      }
+    });
   }
 
   /**
