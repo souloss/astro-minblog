@@ -13,29 +13,30 @@ function useMermaid(code: string): MermaidResult {
   const [svg, setSvg] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     setError(undefined);
-    
+
     import('mermaid')
       .then(async ({ default: mermaid }) => {
         if (!mounted) return;
-        
+
         try {
-          const isDark = typeof document !== 'undefined' && 
+          const isDark = typeof document !== 'undefined' &&
             document.documentElement.getAttribute('data-theme') === 'dark';
-          
+
+          // Initialize mermaid matching core implementation
           mermaid.initialize({
             startOnLoad: false,
             securityLevel: 'strict',
             theme: isDark ? 'dark' : 'default',
-          });
-          
+          } as any);
+
           const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
           const { svg: rendered } = await mermaid.render(id, code);
-          
+
           if (mounted) {
             setSvg(rendered);
             setLoading(false);
@@ -53,10 +54,10 @@ function useMermaid(code: string): MermaidResult {
           setLoading(false);
         }
       });
-    
+
     return () => { mounted = false; };
   }, [code]);
-  
+
   return { svg, loading, error };
 }
 
@@ -70,7 +71,7 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   const [showSource, setShowSource] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const showDiagram = !showSource;
-  
+
   // Stable key based on content hash for re-render persistence
   const contentKey = useMemo(() => {
     if (!code) return '';
@@ -82,18 +83,18 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     }
     return `mermaid-${Math.abs(hash).toString(36)}`;
   }, [code]);
-  
+
   const handleShowSource = useCallback(() => setShowSource(v => !v), []);
-  
+
   const handleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
     if (document.fullscreenElement === containerRef.current) {
       document.exitFullscreen();
     } else {
-      containerRef.current.requestFullscreen().catch(() => {});
+      containerRef.current.requestFullscreen().catch(() => { });
     }
   }, []);
-  
+
   useEffect(() => {
     const handleChange = () => {
       setIsFullscreen(document.fullscreenElement === containerRef.current);
@@ -102,17 +103,17 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     document.addEventListener('fullscreenchange', handleChange);
     return () => document.removeEventListener('fullscreenchange', handleChange);
   }, []);
-  
+
   // Escape key to close fullscreen
   useEffect(() => {
     if (!isFullscreen) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && document.fullscreenElement) {
         document.exitFullscreen();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isFullscreen]);
@@ -186,11 +187,11 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   const { scaledStyle, transformStyle } = useScaledCanvas(contentRef, scale, [svg, showSource, isFullscreen]);
   const effectiveScaledStyle = svgSize
     ? {
-        width: `${Math.max(1, Math.ceil(svgSize.width * scale))}px`,
-        height: `${Math.max(1, Math.ceil(svgSize.height * scale))}px`,
-      }
+      width: `${Math.max(1, Math.ceil(svgSize.width * scale))}px`,
+      height: `${Math.max(1, Math.ceil(svgSize.height * scale))}px`,
+    }
     : scaledStyle;
-  
+
   if (isStreaming || loading) {
     return (
       <div class="mermaid-block group relative overflow-hidden rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] p-3">
@@ -198,7 +199,7 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div class="mermaid-block">
@@ -209,20 +210,18 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       </div>
     );
   }
-  
+
   return (
-    <div 
+    <div
       ref={containerRef}
       key={contentKey}
-      class={`mermaid-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${
-        isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
-      }`}
+      class={`mermaid-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
+        }`}
       style={isFullscreen ? { background: 'var(--background)' } : undefined}
     >
       {showSource ? (
-        <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${
-          isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
-        }`}>
+        <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
+          }`}>
           <code>{code}</code>
         </pre>
       ) : (
@@ -231,11 +230,11 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
           class={`overflow-auto cursor-grab active:cursor-grabbing ${isFullscreen ? 'min-h-0 flex-1 pt-10' : 'max-h-[400px]'}`}
           onWheel={handleWheelZoom}
         >
-            <div class="flex min-h-full min-w-full items-start justify-center">
-              <div style={effectiveScaledStyle}>
-                <div
-                  ref={contentRef}
-                  class="origin-top-left transition-transform duration-200"
+          <div class="flex min-h-full min-w-full items-start justify-center">
+            <div style={effectiveScaledStyle}>
+              <div
+                ref={contentRef}
+                class="origin-top-left transition-transform duration-200"
                 style={transformStyle}
                 dangerouslySetInnerHTML={{ __html: svg }}
               />
@@ -243,7 +242,7 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
           </div>
         </div>
       )}
-      <VizToolbar 
+      <VizToolbar
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onReset={handleReset}

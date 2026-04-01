@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -30,6 +32,8 @@ import {
 import { SITE } from "./src/config";
 import { SOCIALS, SHARE_LINKS } from "./src/constants";
 import { FRIENDS } from "./src/data/friends";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const shikiTransformers = [
   updateStyle(),
@@ -144,21 +148,18 @@ export default defineConfig({
     plugins: [
       tailwindcss(),
       process.env.ANALYZE === "true" &&
-        visualizer({
-          open: true,
-          filename: "stats.html",
-          gzipSize: true,
-          brotliSize: true,
-        }),
+      visualizer({
+        open: true,
+        filename: "stats.html",
+        gzipSize: true,
+        brotliSize: true,
+      }),
       {
         name: "astro-minimax-media-resolver",
         enforce: "pre" as const,
         async resolveId(source, importer, options) {
           if (source.startsWith("@/components/media")) {
-            const vizDir = new URL(
-              "../../packages/core/src/components/viz",
-              import.meta.url
-            ).pathname;
+            const vizDir = resolve(__dirname, "../../packages/core/src/components/viz");
             return this.resolve(
               source.replace("@/components/media", vizDir),
               importer,
@@ -172,10 +173,10 @@ export default defineConfig({
       fs: {
         strict: true,
         allow: [
-          new URL("../../packages", import.meta.url).pathname,
-          new URL("../../node_modules", import.meta.url).pathname,
-          "./src",
-          "./.astro",
+          resolve(__dirname, "../../packages"),
+          resolve(__dirname, "../../node_modules"),
+          resolve(__dirname, "src"),
+          resolve(__dirname, ".astro"),
         ],
       },
       proxy: {
@@ -193,12 +194,9 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        "@/components/media": new URL(
-          "../../packages/core/src/components/viz",
-          import.meta.url
-        ).pathname,
+        "@/components/media": resolve(__dirname, "../../packages/core/src/components/viz"),
         // Base path alias for src/ directory
-        "@/": new URL("./src/", import.meta.url).pathname,
+        "@/": resolve(__dirname, "src") + "/",
         // React compatibility: redirect React imports to Preact compat layer.
         //
         // WHY: @ai-sdk/react imports from 'react' and 'react-dom'.

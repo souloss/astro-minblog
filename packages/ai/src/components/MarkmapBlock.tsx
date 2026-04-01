@@ -17,7 +17,7 @@ function useMarkmap(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const markmapInstanceRef = useRef<{ destroy?: () => void; fit?: () => void } | null>(null);
-  
+
   useEffect(() => {
     if (!code || !visible) {
       setLoading(false);
@@ -30,32 +30,32 @@ function useMarkmap(
     let mounted = true;
     setLoading(true);
     setError(undefined);
-    
+
     if (markmapInstanceRef.current?.destroy) {
       markmapInstanceRef.current.destroy();
       markmapInstanceRef.current = null;
     }
-    
+
     Promise.all([
       import('markmap-lib'),
       import('markmap-view'),
     ])
       .then(async ([markmapLib, markmapView]) => {
         if (!mounted) return;
-        
+
         try {
           const { Transformer } = markmapLib;
           const { Markmap } = markmapView;
-          
+
           const transformer = new Transformer();
           const { root } = transformer.transform(code);
-          
+
           const mm = new Markmap(svgEl);
           mm.setData(root);
           mm.fit();
-          
+
           markmapInstanceRef.current = mm as { destroy?: () => void };
-          
+
           if (mounted) {
             setLoading(false);
           }
@@ -72,15 +72,15 @@ function useMarkmap(
           setLoading(false);
         }
       });
-    
-    return () => { 
+
+    return () => {
       mounted = false;
       if (markmapInstanceRef.current?.destroy) {
         markmapInstanceRef.current.destroy();
       }
     };
   }, [code, visible]);
-  
+
   return { loading, error, markmapInstanceRef };
 }
 
@@ -98,31 +98,31 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    
+
     const observer = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.1 }
     );
-    
+
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
-  
+
   const resolvedCode = isStreaming ? '' : code;
   const { loading, error, markmapInstanceRef } = useMarkmap(svgRef, resolvedCode, isVisible);
   const showSkeleton = isStreaming || (loading && !error);
-  
+
   const handleShowSource = useCallback(() => setShowSource(v => !v), []);
-  
+
   const handleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
     if (document.fullscreenElement === containerRef.current) {
       document.exitFullscreen();
     } else {
-      containerRef.current.requestFullscreen().catch(() => {});
+      containerRef.current.requestFullscreen().catch(() => { });
     }
   }, []);
-  
+
   useEffect(() => {
     const handleChange = () => {
       setIsFullscreen(document.fullscreenElement === containerRef.current);
@@ -131,16 +131,16 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     document.addEventListener('fullscreenchange', handleChange);
     return () => document.removeEventListener('fullscreenchange', handleChange);
   }, []);
-  
+
   useEffect(() => {
     if (!isFullscreen) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && document.fullscreenElement) {
         document.exitFullscreen();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isFullscreen]);
@@ -193,13 +193,12 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   useDragPanScroll(viewportRef, showDiagram && !showSkeleton, [resolvedCode, isFullscreen, scale, showSkeleton]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      class={`markmap-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${
-        isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
-      }`}
-      style={{ 
-        background: isFullscreen ? 'var(--background)' : undefined 
+      class={`markmap-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
+        }`}
+      style={{
+        background: isFullscreen ? 'var(--background)' : undefined
       }}
     >
       {showSkeleton && <SkeletonLoader height="120px" />}
@@ -214,9 +213,8 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       {!error && (
         <>
           {showSource ? (
-            <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${
-              isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
-            }`}>
+            <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
+              }`}>
               <code>{code}</code>
             </pre>
           ) : (
@@ -228,13 +226,21 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
               <div class="flex min-h-full min-w-full items-start justify-center">
                 <div style={{ ...scaledStyle, display: showSkeleton ? 'none' : undefined }}>
                   <div ref={contentRef} class="markmap-content transition-transform duration-200" style={transformStyle}>
-                    <svg ref={svgRef} class="markmap-svg block" style={{ minHeight: '200px' }} />
+                    <svg
+                      ref={svgRef}
+                      class="markmap-svg block"
+                      style={{
+                        minHeight: '200px',
+                        width: '100%',
+                        height: isFullscreen ? '100%' : 'auto'
+                      }}
+                    />
                   </div>
                 </div>
               </div>
             </div>
           )}
-          <VizToolbar 
+          <VizToolbar
             onZoomIn={handleZoomIn}
             onZoomOut={handleZoomOut}
             onReset={handleReset}
