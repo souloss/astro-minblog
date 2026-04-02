@@ -580,15 +580,13 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
           }`}>
             {isMockMode ? t('ai.header.mode', lang) : t('ai.status.live', lang)}
           </span>
-          {process.env.NODE_ENV === 'development' && sessionId && (
-            <span 
-              class="rounded-full px-1.5 py-px text-[10px] font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 cursor-pointer hover:bg-blue-500/25"
-              title="Click to open debug trace"
-              onClick={() => window.open(`/api/ai-debug?session_id=${sessionId}`, '_blank')}
-            >
-              SID:{sessionId.slice(0, 8)}
-            </span>
-          )}
+          <span
+            class="group relative rounded-full px-1.5 py-px text-[10px] font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+            title="Click to open debug trace"
+            onClick={() => window.open(`/api/ai-debug?session_id=${sessionId}`, '_blank')}
+          >
+            {sessionId && sessionId.slice(0, 8)}
+          </span>
         </div>
         <div class="flex items-center gap-0.5">
           <div class="flex items-center gap-0.5 rounded-md border border-border bg-muted/30 p-0.5">
