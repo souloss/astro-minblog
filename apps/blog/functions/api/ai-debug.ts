@@ -6,7 +6,7 @@ import {
 } from "./shared-ai-env";
 import { errors } from "@astro-minimax/ai/server";
 
-const SESSION_ID_PATTERN = /^[a-z0-9][a-z0-9_-]{7,63}$/i;
+const SESSION_ID_PATTERN = /^[a-z0-9][a-z0-9_:-]{7,63}$/i;
 
 export const onRequest: PagesFunction<FunctionEnv> = async context => {
   const env = createAiFunctionEnv(context.env);
