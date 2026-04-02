@@ -28,8 +28,41 @@ import {
 } from "../search/index.js";
 import { createLogger } from "../utils/logger.js";
 import { extractCodeAnchors } from "../utils/text.js";
+import type { ArticleChunk, ChunkMatchResult } from "../search/hybrid-search.js";
 
 const log = createLogger("prompt-runtime");
+
+const SHORT_ARTICLE_THRESHOLD = 5000;
+const SHORT_ARTICLE_MAX_TOKENS = 6000;
+const LEAD_PAIR_LEAD_BUDGET = 1500;
+
+function isShortArticle(totalTokens?: number): boolean {
+  return (totalTokens ?? 0) <= SHORT_ARTICLE_THRESHOLD;
+}
+
+function injectLeadParagraphs(
+  chunks: ArticleChunk[],
+  budget: number
+): ChunkMatchResult[] {
+  if (!chunks.length) return [];
+  const leads: ChunkMatchResult[] = [];
+  let usedTokens = 0;
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
+    const isFirst = i === 0;
+    const isLast = i === chunks.length - 1 && i !== 0;
+    if (!isFirst && !isLast) continue;
+    const chunkTokens = chunk.tokenCount ?? Math.ceil(chunk.content.length / 2);
+    if (usedTokens + chunkTokens > budget) break;
+    leads.push({
+      article: { id: chunk.postId, title: "", url: "", chunks: [], keyPoints: [], categories: [], dateTime: 0 },
+      chunk,
+      score: isFirst ? 999 : 998,
+    });
+    usedTokens += chunkTokens;
+  }
+  return leads;
+}
 
 interface BuildRuntimeSystemPromptArgs {
   env: Record<string, unknown>;
@@ -238,7 +271,7 @@ export async function assemblePromptRuntime(
     (a): a is ArticleContext => Boolean(a.chunks && a.chunks.length > 0)
   );
   if (articleSlugForChunks) {
-    currentArticleIdForChunks =
+    const currentArticleId =
       articlesWithChunks.find(
         article =>
           article.id === articleSlugForChunks ||
@@ -251,15 +284,6 @@ export async function assemblePromptRuntime(
           : getArticleChunks(`en/${articleSlugForChunks}`)
             ? `en/${articleSlugForChunks}`
             : undefined);
-
-    const currentArticleId =
-      getArticleChunks(articleSlugForChunks)
-        ? articleSlugForChunks
-        : getArticleChunks(`zh/${articleSlugForChunks}`)
-          ? `zh/${articleSlugForChunks}`
-          : getArticleChunks(`en/${articleSlugForChunks}`)
-            ? `en/${articleSlugForChunks}`
-            : undefined;
     const currentChunks = currentArticleId
       ? getArticleChunks(currentArticleId)
       : undefined;
@@ -301,14 +325,33 @@ export async function assemblePromptRuntime(
       ? CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE * 2
       : CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE;
     const rawAnchors = extractCodeAnchors(latestText);
+    const articleTotalTokens = context.article?.totalTokens;
+    const shortArticle = isShortArticle(articleTotalTokens);
+    const effectiveMaxTokens = shortArticle
+      ? SHORT_ARTICLE_MAX_TOKENS
+      : CHUNK_INJECTION.MAX_TOKENS;
 
-    const matchedChunks = selectRelevantChunks(latestText, articlesWithChunks, {
-      maxTokens: CHUNK_INJECTION.MAX_TOKENS,
-      minChunkScore: CHUNK_INJECTION.MIN_CHUNK_SCORE,
-      maxChunksPerArticle,
+    let matchedChunks = selectRelevantChunks(latestText, articlesWithChunks, {
+      maxTokens: effectiveMaxTokens,
+      minChunkScore: shortArticle ? 0.1 : CHUNK_INJECTION.MIN_CHUNK_SCORE,
+      maxChunksPerArticle: shortArticle ? 10 : maxChunksPerArticle,
       rawAnchors,
       currentArticleId: currentArticleIdForChunks,
     });
+
+    if (shortArticle && currentArticleIdForChunks) {
+      const currentArticle = articlesWithChunks.find(
+        a => a.id === currentArticleIdForChunks
+      );
+      if (currentArticle?.chunks?.length) {
+        const leads = injectLeadParagraphs(currentArticle.chunks, LEAD_PAIR_LEAD_BUDGET);
+        if (leads.length > 0) {
+          const leadIds = new Set(leads.map(l => l.chunk.id));
+          const nonLeadMatches = matchedChunks.filter(m => !leadIds.has(m.chunk.id));
+          matchedChunks = [...leads, ...nonLeadMatches];
+        }
+      }
+    }
     const effectiveMatches =
       articleSlugForChunks && latestText.length <= 48
         ? expandChunkMatchesWithNeighbors(matchedChunks, {

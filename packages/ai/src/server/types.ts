@@ -17,6 +17,8 @@ export interface ArticleChatContext {
   abstract?: string;
   keyPoints?: string[];
   relatedSlugs?: string[];
+  /** 文章总 token 数，用于判断是否短文章全文召回 */
+  totalTokens?: number;
 }
 
 // ── Request / Response ────────────────────────────────────────

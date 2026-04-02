@@ -89,7 +89,7 @@ export default function minimax(
 
         const cssLines: string[] = [
           '@import "tailwindcss";',
-          `@source "${srcDir}";`,
+          `@source "${srcDir.replace(/\\/g, "/")}";`,
           '@import "@astro-minimax/core/styles/source.css";',
         ];
 

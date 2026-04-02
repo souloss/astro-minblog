@@ -37,11 +37,14 @@ export function parseInlineMarkdownRobust(text: string): InlinePart[] {
       }
     }
     
-    // 检测粗体开始
     if (text.slice(i, i + 2) === '**') {
-      const boldEnd = text.indexOf('**', i + 2);
+      const afterFirstMarker = text.slice(i + 2);
+      const skipCount = (afterFirstMarker.match(/^\*+/) ?? [''])[0].length;
+      const searchStart = i + 2 + skipCount;
+      const boldEnd = text.indexOf('**', searchStart);
       if (boldEnd !== -1) {
-        parts.push({ type: 'bold', text: text.slice(i + 2, boldEnd) });
+        const boldContent = text.slice(searchStart, boldEnd);
+        parts.push({ type: 'bold', text: boldContent });
         i = boldEnd + 2;
         continue;
       }

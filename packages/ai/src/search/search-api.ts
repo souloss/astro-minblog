@@ -20,14 +20,13 @@ import type {
   ArticleContext,
   ProjectContext,
 } from "./types.js";
+import { SEARCH } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
 
 // Lazy-initialized, cached indexes
 let articleIndex: IndexedDocument[] | null = null;
 let projectIndex: IndexedDocument[] | null = null;
 let articleChunks: Map<string, ArticleChunk[]> = new Map(); // postId -> chunks
-
-import { SEARCH } from "../constants.js";
-import { createLogger } from "../utils/logger.js";
 
 const log = createLogger("search");
 

@@ -1,3 +1,9 @@
+import { MemoryCacheAdapter } from "./memory-adapter.js";
+import { KVCacheAdapter } from "./kv-adapter.js";
+import type { CacheAdapter, CacheEnv, CacheManagerConfig } from "./types.js";
+import { CACHE } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
+
 export {
   MemoryCacheAdapter,
   type MemoryCacheOptions,
@@ -47,13 +53,6 @@ export {
 } from "./response-cache.js";
 
 export { injectionCache, type InjectionCacheEntry } from "./injection-cache.js";
-
-import { MemoryCacheAdapter } from "./memory-adapter.js";
-import { KVCacheAdapter } from "./kv-adapter.js";
-import type { CacheAdapter, CacheEnv, CacheManagerConfig } from "./types.js";
-
-import { CACHE } from "../constants.js";
-import { createLogger } from "../utils/logger.js";
 
 const log = createLogger("cache");
 
@@ -130,6 +129,6 @@ function isKVNamespace(value: unknown): value is KVNamespace {
 function parseTtl(value: string | number | undefined): number | undefined {
   if (value === undefined) return undefined;
   if (typeof value === "number") return value;
-  const parsed = parseInt(value, 10);
+  const parsed = parseInt(value as string, 10);
   return isNaN(parsed) ? undefined : parsed;
 }

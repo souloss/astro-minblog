@@ -7,20 +7,15 @@
  * 默认 k=60，源自 Cormack, Clarke, Buettcher 2009 论文。
  */
 
-import type { ArticleContext } from "./types.js";
+import type { ArticleContext, ArticleChunk } from "./types.js";
 import { tokenize, normalizeText, extractCodeAnchors } from "../utils/text.js";
+import { createLogger } from "../utils/logger.js";
+
+export type { ArticleChunk } from "./types.js";
+
+const log = createLogger("hybrid-search");
 
 // ─── 类型定义 ─────────────────────────────────────────────────────
-
-export interface ArticleChunk {
-  id: string;
-  postId: string;
-  heading: string;
-  content: string;
-  position: number;
-  tokenCount: number;
-  headers: Record<string, string>;
-}
 
 export interface ArticleWithChunks extends ArticleContext {
   chunks?: ArticleChunk[];
@@ -29,10 +24,6 @@ export interface ArticleWithChunks extends ArticleContext {
 export interface RRFConfig {
   /** RRF 常数 k，默认 60 */
   k?: number;
-  /** BM25/TF-IDF 权重，默认 0.5 */
-  bm25Weight?: number;
-  /** 向量权重，默认 0.5 */
-  vectorWeight?: number;
   /** 返回数量，默认 10 */
   topK?: number;
 }
@@ -130,21 +121,21 @@ export function hybridSearch(
   const rrfScores = reciprocalRankFusion([bm25Ranking, vectorRanking], k);
 
   // 构建最终结果
-  const bm25Map = new Map(bm25Results.map(r => [r.url, r]));
+  const bm25Map = new Map(bm25Results.map((r, i) => [r.url, { result: r, index: i + 1 }]));
   const vectorMap = new Map(vectorResults.map((r, i) => [r.url, i + 1]));
 
   const results: HybridSearchResult[] = [];
   let rank = 1;
 
   for (const [url, rrfScore] of rrfScores) {
-    const bm25Result = bm25Map.get(url);
+    const bm25Entry = bm25Map.get(url);
     const vectorRank = vectorMap.get(url);
 
-    if (bm25Result) {
+    if (bm25Entry) {
       results.push({
-        ...bm25Result,
+        ...bm25Entry.result,
         rrfScore,
-        bm25Rank: bm25Results.findIndex(r => r.url === url) + 1,
+        bm25Rank: bm25Entry.index,
         vectorRank,
       });
     }
@@ -261,14 +252,12 @@ export function computeChunkRelevance(
     }
   }
 
-  // 内容匹配
-  let contentMatches = 0;
-  for (const token of queryTokens) {
-    if (contentTokens.some(c => c.includes(token) || token.includes(c))) {
-      contentMatches++;
-    }
-  }
-  score += (contentMatches / queryTokens.length) * 1.5;
+  // 内容匹配 - 使用绝对匹配数替代比率，对长查询更公平
+  const contentMatches = queryTokens.filter(token =>
+    contentTokens.some(c => c.includes(token) || token.includes(c))
+  ).length;
+  const contentRatio = Math.min(contentMatches / queryTokens.length, 0.8);
+  score += contentRatio * 2.0;
 
   // 标题层级加成
   if (chunk.headers.H1 || chunk.headers.H2) {
@@ -398,18 +387,27 @@ function extractLikelyQuotedText(query: string): string {
  *
  * @param matches - 段落匹配结果
  * @param maxTokens - 最大 token 数，默认 2000
+ * @param defaultContentLimit - 每个段落内容的最大字符数，默认 1500
  */
 export function formatChunksForInjection(
   matches: ChunkMatchResult[],
-  maxTokens: number = 2000
+  maxTokens: number = 2000,
+  defaultContentLimit: number = 1500
 ): string {
   if (!matches.length) return "";
+
+  // 动态计算每个段落的内容限制
+  // 80% 的 token 预算给段落内容，20% 给标题和来源等开销
+  const perChunkContentLimit = Math.min(
+    defaultContentLimit,
+    Math.floor((maxTokens * 0.8) / matches.length)
+  );
 
   const lines: string[] = [];
   let totalTokens = 0;
 
   for (const match of matches) {
-    const chunkText = formatChunkForInjection(match);
+    const chunkText = formatChunkForInjection(match, perChunkContentLimit);
     const chunkTokens = estimateTokens(chunkText);
 
     if (totalTokens + chunkTokens > maxTokens) break;
@@ -421,12 +419,20 @@ export function formatChunksForInjection(
   return lines.join("\n\n");
 }
 
-function formatChunkForInjection(match: ChunkMatchResult): string {
+function formatChunkForInjection(
+  match: ChunkMatchResult,
+  contentLimit: number = 1500
+): string {
   const { article, chunk } = match;
   const heading = chunk.heading ? `【${chunk.heading}】` : "";
   const source = `来源: [${article.title}](${article.url})`;
 
-  return `${heading}\n${chunk.content.slice(0, 500)}\n\n${source}`;
+  // 根据动态计算的 contentLimit 限制内容长度
+  const truncatedContent = chunk.content.length > contentLimit
+    ? chunk.content.slice(0, contentLimit) + "..."
+    : chunk.content;
+
+  return `${heading}\n${truncatedContent}\n\n${source}`;
 }
 
 function estimateTokens(text: string): number {
@@ -540,7 +546,7 @@ export function expandChunkMatchesWithNeighbors(
     const push = (candidate: ChunkMatchResult | undefined) => {
       if (!candidate) return;
       if (seen.has(candidate.chunk.id)) return;
-      if (candidate !== match && !candidateHasAnchor(candidate)) return;
+      if (candidate !== match && rawAnchors.length > 0 && !candidateHasAnchor(candidate)) return;
       seen.add(candidate.chunk.id);
       expanded.push(candidate);
     };
@@ -555,7 +561,7 @@ export function expandChunkMatchesWithNeighbors(
       push({
         article: match.article,
         chunk: articleChunks[index - 1],
-        score: match.score * 0.85,
+        score: match.score * 0.9,
       });
     }
 
@@ -563,7 +569,7 @@ export function expandChunkMatchesWithNeighbors(
       push({
         article: match.article,
         chunk: articleChunks[index + 1],
-        score: match.score * 0.9,
+        score: match.score * 0.85,
       });
     }
   }
@@ -572,6 +578,3 @@ export function expandChunkMatchesWithNeighbors(
     (a, b) => b.score - a.score || a.chunk.position - b.chunk.position
   );
 }
-import { createLogger } from "../utils/logger.js";
-
-const log = createLogger("hybrid-search");

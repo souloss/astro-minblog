@@ -125,6 +125,15 @@ function escapeHtml(text: string): string {
 export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
   const normalizedLang = normalizeCodeBlockLang(lang);
 
+  // For mermaid/markmap, pass empty code to avoid loading shiki, but still call hook at top level
+  const shikiCode = (normalizedLang === "mermaid" || normalizedLang === "markmap" || normalizedLang === "mindmap")
+    ? ""
+    : code;
+
+  // ALWAYS call hooks at top level - Rules of Hooks violation if called conditionally
+  const { html, loading, error } = useShikiHighlighter(shikiCode, lang);
+
+  // Handle special languages with early returns AFTER hook calls
   if (normalizedLang === "mermaid") {
     return <MermaidBlock code={code} isStreaming={isStreaming} />;
   }
@@ -133,11 +142,7 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
     return <MarkmapBlock code={code} isStreaming={isStreaming} />;
   }
 
-  const { html, loading, error } = useShikiHighlighter(
-    isStreaming ? "" : code,
-    lang
-  );
-
+  // Regular code block rendering using hook results
   if (isStreaming || loading) {
     return (
       <div class="code-block-wrapper group relative">
@@ -180,7 +185,11 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
           {lang}
         </span>
       )}
-      <CopyButton code={code} />
+      {error && (
+        <span class="text-accent absolute bottom-1 right-2 text-[10px]">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

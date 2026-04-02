@@ -4,6 +4,8 @@
  * 用于多轮对话中去重已注入的段落，避免重复注入浪费 token。
  */
 
+import { createLogger } from "../utils/logger.js";
+
 export interface InjectionCacheEntry {
   sessionId: string;
   injectedChunks: Set<string>;
@@ -117,6 +119,5 @@ class InjectionCacheManager {
 }
 
 export const injectionCache = new InjectionCacheManager();
-import { createLogger } from "../utils/logger.js";
 
 const log = createLogger("injection-cache");

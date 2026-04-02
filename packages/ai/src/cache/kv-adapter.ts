@@ -5,6 +5,7 @@ import type {
   CacheSetOptions,
   CacheGetOptions,
 } from './types.js';
+import { CACHE } from '../constants.js';
 
 interface KVStoredEntry<T> {
   value: T;
@@ -15,8 +16,6 @@ export interface KVCacheOptions {
   defaultTtl?: number;
   prefix?: string;
 }
-
-import { CACHE } from '../constants.js';
 
 const DEFAULT_TTL_SECONDS = CACHE.DEFAULT_TTL;
 const MIN_TTL_SECONDS = 60;

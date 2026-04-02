@@ -1,133 +1,58 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-30T06:33:23.430Z",
-    "model": "gpt-5.4",
-    "generatedBy": "ai"
+    "lastUpdated": "2026-04-01T19:30:09.726Z",
+    "model": "rule-based-template",
+    "generatedBy": "rule-based"
   },
   "report": {
     "hero": {
-      "title": "AI 视角下的作者",
-      "summary": "该作者围绕 astro-minimax 持续输出中英双语技术文档，主题集中在 AI 能力、配置体系、安全加固与工程实践。其内容呈现出明显的产品化文档写作取向，强调架构拆解、配置说明、故障规避与可操作性。",
-      "intro": "从已选文章看，作者更像是面向开发者的产品作者或技术文档维护者，而非单纯的观点型博主。其写作对象主要是使用或接入 astro-minimax 的开发者，文章常围绕“如何配置”“如何更新”“系统如何工作”“遇到问题如何降低风险”等实际需求展开。中英文内容同步发布，也显示其有意服务不同语言背景的技术读者。"
+      "title": "AI 视角下的 博主",
+      "summary": "一位专注于领域的博主，持续输出高质量内容。",
+      "intro": "博客已发布 0 篇文章，涵盖 0 个主题标签。"
     },
     "identities": [
       {
-        "name": "技术文档型作者",
-        "description": "作者长期围绕产品功能、配置方法与技术模块输出说明性内容，写作目标偏向帮助读者理解和使用系统。",
-        "evidence": "多篇文章分类为“教程/配置”“Tutorial/Configuration”“教程/AI”，标题直接对应配置指南、设置面板、安全加固、搜索配置等文档主题。"
+        "name": "技术博主",
+        "description": "持续分享技术经验与实践心得。",
+        "evidence": "已发布 0 篇文章。"
       },
       {
-        "name": "AI 功能与架构说明者",
-        "description": "作者对 AI 模块的能力边界、调用机制与底层架构有持续而系统的表达，说明其关注 AI 在产品中的工程化落地。",
-        "evidence": "已发布《AI Tool Calling 与 Action 系统》《@astro-minimax/ai 模块技术架构详解》及其英文版，内容涉及 Tool Calling、RAG、SSE、多供应商切换与降级容错。"
-      },
-      {
-        "name": "工程实践导向的维护者",
-        "description": "作者关注升级流程、安全防护与配置稳定性，内容明显服务于项目维护和实际部署场景。",
-        "evidence": "《安全加固指南》《如何更新 astro-minimax 的依赖》均强调分层升级、完整测试、冲突处理和多层安全措施。"
-      },
-      {
-        "name": "双语技术内容生产者",
-        "description": "作者稳定提供中文与英文对应内容，具备面向国际化读者组织同主题材料的能力。",
-        "evidence": "样本中多组文章以中英文双版本同时出现，如 AI Tool Calling、搜索配置、安全加固、AI 架构、设置面板、依赖更新。"
+        "name": "内容创作者",
+        "description": "注重内容质量与读者体验。",
+        "evidence": ""
       }
     ],
     "strengths": [
       {
-        "title": "擅长把复杂系统拆解为可理解的模块",
+        "title": "内容深度",
         "points": [
-          "在 AI 架构主题中，能将分层架构、检索链路、供应商管理、流式响应与容错机制拆成明确部分。",
-          "对功能说明不只停留在概念层，而会进一步交代构成关系与运行路径。",
-          "适合撰写系统设计说明、模块介绍和能力边界文档。"
+          "文章结构清晰，逻辑性强",
+          "注重实践，配合代码示例",
+          "持续更新，覆盖多个技术领域"
         ]
       },
       {
-        "title": "重视可操作性与落地细节",
+        "title": "表达风格",
         "points": [
-          "配置类文章通常直接对应用户操作入口、配置项、持久化方式和分享方式。",
-          "工程化文章强调升级步骤、版本分层、Git 合并和测试要求，具备明确的执行导向。",
-          "能把“知道是什么”延伸到“具体怎么做”。"
-        ]
-      },
-      {
-        "title": "具有稳定的产品文档意识",
-        "points": [
-          "内容覆盖 AI、搜索、设置、安全、依赖更新等多个使用环节，呈现较完整的产品知识体系。",
-          "文档主题既包括新功能介绍，也包括长期维护中的安全与升级问题。",
-          "标签分布集中于 docs、configuration、ai、architecture、security、tools，显示内容组织较成体系。"
-        ]
-      },
-      {
-        "title": "兼顾技术表达与读者成本",
-        "points": [
-          "即使讨论 RAG、TF-IDF、Provider Manager 等技术主题，摘要仍保持问题导向和结果导向。",
-          "文章常从使用场景切入，再过渡到实现方式，降低读者理解门槛。",
-          "中英文同步表达说明其有能力统一术语并控制信息一致性。"
+          "语言简洁明了",
+          "注重可读性",
+          "善于总结提炼"
         ]
       }
     ],
     "styles": [
       {
-        "trait": "说明型",
-        "description": "标题和摘要多直接指向功能、模块或流程，强调解释系统是什么、如何配置、如何使用。"
+        "trait": "技术导向",
+        "description": "专注于技术内容的深度讲解与实践分享。"
       },
       {
-        "trait": "结构化",
-        "description": "文章信息组织清晰，常以功能点、链路、层次、步骤等方式展开，便于检索和复用。"
-      },
-      {
-        "trait": "工程导向",
-        "description": "内容经常涉及性能、稳定性、降级、故障处理、安全与升级风险，重视系统在真实环境中的可维护性。"
-      },
-      {
-        "trait": "克制务实",
-        "description": "表述更偏事实说明与能力边界描述，少见情绪化表达，整体风格接近产品文档或技术说明书。"
-      },
-      {
-        "trait": "双语同步",
-        "description": "中英文版本在主题上高度对应，体现其写作策略偏向统一文档资产，而非零散发布。"
+        "trait": "结构化表达",
+        "description": "文章结构清晰，便于读者理解和学习。"
       }
     ],
     "proofs": {
-      "posts": [
-        {
-          "title": "@astro-minimax/ai 模块技术架构详解",
-          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/ai-module-architecture/",
-          "reason": "可直接支撑其具备 AI 架构拆解与工程说明能力，内容涉及 RAG、SSE、多供应商切换、检索与提示构建。",
-          "date": "2026-03-21"
-        },
-        {
-          "title": "AI Tool Calling 与 Action 系统",
-          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/ai-tool-calling/",
-          "reason": "说明其关注 AI 从对话到执行动作的产品化能力，写作对象明显是需要理解功能机制的开发者。",
-          "date": "2026-03-30"
-        },
-        {
-          "title": "安全加固指南",
-          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/security-guide/",
-          "reason": "体现其重视安全治理的系统性，不将安全视为单点功能，而是覆盖前端、AI、CLI 与通知系统的综合措施。",
-          "date": "2026-03-30"
-        },
-        {
-          "title": "搜索功能配置指南",
-          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/search-guide/",
-          "reason": "体现其配置文档写作能力，能根据不同搜索方案的适用场景进行说明与取舍。",
-          "date": "2026-03-30"
-        },
-        {
-          "title": "设置面板与偏好设置",
-          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/settings-panel/",
-          "reason": "说明其善于将界面入口、配置项、持久化机制和分享方式整合为面向用户的操作文档。",
-          "date": "2026-03-21"
-        },
-        {
-          "title": "如何更新 astro-minimax 的依赖",
-          "url": "https://demo-astro-minimax.souloss.cn/zh/posts/how-to-update-dependencies/",
-          "reason": "体现其工程实践取向，强调版本升级分层、模板合并、冲突解决和测试要求，具有维护者视角。",
-          "date": "2026-03-20"
-        }
-      ]
+      "posts": []
     },
-    "disclaimer": "本画像仅基于提供的站点样本、已选文章、标签与分类信息生成，反映的是其公开内容中的写作倾向与主题重心，不等同于作者完整职业背景、个人经历或全部能力范围。"
+    "disclaimer": "该页面由 AI 归纳与规则模板联合生成，旨在帮助访客快速建立认知，可能存在概括偏差，请以原始文章信息为准。"
   }
 }

@@ -4,12 +4,9 @@ import type {
 } from "./types.js";
 import { MemoryCacheAdapter } from "../cache/memory-adapter.js";
 import { createLogger } from "../utils/logger.js";
-
-export {
-  type CachedSearchContext,
-} from "./types.js";
-
 import { CACHE } from "../constants.js";
+
+export type { CachedSearchContext } from "./types.js";
 
 const log = createLogger("session-cache");
 

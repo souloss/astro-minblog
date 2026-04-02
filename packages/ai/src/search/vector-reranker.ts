@@ -7,6 +7,7 @@
  */
 
 import type { ArticleContext } from "./types.js";
+import { createLogger } from "../utils/logger.js";
 
 // ── Vector Index Types (mirrors cli/lib/vectors.ts) ──────────
 
@@ -196,6 +197,4 @@ function extractSlugFromUrl(url: string): string {
   if (match) return `${match[1]}/${match[2]}`;
   return path.replace(/^\/|\/$/g, "");
 }
-import { createLogger } from "../utils/logger.js";
-
 const log = createLogger("vector-reranker");
