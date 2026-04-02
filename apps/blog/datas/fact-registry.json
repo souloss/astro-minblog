@@ -1,13 +1,13 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-04-01T19:30:07.595Z",
+  "generatedAt": "2026-04-02T16:19:52.775Z",
   "version": 1,
   "facts": [
     {
       "id": "author-name",
       "category": "author",
       "statement": "博客作者名为 Souloss",
-      "evidence": "src/config.ts → SITE.author",
+      "evidence": "author-context.json → profile.name",
       "source": "explicit",
       "confidence": 1,
       "tags": [
@@ -15,7 +15,7 @@
         "名字",
         "author",
         "name",
-        "Souloss"
+        "souloss"
       ],
       "lang": "zh"
     },
@@ -23,13 +23,13 @@
       "id": "author-name-en",
       "category": "author",
       "statement": "The blog author is Souloss",
-      "evidence": "src/config.ts → SITE.author",
+      "evidence": "author-context.json → profile.name",
       "source": "explicit",
       "confidence": 1,
       "tags": [
         "author",
         "name",
-        "Souloss"
+        "souloss"
       ],
       "lang": "en"
     },
@@ -37,7 +37,7 @@
       "id": "author-site",
       "category": "author",
       "statement": "博客网址为 https://demo-astro-minimax.souloss.cn",
-      "evidence": "src/config.ts → SITE.website",
+      "evidence": "author-context.json → profile.siteUrl",
       "source": "explicit",
       "confidence": 1,
       "tags": [
@@ -45,16 +45,15 @@
         "URL",
         "site",
         "url",
-        "博客",
-        "Souloss"
+        "博客"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 44 篇文章（中文 44 篇，英文 0 篇）",
-      "evidence": "ai-summaries.json → totalProcessed: 44",
+      "statement": "博客共有 0 篇文章（中文 0 篇，英文 0 篇）",
+      "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
       "tags": [
@@ -73,8 +72,8 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 44 posts (44 in Chinese, 0 in English)",
-      "evidence": "ai-summaries.json → totalProcessed: 44",
+      "statement": "The blog has 0 posts (0 in Chinese, 0 in English)",
+      "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
       "tags": [

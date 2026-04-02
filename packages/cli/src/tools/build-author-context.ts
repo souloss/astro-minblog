@@ -100,7 +100,8 @@ async function collectMarkdownFiles(
   const files: string[] = [];
 
   for (const entry of entries) {
-    const fullPath = join(dir, entry.name);
+    // Normalize path separators for Windows compatibility
+    const fullPath = join(dir, entry.name).replace(/\\/g, "/");
     if (
       entry.isDirectory() &&
       (options.includeUnderscoreDirs || !entry.name.startsWith("_"))
@@ -153,7 +154,10 @@ async function collectPosts(
     // 跳过没有标题或日期的文章，以及草稿
     if (!data.title || !data.pubDatetime || data.draft) continue;
 
-    const relativePath = filePath.replace(BLOG_DIR + "/", "");
+    // Normalize path separators for Windows compatibility
+    const normalizedFilePath = filePath.replace(/\\/g, "/");
+    const normalizedBlogDir = BLOG_DIR.replace(/\\/g, "/");
+    const relativePath = normalizedFilePath.replace(normalizedBlogDir + "/", "");
     const lang = relativePath.startsWith("en/") ? "en" : "zh";
     const id = relativePath.replace(/\.md$/, "");
 

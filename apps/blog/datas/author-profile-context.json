@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-04-01T19:30:09.721Z",
-  "siteUrl": "https://example.com",
+  "generatedAt": "2026-04-02T16:19:54.525Z",
+  "siteUrl": "https://demo-astro-minimax.souloss.cn",
   "sourceInfo": {
     "totalPosts": 0,
     "zhPosts": 0,
@@ -8,8 +8,8 @@
     "selectedPosts": 0
   },
   "profile": {
-    "name": "博主",
-    "siteUrl": "https://example.com"
+    "name": "Souloss",
+    "siteUrl": "https://demo-astro-minimax.souloss.cn"
   },
   "posts": [],
   "topTags": [],

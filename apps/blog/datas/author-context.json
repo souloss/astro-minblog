@@ -1,10 +1,10 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-04-02T12:00:00.000Z",
+  "generatedAt": "2026-04-02T16:19:50.176Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn",
-    "description": "A minimal, responsive and SEO-friendly Astro blog theme."
+    "description": ""
   },
   "posts": [],
   "stableFacts": {
@@ -12,8 +12,8 @@
     "recurringTopics": [],
     "flagshipPosts": [],
     "contentFootprint": {
-      "posts": 44,
-      "zhPosts": 44,
+      "posts": 0,
+      "zhPosts": 0,
       "enPosts": 0
     },
     "topTags": []
@@ -21,6 +21,9 @@
   "timelineFacts": {
     "latestPosts": []
   },
-  "aiConfig": null,
-  "contextHash": "ba7b32961af96fec"
+  "aiConfig": {
+    "model": "MiniMax-M2.7-highspeed",
+    "provider": "openai"
+  },
+  "contextHash": "63553152124c7025"
 }

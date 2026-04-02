@@ -51,7 +51,10 @@ export async function getAllPosts(opts?: {
 
         if (isDraft && !opts?.includeDrafts) continue;
 
-        const relativePath = fullPath.replace(BLOG_PATH + "/", "");
+        // Normalize path separators for Windows compatibility
+        const normalizedFullPath = fullPath.replace(/\\/g, "/");
+        const normalizedBlogPath = BLOG_PATH.replace(/\\/g, "/");
+        const relativePath = normalizedFullPath.replace(normalizedBlogPath + "/", "");
         const lang = relativePath.startsWith("en/") ? "en" : "zh";
         const id = relativePath.replace(/\.(md|mdx)$/, "");
 
