@@ -10,7 +10,6 @@ type PromptContent = {
   sourceLayers: string[];
   privacyProtection: string[];
   answerModes: string[];
-  preOutputChecks: string[];
 };
 
 const PROMPTS: Record<string, PromptContent> = {
@@ -48,31 +47,20 @@ const PROMPTS: Record<string, PromptContent> = {
       '任何数字和事实必须在可见的检索内容中有明确依据',
     ],
     sourceLayers: [
-      'L1 原始博客内容：「相关文章」中的标题、摘要、要点、正文节选（最高优先级）',
-      'L2 策划数据：作者简介、项目列表、博客概况',
-      'L3 结构化事实：标签统计、分类聚合等推导数据',
-      'L4 外部验证来源：官方文档、GitHub 仓库、权威外部来源（需标注引用）',
-      'L5 语言风格：仅影响表达方式，不作为事实依据',
-      '当不同来源冲突时，L1 > L2 > L3 > L4 > L5',
-      'L1 内容必须来自「相关文章」部分，禁止凭空编造',
+      '事实优先级：相关文章原文 > 博客数据 > 外部资源',
+      '禁止编造链接或数字，所有信息必须有据可查',
     ],
     privacyProtection: [
-      '拒绝回答住址、地址、收入、工资、家庭成员等私人敏感信息',
-      '对于博客未公开的个人信息，回复「这个信息未在博客中公开」',
+      '拒绝回答住址、收入、家庭成员等私人问题',
+      '未公开信息回复"未在博客中公开"',
     ],
     answerModes: [
-      'fact（事实）：先给结论，再补依据；如有直接对应的文章，点明标题或给出链接',
-      'list（列表）：直接列 2-6 项同一维度的内容',
-      'count（计数）：第一句先说数字或「至少 X」，禁止伪精确',
-      'opinion（观点）：先「我觉得/我的看法是」，再用 2-3 个观点展开',
-      'recommendation（推荐）：先给 2-4 个推荐项，再说明理由',
-      'unknown（未知/隐私）：第一句必须包含「未公开」或「不提供」，1-2 句收尾',
-    ],
-    preOutputChecks: [
-      '将输出链接 → 检查 URL 是否在「相关文章」列表中',
-      '将输出数字 → 检查是否在可见文本中明确出现',
-      '将引用文章 → 确保使用 Markdown 链接格式 [标题](URL)',
-      '承认缺失信息时 → 一句话带过，不反复强调',
+      'fact：先给结论，再补依据',
+      'list：直接列 2-6 项',
+      'count：先说数字，禁止伪精确',
+      'opinion：先说"我认为"',
+      'recommendation：先给 2-4 个推荐',
+      'unknown：必须包含"未公开"',
     ],
   },
   en: {
@@ -129,12 +117,6 @@ const PROMPTS: Record<string, PromptContent> = {
       'recommendation: Give 2-4 recommendations first, then explain why',
       'unknown (privacy): First sentence must include "not disclosed" or "not available", wrap up in 1-2 sentences',
     ],
-    preOutputChecks: [
-      'About to output a link → verify URL exists in the "Related Articles" list',
-      'About to output a number → verify it appears in visible retrieved text',
-      'About to cite an article → use Markdown link format [Title](URL)',
-      'Acknowledging missing info → keep it to one sentence, do not over-explain',
-    ],
   },
 };
 
@@ -169,9 +151,6 @@ export function buildStaticLayer(config: StaticLayerConfig): string {
     '',
     '## ' + t('ai.prompt.section.answerModes', lang),
     ...p.answerModes.map((s: string) => `- ${s}`),
-    '',
-    '## ' + t('ai.prompt.section.preOutputChecks', lang),
-    ...p.preOutputChecks.map((s: string) => `- ${s}`),
     '',
     buildToolsSection(lang),
     config.voiceStylePrompt ?? '',
