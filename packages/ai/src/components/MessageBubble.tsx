@@ -236,12 +236,13 @@ export function TypingDots({ statusMessage }: { statusMessage?: string }) {
 
 type ReasoningPart = { type: 'reasoning'; text: string; state?: 'streaming' | 'done' };
 
-export function AssistantMessage({ message, isStreaming, lang = 'zh', articleContext, onFollowUp }: {
+export function AssistantMessage({ message, isStreaming, lang = 'zh', articleContext, onFollowUp, showSourceSnippets = false }: {
   message: UIMessage;
   isStreaming?: boolean;
   lang?: string;
   articleContext?: ArticleChatContext;
   onFollowUp?: (text: string) => void;
+  showSourceSnippets?: boolean;
 }) {
   const fullText = getTextFromMessage(message);
   const actionConfirmations = useMemo(() => getActionToolConfirmations(message, lang), [message, lang]);
@@ -297,7 +298,7 @@ export function AssistantMessage({ message, isStreaming, lang = 'zh', articleCon
         <ReasoningBlock text={reasoningDisplayed} isStreaming={isStreaming} lang={lang} />
       )}
       {displayedText && <RichText text={displayedText} isStreaming={isStreaming} />}
-      {!isStreaming && sourceSnippets.length > 0 && (
+      {!isStreaming && showSourceSnippets && sourceSnippets.length > 0 && (
         <div class="mt-2 space-y-2">
           <div class="text-[11px] font-medium text-foreground-soft">
             {lang === 'en' ? 'Relevant snippets' : '相关原文段落'}

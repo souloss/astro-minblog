@@ -21,6 +21,7 @@ export interface AIChatConfig {
   placeholder?: string;
   authorName?: string;
   lang?: string;
+  showSourceSnippets?: boolean;
 }
 
 interface ChatPanelProps {
@@ -525,6 +526,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
                       lang={lang}
                       articleContext={articleContext}
                       onFollowUp={doSend}
+                      showSourceSnippets={config.showSourceSnippets}
                     />
                   : text}
               </div>

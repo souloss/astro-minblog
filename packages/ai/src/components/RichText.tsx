@@ -12,7 +12,8 @@ type InlinePart =
   | { type: 'text'; text: string }
   | { type: 'link'; label: string; url: string }
   | { type: 'bold'; text: string }
-  | { type: 'code'; text: string };
+  | { type: 'code'; text: string }
+  | { type: 'citation'; label: string; title?: string; url?: string };
 
 /**
  * 更健壮的 Markdown 链接解析器
@@ -60,10 +61,21 @@ export function parseInlineMarkdownRobust(text: string): InlinePart[] {
       }
     }
     
+    // 检测引用标记开始 【label|content】 or 【label|title|url】
+    if (text[i] === '【') {
+      const citationResult = tryParseCitation(text, i);
+      if (citationResult) {
+        parts.push({ type: 'citation', ...citationResult });
+        i = citationResult.endIndex;
+        continue;
+      }
+    }
+    
     // 收集纯文本直到下一个特殊字符
     let textEnd = i + 1;
     while (textEnd < text.length && 
            text[textEnd] !== '[' && 
+           text[textEnd] !== '【' && 
            text[textEnd] !== '*' && 
            text[textEnd] !== '`') {
       textEnd++;
@@ -116,6 +128,38 @@ function tryParseLink(text: string, start: number): { label: string; url: string
   return { label, url, endIndex: urlEnd };
 }
 
+function tryParseCitation(text: string, start: number): { label: string; title?: string; url?: string; endIndex: number } | null {
+  if (text[start] !== '【') return null;
+  
+  const endMarker = text.indexOf('】', start);
+  if (endMarker === -1) return null;
+  
+  const inner = text.slice(start + 1, endMarker);
+  const parts = inner.split('|').map(p => p.trim());
+  
+  if (parts.length < 2) return null;
+  
+  const label = parts[0];
+  const result: { label: string; title?: string; url?: string; endIndex: number } = {
+    label,
+    endIndex: endMarker + 1,
+  };
+  
+  if (parts.length === 2) {
+    result.title = parts[1];
+  } else if (parts.length >= 3) {
+    result.title = parts[1];
+    const potentialUrl = parts[2];
+    if (potentialUrl.startsWith('http://') || potentialUrl.startsWith('https://') || potentialUrl.startsWith('/')) {
+      result.url = potentialUrl;
+    } else {
+      result.title += ' ' + potentialUrl;
+    }
+  }
+  
+  return result;
+}
+
 function ExternalLinkIcon() {
   return (
     <svg class="inline-block size-3 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -143,6 +187,27 @@ export function InlineRichText({ text }: { text: string }) {
         }
         if (p.type === 'bold') return <strong key={i} class="font-semibold">{p.text}</strong>;
         if (p.type === 'code') return <code key={i} class="rounded bg-muted/60 px-1 py-0.5 text-[13px] font-mono">{p.text}</code>;
+        if (p.type === 'citation') {
+          const content = (
+            <>
+              <span class="text-accent/70">{p.label}</span>
+              {p.title && <span class="text-foreground-soft">{p.title}</span>}
+            </>
+          );
+          if (p.url) {
+            const safeUrl = sanitizeUrl(p.url);
+            const isExternal = safeUrl.startsWith('http');
+            return (
+              <a key={i} href={safeUrl}
+                class="inline-flex items-center gap-0.5 font-medium text-accent underline decoration-accent/30 underline-offset-2 transition-colors hover:decoration-accent"
+                target={isExternal ? '_blank' : undefined} rel={isExternal ? 'noopener noreferrer' : undefined}>
+                {content}
+                {isExternal && <ExternalLinkIcon />}
+              </a>
+            );
+          }
+          return <span key={i} class="inline-flex items-center gap-0.5">{content}</span>;
+        }
         return <span key={i}>{p.text}</span>;
       })}
     </span>
