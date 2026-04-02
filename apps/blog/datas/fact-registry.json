@@ -6,8 +6,8 @@
     {
       "id": "author-name",
       "category": "author",
-      "statement": "博客作者名为 博主",
-      "evidence": "author-context.json → profile.name",
+      "statement": "博客作者名为 Souloss",
+      "evidence": "src/config.ts → SITE.author",
       "source": "explicit",
       "confidence": 1,
       "tags": [
@@ -15,29 +15,29 @@
         "名字",
         "author",
         "name",
-        "博主"
+        "Souloss"
       ],
       "lang": "zh"
     },
     {
       "id": "author-name-en",
       "category": "author",
-      "statement": "The blog author is 博主",
-      "evidence": "author-context.json → profile.name",
+      "statement": "The blog author is Souloss",
+      "evidence": "src/config.ts → SITE.author",
       "source": "explicit",
       "confidence": 1,
       "tags": [
         "author",
         "name",
-        "博主"
+        "Souloss"
       ],
       "lang": "en"
     },
     {
       "id": "author-site",
       "category": "author",
-      "statement": "博客网址为 https://example.com",
-      "evidence": "author-context.json → profile.siteUrl",
+      "statement": "博客网址为 https://demo-astro-minimax.souloss.cn",
+      "evidence": "src/config.ts → SITE.website",
       "source": "explicit",
       "confidence": 1,
       "tags": [
@@ -45,15 +45,16 @@
         "URL",
         "site",
         "url",
-        "博客"
+        "博客",
+        "Souloss"
       ],
       "lang": "zh"
     },
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 0 篇文章（中文 0 篇，英文 0 篇）",
-      "evidence": "author-context.json → stableFacts.contentFootprint",
+      "statement": "博客共有 44 篇文章（中文 44 篇，英文 0 篇）",
+      "evidence": "ai-summaries.json → totalProcessed: 44",
       "source": "derived",
       "confidence": 1,
       "tags": [
@@ -72,8 +73,8 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 0 posts (0 in Chinese, 0 in English)",
-      "evidence": "author-context.json → stableFacts.contentFootprint",
+      "statement": "The blog has 44 posts (44 in Chinese, 0 in English)",
+      "evidence": "ai-summaries.json → totalProcessed: 44",
       "source": "derived",
       "confidence": 1,
       "tags": [
