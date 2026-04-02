@@ -567,7 +567,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       style={{ height: sizeConfig.height }}>
 
       {/* Header */}
-      <div class="flex shrink-0 items-center justify-between border-b border-border px-3.5 py-2.5">
+      <div class={`flex shrink-0 items-center justify-between border-b border-border px-3.5 ${panelSize === 'S' ? 'py-2' : 'py-2.5'}`}>
         <div class="flex items-center gap-2 group">
           <div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15">
             <BotIcon class="size-3 text-accent" aria-hidden="true" />
@@ -640,8 +640,8 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       </div>
 
       {/* Messages */}
-      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-3 [scrollbar-width:thin]" aria-live="off">
-        <div class="space-y-4">
+      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-3 [scrollbar-width:thin] [display:flex] [flex-direction:column]" aria-live="off">
+        <div class="space-y-4 [flex:1]">
           {isMockMode ? renderMockMessages() : renderLiveMessages()}
 
           {error && (
