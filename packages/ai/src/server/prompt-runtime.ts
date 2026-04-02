@@ -117,6 +117,13 @@ export interface PromptAssemblyResult {
   preflight: ReturnType<typeof getCitationGuardPreflight>;
   unknownRefusal: { text: string; isUnknown: boolean } | null;
   selectedSources: SourceSelection[];
+  matchedFacts: Array<{
+    id: string;
+    statement: string;
+    category: string;
+    confidence: number;
+  }>;
+  voiceMode: string | null;
 }
 
 function clipSnippet(text: string, maxLength = 260): string {
@@ -466,5 +473,5 @@ export async function assemblePromptRuntime(
     preferInjectedChunks: !!articleSlugForChunks && !!chunksSection,
   });
 
-  return { systemPrompt, preflight, unknownRefusal, selectedSources };
+  return { systemPrompt, preflight, unknownRefusal, selectedSources, matchedFacts, voiceMode: voiceMode?.name ?? null };
 }

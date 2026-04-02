@@ -65,6 +65,8 @@ import type { CachedAIResponse } from "../cache/response-cache.js";
 import type { PublicQuestionType } from "../cache/global-cache.js";
 import type { SourceSelection } from "../search/types.js";
 import type { ProviderAdapter } from "../provider-manager/types.js";
+import type { SessionTrace } from "./types/debug.js";
+import { setSessionTrace } from "../search/trace-store.js";
 import type {
   ChatHandlerOptions,
   ChatRequestBody,
@@ -211,6 +213,7 @@ interface PipelineContext {
   latestText: string;
   context: ChatContext;
   lang: string;
+  sessionId: string;
   timeouts: TimeoutConfig;
   timing: TimingTracker;
   cache: ReturnType<typeof createCacheAdapter>;
@@ -252,6 +255,7 @@ async function initializeContext(args: PipelineArgs): Promise<PipelineContext> {
       : undefined;
   const publicQuestion = detectPublicQuestion(latestText);
   const cacheKey = getSessionCacheKey(req);
+  const sessionId = req.headers.get("x-session-id") ?? "";
 
   return {
     env,
@@ -259,6 +263,7 @@ async function initializeContext(args: PipelineArgs): Promise<PipelineContext> {
     latestText,
     context,
     lang,
+    sessionId,
     timeouts,
     timing,
     cache,
@@ -1012,8 +1017,50 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
 
   const search = await retrieveContext(ctx, args.req);
   const { searchQuery, relatedArticles, relatedProjects, interpretation } = search;
-  const { systemPrompt, preflight, unknownRefusal, selectedSources } =
+
+  const traceData: Partial<SessionTrace> = {
+    sessionId: ctx.sessionId,
+    timestamp: Date.now(),
+    intent: interpretation.topic.primary,
+    answerMode: interpretation.answer.contract,
+    complexity: interpretation.reasoning.complexity,
+    searchQuery,
+    retrievedArticles: relatedArticles.slice(0, 10).map(a => ({
+      title: a.title,
+      url: a.url,
+      lang: a.lang,
+      score: a.score ?? 0,
+      reason: 'retrieval-fallback',
+    })),
+    retrievedProjects: relatedProjects.slice(0, 5).map(p => ({
+      name: p.name,
+      url: p.url,
+      description: p.description,
+    })),
+    sessionCacheHit: interpretation.conversation.shouldReuseContext,
+    keywords: [],
+    matchedFacts: [],
+    timing: {
+      total: 0,
+    },
+    usedMockFallback: false,
+  };
+
+  const promptAssemblyStart = Date.now();
+  const { systemPrompt, preflight, unknownRefusal, selectedSources, matchedFacts, voiceMode } =
     await analyzeAndBuildPrompt(ctx, search);
+  const promptAssemblyMs = Date.now() - promptAssemblyStart;
+
+  traceData.finalPrompt = systemPrompt;
+  traceData.timing!.promptAssembly = promptAssemblyMs;
+  traceData.matchedFacts = matchedFacts.map(f => ({
+    id: f.id,
+    statement: f.statement,
+    category: f.category,
+    confidence: f.confidence,
+  }));
+  traceData.voiceStyle = voiceMode ?? undefined;
+
   const finalSources = buildFinalSources({
     relatedArticles,
     selectedSources,
@@ -1120,6 +1167,13 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
 
       const usedAdapter = llmResult.adapter;
 
+      traceData.providerUsed = usedAdapter?.id;
+      traceData.modelUsed = usedAdapter?.model;
+      traceData.usedMockFallback = llmResult.usedMockFallback ?? false;
+      if (tokenUsage) {
+        traceData.tokenUsage = tokenUsage;
+      }
+
       if (usedAdapter && llmResult.responseText.length > 0) {
         log.debug(
           `Provider success: adapter=${usedAdapter.id}, model=${usedAdapter.model}, responseLength=${responseText.length}, usage=${JSON.stringify(tokenUsage ?? null)}`
@@ -1177,6 +1231,22 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         timing.generation = Date.now() - generationStart;
         responseText = llmResult.responseText;
       }
+
+      const fullTrace: SessionTrace = {
+        ...traceData,
+        timing: {
+          total: Date.now() - timing.start,
+          keywordExtraction: timing.keywordExtraction,
+          search: timing.search,
+          evidenceAnalysis: timing.evidenceAnalysis,
+          promptAssembly: traceData.timing!.promptAssembly,
+          generation: timing.generation,
+        },
+      } as SessionTrace;
+
+      setSessionTrace(ctx.sessionId, fullTrace).catch(err => {
+        log.error('Failed to store session trace:', err);
+      });
 
       if (responseText) {
         const notifyTiming: PhaseTiming = {

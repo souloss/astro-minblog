@@ -28,6 +28,13 @@ export {
   SESSION_CACHE_TTL_SECONDS,
   SESSION_CACHE_TTL_MS,
 } from "./session-cache.js";
+export {
+  setSessionTrace,
+  getSessionTrace,
+  setTraceCacheAdapter,
+  getTraceCacheAdapter,
+  TRACE_TTL_SECONDS,
+} from "./trace-store.js";
 export { normalizeText, tokenize } from "../utils/text.js";
 export {
   scoreDocument,
