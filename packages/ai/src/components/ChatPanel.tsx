@@ -483,7 +483,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
     const showQuickPrompts = liveMessages.length <= 1;
     const lastAssistantMsgId = [...liveMessages].reverse().find(m => m.role === 'assistant')?.id;
     const lastMessage = liveMessages[liveMessages.length - 1];
-    const isWaitingForAssistant = isStreaming && lastMessage?.role === 'user';
+    const isWaitingForAssistant = isStreaming && lastMessage?.role === 'user' && !lastAssistantMsgId;
 
     return (
       <>
