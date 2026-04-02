@@ -42,8 +42,7 @@ function getChatActionLabel(lang: string, type: 'send' | 'sending'): string {
   return normalizedLang === 'zh' ? '发送消息' : 'Send message';
 }
 
-function generateSessionId(articleContext?: ArticleChatContext): string {
-  if (articleContext?.slug) return `article:${articleContext.slug}`;
+function generateSessionId(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
@@ -206,7 +205,7 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
   const lang = getLang(config.lang);
   const placeholder = config.placeholder ?? t('ai.placeholder', lang);
 
-  const sessionId = useMemo(() => generateSessionId(articleContext), [articleContext]);
+  const sessionId = useMemo(() => generateSessionId(), []);
   const panelRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastSendRef = useRef(0);
