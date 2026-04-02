@@ -481,13 +481,22 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
 
   const renderLiveMessages = () => {
     const showQuickPrompts = liveMessages.length <= 1;
-    const lastAssistantMsgId = [...liveMessages].reverse().find(m => m.role === 'assistant')?.id;
-    const lastMessage = liveMessages[liveMessages.length - 1];
+
+    // Deduplicate messages by id - keep first occurrence
+    const seenIds = new Set<string>();
+    const uniqueMessages = liveMessages.filter(msg => {
+      if (seenIds.has(msg.id)) return false;
+      seenIds.add(msg.id);
+      return true;
+    });
+
+    const lastAssistantMsgId = [...uniqueMessages].reverse().find(m => m.role === 'assistant')?.id;
+    const lastMessage = uniqueMessages[uniqueMessages.length - 1];
     const isWaitingForAssistant = isStreaming && lastMessage?.role === 'user' && !lastAssistantMsgId;
 
     return (
       <>
-        {liveMessages.map(msg => {
+        {uniqueMessages.map(msg => {
           if (msg.id === 'welcome' && showQuickPrompts) {
             return (
               <div key={msg.id} class="space-y-3">
