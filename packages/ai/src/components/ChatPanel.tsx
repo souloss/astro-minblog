@@ -567,8 +567,8 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
       style={{ height: sizeConfig.height }}>
 
       {/* Header */}
-      <div class={`flex shrink-0 items-center justify-between border-b border-border px-3.5 ${panelSize === 'S' ? 'py-2' : 'py-2.5'}`}>
-        <div class="flex items-center gap-2 group">
+      <div class={`flex shrink-0 items-center justify-between border-b border-border px-3.5 gap-2 overflow-hidden ${panelSize === 'S' ? 'py-2' : 'py-2.5'}`}>
+        <div class="flex items-center gap-2 group min-w-0">
           <div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15">
             <BotIcon class="size-3 text-accent" aria-hidden="true" />
           </div>
@@ -589,14 +589,14 @@ export function ChatPanel({ open, onClose, config, articleContext }: ChatPanelPr
             {isMockMode ? t('ai.header.mode', lang) : t('ai.status.live', lang)}
           </span>
           <span
-            class="relative rounded-full px-1.5 py-px text-[10px] font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+            class={`relative rounded-full px-1.5 py-px text-[10px] font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer ${panelSize === 'S' ? 'hidden' : ''}`}
             title="Click to open debug trace"
             onClick={() => window.open(`/api/ai-debug?session_id=${sessionId}`, '_blank')}
           >
             {sessionId && sessionId.slice(0, 8)}
           </span>
         </div>
-        <div class="flex items-center gap-0.5">
+        <div class="flex items-center gap-0.5 shrink-0">
           <div class="flex items-center gap-0.5 rounded-md border border-border bg-muted/30 p-0.5">
             {(['S', 'M', 'L'] as const).map(size => (
               <button
