@@ -283,11 +283,7 @@ export function AssistantMessage({ message, isStreaming, lang = 'zh', articleCon
 
 
   if (isWaitingForContent) {
-    return (
-      <div class="space-y-1.5">
-        <ReasoningBlock text="" isStreaming={true} lang={lang} />
-      </div>
-    );
+    return null;
   }
 
   if (!effectiveText && !hasReasoning) return null;
