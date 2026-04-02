@@ -262,6 +262,24 @@ export function AssistantMessage({ message, isStreaming, lang = 'zh', articleCon
 
   const isWaitingForContent = isStreaming && !fullText && !reasoningFullText;
 
+  // If streaming but only has reasoning (no actual text), don't render empty block
+  // This prevents showing empty avatar when thinking has started but no response text yet
+  const isThinkingOnly = isStreaming && !fullText && hasReasoning;
+
+  if (isWaitingForContent) {
+    return null;
+  }
+
+  if (!effectiveText && !hasReasoning) return null;
+
+  if (isThinkingOnly) {
+    return (
+      <div class="space-y-1.5">
+        <ReasoningBlock text={reasoningDisplayed} isStreaming={isStreaming} lang={lang} />
+      </div>
+    );
+  }
+
   const sources = message.parts.filter(p => p.type === 'source-url' || p.type === 'source-document');
   const sourceSnippets = message.parts.filter(
     (p): p is {
