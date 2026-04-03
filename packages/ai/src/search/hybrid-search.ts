@@ -396,8 +396,6 @@ export function formatChunksForInjection(
 ): string {
   if (!matches.length) return "";
 
-  // 动态计算每个段落的内容限制
-  // 80% 的 token 预算给段落内容，20% 给标题和来源等开销
   const perChunkContentLimit = Math.min(
     defaultContentLimit,
     Math.floor((maxTokens * 0.8) / matches.length)
@@ -405,34 +403,31 @@ export function formatChunksForInjection(
 
   const lines: string[] = [];
   let totalTokens = 0;
+  let lastHeading = "";
 
   for (const match of matches) {
-    const chunkText = formatChunkForInjection(match, perChunkContentLimit);
+    const { article, chunk } = match;
+    const heading = chunk.heading ? `【${chunk.heading}】` : "";
+    const source = `来源: [${article.title}](${article.url})`;
+
+    const truncatedContent = chunk.content.length > perChunkContentLimit
+      ? chunk.content.slice(0, perChunkContentLimit) + "..."
+      : chunk.content;
+
+    const chunkText = heading === lastHeading
+      ? `${truncatedContent}\n\n${source}`
+      : `${heading}\n${truncatedContent}\n\n${source}`;
+
     const chunkTokens = estimateTokens(chunkText);
 
     if (totalTokens + chunkTokens > maxTokens) break;
 
     lines.push(chunkText);
     totalTokens += chunkTokens;
+    lastHeading = heading;
   }
 
   return lines.join("\n\n");
-}
-
-function formatChunkForInjection(
-  match: ChunkMatchResult,
-  contentLimit: number = 1500
-): string {
-  const { article, chunk } = match;
-  const heading = chunk.heading ? `【${chunk.heading}】` : "";
-  const source = `来源: [${article.title}](${article.url})`;
-
-  // 根据动态计算的 contentLimit 限制内容长度
-  const truncatedContent = chunk.content.length > contentLimit
-    ? chunk.content.slice(0, contentLimit) + "..."
-    : chunk.content;
-
-  return `${heading}\n${truncatedContent}\n\n${source}`;
 }
 
 function estimateTokens(text: string): number {
