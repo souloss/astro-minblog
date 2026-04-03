@@ -1,6 +1,6 @@
 {
   "$schema": "author-context-v1",
-  "generatedAt": "2026-04-02T18:16:09.739Z",
+  "generatedAt": "2026-04-03T01:30:20.223Z",
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn",
@@ -5406,5 +5406,5 @@
     "model": "MiniMax-M2.7-highspeed",
     "provider": "openai"
   },
-  "contextHash": "a46efb6aef6bbc7c"
+  "contextHash": "9b25352868aa44ef"
 }
