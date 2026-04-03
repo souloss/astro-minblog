@@ -9,14 +9,14 @@ export interface FrontmatterResult {
 }
 
 export function extractFrontmatter(content: string): FrontmatterResult {
-  const match = content.match(/^(---\n[\s\S]*?\n---)\n?([\s\S]*)/);
+  const match = content.match(/^(---\r?\n[\s\S]*?\r?\n---)\r?\n?([\s\S]*)/);
   if (!match) return { raw: "", body: content, data: {} };
 
   const raw = match[1];
   const body = match[2];
   const data: Record<string, unknown> = {};
 
-  const lines = raw.replace(/^---\n/, "").replace(/\n---$/, "").split("\n");
+  const lines = raw.replace(/^---\r?\n/, "").replace(/\r?\n---$/, "").split(/\r?\n/);
   let currentKey = "";
   let arrayValues: string[] = [];
   let inArray = false;

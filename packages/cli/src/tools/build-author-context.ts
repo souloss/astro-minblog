@@ -100,15 +100,15 @@ async function collectMarkdownFiles(
   const files: string[] = [];
 
   for (const entry of entries) {
-    // Normalize path separators for Windows compatibility
-    const fullPath = join(dir, entry.name).replace(/\\/g, "/");
+    const fullPath = join(dir, entry.name);
     if (
       entry.isDirectory() &&
       (options.includeUnderscoreDirs || !entry.name.startsWith("_"))
     ) {
       files.push(...(await collectMarkdownFiles(fullPath, options)));
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
-      files.push(fullPath);
+      // Normalize path separators for cross-platform consistency
+      files.push(fullPath.replace(/\\/g, "/"));
     }
   }
 
