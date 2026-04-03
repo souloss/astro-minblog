@@ -318,6 +318,31 @@ export async function assemblePromptRuntime(
         },
         ...otherArticles,
       ];
+    } else if (articleSlugForChunks && context.article) {
+      // Fallback: searchArticles missed current article — force-fetch its chunks
+      const forceChunks =
+        getArticleChunks(articleSlugForChunks) ??
+        getArticleChunks(`zh/${articleSlugForChunks}`) ??
+        getArticleChunks(`en/${articleSlugForChunks}`) ??
+        [];
+      if (forceChunks.length > 0) {
+        const currentArticleUrl = `${env.SITE_URL ?? ""}/${lang}/posts/${articleSlugForChunks}/`;
+        articlesWithChunks = [
+          {
+            id: articleSlugForChunks,
+            title: context.article?.title ?? "",
+            url: currentArticleUrl,
+            lang,
+            keyPoints: context.article?.keyPoints ?? [],
+            categories: context.article?.categories ?? [],
+            dateTime: 0,
+            summary: context.article?.summary,
+            chunks: forceChunks,
+          },
+          ...articlesWithChunks,
+        ];
+        currentArticleIdForChunks = articleSlugForChunks;
+      }
     }
   }
 
