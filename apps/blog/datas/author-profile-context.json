@@ -1,21 +1,222 @@
 {
-  "generatedAt": "2026-04-02T16:19:54.525Z",
+  "generatedAt": "2026-04-02T18:16:14.365Z",
   "siteUrl": "https://demo-astro-minimax.souloss.cn",
   "sourceInfo": {
-    "totalPosts": 0,
-    "zhPosts": 0,
+    "totalPosts": 46,
+    "zhPosts": 46,
     "enPosts": 0,
-    "selectedPosts": 0
+    "selectedPosts": 12
   },
   "profile": {
     "name": "Souloss",
     "siteUrl": "https://demo-astro-minimax.souloss.cn"
   },
-  "posts": [],
-  "topTags": [],
-  "topCategories": [],
+  "posts": [
+    {
+      "title": "\"AI Tool Calling and Action System\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "Tutorial/AI"
+      ],
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax's AI chat is more than text conversation. When you say \"switch to dark mode\" or \"open…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "Search Configuration Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "Tutorial/Configuration"
+      ],
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax ships with two search providers covering different use cases. Pagefind is the default…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "Security Hardening Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "Tutorial/Configuration"
+      ],
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax has been continuously hardening its security since v0.9.2. There is no single securit…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "\"AI Tool Calling 与 Action 系统\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "教程/AI"
+      ],
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax 的 AI 聊天不只是文字对话。当你说「切换到深色模式」或「打开架构那篇文章」，模型不会只给你一段操作说明，而是直接帮你完成操作。这套能力的核心是 Tool Calling…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "搜索功能配置指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax 内置两种搜索方案，覆盖不同的使用场景。Pagefind 是默认的静态搜索引擎，零配置即可使用；Algolia DocSearch 提供云端搜索，适合需要毫秒级响应和搜索分…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "安全加固指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax 从 v0.9.2 起持续加固安全防护。这些防护不是一个单独的安全模块，而是分散在各个包里的一系列防御措施，覆盖前端渲染、AI 聊天、CLI 工具和通知系统。\r\n\r\n这篇文…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
+      "date": "2026-03-21T00:00:00.000Z",
+      "categories": [
+        "Technical/AI"
+      ],
+      "tags": [
+        "docs",
+        "ai",
+        "architecture",
+        "technical"
+      ],
+      "summary": "When I originally designed , the goal was never to build an isolated chat widget. I wanted to turn …",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "Settings Panel & Preferences",
+      "date": "2026-03-21T00:00:00.000Z",
+      "categories": [
+        "Tutorial/Configuration"
+      ],
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "astro-minimax introduces a brand new settings panel for personalizing your blog's appearance and ex…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "\"@astro-minimax/ai 模块技术架构详解\"",
+      "date": "2026-03-21T00:00:00.000Z",
+      "categories": [
+        "技术/AI"
+      ],
+      "tags": [
+        "docs",
+        "ai",
+        "architecture",
+        "technical"
+      ],
+      "summary": "我一直不太喜欢把一个 AI 模块写成\"聊天框 + 一点 prompt + 一个 API key\"的样子。对我来说， 从一开始要解决的就不是\"把模型接上去\"，而是怎么把博客内容、知识资产、检索、提示词…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "设置面板与偏好设置",
+      "date": "2026-03-21T00:00:00.000Z",
+      "categories": [
+        "教程/配置"
+      ],
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "astro-minimax 引入了全新的设置面板，让你可以个性化博客的外观和体验。\r\n\r\n打开设置面板\r\n\r\n点击页面右下角的设置图标（齿轮图标）即可打开设置面板。\r\n\r\n设置选项\r\n\r\n外观设置\r…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "How to update dependencies of astro-minimax",
+      "date": "2026-03-20T00:00:00.000Z",
+      "categories": [
+        "Tutorial/Engineering"
+      ],
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "Updating dependencies can be tedious, but neglecting them is worse. Here's how to keep your astro-m…",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    },
+    {
+      "title": "如何更新 astro-minimax 的依赖",
+      "date": "2026-03-20T00:00:00.000Z",
+      "categories": [
+        "教程/工程化"
+      ],
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "更新项目依赖可能是一件繁琐的事情。然而，忽视更新项目依赖也不是一个好主意。在这篇文章中，我将分享如何更新 astro-minimax 博客的依赖。\r\n\r\n快速更新（推荐）\r\n\r\n如果你通过 CLI …",
+      "keyPoints": [],
+      "url": "/zh/posts//"
+    }
+  ],
+  "topTags": [
+    "docs",
+    "configuration",
+    "ai",
+    "deployment",
+    "tools",
+    "architecture",
+    "vercel",
+    "neon",
+    "actions",
+    "search",
+    "security",
+    "technical",
+    "FAQ",
+    "cloudflare",
+    "tutorial"
+  ],
+  "topCategories": [
+    "教程/配置",
+    "教程/博客",
+    "Tutorial/Configuration",
+    "Blog/Tutorial",
+    "Tutorial/AI"
+  ],
   "contentStats": {
-    "totalPosts": 0,
-    "avgPostPerMonth": 0
+    "totalPosts": 46,
+    "avgPostPerMonth": 1
   }
 }

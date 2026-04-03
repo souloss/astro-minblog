@@ -1,42 +1,103 @@
 {
   "$schema": "voice-profile-v1",
-  "generatedAt": "2026-04-02T16:19:51.486Z",
+  "generatedAt": "2026-04-02T18:16:11.180Z",
   "overall_tone": {
     "description": "技术博客风格，注重实践与可操作性，语言简洁明了",
     "primary_persona": "技术博主",
     "communication_style": "先给结论，再补细节"
   },
   "blog_title_style": {
-    "total": 0,
+    "total": 46,
     "patterns": {
       "usesVerticalBar": 0,
-      "usesColon": 0,
+      "usesColon": 12,
       "usesMiddleDot": 0,
       "usesQuestion": 0,
       "usesEmoji": 0,
-      "usesEnglish": 0,
-      "usesYear": 0,
+      "usesEnglish": 38,
+      "usesYear": 2,
       "usesSeriesFormat": 0
     },
     "style": {
       "vertical_bar_rate": 0,
-      "colon_rate": 0,
+      "colon_rate": 26,
       "question_rate": 0,
-      "english_mix_rate": 0,
-      "year_in_title_rate": 0
+      "english_mix_rate": 83,
+      "year_in_title_rate": 4
     }
   },
   "content_style": {
-    "avgLength": 0,
-    "codeBlockRate": 0,
-    "linkRate": 0,
-    "imageRate": 0,
-    "headingRate": 0,
-    "listRate": 0,
-    "quoteRate": 0
+    "avgLength": 10262,
+    "codeBlockRate": 96,
+    "linkRate": 83,
+    "imageRate": 22,
+    "headingRate": 100,
+    "listRate": 93,
+    "quoteRate": 63
   },
   "expression_habits": {
-    "frequent_expressions": [],
+    "frequent_expressions": [
+      {
+        "word": "关键",
+        "count": 46
+      },
+      {
+        "word": "推荐",
+        "count": 42
+      },
+      {
+        "word": "分享",
+        "count": 31
+      },
+      {
+        "word": "体验",
+        "count": 17
+      },
+      {
+        "word": "重要",
+        "count": 14
+      },
+      {
+        "word": "注意",
+        "count": 9
+      },
+      {
+        "word": "然后",
+        "count": 6
+      },
+      {
+        "word": "所以",
+        "count": 5
+      },
+      {
+        "word": "其实",
+        "count": 4
+      },
+      {
+        "word": "但是",
+        "count": 3
+      },
+      {
+        "word": "总结",
+        "count": 3
+      },
+      {
+        "word": "折腾",
+        "count": 1
+      },
+      {
+        "word": "感觉",
+        "count": 1
+      },
+      {
+        "word": "突然",
+        "count": 1
+      },
+      {
+        "word": "随手",
+        "count": 1
+      }
+    ],
     "style_notes": [
       "标题常用竖线分隔格式：「主题 | 标题」",
       "技术类标题直接用英文术语，不强行翻译",
@@ -45,7 +106,88 @@
       "分享经验时常用「攻略」「指南」「记」等实用性标题词"
     ]
   },
-  "category_styles": {},
+  "category_styles": {
+    "Tutorial/Blog": {
+      "count": 2,
+      "avgLength": 10240
+    },
+    "Blog/Tutorial": {
+      "count": 3,
+      "avgLength": 12512
+    },
+    "Tutorial/AI": {
+      "count": 2,
+      "avgLength": 11629
+    },
+    "Technical/AI": {
+      "count": 1,
+      "avgLength": 43098
+    },
+    "Tutorial/Tools": {
+      "count": 1,
+      "avgLength": 5137
+    },
+    "Tutorial/Deployment": {
+      "count": 1,
+      "avgLength": 14512
+    },
+    "Tutorial/Getting Started": {
+      "count": 1,
+      "avgLength": 10382
+    },
+    "Blog/Deployment": {
+      "count": 1,
+      "avgLength": 12511
+    },
+    "教程/博客": {
+      "count": 7,
+      "avgLength": 7045
+    },
+    "教程/前端": {
+      "count": 2,
+      "avgLength": 3764
+    },
+    "Blog/Configuration": {
+      "count": 1,
+      "avgLength": 15970
+    },
+    "Tutorial/Engineering": {
+      "count": 2,
+      "avgLength": 6053
+    },
+    "Tutorial/Configuration": {
+      "count": 6,
+      "avgLength": 10632
+    },
+    "教程/AI": {
+      "count": 2,
+      "avgLength": 7319
+    },
+    "技术/AI": {
+      "count": 1,
+      "avgLength": 49544
+    },
+    "教程/工具": {
+      "count": 1,
+      "avgLength": 4077
+    },
+    "教程/部署": {
+      "count": 2,
+      "avgLength": 9240
+    },
+    "教程/入门": {
+      "count": 1,
+      "avgLength": 7934
+    },
+    "教程/配置": {
+      "count": 7,
+      "avgLength": 7829
+    },
+    "教程/工程化": {
+      "count": 2,
+      "avgLength": 3469
+    }
+  },
   "style_modes": {
     "technical": {
       "description": "技术类文章",

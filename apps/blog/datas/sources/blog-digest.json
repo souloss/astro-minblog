@@ -1,5 +1,1088 @@
 {
-  "generatedAt": "2026-04-02T16:19:50.172Z",
-  "count": 0,
-  "posts": []
+  "generatedAt": "2026-04-02T18:16:09.731Z",
+  "count": 78,
+  "posts": [
+    {
+      "id": "en/ai-tool-calling",
+      "title": "\"AI Tool Calling and Action System\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax's AI chat is more than text conversation. When you say \"switch to dark mode\" or \"open the architecture article\", the model doesn't just…",
+      "url": "/en/posts/ai-tool-calling/"
+    },
+    {
+      "id": "en/search-guide",
+      "title": "Search Configuration Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax ships with two search providers covering different use cases. Pagefind is the default static search engine that works out of the box wi…",
+      "url": "/en/posts/search-guide/"
+    },
+    {
+      "id": "en/security-guide",
+      "title": "Security Hardening Guide",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax has been continuously hardening its security since v0.9.2. There is no single security module. Instead, a series of defensive measures …",
+      "url": "/en/posts/security-guide/"
+    },
+    {
+      "id": "zh/ai-tool-calling",
+      "title": "\"AI Tool Calling 与 Action 系统\"",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "tools",
+        "actions"
+      ],
+      "summary": "astro-minimax 的 AI 聊天不只是文字对话。当你说「切换到深色模式」或「打开架构那篇文章」，模型不会只给你一段操作说明，而是直接帮你完成操作。这套能力的核心是 Tool Calling 和客户端 Action 系统。\r\n\r\nTool Calling 是什么\r\n\r\nTool Calli…",
+      "url": "/zh/posts/ai-tool-calling/"
+    },
+    {
+      "id": "zh/search-guide",
+      "title": "搜索功能配置指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "search",
+        "configuration"
+      ],
+      "summary": "astro-minimax 内置两种搜索方案，覆盖不同的使用场景。Pagefind 是默认的静态搜索引擎，零配置即可使用；Algolia DocSearch 提供云端搜索，适合需要毫秒级响应和搜索分析的站点。\r\n\r\n本文介绍两种搜索方案的特点、配置方法，以及与 AI 搜索系统的关系。\r\n\r\n两种搜…",
+      "url": "/zh/posts/search-guide/"
+    },
+    {
+      "id": "zh/security-guide",
+      "title": "安全加固指南",
+      "date": "2026-03-30T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "security",
+        "configuration"
+      ],
+      "summary": "astro-minimax 从 v0.9.2 起持续加固安全防护。这些防护不是一个单独的安全模块，而是分散在各个包里的一系列防御措施，覆盖前端渲染、AI 聊天、CLI 工具和通知系统。\r\n\r\n这篇文章把这些措施梳理清楚：哪里做了防护、怎么配置、你需要注意什么。\r\n\r\n\r\n\r\nURL 净化（sani…",
+      "url": "/zh/posts/security-guide/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.9.3",
+      "title": "\"astro-minimax v0.9.3: Runtime Alignment, Accessibility & Data Refresh\"",
+      "date": "2026-03-29T12:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "accessibility",
+        "testing",
+        "docs"
+      ],
+      "summary": "astro-minimax v0.9.3 is not just a version bump. The recent commit history shows a release centered on runtime alignment, generated AI asset refreshe…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.3/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.3",
+      "title": "\"astro-minimax v0.9.3: 运行时对齐、可访问性增强与数据刷新\"",
+      "date": "2026-03-29T12:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "accessibility",
+        "testing",
+        "docs"
+      ],
+      "summary": "astro-minimax v0.9.3 并不只是简单地把版本号改成 。结合最近一串提交来看，这个版本真正完成的是一轮运行时对齐、AI 生成资产刷新、浏览器冒烟测试重写与可访问性细化，而版本号同步与发布文档补全只是这轮工作的最后收口。\r\n\r\n运行时与数据对齐\r\n\r\n示例博客运行时对齐\r\n\r\n示例博…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.3/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.9.2",
+      "title": "\"astro-minimax v0.9.2: Security Hardening & Architecture Split\"",
+      "date": "2026-03-24T12:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "security",
+        "refactoring"
+      ],
+      "summary": "astro-minimax v0.9.2 focuses on security hardening and architectural improvements. Following a parallel deep audit of all four packages, we fixed XSS…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.2/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.2",
+      "title": "\"astro-minimax v0.9.2: 安全加固与架构拆分\"",
+      "date": "2026-03-24T12:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "security",
+        "refactoring"
+      ],
+      "summary": "astro-minimax v0.9.2 聚焦「安全加固」与「架构拆分」：基于四包并行深度审计，修复了 XSS/路径穿越等安全问题，完成两轮组件拆分，并将配置常量收敛到单一数据源。\r\n\r\n安全修复\r\n\r\nURL 协议校验 (Critical)\r\n\r\nAI 聊天中模型返回的 Markdown 链接、…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.2/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.9.1",
+      "title": "\"astro-minimax v0.9.1: AI Tool Calling & Action System\"",
+      "date": "2026-03-24T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "ai",
+        "tool-calling",
+        "actions"
+      ],
+      "summary": "astro-minimax v0.9.1 focuses on what the AI can do: standard tool calls drive page behavior, backed by a type-safe action pipeline in the theme. It a…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.1/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.1",
+      "title": "\"astro-minimax v0.9.1: AI 工具调用与动作系统\"",
+      "date": "2026-03-24T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Release",
+      "tags": [
+        "release",
+        "changelog",
+        "ai",
+        "tool-calling",
+        "actions"
+      ],
+      "summary": "astro-minimax v0.9.1 聚焦「AI 能做什么」：通过标准工具调用驱动页面行为，并在主题中落地类型安全的动作执行管线；同时提升检索粒度与聊天、代码块等周边体验。\r\n\r\n新功能\r\n\r\nAI 工具调用 (Tool Calling)\r\n\r\nAI 助手现在可以通过工具调用直接控制页面行为。…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.1/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.9.0",
+      "title": "astro-minimax 0.9.0",
+      "date": "2026-03-22T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.9.0 is a feature enhancement release with multiple user experience improvements and component enhancements.\r\n\r\nNew Features\r\n\r\nMermai…",
+      "url": "/en/posts/_releases/astro-minimax-0.9.0/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.9.0",
+      "title": "astro-minimax 0.9.0",
+      "date": "2026-03-22T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.9.0 是一个功能增强版本，带来了多项用户体验改进和组件增强。\r\n\r\n新功能\r\n\r\nMermaid 交互工具栏\r\n\r\n增强了 MermaidInit 组件，新增交互式工具栏：\r缩放控制：放大、缩小、重置缩放\r导出功能：支持导出为 SVG 和 PNG 格式\r全屏模式：…",
+      "url": "/zh/posts/_releases/astro-minimax-0.9.0/"
+    },
+    {
+      "id": "en/ai-module-architecture",
+      "title": "\"@astro-minimax/ai Module Technical Architecture Deep Dive\"",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "en",
+      "category": "Technical/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "architecture",
+        "technical"
+      ],
+      "summary": "The article explains the vendor-agnostic architecture of the @astro-minimax/ai module, detailing its layered RAG pipeline, multi-provider failover, build-runtime separation, and graceful degradation to deliver low-latency, resilient blog AI interactions.",
+      "url": "/en/posts/ai-module-architecture/"
+    },
+    {
+      "id": "en/settings-panel",
+      "title": "Settings Panel & Preferences",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "The article introduces astro-minimax’s settings panel, explaining how to adjust appearance, reading, layout, and general preferences, then save, share, reset, and automatically restore them for a personalized blog experience.",
+      "url": "/en/posts/settings-panel/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.8.3",
+      "title": "astro-minimax 0.8.3",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.3 is a feature release with significant user experience improvements and new functionality.\r\n\r\nNew Features\r\n\r\nCover Image Support\r…",
+      "url": "/en/posts/_releases/astro-minimax-0.8.3/"
+    },
+    {
+      "id": "zh/ai-module-architecture",
+      "title": "\"@astro-minimax/ai 模块技术架构详解\"",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "zh",
+      "category": "技术/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "architecture",
+        "technical"
+      ],
+      "summary": "文章详解 @astro-minimax/ai 的分层技术架构，围绕 RAG 流水线、多供应商抽象、流式响应与降级容错设计展开，说明其如何在博客场景中实现低延迟、高可用且可扩展的 AI 交互能力。",
+      "url": "/zh/posts/ai-module-architecture/"
+    },
+    {
+      "id": "zh/settings-panel",
+      "title": "设置面板与偏好设置",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "文章介绍 astro-minimax 的设置面板使用方式，说明外观、阅读、布局与通用偏好的配置项，以及通过 localStorage 持久化和 URL 参数分享设置的实现效果。",
+      "url": "/zh/posts/settings-panel/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.8.3",
+      "title": "astro-minimax 0.8.3",
+      "date": "2026-03-21T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.3 是一个功能更新版本，带来了多项用户体验改进和新功能。\r\n\r\n新功能\r\n\r\n封面图支持\r\n\r\n新增  字段用于博客文章封面图，与 （社交分享图）区分：\r\n\r\n| 字段          | 用途         | 使用场景                  …",
+      "url": "/zh/posts/_releases/astro-minimax-0.8.3/"
+    },
+    {
+      "id": "en/how-to-update-dependencies",
+      "title": "How to update dependencies of astro-minimax",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Engineering",
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "The article explains how to update astro-minimax dependencies and template safely using pnpm, npm-check-updates, and Git workflows, helping users stay current while reducing breakage risk.",
+      "url": "/en/posts/how-to-update-dependencies/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.8.0",
+      "title": "astro-minimax 0.8.0",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax is a minimal, responsive, accessible and SEO-friendly Astro blog theme. This project is built on top of AstroPaper and has evolved thro…",
+      "url": "/en/posts/_releases/astro-minimax-0.8.0/"
+    },
+    {
+      "id": "en/_releases/astro-minimax-0.8.1",
+      "title": "astro-minimax 0.8.1",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "en",
+      "category": "Release Notes",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.1 is a maintenance release that fixes several issues discovered in 0.8.0.\r\n\r\nBug Fixes\r\n\r\nMermaid Theme Adaptation\r\n\r\nFixed an issu…",
+      "url": "/en/posts/_releases/astro-minimax-0.8.1/"
+    },
+    {
+      "id": "zh/how-to-update-dependencies",
+      "title": "如何更新 astro-minimax 的依赖",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/工程化",
+      "tags": [
+        "FAQ"
+      ],
+      "summary": "文章介绍更新 astro-minimax 依赖与模板的实用流程：CLI 用户可直接用 pnpm 更新，模板用户可借助 npm-check-updates 分层升级并用 Git 合并模板，从而更稳妥地保持项目最新。",
+      "url": "/zh/posts/how-to-update-dependencies/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.8.0",
+      "title": "astro-minimax 0.8.0",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 是一个极简、响应式、无障碍且对 SEO 友好的 Astro 博客主题。本项目基于 AstroPaper 二次开发，经过多个版本的迭代，现已成为一个功能完善的独立主题。当前版本 0.8.0 基于 Astro v6 构建。\r\n\r\n\r\n\r\n项目起源\r\n\r\nastro-mini…",
+      "url": "/zh/posts/_releases/astro-minimax-0.8.0/"
+    },
+    {
+      "id": "zh/_releases/astro-minimax-0.8.1",
+      "title": "astro-minimax 0.8.1",
+      "date": "2026-03-20T00:00:00.000Z",
+      "lang": "zh",
+      "category": "发布说明",
+      "tags": [
+        "release"
+      ],
+      "summary": "astro-minimax 0.8.1 是一个维护版本，修复了 0.8.0 中发现的若干问题。\r\n\r\n修复的问题\r\n\r\nMermaid 图表主题适配\r\n\r\n修复了 Mermaid 图表在明暗主题切换时不会更新颜色的问题。现在图表会正确地随主题切换重新渲染，使用对应的配色方案。\r\n\r\n影响：所有使用…",
+      "url": "/zh/posts/_releases/astro-minimax-0.8.1/"
+    },
+    {
+      "id": "en/cloudflare-env-vars",
+      "title": "\"Configuring Environment Variables in Cloudflare Pages\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Deployment",
+      "tags": [
+        "docs",
+        "cloudflare",
+        "deployment",
+        "configuration"
+      ],
+      "summary": "This tutorial shows how to configure Cloudflare Pages environment variables for astro-minimax, including build-time and runtime settings, scope selection, and AI binding alignment, so deployment, AI chat, notifications, and builds work correctly.",
+      "url": "/en/posts/cloudflare-env-vars/"
+    },
+    {
+      "id": "en/complete-setup-guide",
+      "title": "\"Complete Setup Guide: From Zero to Production\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Getting Started",
+      "tags": [
+        "docs",
+        "tutorial",
+        "getting-started"
+      ],
+      "summary": "The article provides a step-by-step tutorial for creating an astro-minimax blog, configuring core features, and deploying it to Cloudflare and Vercel to enable comments, analytics, notifications, and AI chat for a production-ready setup.",
+      "url": "/en/posts/complete-setup-guide/"
+    },
+    {
+      "id": "en/setup-umami-analytics",
+      "title": "\"Setup Umami Analytics: Free Vercel Deployment\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "analytics",
+        "deployment",
+        "vercel",
+        "neon"
+      ],
+      "summary": "This tutorial explains how to deploy the privacy-friendly Umami analytics platform for free with Vercel and Neon, compares alternative hosting options, and outlines setup, initialization, and blog integration preparation via websiteId retrieval.",
+      "url": "/en/posts/setup-umami-analytics/"
+    },
+    {
+      "id": "en/setup-waline-on-vercel",
+      "title": "\"Deploy Waline Comment System on Vercel\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "waline",
+        "vercel",
+        "postgresql",
+        "neon",
+        "comments"
+      ],
+      "summary": "The article explains how to deploy Waline on Vercel with a built-in Neon PostgreSQL database, configure required environment variables and optional email notifications, then connect it to an astro-minimax blog for a complete comment system.",
+      "url": "/en/posts/setup-waline-on-vercel/"
+    },
+    {
+      "id": "zh/cloudflare-env-vars",
+      "title": "\"Cloudflare Pages 环境变量配置指南\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/部署",
+      "tags": [
+        "docs",
+        "cloudflare",
+        "deployment",
+        "configuration"
+      ],
+      "summary": "本文围绕 astro-minimax 在 Cloudflare Pages 部署时的环境变量配置，说明构建时与运行时变量的设置方法、必需与可选项及排障要点，以确保 AI、通知和站点功能正常启用。",
+      "url": "/zh/posts/cloudflare-env-vars/"
+    },
+    {
+      "id": "zh/complete-setup-guide",
+      "title": "\"从零开始：完整博客搭建指南\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/入门",
+      "tags": [
+        "docs",
+        "tutorial",
+        "getting-started"
+      ],
+      "summary": "文章围绕 astro-minimax 博客，从项目初始化、站点配置到 Cloudflare 部署，并接入 Waline、Umami、Telegram 通知与 AI 聊天，帮助读者完成一套可用的完整博客系统。",
+      "url": "/zh/posts/complete-setup-guide/"
+    },
+    {
+      "id": "zh/setup-umami-analytics",
+      "title": "\"配置 Umami 网站统计：Vercel 免费部署方案\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "analytics",
+        "deployment",
+        "vercel",
+        "neon"
+      ],
+      "summary": "文章介绍了基于 Vercel 与 Neon PostgreSQL 免费部署 Umami 的完整流程，并说明如何获取网站追踪参数集成到博客中，以实现隐私友好且低运维的网站统计。",
+      "url": "/zh/posts/setup-umami-analytics/"
+    },
+    {
+      "id": "zh/setup-waline-on-vercel",
+      "title": "\"在 Vercel 部署 Waline 评论系统\"",
+      "date": "2026-03-18T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "waline",
+        "vercel",
+        "postgresql",
+        "neon",
+        "comments"
+      ],
+      "summary": "本文介绍在 Vercel 部署 Waline 评论系统的方法，包括创建 Neon PostgreSQL、导入表结构、配置环境变量与邮件/Webhook，并集成到 astro-minimax 博客以实现评论与通知能力。",
+      "url": "/zh/posts/setup-waline-on-vercel/"
+    },
+    {
+      "id": "en/2026-blog-ecosystem",
+      "title": "\"2026 Tech Blog Ecosystem: A Complete Guide to Building Your Own\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Blog",
+      "tags": [
+        "blog",
+        "guide",
+        "ecosystem",
+        "\"2026\""
+      ],
+      "summary": "The article maps the 2026 tech blog ecosystem across framework, content, search, comments, AI, analytics, notifications, and deployment, then provides decision matrices and stack presets to help readers choose tools that fit their needs and reduce tooling friction.",
+      "url": "/en/posts/2026-blog-ecosystem/"
+    },
+    {
+      "id": "en/ai-guide",
+      "title": "\"AI Chat Feature Configuration Guide\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "configuration"
+      ],
+      "summary": "The guide explains how to enable and configure astro-minimax AI chat, set providers and failover, build AI data, and extend or evaluate the system to achieve reliable, secure, tool-enabled responses.",
+      "url": "/en/posts/ai-guide/"
+    },
+    {
+      "id": "en/cli-guide",
+      "title": "\"CLI Tools Guide\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Tools",
+      "tags": [
+        "docs",
+        "cli",
+        "tools"
+      ],
+      "summary": "This guide explains how to use the @astro-minimax/cli toolkit to initialize blog projects, manage posts, run AI content workflows, and maintain profile and data files for more efficient blog operations.",
+      "url": "/en/posts/cli-guide/"
+    },
+    {
+      "id": "en/notification-guide",
+      "title": "\"Blog Notification System Configuration Guide\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Configuration",
+      "tags": [
+        "docs",
+        "notification",
+        "telegram",
+        "email"
+      ],
+      "summary": "This guide explains how to configure astro-minimax’s multi-channel notification system via environment variables, custom templates, and Waline webhooks to deliver real-time comment and AI chat alerts with fault-tolerant parallel sending.",
+      "url": "/en/posts/notification-guide/"
+    },
+    {
+      "id": "en/why-astro-minimax",
+      "title": "\"Why astro-minimax: Design Decisions & Technical Philosophy\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "en",
+      "category": "Tutorial/Blog",
+      "tags": [
+        "docs",
+        "architecture",
+        "design"
+      ],
+      "summary": "The article explains astro-minimax’s design philosophy by detailing its Astro-based architecture, monorepo package split, virtual-module configuration, and built-in RAG search/chat choices, concluding that this approach balances fast setup, extensibility, and low-maintenance operation.",
+      "url": "/en/posts/why-astro-minimax/"
+    },
+    {
+      "id": "zh/2026-blog-ecosystem",
+      "title": "\"2026 年个人技术博客生态全览：从零构建你的博客系统\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "blog",
+        "guide",
+        "ecosystem",
+        "\"2026\""
+      ],
+      "summary": "文章系统梳理2026年个人技术博客从框架、内容管理到AI、搜索与部署的关键选型，并给出按需求决策路径，帮助从零搭建高性能、低成本且可扩展的博客系统。",
+      "url": "/zh/posts/2026-blog-ecosystem/"
+    },
+    {
+      "id": "zh/ai-guide",
+      "title": "\"AI 聊天功能配置指南\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/AI",
+      "tags": [
+        "docs",
+        "ai",
+        "configuration"
+      ],
+      "summary": "本文系统讲解 astro-minimax 的 AI 聊天功能配置流程，包括启用开关、Provider 与数据构建、工具调用及评估扩展等设置，帮助站点获得可故障转移、可检索增强且可安全降级的聊天能力。",
+      "url": "/zh/posts/ai-guide/"
+    },
+    {
+      "id": "zh/cli-guide",
+      "title": "\"CLI 工具使用指南\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/工具",
+      "tags": [
+        "docs",
+        "cli",
+        "tools"
+      ],
+      "summary": "本文系统介绍 @astro-minimax/cli 的安装、建站、文章管理、AI 处理、评估与数据维护命令，帮助用户通过统一 CLI 高效完成博客项目初始化、内容生成和质量检查。",
+      "url": "/zh/posts/cli-guide/"
+    },
+    {
+      "id": "zh/notification-guide",
+      "title": "\"博客通知系统配置指南\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "docs",
+        "notification",
+        "telegram",
+        "email"
+      ],
+      "summary": "本文介绍 astro-minimax 博客通知系统的配置方法，涵盖 Telegram、Resend 邮件与 Webhook 渠道、Waline 集成、自定义模板和代理设置，帮助站长快速接收评论与 AI 对话通知。",
+      "url": "/zh/posts/notification-guide/"
+    },
+    {
+      "id": "zh/why-astro-minimax",
+      "title": "\"为什么选择 astro-minimax：设计决策与技术思考\"",
+      "date": "2026-03-17T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "architecture",
+        "design"
+      ],
+      "summary": "文章围绕 astro-minimax 的设计决策，阐述其以 Astro、Monorepo 与模块化为核心构建现代技术博客，并通过内置 AI、搜索、通知和 CLI 提升可扩展性与使用效率。",
+      "url": "/zh/posts/why-astro-minimax/"
+    },
+    {
+      "id": "en/deployment-guide",
+      "title": "\"Deployment Guide: Deploy astro-minimax to Multiple Platforms\"",
+      "date": "2026-03-14T00:00:00.000Z",
+      "lang": "en",
+      "category": "Blog/Deployment",
+      "tags": [
+        "docs",
+        "deployment"
+      ],
+      "summary": "This deployment guide explains how to publish astro-minimax static blogs across Cloudflare Pages, Vercel, Netlify, and Docker by first identifying monorepo or CLI project type, then applying platform-specific build paths and Node 22 settings for reliable deployment.",
+      "url": "/en/posts/deployment-guide/"
+    },
+    {
+      "id": "en/feature-overview",
+      "title": "\"astro-minimax Feature Overview\"",
+      "date": "2026-03-14T00:00:00.000Z",
+      "lang": "en",
+      "category": "Blog/Tutorial",
+      "tags": [
+        "docs",
+        "features"
+      ],
+      "summary": "The article introduces the modular astro-minimax Astro blog theme, explaining its content, search, styling, visualization, and optional AI/notification/CLI features, helping users understand configuration options and practical usage paths.",
+      "url": "/en/posts/feature-overview/"
+    },
+    {
+      "id": "zh/deployment-guide",
+      "title": "\"部署指南：多平台部署 astro-minimax\"",
+      "date": "2026-03-14T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/部署",
+      "tags": [
+        "docs",
+        "deployment"
+      ],
+      "summary": "文章围绕 astro-minimax 的多平台部署，先区分 Monorepo 与 CLI 两种项目形式，再给出 Cloudflare Pages、Vercel、Netlify、Docker 及静态托管的构建目录、配置项与注意事项，帮助稳定上线并正确启用 AI 功能。",
+      "url": "/zh/posts/deployment-guide/"
+    },
+    {
+      "id": "zh/feature-overview",
+      "title": "\"astro-minimax 功能特性总览\"",
+      "date": "2026-03-14T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "features"
+      ],
+      "summary": "本文系统梳理 astro-minimax 博客主题的模块化架构、内容管理、搜索、可视化、AI、互动、SEO 与性能等功能，并说明主要配置方式与适用场景，便于快速搭建功能完整的 Astro 博客。",
+      "url": "/zh/posts/feature-overview/"
+    },
+    {
+      "id": "en/getting-started",
+      "title": "\"Getting Started: Three Integration Methods\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Blog/Tutorial",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "The article explains three ways to integrate astro-minimax—CLI, GitHub template, and npm packages—showing setup commands, configuration locations, and update paths so users can choose the fastest or most customizable workflow.",
+      "url": "/en/posts/getting-started/"
+    },
+    {
+      "id": "en/_examples/excalidraw-whiteboard",
+      "title": "\"Excalidraw Whiteboard: Hand-Drawn Diagrams in Your Blog\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "excalidraw"
+      ],
+      "summary": "Excalidraw is a virtual whiteboard tool that produces hand-drawn style diagrams. It's perfect for technical illustrations, architecture diagrams, and…",
+      "url": "/en/posts/_examples/excalidraw-whiteboard/"
+    },
+    {
+      "id": "en/_examples/markdown-basics",
+      "title": "\"Markdown Basics: A Complete Syntax Guide\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "This article covers all the fundamental Markdown syntax you need to write rich, well-structured content. Every feature includes a working example so …",
+      "url": "/en/posts/_examples/markdown-basics/"
+    },
+    {
+      "id": "en/_examples/markdown-extended",
+      "title": "\"Markdown Extended: Advanced Syntax Features\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "Beyond the basics, Markdown supports a rich set of extended features. This article demonstrates math typesetting, code blocks with advanced highlight…",
+      "url": "/en/posts/_examples/markdown-extended/"
+    },
+    {
+      "id": "en/_examples/markmap-mindmaps",
+      "title": "\"Markmap Mindmaps: Visual Thinking in Markdown\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markmap"
+      ],
+      "summary": "Mindmaps are a powerful tool for organizing thoughts, planning projects, and visualizing relationships between concepts. With Markmap, you can create…",
+      "url": "/en/posts/_examples/markmap-mindmaps/"
+    },
+    {
+      "id": "en/_examples/mermaid-diagrams",
+      "title": "Mermaid Diagram Examples",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "en",
+      "category": "Blog/Tutorial",
+      "tags": [
+        "mermaid",
+        "diagram",
+        "tutorial"
+      ],
+      "summary": "This article demonstrates how to create various Mermaid diagrams using the \r\n\r\n---\r\n\r\nReferences\rMermaid Official Documentation\rMermaid GitHub\rMermai…",
+      "url": "/en/posts/_examples/mermaid-diagrams/"
+    },
+    {
+      "id": "zh/getting-started",
+      "title": "\"快速开始：三种使用方式\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "configuration"
+      ],
+      "summary": "文章介绍 astro-minimax 的三种快速上手方式：CLI 创建、GitHub Template 与 NPM 包集成，并说明各自适用场景、配置步骤和更新方式，帮助用户按需求高效搭建博客。",
+      "url": "/zh/posts/getting-started/"
+    },
+    {
+      "id": "zh/_examples/excalidraw-whiteboard",
+      "title": "\"Excalidraw 白板：在博客中嵌入手绘风格图表\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "excalidraw"
+      ],
+      "summary": "Excalidraw 是一个虚拟白板工具，可以生成手绘风格的图表。它非常适合技术插图、架构图和可视化解释，给人一种亲切自然的感觉。\r\n\r\n---\r\n\r\n什么是 Excalidraw？\r\n\r\nExcalidraw 是一个开源虚拟白板，具有以下核心特性：\r手绘风格 — 图表看起来像手画的草图，给人轻松…",
+      "url": "/zh/posts/_examples/excalidraw-whiteboard/"
+    },
+    {
+      "id": "zh/_examples/markdown-basics",
+      "title": "\"Markdown 基础：完整语法指南\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "本文涵盖了所有基础 Markdown 语法，帮助你编写丰富、结构清晰的内容。每个功能都附带可用的示例，让你直观地看到渲染效果。\r\n\r\n---\r\n\r\n标题\r\n\r\nMarkdown 支持六个级别的标题，使用  符号来定义标题层级。\r\n\r\n一级标题\r\n\r\n二级标题\r\n\r\n三级标题\r\n\r\n四级标题\r\n\r\n…",
+      "url": "/zh/posts/_examples/markdown-basics/"
+    },
+    {
+      "id": "zh/_examples/markdown-extended",
+      "title": "\"Markdown 扩展：高级语法功能\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markdown"
+      ],
+      "summary": "在基础语法之外，Markdown 还支持丰富的扩展功能。本文展示数学排版、高级代码高亮、GitHub 风格告警等特性。\r\n\r\n---\r\n\r\n数学公式\r\n\r\n行内公式\r\n\r\n使用单美元符号输入行内公式。例如，爱因斯坦的著名方程 $E = mc^2$ 改变了物理学。求根公式 $x = \\frac{-b…",
+      "url": "/zh/posts/_examples/markdown-extended/"
+    },
+    {
+      "id": "zh/_examples/markmap-mindmaps",
+      "title": "\"Markmap 思维导图：用 Markdown 进行可视化思考\"",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "Examples",
+      "tags": [
+        "tutorial",
+        "examples",
+        "markmap"
+      ],
+      "summary": "思维导图是组织思路、规划项目和可视化概念关系的强大工具。借助 Markmap，你可以直接在 Markdown 文件中使用  代码块中，即可渲染为精美的交互式 SVG 思维导图。\r\n\r\n---\r\n\r\n基础思维导图\r\n\r\n此示例展示了最基本的结构——一个中心主题，下分三层分支。\r\n\r\n\r\n\r\n每个分支…",
+      "url": "/zh/posts/_examples/markmap-mindmaps/"
+    },
+    {
+      "id": "zh/_examples/mermaid-diagrams",
+      "title": "Mermaid 图表示例",
+      "date": "2026-03-12T00:00:00.000Z",
+      "lang": "zh",
+      "category": "博客/教程",
+      "tags": [
+        "mermaid",
+        "图表",
+        "教程"
+      ],
+      "summary": "本文展示如何使用 \r\n\r\n---\r\n\r\n参考资料\rMermaid 官方文档\rMermaid GitHub\rMermaid Live Editor",
+      "url": "/zh/posts/_examples/mermaid-diagrams/"
+    },
+    {
+      "id": "en/_examples/rust-series-04-concurrency",
+      "title": "\"Rust Concurrency in Practice\"",
+      "date": "2026-03-07T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Concurrency",
+        "async/await"
+      ],
+      "summary": "Rust's Concurrency Safety Guarantee\r\n\r\nRust has a famous motto: \"Fearless Concurrency\". Thanks to the ownership system and type system, Rust can elim…",
+      "url": "/en/posts/_examples/rust-series-04-concurrency/"
+    },
+    {
+      "id": "zh/_examples/rust-series-04-concurrency",
+      "title": "\"Rust 并发编程实战\"",
+      "date": "2026-03-07T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "并发",
+        "async/await"
+      ],
+      "summary": "Rust 的并发安全保证\r\n\r\nRust 有一个著名的口号：「无畏并发」（Fearless Concurrency）。得益于所有权系统和类型系统，Rust 在编译时就能排除绝大部分并发错误，如数据竞争。\r\n\r\n线程基础\r\n\r\n创建线程\r\n\r\n\r\n\r\n使用 move 闭包\r\n\r\n当需要在线程间传递数…",
+      "url": "/zh/posts/_examples/rust-series-04-concurrency/"
+    },
+    {
+      "id": "en/_examples/rust-series-03-error-handling",
+      "title": "\"Rust Error Handling Best Practices\"",
+      "date": "2026-03-05T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Error Handling",
+        "Result"
+      ],
+      "summary": "Why is Rust's Error Handling Different?\r\n\r\nIn most languages, error handling relies on exception mechanisms (try-catch). Rust takes a completely diff…",
+      "url": "/en/posts/_examples/rust-series-03-error-handling/"
+    },
+    {
+      "id": "zh/_examples/rust-series-03-error-handling",
+      "title": "\"Rust 错误处理最佳实践\"",
+      "date": "2026-03-05T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "错误处理",
+        "Result"
+      ],
+      "summary": "为什么 Rust 的错误处理与众不同？\r\n\r\n在大多数语言中，错误处理依赖于异常机制（try-catch）。而 Rust 采用了完全不同的方式——通过类型系统来处理错误。这意味着编译器会强制你处理每一个可能的错误情况，不会有遗漏。\r\n\r\n两种错误类型\r\n\r\nRust 将错误分为两种：\r可恢复错误（…",
+      "url": "/zh/posts/_examples/rust-series-03-error-handling/"
+    },
+    {
+      "id": "en/_examples/rust-series-02-ownership",
+      "title": "\"Understanding Rust's Ownership System\"",
+      "date": "2026-03-03T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Ownership",
+        "Memory Management"
+      ],
+      "summary": "What is Ownership?\r\n\r\nOwnership is Rust's most unique feature, enabling Rust to guarantee memory safety without needing a garbage collector. Understa…",
+      "url": "/en/posts/_examples/rust-series-02-ownership/"
+    },
+    {
+      "id": "zh/_examples/rust-series-02-ownership",
+      "title": "\"理解 Rust 的所有权系统\"",
+      "date": "2026-03-03T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "所有权",
+        "内存管理"
+      ],
+      "summary": "什么是所有权？\r\n\r\n所有权是 Rust 最独特的特性，它使 Rust 能在不需要垃圾回收的情况下保证内存安全。理解所有权对于掌握 Rust 至关重要。\r\n\r\n所有权规则\r\n\r\nRust 的所有权遵循三条简单规则：\rRust 中的每一个值都有一个所有者（owner）\r同一时刻，一个值只能有一个所有…",
+      "url": "/zh/posts/_examples/rust-series-02-ownership/"
+    },
+    {
+      "id": "en/_examples/rust-series-01-introduction",
+      "title": "\"Rust Getting Started Guide: Why Choose Rust?\"",
+      "date": "2026-03-01T10:00:00Z",
+      "lang": "en",
+      "category": "Tutorial/Rust",
+      "tags": [
+        "Rust",
+        "Programming Language",
+        "Getting Started"
+      ],
+      "summary": "Why Learn Rust?\r\n\r\nRust is a systems programming language focused on safety, concurrency, and performance. Since its 1.0 release in 2015, it has been…",
+      "url": "/en/posts/_examples/rust-series-01-introduction/"
+    },
+    {
+      "id": "zh/_examples/rust-series-01-introduction",
+      "title": "\"Rust 入门指南：为什么选择 Rust？\"",
+      "date": "2026-03-01T10:00:00Z",
+      "lang": "zh",
+      "category": "教程/Rust",
+      "tags": [
+        "Rust",
+        "编程语言",
+        "入门教程"
+      ],
+      "summary": "为什么学习 Rust？\r\n\r\nRust 是一门专注于安全性、并发性和性能的系统编程语言。自 2015 年发布 1.0 版本以来，它连续多年在 Stack Overflow 开发者调查中被评为\"最受喜爱的编程语言\"。\r\n\r\nRust 的核心优势\r内存安全，无需垃圾回收\r\n\r\nRust 通过其独特的所…",
+      "url": "/zh/posts/_examples/rust-series-01-introduction/"
+    },
+    {
+      "id": "en/how-to-add-latex-equations-in-blog-posts",
+      "title": "How to add LaTeX Equations in Astro blog posts",
+      "date": "2024-09-08T20:58:52.737Z",
+      "lang": "en",
+      "category": "教程/前端",
+      "tags": [
+        "docs"
+      ],
+      "summary": "The article explains how to enable LaTeX rendering in Astro Markdown posts by installing math plugins, updating Astro config, importing KaTeX CSS, and adjusting typography so equations display correctly.",
+      "url": "/en/posts/how-to-add-latex-equations-in-blog-posts/"
+    },
+    {
+      "id": "zh/how-to-add-latex-equations-in-blog-posts",
+      "title": "如何在 Astro 博客文章中添加 LaTeX 公式",
+      "date": "2024-09-08T20:58:52.737Z",
+      "lang": "zh",
+      "category": "教程/前端",
+      "tags": [
+        "docs"
+      ],
+      "summary": "文章介绍在 Astro 的 astro-minimax 博客中为 Markdown 启用 LaTeX 公式支持的方法，包括安装 remark/rehype/KaTeX 插件、配置样式与语法，最终实现行内和块级公式的正确渲染。",
+      "url": "/zh/posts/how-to-add-latex-equations-in-blog-posts/"
+    },
+    {
+      "id": "en/setting-dates-via-git-hooks",
+      "title": "How to Use Git Hooks to Auto-Set Post Dates",
+      "date": "2024-01-03T20:40:08Z",
+      "lang": "en",
+      "category": "Tutorial/Engineering",
+      "tags": [
+        "docs",
+        "git",
+        "automation"
+      ],
+      "summary": "The article shows how to automate Astro blog post `pubDatetime` and `modDatetime` updates with Git pre-commit hooks, reducing manual date maintenance while preserving any dates already set by the author.",
+      "url": "/en/posts/setting-dates-via-git-hooks/"
+    },
+    {
+      "id": "zh/setting-dates-via-git-hooks",
+      "title": "如何使用 Git 钩子自动设置文章日期",
+      "date": "2024-01-03T20:40:08Z",
+      "lang": "zh",
+      "category": "教程/工程化",
+      "tags": [
+        "docs",
+        "git",
+        "automation"
+      ],
+      "summary": "文章介绍在 astro-minimax 博客中通过 Git pre-commit 钩子自动填充 frontmatter 的发布日期与修改日期，并用 CLI 或 Husky 手动配置实现免手动维护且保留人工设定值。",
+      "url": "/zh/posts/setting-dates-via-git-hooks/"
+    },
+    {
+      "id": "en/dynamic-og-images",
+      "title": "Dynamic OG image generation in astro-minimax blog posts",
+      "date": "2022-12-28T04:59:04.866Z",
+      "lang": "en",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "summary": "The article explains how astro-minimax generates dynamic OG images at build time, how `cover` and `ogImage` fall back to each other, and why this improves social sharing while increasing build time.",
+      "url": "/en/posts/dynamic-og-images/"
+    },
+    {
+      "id": "zh/dynamic-og-images",
+      "title": "在 astro-minimax 中动态生成 OG 图片",
+      "date": "2022-12-28T04:59:04.866Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "summary": "文章介绍 astro-minimax 在构建时为未设置 ogImage 的非草稿文章动态生成社交分享图的方法，说明 cover 与 ogImage 的回退规则、字体配置及构建耗时权衡。",
+      "url": "/zh/posts/dynamic-og-images/"
+    },
+    {
+      "id": "en/adding-new-post",
+      "title": "Adding new posts in astro-minimax theme",
+      "date": "2022-09-23T15:22:00Z",
+      "lang": "en",
+      "category": "Blog/Tutorial",
+      "tags": [
+        "docs"
+      ],
+      "summary": "This tutorial explains how to create and organize new posts in the astro-minimax theme, configure frontmatter and slugs correctly, and avoid URL or build issues for better content management and SEO.",
+      "url": "/en/posts/adding-new-post/"
+    },
+    {
+      "id": "zh/adding-new-post",
+      "title": "在 astro-minimax 主题中添加新文章",
+      "date": "2022-09-23T15:22:00Z",
+      "lang": "zh",
+      "category": "教程/博客",
+      "tags": [
+        "docs"
+      ],
+      "summary": "本文介绍如何在 astro-minimax 主题中创建新文章，包括目录与 URL 规则、Frontmatter 配置、代码高亮和图片存储方式，以便规范发布并优化管理与展示。",
+      "url": "/zh/posts/adding-new-post/"
+    },
+    {
+      "id": "en/how-to-configure-astro-minimax-theme",
+      "title": "How to configure astro-minimax theme",
+      "date": "2022-09-23T04:58:53Z",
+      "lang": "en",
+      "category": "Blog/Configuration",
+      "tags": [
+        "configuration",
+        "docs"
+      ],
+      "summary": "The article explains how to customize the astro-minimax Astro blog theme through config files, covering site settings, feature toggles, navigation, projects, branding, social/share links, and optional integrations to tailor behavior and UI.",
+      "url": "/en/posts/how-to-configure-astro-minimax-theme/"
+    },
+    {
+      "id": "zh/how-to-configure-astro-minimax-theme",
+      "title": "如何配置 astro-minimax 主题",
+      "date": "2022-09-23T04:58:53Z",
+      "lang": "zh",
+      "category": "教程/配置",
+      "tags": [
+        "configuration",
+        "docs"
+      ],
+      "summary": "本文系统说明 astro-minimax 主题的配置方式，围绕 src/config.ts、constants.ts 与样式文件设置站点信息、功能开关、导航、搜索、评论等模块，以实现个性化博客定制。",
+      "url": "/zh/posts/how-to-configure-astro-minimax-theme/"
+    }
+  ]
 }
