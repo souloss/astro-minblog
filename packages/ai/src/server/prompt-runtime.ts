@@ -291,6 +291,7 @@ export async function assemblePromptRuntime(
           : getArticleChunks(`en/${articleSlugForChunks}`)
             ? `en/${articleSlugForChunks}`
             : undefined);
+    currentArticleIdForChunks = currentArticleId;
     const currentChunks = currentArticleId
       ? getArticleChunks(currentArticleId)
       : undefined;

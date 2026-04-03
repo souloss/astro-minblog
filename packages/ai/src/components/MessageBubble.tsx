@@ -19,6 +19,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function getValidExternalUrl(value: unknown): string | null {
   if (typeof value !== 'string' || !value.trim()) return null;
 
+  // Accept relative URLs (e.g., /zh/posts/slug or #anchor) — same as RichText.sanitizeUrl
+  if (value.startsWith('/') || value.startsWith('#')) {
+    return value;
+  }
+
   try {
     const url = new URL(value);
     return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null;
