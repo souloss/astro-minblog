@@ -66,7 +66,7 @@ export interface ChatHandlerOptions {
 
 // ── Status Metadata ───────────────────────────────────────────
 
-export type ChatStatusStage = "search" | "answer" | "complete";
+export type ChatStatusStage = "search" | "answer" | "complete" | "error";
 
 export interface ChatStatusData {
   stage: ChatStatusStage;

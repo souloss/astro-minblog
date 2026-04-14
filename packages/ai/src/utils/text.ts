@@ -49,9 +49,17 @@ function buildCjkTokenVariants(text: string): string[] {
 
 export function dedupeByContainment(terms: string[]): string[] {
   const unique = [...new Set(terms)];
+  // Sort longest-first so longer terms are kept (they subsume shorter ones)
+  const sorted = unique.sort((a, b) => b.length - a.length);
   const kept: string[] = [];
-  for (const term of unique.sort((a, b) => b.length - a.length)) {
-    if (!kept.some(existing => existing.includes(term))) {
+
+  // Use a Set for O(1) containment lookups via substring scan on kept terms.
+  // For each candidate, only check if it's a substring of any already-kept
+  // (longer) term. Since we iterate longest-first, kept terms are always
+  // >= current term length, making this more efficient than the naive O(n²).
+  for (const term of sorted) {
+    const isSubstr = kept.some(existing => existing.includes(term));
+    if (!isSubstr) {
       kept.push(term);
     }
   }

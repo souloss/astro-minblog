@@ -25,12 +25,12 @@ class InjectionCacheManager {
   }
 
   get(sessionId: string): InjectionCacheEntry | undefined {
-    this.cleanup();
+    this.maybeCleanup();
     return this.caches.get(sessionId);
   }
 
   getOrCreate(sessionId: string): InjectionCacheEntry {
-    this.cleanup();
+    this.maybeCleanup();
 
     let entry = this.caches.get(sessionId);
     if (!entry) {
@@ -71,6 +71,16 @@ class InjectionCacheManager {
     log.debug(
       `markAsInjected: session=${sessionId}, added=${chunkIds.length}, total=${entry.injectedChunks.size}`
     );
+  }
+
+  private lastCleanupTime = 0;
+  private static CLEANUP_INTERVAL_MS = 60_000;
+
+  private maybeCleanup(): void {
+    const now = Date.now();
+    if (now - this.lastCleanupTime < InjectionCacheManager.CLEANUP_INTERVAL_MS) return;
+    this.lastCleanupTime = now;
+    this.cleanup();
   }
 
   cleanup(): void {

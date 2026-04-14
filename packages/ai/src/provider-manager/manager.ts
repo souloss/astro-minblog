@@ -188,9 +188,31 @@ export class ProviderManager {
   }
 }
 
+// Cache the last-created manager by a stable key derived from env.
+// In Workers, the env object is reused across requests within the same isolate,
+// so identity comparison is sufficient. In Node.js dev-server, env is a plain
+// object that is also reused.
+let cachedManager: ProviderManager | null = null;
+let cachedEnvRef: ProviderManagerEnv | null = null;
+
 export function getProviderManager(
   env: ProviderManagerEnv,
   options?: ProviderManagerOptions
 ): ProviderManager {
-  return new ProviderManager(env, options);
+  // Return cached instance when env identity matches (same isolate / same object)
+  if (cachedManager && cachedEnvRef === env) {
+    return cachedManager;
+  }
+  const manager = new ProviderManager(env, options);
+  cachedManager = manager;
+  cachedEnvRef = env;
+  return manager;
+}
+
+/**
+ * Clears the cached ProviderManager. Useful in tests or when env changes.
+ */
+export function resetProviderManagerCache(): void {
+  cachedManager = null;
+  cachedEnvRef = null;
 }

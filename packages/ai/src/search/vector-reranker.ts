@@ -86,7 +86,12 @@ export function rerankWithVectors<
   if (articleScores.size === 0) return candidates;
 
   // Normalize original scores to 0-1
-  const maxOriginal = Math.max(...candidates.map(c => c.score ?? 0), 1);
+  // Use iterative max to avoid RangeError with large candidate arrays
+  let maxOriginal = 1;
+  for (const c of candidates) {
+    const s = c.score ?? 0;
+    if (s > maxOriginal) maxOriginal = s;
+  }
 
   const reranked = candidates.map(article => {
     const slug = extractSlugFromUrl(article.url);
@@ -135,7 +140,11 @@ function computeQueryVector(
 
   const tf = new Map<string, number>();
   for (const t of tokens) tf.set(t, (tf.get(t) || 0) + 1);
-  const maxTf = Math.max(...tf.values(), 1);
+  // Iterative max to avoid RangeError on large token sets
+  let maxTf = 1;
+  for (const v of tf.values()) {
+    if (v > maxTf) maxTf = v;
+  }
 
   const vector = vocabulary.map(term => {
     const termTf = (tf.get(term) || 0) / maxTf;

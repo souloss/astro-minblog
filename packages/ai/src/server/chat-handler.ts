@@ -690,12 +690,30 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
 
         const stream = createUIMessageStream({
           execute: async ({ writer }) => {
+            try {
             await streamCachedResponse(
               writer,
               cachedResponse,
               responseCacheConfig,
               lang
             );
+            } catch (err) {
+              log.error("Stream execution error:", err);
+              try {
+                writer.write({
+                  type: "message-metadata",
+                  messageMetadata: createChatStatusData({
+                    stage: "complete",
+                    message: t("ai.error.generic", lang),
+                    progress: 1,
+                    done: true,
+                  }),
+                });
+                writeFinish(writer);
+              } catch {
+                // Stream already closed, nothing to do
+              }
+            }
           },
         });
 
@@ -718,6 +736,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
     if (cachedSearch) {
       const stream = createUIMessageStream({
         execute: async ({ writer }) => {
+          try {
           const w = writer;
           writeSearchStatus(
             w,
@@ -817,6 +836,23 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           } else {
             responseText = await streamMockFallback(w, latestText, lang);
           }
+          } catch (err) {
+            log.error("Stream execution error:", err);
+            try {
+              writer.write({
+                type: "message-metadata",
+                messageMetadata: createChatStatusData({
+                  stage: "complete",
+                  message: t("ai.error.generic", lang),
+                  progress: 1,
+                  done: true,
+                }),
+              });
+              writeFinish(writer);
+            } catch {
+              // Stream already closed, nothing to do
+            }
+          }
         },
       });
 
@@ -855,6 +891,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
+      try {
       const articleCount = relatedArticles.length + relatedProjects.length;
 
       if (articleCount > 0) {
@@ -1026,6 +1063,23 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           cacheKey,
           waitUntil,
         });
+      }
+      } catch (err) {
+        log.error("Stream execution error:", err);
+        try {
+          writer.write({
+            type: "message-metadata",
+            messageMetadata: createChatStatusData({
+              stage: "complete",
+              message: t("ai.error.generic", lang),
+              progress: 1,
+              done: true,
+            }),
+          });
+          writeFinish(writer);
+        } catch {
+          // Stream already closed, nothing to do
+        }
       }
     },
   });

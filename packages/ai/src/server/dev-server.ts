@@ -386,15 +386,15 @@ async function main() {
         const responseCacheConfig = getResponseCacheConfig(env);
 
         const timeoutConfig = {
-          request: (env.AI_TIMEOUT_REQUEST as number) ?? 45000,
-          keywordExtraction: (env.AI_TIMEOUT_KEYWORD as number) ?? 5000,
-          evidenceAnalysis: (env.AI_TIMEOUT_EVIDENCE as number) ?? 8000,
-          llmStreaming: (env.AI_TIMEOUT_LLM as number) ?? 30000,
+          request: Number(env.AI_TIMEOUT_REQUEST) || 45000,
+          keywordExtraction: Number(env.AI_TIMEOUT_KEYWORD) || 5000,
+          evidenceAnalysis: Number(env.AI_TIMEOUT_EVIDENCE) || 8000,
+          llmStreaming: Number(env.AI_TIMEOUT_LLM) || 30000,
         };
 
         const healthConfig = {
-          unhealthyThreshold: (env.AI_HEALTH_THRESHOLD as number) ?? 3,
-          recoveryTtl: (env.AI_HEALTH_RECOVERY_TTL as number) ?? 60000,
+          unhealthyThreshold: Number(env.AI_HEALTH_THRESHOLD) || 3,
+          recoveryTtl: Number(env.AI_HEALTH_RECOVERY_TTL) || 60000,
         };
 
         const dataStatus = {
