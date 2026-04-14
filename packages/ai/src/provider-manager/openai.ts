@@ -1,3 +1,5 @@
+import { createLogger } from "../utils/logger.js";
+const openaiLog = createLogger("openai-adapter");
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText, convertToModelMessages } from "ai";
 import type {
@@ -36,19 +38,19 @@ async function setupGlobalProxy(): Promise<void> {
       typeof undici.setGlobalDispatcher !== "function" ||
       typeof undici.ProxyAgent !== "function"
     ) {
-      console.log(
-        "[OpenAIAdapter] undici APIs not available, skipping proxy setup (likely Edge Runtime)"
+      openaiLog.info(
+        "undici APIs not available, skipping proxy setup (likely Edge Runtime)"
       );
       return;
     }
 
     undici.setGlobalDispatcher(new undici.ProxyAgent(proxyUrl));
-    console.log("[OpenAIAdapter] Global proxy dispatcher set:", proxyUrl);
+    openaiLog.info("Global proxy dispatcher set:", proxyUrl);
     proxyInitialized = true;
   } catch (e) {
     // Expected in Cloudflare Edge Runtime - undici import may fail or APIs may not exist
-    console.log(
-      "[OpenAIAdapter] Proxy setup skipped:",
+    openaiLog.info(
+      "Proxy setup skipped:",
       e instanceof Error ? e.message : String(e)
     );
   }
@@ -119,7 +121,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
     if (abortSignal) {
       if (abortSignal.aborted) {
         clearTimeout(timeoutId);
-        throw new DOMException('The operation was aborted.', 'AbortError');
+        throw new DOMException("The operation was aborted.", "AbortError");
       }
       abortSignal.addEventListener("abort", abortHandler, { once: true });
     }

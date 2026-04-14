@@ -34,12 +34,12 @@ class InjectionCacheManager {
 
     let entry = this.caches.get(sessionId);
     if (!entry) {
-        entry = {
-          sessionId,
-          injectedChunks: new Set(),
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        };
+      entry = {
+        sessionId,
+        injectedChunks: new Set(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
       this.caches.set(sessionId, entry);
     }
 

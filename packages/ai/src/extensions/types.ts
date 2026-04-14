@@ -1,11 +1,11 @@
-import type { ArticleContext, ProjectContext } from '../search/types.js';
+import type { ArticleContext, ProjectContext } from "../search/types.js";
 
-export type ExtensionType = 
-  | 'searchable'
-  | 'facts'
-  | 'context'
-  | 'voice-style'
-  | 'semantic-fallback';
+export type ExtensionType =
+  | "searchable"
+  | "facts"
+  | "context"
+  | "voice-style"
+  | "semantic-fallback";
 
 export interface ExtensionSearchDocument {
   id: string;
@@ -59,7 +59,11 @@ export interface PromptContext {
 export interface ContextData {
   sectionTitle: string;
   content: string | ((context: PromptContext) => string);
-  position: 'before-articles' | 'after-articles' | 'before-facts' | 'after-facts';
+  position:
+    | "before-articles"
+    | "after-articles"
+    | "before-facts"
+    | "after-facts";
   matchCondition?: {
     queryPatterns?: RegExp[];
     categories?: string[];
@@ -89,18 +93,18 @@ export interface SemanticFallbackRule {
   patterns: RegExp[];
   fallbackQuery: string;
   primaryQuery?: string;
-  complexity?: 'simple' | 'moderate' | 'complex';
+  complexity?: "simple" | "moderate" | "complex";
 }
 
 export interface SemanticFallbackData {
   rules: SemanticFallbackRule[];
 }
 
-export type ExtensionData = 
-  | SearchableData 
-  | FactsData 
-  | ContextData 
-  | VoiceStyleData 
+export type ExtensionData =
+  | SearchableData
+  | FactsData
+  | ContextData
+  | VoiceStyleData
   | SemanticFallbackData;
 
 export interface Extension<T extends ExtensionData = ExtensionData> {

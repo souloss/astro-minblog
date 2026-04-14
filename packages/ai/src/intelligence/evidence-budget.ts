@@ -1,6 +1,6 @@
-import type { QueryComplexity } from './types.js';
-import type { AnswerMode } from './citation-guard.js';
-import type { ArticleContext } from '../search/types.js';
+import type { QueryComplexity } from "./types.js";
+import type { AnswerMode } from "./citation-guard.js";
+import type { ArticleContext } from "../search/types.js";
 
 export interface EvidenceBudget {
   maxArticles: number;
@@ -44,7 +44,7 @@ const MODE_ADJUSTMENTS: Partial<Record<AnswerMode, Partial<EvidenceBudget>>> = {
 
 export function getEvidenceBudget(
   complexity: QueryComplexity,
-  answerMode?: AnswerMode,
+  answerMode?: AnswerMode
 ): EvidenceBudget {
   const base = { ...BUDGET_PRESETS[complexity] };
 
@@ -57,7 +57,7 @@ export function getEvidenceBudget(
 
 export function applyBudgetToArticles(
   articles: ArticleContext[],
-  budget: EvidenceBudget,
+  budget: EvidenceBudget
 ): ArticleContext[] {
   return articles.slice(0, budget.maxArticles).map(article => ({
     ...article,

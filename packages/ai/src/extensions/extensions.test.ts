@@ -1,15 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  getExtensionRegistry,
-  resetExtensionRegistry,
-} from './registry.js';
+import { describe, it, expect, beforeEach } from "vitest";
+import { getExtensionRegistry, resetExtensionRegistry } from "./registry.js";
 import {
   resolveVoiceStyleMode,
   buildVoiceStylePrompt,
   getSemanticFallback,
   mergeSearchDocuments,
   mergeFacts,
-} from './injector.js';
+} from "./injector.js";
 import type {
   Extension,
   VoiceStyleData,
@@ -17,8 +14,8 @@ import type {
   SearchableData,
   FactsData,
   LoadedExtensions,
-} from './types.js';
-import type { ArticleContext } from '../search/types.js';
+} from "./types.js";
+import type { ArticleContext } from "../search/types.js";
 
 function createVoiceStyleExtension(
   id: string,
@@ -26,18 +23,27 @@ function createVoiceStyleExtension(
   priority = 50,
   enabled = true
 ): Extension<VoiceStyleData> {
-  return { id, type: 'voice-style', name: id, priority, enabled, data };
+  return { id, type: "voice-style", name: id, priority, enabled, data };
 }
 
 function createSemanticFallbackExtension(
   id: string,
-  rules: SemanticFallbackData['rules'],
+  rules: SemanticFallbackData["rules"],
   priority = 50
 ): Extension<SemanticFallbackData> {
-  return { id, type: 'semantic-fallback', name: id, priority, enabled: true, data: { rules } };
+  return {
+    id,
+    type: "semantic-fallback",
+    name: id,
+    priority,
+    enabled: true,
+    data: { rules },
+  };
 }
 
-function createLoadedExtensions(overrides: Partial<LoadedExtensions> = {}): LoadedExtensions {
+function createLoadedExtensions(
+  overrides: Partial<LoadedExtensions> = {}
+): LoadedExtensions {
   return {
     searchable: new Map(),
     facts: new Map(),
@@ -48,92 +54,184 @@ function createLoadedExtensions(overrides: Partial<LoadedExtensions> = {}): Load
   };
 }
 
-describe('ExtensionRegistry', () => {
+describe("ExtensionRegistry", () => {
   beforeEach(() => {
     resetExtensionRegistry();
   });
 
-  describe('voice-style merging', () => {
-    it('should merge modes from multiple voice-style extensions', () => {
+  describe("voice-style merging", () => {
+    it("should merge modes from multiple voice-style extensions", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createVoiceStyleExtension('voice-1', {
-        modes: [{ id: 'travel', name: 'Travel', description: 'Travel mode', traits: ['trait1'] }],
-        overallTone: 'tone1',
-      }, 80));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-1",
+          {
+            modes: [
+              {
+                id: "travel",
+                name: "Travel",
+                description: "Travel mode",
+                traits: ["trait1"],
+              },
+            ],
+            overallTone: "tone1",
+          },
+          80
+        )
+      );
 
-      registry.register(createVoiceStyleExtension('voice-2', {
-        modes: [{ id: 'tech', name: 'Tech', description: 'Tech mode', traits: ['trait2'] }],
-        overallTone: 'tone2',
-      }, 70));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-2",
+          {
+            modes: [
+              {
+                id: "tech",
+                name: "Tech",
+                description: "Tech mode",
+                traits: ["trait2"],
+              },
+            ],
+            overallTone: "tone2",
+          },
+          70
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
       expect(loaded.voiceStyle).not.toBeNull();
       expect(loaded.voiceStyle?.modes).toHaveLength(2);
-      expect(loaded.voiceStyle?.modes.map(m => m.id)).toContain('travel');
-      expect(loaded.voiceStyle?.modes.map(m => m.id)).toContain('tech');
+      expect(loaded.voiceStyle?.modes.map(m => m.id)).toContain("travel");
+      expect(loaded.voiceStyle?.modes.map(m => m.id)).toContain("tech");
     });
 
-    it('should keep overallTone from highest priority extension', () => {
+    it("should keep overallTone from highest priority extension", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createVoiceStyleExtension('voice-1', {
-        modes: [{ id: 'mode1', name: 'M1', description: 'Mode 1', traits: [] }],
-        overallTone: 'high-priority-tone',
-      }, 80));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-1",
+          {
+            modes: [
+              { id: "mode1", name: "M1", description: "Mode 1", traits: [] },
+            ],
+            overallTone: "high-priority-tone",
+          },
+          80
+        )
+      );
 
-      registry.register(createVoiceStyleExtension('voice-2', {
-        modes: [{ id: 'mode2', name: 'M2', description: 'Mode 2', traits: [] }],
-        overallTone: 'low-priority-tone',
-      }, 70));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-2",
+          {
+            modes: [
+              { id: "mode2", name: "M2", description: "Mode 2", traits: [] },
+            ],
+            overallTone: "low-priority-tone",
+          },
+          70
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
-      expect(loaded.voiceStyle?.overallTone).toBe('high-priority-tone');
+      expect(loaded.voiceStyle?.overallTone).toBe("high-priority-tone");
     });
 
-    it('should merge frequentExpressions from multiple extensions', () => {
+    it("should merge frequentExpressions from multiple extensions", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createVoiceStyleExtension('voice-1', {
-        modes: [],
-        frequentExpressions: ['expr1', 'expr2'],
-      }, 80));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-1",
+          {
+            modes: [],
+            frequentExpressions: ["expr1", "expr2"],
+          },
+          80
+        )
+      );
 
-      registry.register(createVoiceStyleExtension('voice-2', {
-        modes: [],
-        frequentExpressions: ['expr3', 'expr4'],
-      }, 70));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-2",
+          {
+            modes: [],
+            frequentExpressions: ["expr3", "expr4"],
+          },
+          70
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
-      expect(loaded.voiceStyle?.frequentExpressions).toEqual(['expr1', 'expr2', 'expr3', 'expr4']);
+      expect(loaded.voiceStyle?.frequentExpressions).toEqual([
+        "expr1",
+        "expr2",
+        "expr3",
+        "expr4",
+      ]);
     });
 
-    it('should not duplicate modes with same id', () => {
+    it("should not duplicate modes with same id", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createVoiceStyleExtension('voice-1', {
-        modes: [{ id: 'travel', name: 'Travel 1', description: 'D1', traits: ['t1'] }],
-      }, 80));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-1",
+          {
+            modes: [
+              {
+                id: "travel",
+                name: "Travel 1",
+                description: "D1",
+                traits: ["t1"],
+              },
+            ],
+          },
+          80
+        )
+      );
 
-      registry.register(createVoiceStyleExtension('voice-2', {
-        modes: [{ id: 'travel', name: 'Travel 2', description: 'D2', traits: ['t2'] }],
-      }, 70));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-2",
+          {
+            modes: [
+              {
+                id: "travel",
+                name: "Travel 2",
+                description: "D2",
+                traits: ["t2"],
+              },
+            ],
+          },
+          70
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
       expect(loaded.voiceStyle?.modes).toHaveLength(1);
-      expect(loaded.voiceStyle?.modes[0].name).toBe('Travel 1');
+      expect(loaded.voiceStyle?.modes[0].name).toBe("Travel 1");
     });
 
-    it('should skip disabled extensions', () => {
+    it("should skip disabled extensions", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createVoiceStyleExtension('voice-1', {
-        modes: [{ id: 'm1', name: 'M1', description: 'D1', traits: [] }],
-      }, 80, false));
+      registry.register(
+        createVoiceStyleExtension(
+          "voice-1",
+          {
+            modes: [{ id: "m1", name: "M1", description: "D1", traits: [] }],
+          },
+          80,
+          false
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
@@ -141,13 +239,19 @@ describe('ExtensionRegistry', () => {
     });
   });
 
-  describe('semantic-fallback pattern compilation', () => {
-    it('should compile string patterns to RegExp', () => {
+  describe("semantic-fallback pattern compilation", () => {
+    it("should compile string patterns to RegExp", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createSemanticFallbackExtension('fallback-1', [
-        { id: 'rule1', patterns: ['旅行|旅游'] as unknown as RegExp[], fallbackQuery: 'travel' },
-      ]));
+      registry.register(
+        createSemanticFallbackExtension("fallback-1", [
+          {
+            id: "rule1",
+            patterns: ["旅行|旅游"] as unknown as RegExp[],
+            fallbackQuery: "travel",
+          },
+        ])
+      );
 
       const loaded = registry.getLoadedExtensions();
 
@@ -155,30 +259,60 @@ describe('ExtensionRegistry', () => {
       expect(loaded.semanticFallback[0].patterns[0]).toBeInstanceOf(RegExp);
     });
 
-    it('should handle invalid regex patterns gracefully', () => {
+    it("should handle invalid regex patterns gracefully", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createSemanticFallbackExtension('fallback-1', [
-        { id: 'rule1', patterns: ['[invalid(regex'] as unknown as RegExp[], fallbackQuery: 'test' },
-        { id: 'rule2', patterns: ['valid pattern'] as unknown as RegExp[], fallbackQuery: 'valid' },
-      ]));
+      registry.register(
+        createSemanticFallbackExtension("fallback-1", [
+          {
+            id: "rule1",
+            patterns: ["[invalid(regex"] as unknown as RegExp[],
+            fallbackQuery: "test",
+          },
+          {
+            id: "rule2",
+            patterns: ["valid pattern"] as unknown as RegExp[],
+            fallbackQuery: "valid",
+          },
+        ])
+      );
 
       const loaded = registry.getLoadedExtensions();
 
       expect(loaded.semanticFallback).toHaveLength(1);
-      expect(loaded.semanticFallback[0].id).toBe('rule2');
+      expect(loaded.semanticFallback[0].id).toBe("rule2");
     });
 
-    it('should merge rules from multiple extensions', () => {
+    it("should merge rules from multiple extensions", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createSemanticFallbackExtension('fallback-1', [
-        { id: 'rule1', patterns: ['pattern1'] as unknown as RegExp[], fallbackQuery: 'query1' },
-      ], 80));
+      registry.register(
+        createSemanticFallbackExtension(
+          "fallback-1",
+          [
+            {
+              id: "rule1",
+              patterns: ["pattern1"] as unknown as RegExp[],
+              fallbackQuery: "query1",
+            },
+          ],
+          80
+        )
+      );
 
-      registry.register(createSemanticFallbackExtension('fallback-2', [
-        { id: 'rule2', patterns: ['pattern2'] as unknown as RegExp[], fallbackQuery: 'query2' },
-      ], 70));
+      registry.register(
+        createSemanticFallbackExtension(
+          "fallback-2",
+          [
+            {
+              id: "rule2",
+              patterns: ["pattern2"] as unknown as RegExp[],
+              fallbackQuery: "query2",
+            },
+          ],
+          70
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
@@ -186,128 +320,196 @@ describe('ExtensionRegistry', () => {
     });
   });
 
-  describe('priority ordering', () => {
-    it('should sort extensions by priority descending', () => {
+  describe("priority ordering", () => {
+    it("should sort extensions by priority descending", () => {
       const registry = getExtensionRegistry();
 
-      registry.register(createSemanticFallbackExtension('low', [
-        { id: 'rule-low', patterns: ['low'] as unknown as RegExp[], fallbackQuery: 'low-query' },
-      ], 10));
+      registry.register(
+        createSemanticFallbackExtension(
+          "low",
+          [
+            {
+              id: "rule-low",
+              patterns: ["low"] as unknown as RegExp[],
+              fallbackQuery: "low-query",
+            },
+          ],
+          10
+        )
+      );
 
-      registry.register(createSemanticFallbackExtension('high', [
-        { id: 'rule-high', patterns: ['high'] as unknown as RegExp[], fallbackQuery: 'high-query' },
-      ], 90));
+      registry.register(
+        createSemanticFallbackExtension(
+          "high",
+          [
+            {
+              id: "rule-high",
+              patterns: ["high"] as unknown as RegExp[],
+              fallbackQuery: "high-query",
+            },
+          ],
+          90
+        )
+      );
 
-      registry.register(createSemanticFallbackExtension('mid', [
-        { id: 'rule-mid', patterns: ['mid'] as unknown as RegExp[], fallbackQuery: 'mid-query' },
-      ], 50));
+      registry.register(
+        createSemanticFallbackExtension(
+          "mid",
+          [
+            {
+              id: "rule-mid",
+              patterns: ["mid"] as unknown as RegExp[],
+              fallbackQuery: "mid-query",
+            },
+          ],
+          50
+        )
+      );
 
       const loaded = registry.getLoadedExtensions();
 
-      expect(loaded.semanticFallback[0].id).toBe('rule-high');
-      expect(loaded.semanticFallback[1].id).toBe('rule-mid');
-      expect(loaded.semanticFallback[2].id).toBe('rule-low');
+      expect(loaded.semanticFallback[0].id).toBe("rule-high");
+      expect(loaded.semanticFallback[1].id).toBe("rule-mid");
+      expect(loaded.semanticFallback[2].id).toBe("rule-low");
     });
   });
 });
 
-describe('resolveVoiceStyleMode', () => {
-  it('should match by keyword', () => {
+describe("resolveVoiceStyleMode", () => {
+  it("should match by keyword", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [
-          { id: 'travel', name: 'Travel', description: 'Travel mode', matchKeywords: ['旅行', 'travel'], traits: [] },
+          {
+            id: "travel",
+            name: "Travel",
+            description: "Travel mode",
+            matchKeywords: ["旅行", "travel"],
+            traits: [],
+          },
         ],
       },
     });
 
-    const result = resolveVoiceStyleMode('推荐日本旅行攻略', [], extensions);
+    const result = resolveVoiceStyleMode("推荐日本旅行攻略", [], extensions);
 
-    expect(result?.id).toBe('travel');
+    expect(result?.id).toBe("travel");
   });
 
-  it('should match by category', () => {
+  it("should match by category", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [
-          { id: 'tech', name: 'Tech', description: 'Tech mode', matchCategories: ['programming', 'tech'], traits: [] },
+          {
+            id: "tech",
+            name: "Tech",
+            description: "Tech mode",
+            matchCategories: ["programming", "tech"],
+            traits: [],
+          },
         ],
       },
     });
 
-    const result = resolveVoiceStyleMode('如何学习编程', ['programming'], extensions);
+    const result = resolveVoiceStyleMode(
+      "如何学习编程",
+      ["programming"],
+      extensions
+    );
 
-    expect(result?.id).toBe('tech');
+    expect(result?.id).toBe("tech");
   });
 
-  it('should prefer keyword match over category match', () => {
+  it("should prefer keyword match over category match", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [
-          { id: 'keyword-mode', name: 'Keyword', description: 'Keyword mode', matchKeywords: ['test'], traits: [] },
-          { id: 'category-mode', name: 'Category', description: 'Category mode', matchCategories: ['cat'], traits: [] },
+          {
+            id: "keyword-mode",
+            name: "Keyword",
+            description: "Keyword mode",
+            matchKeywords: ["test"],
+            traits: [],
+          },
+          {
+            id: "category-mode",
+            name: "Category",
+            description: "Category mode",
+            matchCategories: ["cat"],
+            traits: [],
+          },
         ],
       },
     });
 
-    const result = resolveVoiceStyleMode('test query', ['cat'], extensions);
+    const result = resolveVoiceStyleMode("test query", ["cat"], extensions);
 
-    expect(result?.id).toBe('keyword-mode');
+    expect(result?.id).toBe("keyword-mode");
   });
 
-  it('should return default mode when no match', () => {
+  it("should return default mode when no match", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [
-          { id: 'travel', name: 'Travel', description: 'Travel mode', traits: [] },
-          { id: 'default', name: 'Default', description: 'Default mode', traits: [] },
+          {
+            id: "travel",
+            name: "Travel",
+            description: "Travel mode",
+            traits: [],
+          },
+          {
+            id: "default",
+            name: "Default",
+            description: "Default mode",
+            traits: [],
+          },
         ],
-        defaultMode: 'default',
+        defaultMode: "default",
       },
     });
 
-    const result = resolveVoiceStyleMode('random query', [], extensions);
+    const result = resolveVoiceStyleMode("random query", [], extensions);
 
-    expect(result?.id).toBe('default');
+    expect(result?.id).toBe("default");
   });
 
-  it('should return null when no voiceStyle configured', () => {
+  it("should return null when no voiceStyle configured", () => {
     const extensions = createLoadedExtensions();
 
-    const result = resolveVoiceStyleMode('test', [], extensions);
+    const result = resolveVoiceStyleMode("test", [], extensions);
 
     expect(result).toBeNull();
   });
 });
 
-describe('buildVoiceStylePrompt', () => {
-  it('should include overallTone', () => {
+describe("buildVoiceStylePrompt", () => {
+  it("should include overallTone", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [],
-        overallTone: '轻松友好',
+        overallTone: "轻松友好",
       },
     });
 
     const prompt = buildVoiceStylePrompt(null, extensions);
 
-    expect(prompt).toContain('轻松友好');
+    expect(prompt).toContain("轻松友好");
   });
 
-  it('should include frequentExpressions', () => {
+  it("should include frequentExpressions", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [],
-        frequentExpressions: ['其实', '说实话', '在我看来'],
+        frequentExpressions: ["其实", "说实话", "在我看来"],
       },
     });
 
     const prompt = buildVoiceStylePrompt(null, extensions);
 
-    expect(prompt).toContain('其实、说实话、在我看来');
+    expect(prompt).toContain("其实、说实话、在我看来");
   });
 
-  it('should include mode traits when matched', () => {
+  it("should include mode traits when matched", () => {
     const extensions = createLoadedExtensions({
       voiceStyle: {
         modes: [],
@@ -315,147 +517,197 @@ describe('buildVoiceStylePrompt', () => {
     });
 
     const mode = {
-      id: 'travel',
-      name: 'Travel',
-      description: '旅行模式',
-      traits: ['按时间线叙述', '推荐实用信息'],
+      id: "travel",
+      name: "Travel",
+      description: "旅行模式",
+      traits: ["按时间线叙述", "推荐实用信息"],
     };
 
     const prompt = buildVoiceStylePrompt(mode, extensions);
 
-    expect(prompt).toContain('旅行模式');
-    expect(prompt).toContain('按时间线叙述');
-    expect(prompt).toContain('推荐实用信息');
+    expect(prompt).toContain("旅行模式");
+    expect(prompt).toContain("按时间线叙述");
+    expect(prompt).toContain("推荐实用信息");
   });
 
-  it('should return empty string when no voiceStyle', () => {
+  it("should return empty string when no voiceStyle", () => {
     const extensions = createLoadedExtensions();
 
     const prompt = buildVoiceStylePrompt(null, extensions);
 
-    expect(prompt).toBe('');
+    expect(prompt).toBe("");
   });
 });
 
-describe('getSemanticFallback', () => {
-  it('should return null when no rules match', () => {
+describe("getSemanticFallback", () => {
+  it("should return null when no rules match", () => {
     const extensions = createLoadedExtensions({
       semanticFallback: [
-        { id: 'r1', patterns: [/旅行/], fallbackQuery: 'travel' },
+        { id: "r1", patterns: [/旅行/], fallbackQuery: "travel" },
       ],
     });
 
-    const result = getSemanticFallback('如何学习编程', extensions);
+    const result = getSemanticFallback("如何学习编程", extensions);
 
     expect(result).toBeNull();
   });
 
-  it('should return fallback query when pattern matches', () => {
+  it("should return fallback query when pattern matches", () => {
     const extensions = createLoadedExtensions({
       semanticFallback: [
-        { id: 'r1', patterns: [/旅行|旅游/], fallbackQuery: 'travel journey' },
+        { id: "r1", patterns: [/旅行|旅游/], fallbackQuery: "travel journey" },
       ],
     });
 
-    const result = getSemanticFallback('推荐日本旅行', extensions);
+    const result = getSemanticFallback("推荐日本旅行", extensions);
 
     expect(result).not.toBeNull();
-    expect(result?.query).toBe('travel journey');
+    expect(result?.query).toBe("travel journey");
   });
 
-  it('should replace $1, $2 capture groups in fallbackQuery', () => {
+  it("should replace $1, $2 capture groups in fallbackQuery", () => {
     const extensions = createLoadedExtensions({
       semanticFallback: [
-        { id: 'r1', patterns: [/(日本|韩国|美国).{0,6}(几次|多少次)/], fallbackQuery: '$1 旅行 游记' },
+        {
+          id: "r1",
+          patterns: [/(日本|韩国|美国).{0,6}(几次|多少次)/],
+          fallbackQuery: "$1 旅行 游记",
+        },
       ],
     });
 
-    const result = getSemanticFallback('你去过日本几次', extensions);
+    const result = getSemanticFallback("你去过日本几次", extensions);
 
     expect(result).not.toBeNull();
-    expect(result?.query).toBe('日本 旅行 游记');
+    expect(result?.query).toBe("日本 旅行 游记");
   });
 
-  it('should replace capture groups in primaryQuery', () => {
+  it("should replace capture groups in primaryQuery", () => {
     const extensions = createLoadedExtensions({
       semanticFallback: [
-        { id: 'r1', patterns: [/(日本|韩国)/], fallbackQuery: 'fallback', primaryQuery: '$1 攻略' },
+        {
+          id: "r1",
+          patterns: [/(日本|韩国)/],
+          fallbackQuery: "fallback",
+          primaryQuery: "$1 攻略",
+        },
       ],
     });
 
-    const result = getSemanticFallback('推荐日本旅游', extensions);
+    const result = getSemanticFallback("推荐日本旅游", extensions);
 
-    expect(result?.primaryQuery).toBe('日本 攻略');
+    expect(result?.primaryQuery).toBe("日本 攻略");
   });
 
-  it('should return complexity from rule', () => {
+  it("should return complexity from rule", () => {
     const extensions = createLoadedExtensions({
       semanticFallback: [
-        { id: 'r1', patterns: [/test/], fallbackQuery: 'query', complexity: 'complex' },
+        {
+          id: "r1",
+          patterns: [/test/],
+          fallbackQuery: "query",
+          complexity: "complex",
+        },
       ],
     });
 
-    const result = getSemanticFallback('test query', extensions);
+    const result = getSemanticFallback("test query", extensions);
 
-    expect(result?.complexity).toBe('complex');
+    expect(result?.complexity).toBe("complex");
   });
 
-  it('should return first matching rule', () => {
+  it("should return first matching rule", () => {
     const extensions = createLoadedExtensions({
       semanticFallback: [
-        { id: 'r1', patterns: [/first/], fallbackQuery: 'first-query' },
-        { id: 'r2', patterns: [/first/], fallbackQuery: 'second-query' },
+        { id: "r1", patterns: [/first/], fallbackQuery: "first-query" },
+        { id: "r2", patterns: [/first/], fallbackQuery: "second-query" },
       ],
     });
 
-    const result = getSemanticFallback('first match', extensions);
+    const result = getSemanticFallback("first match", extensions);
 
-    expect(result?.query).toBe('first-query');
+    expect(result?.query).toBe("first-query");
   });
 });
 
-describe('mergeSearchDocuments', () => {
-  it('should merge extension documents into base documents', () => {
+describe("mergeSearchDocuments", () => {
+  it("should merge extension documents into base documents", () => {
     const baseDocs: ArticleContext[] = [
-      { title: 'Base Article', url: '/base', keyPoints: [], categories: [], dateTime: Date.now() },
+      {
+        title: "Base Article",
+        url: "/base",
+        keyPoints: [],
+        categories: [],
+        dateTime: Date.now(),
+      },
     ];
 
     const extensions = createLoadedExtensions({
       searchable: new Map([
-        ['ext1', {
-          documents: [
-            { id: 'ext-doc', title: 'Extension Doc', url: '/ext', excerpt: 'test', content: 'content', categories: [], dateTime: Date.now() },
-          ],
-        }],
+        [
+          "ext1",
+          {
+            documents: [
+              {
+                id: "ext-doc",
+                title: "Extension Doc",
+                url: "/ext",
+                excerpt: "test",
+                content: "content",
+                categories: [],
+                dateTime: Date.now(),
+              },
+            ],
+          },
+        ],
       ]),
     });
 
     const result = mergeSearchDocuments(baseDocs, extensions);
 
     expect(result).toHaveLength(2);
-    expect(result[1].title).toBe('Extension Doc');
+    expect(result[1].title).toBe("Extension Doc");
   });
 });
 
-describe('mergeFacts', () => {
-  it('should merge extension facts into base facts', () => {
+describe("mergeFacts", () => {
+  it("should merge extension facts into base facts", () => {
     const baseFacts = [
-      { id: 'base-fact', category: 'author' as const, statement: 'Base fact', evidence: '', source: 'explicit' as const, confidence: 1, tags: [], lang: 'zh' },
+      {
+        id: "base-fact",
+        category: "author" as const,
+        statement: "Base fact",
+        evidence: "",
+        source: "explicit" as const,
+        confidence: 1,
+        tags: [],
+        lang: "zh",
+      },
     ];
 
     const extensions = createLoadedExtensions({
       facts: new Map([
-        ['ext1', {
-          facts: [
-            { id: 'ext-fact', category: 'blog', statement: 'Extension fact', confidence: 0.9, tags: [], lang: 'zh' },
-          ],
-        }],
+        [
+          "ext1",
+          {
+            facts: [
+              {
+                id: "ext-fact",
+                category: "blog",
+                statement: "Extension fact",
+                confidence: 0.9,
+                tags: [],
+                lang: "zh",
+              },
+            ],
+          },
+        ],
       ]),
     });
 
     const result = mergeFacts(baseFacts, extensions);
 
     expect(result).toHaveLength(2);
-    expect(result[1].id).toBe('ext-fact');
+    expect(result[1].id).toBe("ext-fact");
   });
 });

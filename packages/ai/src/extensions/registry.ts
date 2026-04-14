@@ -1,3 +1,5 @@
+import { createLogger } from "../utils/logger.js";
+const extLog = createLogger("extensions");
 import type {
   Extension,
   ExtensionData,
@@ -10,9 +12,12 @@ import type {
   VoiceStyleData,
   VoiceStyleMode,
   SemanticFallbackRule,
-} from './types.js';
+} from "./types.js";
 
-function compilePatterns(patterns: unknown[]): { compiled: RegExp[]; errors: string[] } {
+function compilePatterns(patterns: unknown[]): {
+  compiled: RegExp[];
+  errors: string[];
+} {
   const compiled: RegExp[] = [];
   const errors: string[] = [];
 
@@ -20,8 +25,8 @@ function compilePatterns(patterns: unknown[]): { compiled: RegExp[]; errors: str
     try {
       if (pattern instanceof RegExp) {
         compiled.push(pattern);
-      } else if (typeof pattern === 'string') {
-        compiled.push(new RegExp(pattern, 'i'));
+      } else if (typeof pattern === "string") {
+        compiled.push(new RegExp(pattern, "i"));
       } else {
         errors.push(`Invalid pattern type: ${typeof pattern}`);
       }
@@ -57,9 +62,10 @@ function mergeVoiceStyleData(
   return {
     modes: mergedModes,
     defaultMode: newData.defaultMode ?? existing.defaultMode,
-    overallTone: newPriority >= existingPriority
-      ? newData.overallTone ?? existing.overallTone
-      : existing.overallTone,
+    overallTone:
+      newPriority >= existingPriority
+        ? (newData.overallTone ?? existing.overallTone)
+        : existing.overallTone,
     frequentExpressions: [
       ...(existing.frequentExpressions ?? []),
       ...(newData.frequentExpressions ?? []),
@@ -74,7 +80,9 @@ class ExtensionRegistry implements ExtensionRegistryInterface {
 
   register<T extends ExtensionData>(extension: Extension<T>): void {
     if (this.extensions.has(extension.id)) {
-      console.warn(`[extensions] Extension "${extension.id}" already registered, overwriting`);
+      extLog.warn(
+        `Extension "${extension.id}" already registered, overwriting`
+      );
     }
     this.extensions.set(extension.id, extension);
     this.loadedCache = null;
@@ -116,19 +124,19 @@ class ExtensionRegistry implements ExtensionRegistryInterface {
 
     for (const ext of sorted) {
       switch (ext.type) {
-        case 'searchable': {
+        case "searchable": {
           result.searchable.set(ext.id, ext.data as SearchableData);
           break;
         }
-        case 'facts': {
+        case "facts": {
           result.facts.set(ext.id, ext.data as FactsData);
           break;
         }
-        case 'context': {
+        case "context": {
           result.context.push(ext.data as ContextData);
           break;
         }
-        case 'voice-style': {
+        case "voice-style": {
           result.voiceStyle = mergeVoiceStyleData(
             result.voiceStyle,
             ext.data as VoiceStyleData,
@@ -136,14 +144,14 @@ class ExtensionRegistry implements ExtensionRegistryInterface {
           );
           break;
         }
-        case 'semantic-fallback': {
+        case "semantic-fallback": {
           const rulesData = ext.data as { rules: SemanticFallbackRule[] };
           for (const rule of rulesData.rules) {
             const { compiled, errors } = compilePatterns(rule.patterns);
 
             if (errors.length > 0) {
               for (const err of errors) {
-                console.warn(`[extensions] ${ext.id}/${rule.id}: ${err}`);
+                extLog.warn(`${ext.id}/${rule.id}: ${err}`);
               }
             }
 

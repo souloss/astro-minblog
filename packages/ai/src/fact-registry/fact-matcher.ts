@@ -1,5 +1,5 @@
-import type { Fact, FactCategory } from './types.js';
-import { queryFacts } from './registry.js';
+import type { Fact, FactCategory } from "./types.js";
+import { queryFacts } from "./registry.js";
 
 /**
  * Category detection keywords — when any keyword appears in the user query,
@@ -7,24 +7,80 @@ import { queryFacts } from './registry.js';
  */
 const CATEGORY_KEYWORDS: Record<FactCategory, string[]> = {
   author: [
-    '作者', '博主', '谁', '关于我', '自我介绍', '个人',
-    'author', 'who', 'about me', 'introduce',
+    "作者",
+    "博主",
+    "谁",
+    "关于我",
+    "自我介绍",
+    "个人",
+    "author",
+    "who",
+    "about me",
+    "introduce",
   ],
   blog: [
-    '博客', '文章', '多少', '数量', '统计', '总共', '分类', '标签', '语言',
-    'blog', 'post', 'how many', 'count', 'statistic', 'category', 'tag',
+    "博客",
+    "文章",
+    "多少",
+    "数量",
+    "统计",
+    "总共",
+    "分类",
+    "标签",
+    "语言",
+    "blog",
+    "post",
+    "how many",
+    "count",
+    "statistic",
+    "category",
+    "tag",
   ],
   content: [
-    '写过', '提到', '讨论', '观点', '主题', '话题', '涵盖', '领域',
-    'wrote', 'mention', 'discuss', 'topic', 'cover', 'area', 'opinion',
+    "写过",
+    "提到",
+    "讨论",
+    "观点",
+    "主题",
+    "话题",
+    "涵盖",
+    "领域",
+    "wrote",
+    "mention",
+    "discuss",
+    "topic",
+    "cover",
+    "area",
+    "opinion",
   ],
   project: [
-    '项目', '开源', '仓库', '工具', '产品',
-    'project', 'open source', 'repo', 'github', 'tool', 'product',
+    "项目",
+    "开源",
+    "仓库",
+    "工具",
+    "产品",
+    "project",
+    "open source",
+    "repo",
+    "github",
+    "tool",
+    "product",
   ],
   tech: [
-    '技术', '技术栈', '框架', '库', '编程语言', '前端', '后端',
-    'tech', 'stack', 'framework', 'library', 'language', 'frontend', 'backend',
+    "技术",
+    "技术栈",
+    "框架",
+    "库",
+    "编程语言",
+    "前端",
+    "后端",
+    "tech",
+    "stack",
+    "framework",
+    "library",
+    "language",
+    "frontend",
+    "backend",
   ],
 };
 
@@ -49,7 +105,7 @@ function detectRelevantCategories(query: string): FactCategory[] {
  */
 function extractQueryTags(query: string): string[] {
   const tokens = query.match(
-    /[A-Za-z][A-Za-z0-9.+#-]{1,}|[\u4e00-\u9fa5]{2,6}/g,
+    /[A-Za-z][A-Za-z0-9.+#-]{1,}|[\u4e00-\u9fa5]{2,6}/g
   );
   return tokens?.map(t => t.toLowerCase()) ?? [];
 }
@@ -66,7 +122,7 @@ function extractQueryTags(query: string): string[] {
 export function matchFactsToQuery(
   query: string,
   lang?: string,
-  maxFacts = 15,
+  maxFacts = 15
 ): Fact[] {
   const categories = detectRelevantCategories(query);
   const queryTags = extractQueryTags(query);
@@ -79,24 +135,26 @@ export function matchFactsToQuery(
   });
 
   // Layer 2: category-matched facts
-  const categoryFacts = categories.length > 0
-    ? queryFacts({
-        categories,
-        minConfidence: 0.7,
-        lang,
-        limit: 10,
-      })
-    : [];
+  const categoryFacts =
+    categories.length > 0
+      ? queryFacts({
+          categories,
+          minConfidence: 0.7,
+          lang,
+          limit: 10,
+        })
+      : [];
 
   // Layer 3: tag-matched facts (for specificity)
-  const tagFacts = queryTags.length > 0
-    ? queryFacts({
-        tags: queryTags,
-        minConfidence: 0.6,
-        lang,
-        limit: 5,
-      })
-    : [];
+  const tagFacts =
+    queryTags.length > 0
+      ? queryFacts({
+          tags: queryTags,
+          minConfidence: 0.6,
+          lang,
+          limit: 5,
+        })
+      : [];
 
   // Merge with deduplication, preserving priority order
   const seen = new Set<string>();

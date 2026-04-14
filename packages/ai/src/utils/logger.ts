@@ -1,4 +1,4 @@
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+export type LogLevel = "debug" | "info" | "warn" | "error" | "silent";
 
 export interface Logger {
   debug(message: string, ...args: unknown[]): void;
@@ -15,7 +15,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   silent: 4,
 };
 
-let globalLevel: LogLevel = 'warn';
+let globalLevel: LogLevel = "warn";
 
 export function setLogLevel(level: LogLevel): void {
   globalLevel = level;
@@ -30,16 +30,20 @@ export function createLogger(namespace: string): Logger {
 
   return {
     debug(message, ...args) {
-      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.debug) console.debug(prefix, message, ...args);
+      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.debug)
+        console.debug(prefix, message, ...args);
     },
     info(message, ...args) {
-      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.info) console.log(prefix, message, ...args);
+      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.info)
+        console.log(prefix, message, ...args);
     },
     warn(message, ...args) {
-      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.warn) console.warn(prefix, message, ...args);
+      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.warn)
+        console.warn(prefix, message, ...args);
     },
     error(message, ...args) {
-      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.error) console.error(prefix, message, ...args);
+      if (LOG_LEVELS[globalLevel] <= LOG_LEVELS.error)
+        console.error(prefix, message, ...args);
     },
   };
 }

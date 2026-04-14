@@ -4,9 +4,9 @@ import type {
   PromptContext,
   ContextData,
   SemanticFallbackRule,
-} from './types.js';
-import type { ArticleContext, ProjectContext } from '../search/types.js';
-import type { Fact } from '../fact-registry/types.js';
+} from "./types.js";
+import type { ArticleContext, ProjectContext } from "../search/types.js";
+import type { Fact } from "../fact-registry/types.js";
 
 export function resolveVoiceStyleMode(
   query: string,
@@ -50,29 +50,29 @@ export function buildVoiceStylePrompt(
   extensions: LoadedExtensions
 ): string {
   const voiceStyle = extensions.voiceStyle;
-  if (!voiceStyle) return '';
+  if (!voiceStyle) return "";
 
-  const lines: string[] = ['## 语言风格（L5 style_only，仅影响表达）'];
+  const lines: string[] = ["## 语言风格（L5 style_only，仅影响表达）"];
 
   if (voiceStyle.overallTone) {
     lines.push(`语气基调：${voiceStyle.overallTone}`);
   }
 
   if (voiceStyle.frequentExpressions?.length) {
-    const words = voiceStyle.frequentExpressions.slice(0, 6).join('、');
+    const words = voiceStyle.frequentExpressions.slice(0, 6).join("、");
     lines.push(`高频表达：${words}`);
   }
 
   if (mode) {
-    lines.push('');
+    lines.push("");
     lines.push(`当前回答风格模式：${mode.description}（${mode.name}）`);
-    lines.push('本轮表达参考：');
+    lines.push("本轮表达参考：");
     for (const trait of mode.traits.slice(0, 4)) {
       lines.push(`- ${trait}`);
     }
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 export function buildContextSections(
@@ -107,22 +107,24 @@ export function buildContextSections(
       }
     }
 
-    const content = typeof ctx.content === 'function'
-      ? ctx.content(context)
-      : ctx.content;
+    const content =
+      typeof ctx.content === "function" ? ctx.content(context) : ctx.content;
 
     if (content) {
       sections.push(`## ${ctx.sectionTitle}\n${content}`);
     }
   }
 
-  return sections.join('\n\n');
+  return sections.join("\n\n");
 }
 
-function replaceCaptureGroups(template: string, match: RegExpMatchArray): string {
+function replaceCaptureGroups(
+  template: string,
+  match: RegExpMatchArray
+): string {
   return template.replace(/\$(\d+)/g, (_, groupIndex: string) => {
     const index = parseInt(groupIndex, 10);
-    return match[index] ?? '';
+    return match[index] ?? "";
   });
 }
 
@@ -134,11 +136,11 @@ export function getSemanticFallback(
     for (const pattern of rule.patterns) {
       const match = pattern.exec(query);
       if (match) {
-        const fallbackQuery = rule.fallbackQuery.includes('$')
+        const fallbackQuery = rule.fallbackQuery.includes("$")
           ? replaceCaptureGroups(rule.fallbackQuery, match)
           : rule.fallbackQuery;
 
-        const primaryQuery = rule.primaryQuery?.includes('$')
+        const primaryQuery = rule.primaryQuery?.includes("$")
           ? replaceCaptureGroups(rule.primaryQuery, match)
           : rule.primaryQuery;
 
@@ -186,10 +188,10 @@ export function mergeFacts(
     for (const fact of data.facts) {
       allFacts.push({
         id: fact.id,
-        category: fact.category as Fact['category'],
+        category: fact.category as Fact["category"],
         statement: fact.statement,
-        evidence: fact.evidence ?? '',
-        source: 'explicit',
+        evidence: fact.evidence ?? "",
+        source: "explicit",
         confidence: fact.confidence,
         tags: fact.tags,
         lang: fact.lang,

@@ -43,7 +43,7 @@ function createArticle(
 describe("computeChunkRelevance", () => {
   it("strongly boosts exact quoted sentence matches from chunk content", () => {
     const quotedSentence =
-      'Use `pnpm build` before `pnpm deploy` to ensure Cloudflare Pages receives the latest assets.';
+      "Use `pnpm build` before `pnpm deploy` to ensure Cloudflare Pages receives the latest assets.";
     const matchingChunk = createChunk({
       id: "matching-chunk",
       content: `${quotedSentence}\n\nThen verify the build output before deployment.`,
@@ -56,12 +56,22 @@ describe("computeChunkRelevance", () => {
     const article = createArticle(matchingChunk);
     const queryTokens = tokenize(`请解释这句话："${quotedSentence}"`);
 
-    const exactScore = computeChunkRelevance(queryTokens, matchingChunk, article, {
-      rawQuery: `请解释这句话："${quotedSentence}"`,
-    });
-    const similarScore = computeChunkRelevance(queryTokens, similarChunk, article, {
-      rawQuery: `请解释这句话："${quotedSentence}"`,
-    });
+    const exactScore = computeChunkRelevance(
+      queryTokens,
+      matchingChunk,
+      article,
+      {
+        rawQuery: `请解释这句话："${quotedSentence}"`,
+      }
+    );
+    const similarScore = computeChunkRelevance(
+      queryTokens,
+      similarChunk,
+      article,
+      {
+        rawQuery: `请解释这句话："${quotedSentence}"`,
+      }
+    );
 
     expect(exactScore).toBeGreaterThan(similarScore);
     expect(exactScore).toBeGreaterThan(4);
@@ -74,7 +84,7 @@ describe("computeChunkRelevance", () => {
     });
     const article = createArticle(chunk);
     const rawQuery =
-      'Use `pnpm build` before `pnpm deploy` to ensure Cloudflare Pages receives the latest assets.';
+      "Use `pnpm build` before `pnpm deploy` to ensure Cloudflare Pages receives the latest assets.";
 
     const score = computeChunkRelevance(tokenize(rawQuery), chunk, article, {
       rawQuery,
@@ -128,7 +138,7 @@ describe("computeChunkRelevance", () => {
 describe("selectRelevantChunks", () => {
   it("prioritizes the current article chunk containing the quoted sentence", () => {
     const quotedSentence =
-      'Use `pnpm build` before `pnpm deploy` to ensure Cloudflare Pages receives the latest assets.';
+      "Use `pnpm build` before `pnpm deploy` to ensure Cloudflare Pages receives the latest assets.";
     const matchingChunk = createChunk({
       id: "matching-chunk",
       content: `${quotedSentence}\n\nThen verify the build output before deployment.`,
@@ -168,7 +178,8 @@ describe("selectRelevantChunks", () => {
       id: "chat-hooks",
       postId: "post-2",
       heading: "ChatPanel hooks",
-      content: "useChat 的配置中还包含 onToolCall，用来处理客户端动作并回传 addToolOutput。",
+      content:
+        "useChat 的配置中还包含 onToolCall，用来处理客户端动作并回传 addToolOutput。",
     });
 
     const matches = selectRelevantChunks(

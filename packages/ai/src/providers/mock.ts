@@ -206,9 +206,9 @@ Try these topics:
 /**
  * Returns a mock response with Markdown links for article/external link recommendations.
  */
-export function getMockResponse(question: string, lang = 'zh'): string {
+export function getMockResponse(question: string, lang = "zh"): string {
   const q = question.toLowerCase();
-  const isZh = lang !== 'en';
+  const isZh = lang !== "en";
 
   for (const { patterns, zh, en } of MOCK_RESPONSES) {
     if (patterns.some(p => p.test(q))) {
@@ -234,7 +234,9 @@ export function createMockStream(text: string): ReadableStream<string> {
       const chunk = text.slice(index, index + chunkSize);
       index += chunkSize;
       controller.enqueue(chunk);
-      await new Promise(resolve => setTimeout(resolve, 12 + Math.random() * 23));
+      await new Promise(resolve =>
+        setTimeout(resolve, 12 + Math.random() * 23)
+      );
     },
   });
 }

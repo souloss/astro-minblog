@@ -12,7 +12,6 @@ import {
   shouldSkipAnalysis,
   analyzeRetrievedEvidence,
   buildEvidenceSection,
-  applyBudgetToArticles,
   getCitationGuardPreflight,
   buildUnknownRefusal,
   shouldAppendCitations,
@@ -20,6 +19,24 @@ import {
   formatCitationBlock,
   resolveSearchInterpretation,
 } from "../intelligence/index.js";
+export {
+  extractQuotedCandidate,
+  isLikelyQuotedArticleQuery,
+  isCrossArticleIntent,
+  isArticleSummaryQuery,
+  rerankArticlesForCurrentArticleQuote,
+  rerankArticlesForCodeAnchors,
+  shapeArticlesForQuery,
+} from "./article-ranking.js";
+export { buildFinalSources } from "./source-selection.js";
+import {
+  isLikelyQuotedArticleQuery,
+  isCrossArticleIntent,
+  isArticleSummaryQuery,
+  rerankArticlesForCurrentArticleQuote,
+  shapeArticlesForQuery,
+} from "./article-ranking.js";
+import { buildFinalSources } from "./source-selection.js";
 import {
   mergeResults,
   searchArticles,
@@ -30,12 +47,6 @@ import {
   getArticleChunks,
   type ArticleContext,
 } from "../search/index.js";
-import {
-  extractCodeAnchors,
-  hasCodeAnchors,
-  normalizeText,
-  tokenize,
-} from "../utils/text.js";
 import { getProviderManager } from "../provider-manager/index.js";
 import {
   createCacheAdapter,
@@ -114,20 +125,24 @@ export async function handleChatRequest(
   if (env.AI_DEBUG) setLogLevel("debug");
   if (env.CORS_ORIGIN) setCorsOrigin(env.CORS_ORIGIN as string);
   if (req.method === "OPTIONS") return corsPreflightResponse();
-  if (req.method !== "POST") return errors.methodNotAllowed((env.SITE_LANG as string) ?? "zh");
+  if (req.method !== "POST")
+    return errors.methodNotAllowed((env.SITE_LANG as string) ?? "zh");
 
   const ip = getClientIP(req);
   const rateCheck = checkRateLimit(
     ip,
     env as Record<string, string | undefined>
   );
-  if (!rateCheck.allowed) return rateLimitResponse(rateCheck, (env.SITE_LANG as string) ?? "zh");
+  if (!rateCheck.allowed)
+    return rateLimitResponse(rateCheck, (env.SITE_LANG as string) ?? "zh");
 
   let body: ChatRequestBody;
   try {
     body = await req.json();
   } catch {
-    return errors.invalidRequest(t("ai.error.format", (env.SITE_LANG as string) ?? "zh"));
+    return errors.invalidRequest(
+      t("ai.error.format", (env.SITE_LANG as string) ?? "zh")
+    );
   }
 
   const lang = getLang(body.lang ?? (env.SITE_LANG as string | undefined));
@@ -308,13 +323,14 @@ interface SearchPhaseResult {
   relatedProjects: ReturnType<typeof searchProjects>;
   selectedSources?: SourceSelection[];
   budget: ReturnType<typeof resolveSearchInterpretation>["budget"];
-  interpretation: ReturnType<typeof resolveSearchInterpretation>["interpretation"];
+  interpretation: ReturnType<
+    typeof resolveSearchInterpretation
+  >["interpretation"];
 }
 
-export function resolveSearchAnswerShaping(query: string): Pick<
-  SearchPhaseResult,
-  "budget" | "interpretation"
-> {
+export function resolveSearchAnswerShaping(
+  query: string
+): Pick<SearchPhaseResult, "budget" | "interpretation"> {
   const { interpretation, budget } = resolveSearchInterpretation({
     latestText: query,
   });
@@ -330,230 +346,16 @@ export function rankArticlesForQuery(
   return rankArticlesByCategory(interpretation.topic.primary, articles);
 }
 
-interface CurrentArticleBoostOptions {
-  articleSlug?: string;
-  context?: ChatContext;
-}
-
-const MIN_QUOTED_QUERY_LENGTH = 12;
-const CURRENT_ARTICLE_SCORE_BOOST_RATIO = 0.12;
-const CURRENT_ARTICLE_SCORE_CAP_RATIO = 1.08;
-const CROSS_ARTICLE_INTENT_PATTERNS = [
-  /还有哪些/u,
-  /相关文章/u,
-  /类似/u,
-  /推荐/u,
-  /对比/u,
-  /比较/u,
-  /related/u,
-  /similar/u,
-  /compare/u,
-  /comparison/u,
-  /recommend/u,
-  /what else/u,
-] as const;
-
-export function extractQuotedCandidate(text: string): string {
-  const trimmed = text.trim();
-  if (!trimmed) return "";
-
-  const matches = [...trimmed.matchAll(/["“”'‘’「」『』《》](.+?)["“”'‘’「」『』《》]/g)]
-    .map(match => match[1]?.trim() ?? "")
-    .filter(Boolean)
-    .sort((a, b) => b.length - a.length);
-
-  return matches[0] ?? "";
-}
-
-export function isLikelyQuotedArticleQuery(text: string): boolean {
-  const quoted = extractQuotedCandidate(text);
-  if (!quoted) return false;
-  return normalizeText(quoted).length >= MIN_QUOTED_QUERY_LENGTH;
-}
-
-export function isCrossArticleIntent(text: string): boolean {
-  if (isLikelyQuotedArticleQuery(text)) {
-    return false;
-  }
-  const normalized = normalizeText(text);
-  if (!normalized) return false;
-  return CROSS_ARTICLE_INTENT_PATTERNS.some(pattern => pattern.test(normalized));
-}
-
-function isCurrentArticle(
-  article: ReturnType<typeof searchArticles>[number],
-  articleSlug: string
-): boolean {
-  return article.id === articleSlug || article.url?.includes(articleSlug);
-}
-
-function buildCurrentArticleFallback(
-  context: ChatContext | undefined,
-  articleSlug: string,
-  tailScore: number
-): ReturnType<typeof searchArticles>[number] | null {
-  if (context?.scope !== "article" || !context.article) return null;
-
-  return {
-    id: articleSlug,
-    title: context.article.title,
-    url: `/posts/${articleSlug}`,
-    summary: context.article.summary ?? context.article.abstract,
-    keyPoints: context.article.keyPoints ?? [],
-    categories: context.article.categories ?? [],
-    dateTime: 0,
-    score: tailScore,
-  };
-}
-
-export function rerankArticlesForCurrentArticleQuote(
-  query: string,
-  articles: ReturnType<typeof searchArticles>,
-  options: CurrentArticleBoostOptions = {}
-): ReturnType<typeof searchArticles> {
-  const { articleSlug, context } = options;
-  if (!articleSlug || context?.scope !== "article") return articles;
-  if (!isLikelyQuotedArticleQuery(query)) return articles;
-  if (isCrossArticleIntent(query)) return articles;
-
-  const cloned = [...articles];
-  const currentIndex = cloned.findIndex(article =>
-    isCurrentArticle(article, articleSlug)
-  );
-
-  if (currentIndex >= 0) {
-    const topScore = cloned[0]?.score ?? 0;
-    if (topScore <= 0) return cloned;
-
-    const current = cloned[currentIndex];
-    const boostedScore = Math.min(
-      (current.score ?? 0) + topScore * CURRENT_ARTICLE_SCORE_BOOST_RATIO,
-      topScore * CURRENT_ARTICLE_SCORE_CAP_RATIO
-    );
-    cloned[currentIndex] = { ...current, score: boostedScore };
-    return cloned.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  }
-
-  const tailScore = Math.max((cloned[cloned.length - 1]?.score ?? 1) * 0.95, 0.01);
-  const fallback = buildCurrentArticleFallback(context, articleSlug, tailScore);
-  if (!fallback) return cloned;
-
-  return [...cloned, fallback];
-}
-
-export function shapeArticlesForQuery(
-  query: string,
-  articles: ReturnType<typeof searchArticles>,
-  options: CurrentArticleBoostOptions = {}
-): {
-  interpretation: ReturnType<typeof resolveSearchInterpretation>["interpretation"];
-  budget: ReturnType<typeof resolveSearchInterpretation>["budget"];
-  articles: ReturnType<typeof searchArticles>;
-} {
-  const { interpretation, budget } = resolveSearchInterpretation({
-    latestText: query,
-  });
-  const boostedArticles = rerankArticlesForCurrentArticleQuote(
-    query,
-    articles,
-    options
-  );
-  const rankedArticles = hasCodeAnchors(query)
-    ? rerankArticlesForCodeAnchors(query, boostedArticles)
-    : rankArticlesByCategory(interpretation.topic.primary, boostedArticles);
-  return {
-    interpretation,
-    budget,
-    articles: applyBudgetToArticles(rankedArticles, budget),
-  };
-}
-
-export function rerankArticlesForCodeAnchors(
-  query: string,
-  articles: ReturnType<typeof searchArticles>
-): ReturnType<typeof searchArticles> {
-  const rawAnchors = extractCodeAnchors(query);
-  if (rawAnchors.length === 0 || articles.length <= 1) return articles;
-
-  return [...articles].sort((a, b) => {
-    const aAnchorScore = scoreArticleForCodeAnchors(a, rawAnchors);
-    const bAnchorScore = scoreArticleForCodeAnchors(b, rawAnchors);
-
-    return (
-      bAnchorScore - aAnchorScore ||
-      (b.score ?? 0) - (a.score ?? 0) ||
-      a.title.localeCompare(b.title)
-    );
-  });
-}
-
-function scoreArticleForCodeAnchors(
-  article: ReturnType<typeof searchArticles>[number],
-  rawAnchors: string[]
-): number {
-  const title = article.title;
-  const summary = article.summary ?? "";
-  const keyPoints = article.keyPoints ?? [];
-  const chunks = article.chunks ?? [];
-
-  let score = 0;
-
-  for (const anchor of rawAnchors) {
-    const normalizedAnchor = normalizeText(anchor);
-    if (!normalizedAnchor) continue;
-
-    if (title.includes(anchor)) {
-      score += 10;
-      continue;
-    }
-    if (summary.includes(anchor)) {
-      score += 6;
-      continue;
-    }
-    if (keyPoints.some(point => point.includes(anchor))) {
-      score += 5;
-      continue;
-    }
-    if (chunks.some(chunk => chunk.heading.includes(anchor))) {
-      score += 8;
-      continue;
-    }
-    if (chunks.some(chunk => chunk.content.includes(anchor))) {
-      score += 9;
-      continue;
-    }
-
-    const normalizedTitle = normalizeText(title);
-    const normalizedSummary = normalizeText(summary);
-    const normalizedKeyPoints = keyPoints.map(point => normalizeText(point));
-
-    if (normalizedTitle.includes(normalizedAnchor)) {
-      score += 6;
-    } else if (normalizedSummary.includes(normalizedAnchor)) {
-      score += 4;
-    } else if (normalizedKeyPoints.some(point => point.includes(normalizedAnchor))) {
-      score += 3;
-    } else if (
-      chunks.some(
-        chunk =>
-          normalizeText(chunk.heading).includes(normalizedAnchor) ||
-          normalizeText(chunk.content).includes(normalizedAnchor)
-      )
-    ) {
-      score += 5;
-    }
-  }
-
-  return score;
-}
-
 export function shouldPersistAuthoritativeSources(
   sources: SourceSelection[]
 ): boolean {
   return (
     sources.length > 0 &&
-    sources.every(source =>
-      source.reason === "chunk" || source.reason === "evidence" || source.reason === "article-context"
+    sources.every(
+      source =>
+        source.reason === "chunk" ||
+        source.reason === "evidence" ||
+        source.reason === "article-context"
     )
   );
 }
@@ -563,7 +365,9 @@ export function shapeCachedSearchForQuery(args: {
   articles: ReturnType<typeof searchArticles>;
   projects: ReturnType<typeof searchProjects>;
 }): {
-  interpretation: ReturnType<typeof resolveSearchInterpretation>["interpretation"];
+  interpretation: ReturnType<
+    typeof resolveSearchInterpretation
+  >["interpretation"];
   budget: ReturnType<typeof resolveSearchInterpretation>["budget"];
   articles: ReturnType<typeof searchArticles>;
   projects: ReturnType<typeof searchProjects>;
@@ -600,7 +404,10 @@ export function shouldUsePublicQuestionCaches(args: {
   publicQuestion: PublicQuestionLike | null;
   articleSlug?: string;
 }): boolean {
-  return Boolean(args.publicQuestion && (!args.publicQuestion.needsContext || args.articleSlug));
+  return Boolean(
+    args.publicQuestion &&
+    (!args.publicQuestion.needsContext || args.articleSlug)
+  );
 }
 
 export function buildPublicCacheContext(args: {
@@ -738,8 +545,8 @@ async function retrieveContext(
           }
         } catch (err) {
           timing.keywordExtraction = Date.now() - kwStart;
-          console.debug(
-            "[chat-handler] Keyword extraction failed, using local query:",
+          log.debug(
+            "Keyword extraction failed, using local query:",
             (err as Error).message
           );
         } finally {
@@ -794,11 +601,14 @@ async function retrieveContext(
   }
 
   relatedArticles = mergeSearchDocuments(relatedArticles, extensions);
-  ({ interpretation, budget, articles: relatedArticles } = shapeArticlesForQuery(
-    latestText,
-    relatedArticles,
-    { articleSlug, context: ctx.context }
-  ));
+  ({
+    interpretation,
+    budget,
+    articles: relatedArticles,
+  } = shapeArticlesForQuery(latestText, relatedArticles, {
+    articleSlug,
+    context: ctx.context,
+  }));
 
   log.debug(
     `Search: query="${searchQuery}", articles=${relatedArticles.length}, projects=${relatedProjects.length}, mode=${interpretation.answer.contract}`
@@ -815,7 +625,13 @@ async function retrieveContext(
     );
   }
 
-  return { searchQuery, relatedArticles, relatedProjects, budget, interpretation };
+  return {
+    searchQuery,
+    relatedArticles,
+    relatedProjects,
+    budget,
+    interpretation,
+  };
 }
 
 async function runPipeline(args: PipelineArgs): Promise<Response> {
@@ -1011,7 +827,8 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
   }
 
   const search = await retrieveContext(ctx, args.req);
-  const { searchQuery, relatedArticles, relatedProjects, interpretation } = search;
+  const { searchQuery, relatedArticles, relatedProjects, interpretation } =
+    search;
   const { systemPrompt, preflight, unknownRefusal, selectedSources } =
     await analyzeAndBuildPrompt(ctx, search);
   const finalSources = buildFinalSources({
@@ -1107,7 +924,8 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         tools,
       });
 
-      timing.generation = llmResult.generationMs || Date.now() - generationStart;
+      timing.generation =
+        llmResult.generationMs || Date.now() - generationStart;
       responseText = llmResult.responseText;
       reasoningText = llmResult.reasoningText;
       tokenUsage = llmResult.tokenUsage
@@ -1215,162 +1033,4 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       "Cache-Control": "no-cache",
     },
   });
-}
-
-export function buildFinalSources(args: {
-  relatedArticles: ReturnType<typeof searchArticles>;
-  selectedSources: SourceSelection[];
-  query: string;
-  lang: string;
-  max: number;
-  articleSlug?: string;
-  context?: ChatContext;
-}): SourceSelection[] {
-  const { relatedArticles, selectedSources, query, lang, max, articleSlug, context } = args;
-  const normalizedQuery = normalizeText(query);
-
-  const fallbackSources: SourceSelection[] = relatedArticles.map(article => ({
-    title: article.title,
-    url: article.url,
-    lang: article.lang,
-    reason: "retrieval-fallback",
-    score: article.score,
-  }));
-
-  const preferredPool =
-    selectedSources.length > 0 ? selectedSources : fallbackSources;
-  const isCurrentArticleSource = (source: SourceSelection): boolean => {
-    if (!articleSlug) return false;
-    const url = source.url ?? "";
-    if (url.includes(`/posts/${articleSlug}`) || url.includes(articleSlug)) {
-      return true;
-    }
-    if (context?.article?.title && source.title === context.article.title) {
-      return true;
-    }
-    return false;
-  };
-
-  const shouldPrioritizeCurrentArticle =
-    !!articleSlug &&
-    context?.scope === "article" &&
-    isLikelyQuotedArticleQuery(query) &&
-    !isCrossArticleIntent(query);
-
-  if (shouldPrioritizeCurrentArticle) {
-    const orderedCurrent = preferredPool.filter(isCurrentArticleSource);
-    const orderedOther = preferredPool.filter(source => !isCurrentArticleSource(source));
-    const currentChunkSources = orderedCurrent.filter(source => source.reason === "chunk");
-    const currentNonChunkSources = orderedCurrent.filter(source => source.reason !== "chunk");
-    const dedupedPrioritized: SourceSelection[] = [];
-    const seenPrioritized = new Set<string>();
-    for (const source of [
-      ...currentChunkSources,
-      ...currentNonChunkSources,
-      ...orderedOther,
-    ]) {
-      const key = `${source.title}::${source.url ?? ""}::${source.chunkId ?? ""}`;
-      if (seenPrioritized.has(key)) continue;
-      seenPrioritized.add(key);
-      dedupedPrioritized.push(source);
-      if (dedupedPrioritized.length >= max) break;
-    }
-    return dedupedPrioritized;
-  }
-
-  const sameLang = preferredPool.filter(source => source.lang === lang);
-  const anchorTerms = tokenize(query)
-    .filter((token: string) => token.length >= 2)
-    .sort((a: string, b: string) => b.length - a.length)
-    .slice(0, 3);
-  const sourceMatchesAnchor = (source: SourceSelection): boolean => {
-    if (!anchorTerms.length) return true;
-    const title = normalizeText(source.title);
-    return anchorTerms.some((term: string) => title.includes(term));
-  };
-  const sameLangAnchored = sameLang.filter(sourceMatchesAnchor);
-  const crossLangAnchored = preferredPool.filter(
-    source => source.lang !== lang && sourceMatchesAnchor(source)
-  );
-  const articleSummaryQuery = isArticleSummaryQuery(normalizedQuery);
-  const rankByTitleCloseness = (
-    sources: SourceSelection[]
-  ): SourceSelection[] => {
-    return [...sources].sort((a, b) => {
-      const aScore = computeTitleCloseness(normalizedQuery, a.title);
-      const bScore = computeTitleCloseness(normalizedQuery, b.title);
-      return bScore - aScore || (b.score ?? 0) - (a.score ?? 0);
-    });
-  };
-
-  const orderedSameLang = rankByTitleCloseness(
-    sameLangAnchored.length > 0 ? sameLangAnchored : sameLang
-  );
-  const orderedCrossLang = rankByTitleCloseness(
-    crossLangAnchored.length > 0
-      ? crossLangAnchored
-      : preferredPool.filter(source => source.lang !== lang)
-  );
-
-  let ordered = articleSummaryQuery
-    ? orderedSameLang.length >= max
-      ? orderedSameLang
-      : [...orderedSameLang, ...orderedCrossLang]
-    : [...orderedSameLang, ...orderedCrossLang];
-
-  const deduped: SourceSelection[] = [];
-  const seen = new Set<string>();
-
-  for (const source of ordered) {
-    const key = `${source.title}::${source.url ?? ""}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    deduped.push(source);
-    if (deduped.length >= max) break;
-  }
-
-  return deduped;
-}
-
-function isArticleSummaryQuery(normalizedQuery: string): boolean {
-  return [
-    "这篇文章",
-    "主要讲了什么",
-    "讲了什么",
-    "文章主要",
-    "文章讲了什么",
-    "article summary",
-    "what does this article",
-    "what is this article about",
-  ].some(marker => normalizedQuery.includes(marker));
-}
-
-function computeTitleCloseness(normalizedQuery: string, title: string): number {
-  const normalizedTitle = normalizeText(title);
-  const tokens = tokenize(normalizedQuery)
-    .filter(token => token.length >= 2)
-    .sort((a, b) => b.length - a.length)
-    .slice(0, 5);
-
-  let score = 0;
-  for (const token of tokens) {
-    if (normalizedTitle.includes(token)) {
-      score += Math.max(1, Math.min(token.length, 6));
-    }
-  }
-
-  if (
-    normalizedQuery.includes("技术架构") &&
-    normalizedTitle.includes("技术架构")
-  ) {
-    score += 8;
-  }
-  if (normalizedQuery.includes("模块") && normalizedTitle.includes("模块")) {
-    score += 4;
-  }
-  if (normalizedQuery.includes("文章") && normalizedTitle.includes("文章")) {
-    score += 2;
-  }
-
-  return score;
 }

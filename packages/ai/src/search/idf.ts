@@ -1,4 +1,4 @@
-import type { IndexedDocument } from './types.js';
+import type { IndexedDocument } from "./types.js";
 
 export interface IDFMap {
   /** term → IDF score (log-scaled) */

@@ -1,4 +1,4 @@
-import type { Fact, FactRegistryFile, FactQueryOptions } from './types.js';
+import type { Fact, FactRegistryFile, FactQueryOptions } from "./types.js";
 
 let cachedRegistry: FactRegistryFile | null = null;
 
@@ -29,7 +29,7 @@ export function queryFacts(options: FactQueryOptions = {}): Fact[] {
   }
 
   if (options.lang) {
-    facts = facts.filter(f => f.lang === options.lang || f.lang === 'all');
+    facts = facts.filter(f => f.lang === options.lang || f.lang === "all");
   }
 
   if (options.minConfidence !== undefined) {
@@ -38,9 +38,7 @@ export function queryFacts(options: FactQueryOptions = {}): Fact[] {
 
   if (options.tags?.length) {
     const tagSet = new Set(options.tags.map(t => t.toLowerCase()));
-    facts = facts.filter(f =>
-      f.tags.some(t => tagSet.has(t.toLowerCase())),
-    );
+    facts = facts.filter(f => f.tags.some(t => tagSet.has(t.toLowerCase())));
   }
 
   facts = [...facts].sort((a, b) => b.confidence - a.confidence);

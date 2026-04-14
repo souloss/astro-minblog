@@ -1,22 +1,22 @@
-import type { z } from 'zod';
-import type { TokenUsageStats } from '../intelligence/types.js';
+import type { z } from "zod";
+import type { TokenUsageStats } from "../intelligence/types.js";
 
-export type { TokenUsageStats } from '../intelligence/types.js';
+export type { TokenUsageStats } from "../intelligence/types.js";
 
 export type StructuredOutputStatus =
-  | 'success'
-  | 'success_repaired'
-  | 'schema_error'
-  | 'parse_error'
-  | 'request_error'
-  | 'timeout';
+  | "success"
+  | "success_repaired"
+  | "schema_error"
+  | "parse_error"
+  | "request_error"
+  | "timeout";
 
 export interface StructuredOutputConfig<T> {
   schema: z.ZodSchema<T>;
   schemaName?: string;
   schemaDescription?: string;
   fallbackParser?: (rawText: string) => T | null;
-  repairStrategy?: 'strict' | 'lenient' | 'none';
+  repairStrategy?: "strict" | "lenient" | "none";
   timeoutMs?: number;
   maxOutputTokens?: number;
   temperature?: number;
@@ -50,9 +50,13 @@ export interface StructuredOutputProvider {
     abortSignal?: AbortSignal;
   }): Promise<{
     object: T;
-    usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number };
+    usage?: {
+      inputTokens?: number;
+      outputTokens?: number;
+      totalTokens?: number;
+    };
   }>;
-  
+
   generateText(options: {
     systemPrompt: string;
     userPrompt: string;
@@ -61,7 +65,11 @@ export interface StructuredOutputProvider {
     abortSignal?: AbortSignal;
   }): Promise<{
     text: string;
-    usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number };
+    usage?: {
+      inputTokens?: number;
+      outputTokens?: number;
+      totalTokens?: number;
+    };
   }>;
 }
 

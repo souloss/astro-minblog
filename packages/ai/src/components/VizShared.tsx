@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from "preact/hooks";
 
 interface Size {
   width: number;
@@ -17,11 +17,11 @@ export function useVizScaleControls(initialScale = 1) {
   const [scale, setScale] = useState(initialScale);
 
   const handleZoomIn = useCallback(() => {
-    setScale((current) => clampVizScale(current + VIZ_SCALE_STEP));
+    setScale(current => clampVizScale(current + VIZ_SCALE_STEP));
   }, []);
 
   const handleZoomOut = useCallback(() => {
-    setScale((current) => clampVizScale(current - VIZ_SCALE_STEP));
+    setScale(current => clampVizScale(current - VIZ_SCALE_STEP));
   }, []);
 
   const handleReset = useCallback(() => {
@@ -30,13 +30,18 @@ export function useVizScaleControls(initialScale = 1) {
 
   const zoomWithWheelDelta = useCallback((deltaY: number) => {
     if (deltaY === 0) return;
-    setScale((current) => clampVizScale(current + (deltaY < 0 ? VIZ_SCALE_STEP : -VIZ_SCALE_STEP)));
+    setScale(current =>
+      clampVizScale(current + (deltaY < 0 ? VIZ_SCALE_STEP : -VIZ_SCALE_STEP))
+    );
   }, []);
 
-  const handleWheelZoom = useCallback((event: WheelEvent) => {
-    event.preventDefault();
-    zoomWithWheelDelta(event.deltaY);
-  }, [zoomWithWheelDelta]);
+  const handleWheelZoom = useCallback(
+    (event: WheelEvent) => {
+      event.preventDefault();
+      zoomWithWheelDelta(event.deltaY);
+    },
+    [zoomWithWheelDelta]
+  );
 
   return {
     scale,
@@ -51,8 +56,21 @@ export function useVizScaleControls(initialScale = 1) {
 
 export function measureElementSize(element: HTMLElement): Size {
   return {
-    width: Math.max(1, Math.ceil(element.scrollWidth || element.offsetWidth || element.clientWidth || 1)),
-    height: Math.max(1, Math.ceil(element.scrollHeight || element.offsetHeight || element.clientHeight || 1)),
+    width: Math.max(
+      1,
+      Math.ceil(
+        element.scrollWidth || element.offsetWidth || element.clientWidth || 1
+      )
+    ),
+    height: Math.max(
+      1,
+      Math.ceil(
+        element.scrollHeight ||
+          element.offsetHeight ||
+          element.clientHeight ||
+          1
+      )
+    ),
   };
 }
 
@@ -64,7 +82,7 @@ export function getScaledCanvasStyles(baseSize: Size, scale: number) {
     },
     transformStyle: {
       transform: `scale(${scale})`,
-      transformOrigin: 'top left',
+      transformOrigin: "top left",
     },
   };
 }
@@ -85,13 +103,16 @@ export function useScaledCanvas(
     updateSize();
 
     const frame = requestAnimationFrame(updateSize);
-    const delayedFrame = requestAnimationFrame(() => requestAnimationFrame(updateSize));
+    const delayedFrame = requestAnimationFrame(() =>
+      requestAnimationFrame(updateSize)
+    );
     const settleTimer = window.setTimeout(updateSize, 180);
     const lateTimer = window.setTimeout(updateSize, 420);
 
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(updateSize)
-      : null;
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(updateSize)
+        : null;
 
     resizeObserver?.observe(element);
 
@@ -126,19 +147,20 @@ export function useDragPanScroll(
     let startScrollTop = 0;
 
     const setIdleCursor = () => {
-      element.style.cursor = 'grab';
+      element.style.cursor = "grab";
     };
 
     const clearDraggingState = () => {
       pointerId = null;
-      element.style.cursor = 'grab';
-      element.style.userSelect = '';
+      element.style.cursor = "grab";
+      element.style.userSelect = "";
     };
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (event.button !== 0 || event.pointerType === 'touch') return;
+      if (event.button !== 0 || event.pointerType === "touch") return;
       if (!(event.target instanceof Element)) return;
-      if (event.target.closest('button, a, input, textarea, select, summary')) return;
+      if (event.target.closest("button, a, input, textarea, select, summary"))
+        return;
 
       pointerId = event.pointerId;
       startX = event.clientX;
@@ -146,8 +168,8 @@ export function useDragPanScroll(
       startScrollLeft = element.scrollLeft;
       startScrollTop = element.scrollTop;
 
-      element.style.cursor = 'grabbing';
-      element.style.userSelect = 'none';
+      element.style.cursor = "grabbing";
+      element.style.userSelect = "none";
       element.setPointerCapture(event.pointerId);
       event.preventDefault();
     };
@@ -175,20 +197,20 @@ export function useDragPanScroll(
     };
 
     setIdleCursor();
-    element.addEventListener('pointerdown', handlePointerDown);
-    element.addEventListener('pointermove', handlePointerMove);
-    element.addEventListener('pointerup', handlePointerUp);
-    element.addEventListener('pointercancel', handlePointerCancel);
-    element.addEventListener('lostpointercapture', clearDraggingState);
+    element.addEventListener("pointerdown", handlePointerDown);
+    element.addEventListener("pointermove", handlePointerMove);
+    element.addEventListener("pointerup", handlePointerUp);
+    element.addEventListener("pointercancel", handlePointerCancel);
+    element.addEventListener("lostpointercapture", clearDraggingState);
 
     return () => {
-      element.removeEventListener('pointerdown', handlePointerDown);
-      element.removeEventListener('pointermove', handlePointerMove);
-      element.removeEventListener('pointerup', handlePointerUp);
-      element.removeEventListener('pointercancel', handlePointerCancel);
-      element.removeEventListener('lostpointercapture', clearDraggingState);
-      element.style.cursor = '';
-      element.style.userSelect = '';
+      element.removeEventListener("pointerdown", handlePointerDown);
+      element.removeEventListener("pointermove", handlePointerMove);
+      element.removeEventListener("pointerup", handlePointerUp);
+      element.removeEventListener("pointercancel", handlePointerCancel);
+      element.removeEventListener("lostpointercapture", clearDraggingState);
+      element.style.cursor = "";
+      element.style.userSelect = "";
     };
   }, [enabled, ...deps]);
 }
@@ -204,68 +226,120 @@ interface VizToolbarProps {
   showSourceActive?: boolean;
 }
 
-export function VizToolbar({ onZoomIn, onZoomOut, onReset, onFullscreen, onShowSource, showSourceActive }: VizToolbarProps) {
+export function VizToolbar({
+  onZoomIn,
+  onZoomOut,
+  onReset,
+  onFullscreen,
+  onShowSource,
+  showSourceActive,
+}: VizToolbarProps) {
   return (
-    <div class="viz-toolbar absolute right-2 top-2 z-10 flex items-center gap-0.5 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
+    <div class="viz-toolbar absolute top-2 right-2 z-10 flex items-center gap-0.5 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
       <button
         type="button"
         onClick={onZoomIn}
-        class="flex size-6 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+        class="text-foreground-soft hover:text-accent flex size-6 items-center justify-center rounded-md transition-colors hover:bg-[var(--viz-btn-hover)]"
         aria-label="Zoom in"
         title="Zoom in"
       >
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       </button>
       <button
         type="button"
         onClick={onZoomOut}
-        class="flex size-6 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+        class="text-foreground-soft hover:text-accent flex size-6 items-center justify-center rounded-md transition-colors hover:bg-[var(--viz-btn-hover)]"
         aria-label="Zoom out"
         title="Zoom out"
       >
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       </button>
       <button
         type="button"
         onClick={onReset}
-        class="flex size-6 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+        class="text-foreground-soft hover:text-accent flex size-6 items-center justify-center rounded-md transition-colors hover:bg-[var(--viz-btn-hover)]"
         aria-label="Reset view"
         title="Reset view"
       >
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
         </svg>
       </button>
       <div class="mx-0.5 h-3.5 w-px bg-[var(--viz-border)]" />
       <button
         type="button"
         onClick={onFullscreen}
-        class="flex size-6 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
+        class="text-foreground-soft hover:text-accent flex size-6 items-center justify-center rounded-md transition-colors hover:bg-[var(--viz-btn-hover)]"
         aria-label="Toggle fullscreen"
         title="Toggle fullscreen"
       >
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-          <path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+          <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+          <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+          <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
         </svg>
       </button>
       <button
         type="button"
         onClick={onShowSource}
         class={`flex size-6 items-center justify-center rounded-md transition-colors ${
-          showSourceActive 
-            ? 'bg-accent/20 text-accent' 
-            : 'text-foreground-soft hover:bg-[var(--viz-btn-hover)] hover:text-accent'
+          showSourceActive
+            ? "bg-accent/20 text-accent"
+            : "text-foreground-soft hover:text-accent hover:bg-[var(--viz-btn-hover)]"
         }`}
         aria-label="Toggle source code"
         title="Toggle source code"
       >
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
         </svg>
       </button>
     </div>
@@ -276,28 +350,45 @@ export function VizToolbar({ onZoomIn, onZoomOut, onReset, onFullscreen, onShowS
 
 export function CopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
-  
+
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [code]);
-  
+
   return (
     <button
       type="button"
       onClick={handleCopy}
-      class="absolute right-2 top-2 z-10 flex size-6 items-center justify-center rounded-md border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] text-foreground-soft opacity-0 shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-[var(--viz-btn-hover)] hover:text-accent group-hover:opacity-100 focus-within:opacity-100"
-      aria-label={copied ? 'Copied!' : 'Copy code'}
-      title={copied ? 'Copied!' : 'Copy code'}
+      class="text-foreground-soft hover:text-accent absolute top-2 right-2 z-10 flex size-6 items-center justify-center rounded-md border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] opacity-0 shadow-sm backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 focus-within:opacity-100 hover:bg-[var(--viz-btn-hover)]"
+      aria-label={copied ? "Copied!" : "Copy code"}
+      title={copied ? "Copied!" : "Copy code"}
     >
       {copied ? (
-        <svg class="size-3.5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          class="size-3.5 text-green-500"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
       ) : (
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
         </svg>
       )}
     </button>
@@ -306,17 +397,23 @@ export function CopyButton({ code }: { code: string }) {
 
 // ── Skeleton Loading Component ────────────────────────────────────
 
-export function SkeletonLoader({ height = '120px' }: { height?: string }) {
+export function SkeletonLoader({ height = "120px" }: { height?: string }) {
   return (
     <div class="flex items-center justify-center" style={{ minHeight: height }}>
       <div class="flex flex-col items-center gap-2">
-        <svg class="size-5 animate-spin text-foreground-soft/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg
+          class="text-foreground-soft/40 size-5 animate-spin"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <path d="M21 12a9 9 0 1 1-6.219-8.56" />
         </svg>
         <div class="flex gap-1">
-          <span class="size-1.5 animate-pulse rounded-full bg-foreground-soft/30" />
-          <span class="size-1.5 animate-pulse rounded-full bg-foreground-soft/30 [animation-delay:150ms]" />
-          <span class="size-1.5 animate-pulse rounded-full bg-foreground-soft/30 [animation-delay:300ms]" />
+          <span class="bg-foreground-soft/30 size-1.5 animate-pulse rounded-full" />
+          <span class="bg-foreground-soft/30 size-1.5 animate-pulse rounded-full [animation-delay:150ms]" />
+          <span class="bg-foreground-soft/30 size-1.5 animate-pulse rounded-full [animation-delay:300ms]" />
         </div>
       </div>
     </div>

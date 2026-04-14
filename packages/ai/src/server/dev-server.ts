@@ -27,7 +27,10 @@ import type { ChatHandlerEnv } from "./types.js";
 import type { KnowledgeBundleFile } from "../data/knowledge-types.js";
 
 interface NotifyCommentRuntimeModule {
-  handleCommentWebhook(request: Request, env: Record<string, unknown>): Promise<Response>;
+  handleCommentWebhook(
+    request: Request,
+    env: Record<string, unknown>
+  ): Promise<Response>;
 }
 
 const DEFAULT_SUMMARIES = {
@@ -358,25 +361,28 @@ async function main() {
         const providerStatus = manager.getProviderStatus();
         const mockMode = !!env.AI_MOCK_MODE;
         const configured = hasAnyProviderConfigured(env) || mockMode;
-        const providers = providerStatus.length > 0
-          ? providerStatus
-          : mockMode
-            ? [{
-                id: "mock",
-                type: "mock",
-                weight: 0,
-                healthy: true,
-                model: "mock",
-                health: {
-                  consecutiveFailures: 0,
-                  totalRequests: 0,
-                  successfulRequests: 0,
-                  lastError: null,
-                  lastErrorTime: null,
-                  lastSuccessTime: null,
-                },
-              }]
-            : [];
+        const providers =
+          providerStatus.length > 0
+            ? providerStatus
+            : mockMode
+              ? [
+                  {
+                    id: "mock",
+                    type: "mock",
+                    weight: 0,
+                    healthy: true,
+                    model: "mock",
+                    health: {
+                      consecutiveFailures: 0,
+                      totalRequests: 0,
+                      successfulRequests: 0,
+                      lastError: null,
+                      lastErrorTime: null,
+                      lastSuccessTime: null,
+                    },
+                  },
+                ]
+              : [];
         const responseCacheConfig = getResponseCacheConfig(env);
 
         const timeoutConfig = {
@@ -395,17 +401,19 @@ async function main() {
           knowledgeBundle: {
             loaded: true,
             count: Array.isArray(
-              (knowledgeBundle as { corpus?: { documents?: unknown[] } })?.corpus
-                ?.documents
+              (knowledgeBundle as { corpus?: { documents?: unknown[] } })
+                ?.corpus?.documents
             )
               ? (knowledgeBundle as { corpus: { documents: unknown[] } }).corpus
                   .documents.length
               : undefined,
-            lastUpdated: (knowledgeBundle as { generatedAt?: string })?.generatedAt,
+            lastUpdated: (knowledgeBundle as { generatedAt?: string })
+              ?.generatedAt,
           },
           vectorIndex: {
             loaded: Boolean(vectorIndex),
-            lastUpdated: (knowledgeBundle as { generatedAt?: string })?.generatedAt,
+            lastUpdated: (knowledgeBundle as { generatedAt?: string })
+              ?.generatedAt,
           },
         };
 
@@ -446,17 +454,18 @@ async function main() {
                 })),
                 dataStatus,
               },
-              hints: manager.hasProviders() || mockMode
-                ? [
-                    `Providers available: ${providers.length}`,
-                    "Mock fallback: enabled",
-                    responseCacheConfig.enabled
-                      ? "Response cache: enabled"
-                      : "Response cache: disabled",
-                  ]
-                : [
-                    "No AI providers configured. Set AI_BASE_URL + AI_API_KEY environment variables.",
-                  ],
+              hints:
+                manager.hasProviders() || mockMode
+                  ? [
+                      `Providers available: ${providers.length}`,
+                      "Mock fallback: enabled",
+                      responseCacheConfig.enabled
+                        ? "Response cache: enabled"
+                        : "Response cache: disabled",
+                    ]
+                  : [
+                      "No AI providers configured. Set AI_BASE_URL + AI_API_KEY environment variables.",
+                    ],
             },
             null,
             2

@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from 'preact/hooks';
-import { ChatPanel } from './ChatPanel.tsx';
-import type { AIChatConfig } from './ChatPanel.tsx';
-import type { ArticleChatContext } from '../server/types.ts';
+import { useState, useCallback, useEffect } from "preact/hooks";
+import { ChatPanel } from "./ChatPanel.tsx";
+import type { AIChatConfig } from "./ChatPanel.tsx";
+import type { ArticleChatContext } from "../server/types.ts";
 
 interface Props {
   config: AIChatConfig;

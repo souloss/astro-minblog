@@ -4,8 +4,10 @@ import type {
   CacheEntryMetadata,
   CacheSetOptions,
   CacheGetOptions,
-} from './types.js';
-import { CACHE } from '../constants.js';
+} from "./types.js";
+import { CACHE } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
+const kvLog = createLogger("kv-adapter");
 
 interface KVStoredEntry<T> {
   value: T;
@@ -21,7 +23,7 @@ const DEFAULT_TTL_SECONDS = CACHE.DEFAULT_TTL;
 const MIN_TTL_SECONDS = 60;
 
 export class KVCacheAdapter implements CacheAdapter {
-  readonly name = 'cloudflare-kv';
+  readonly name = "cloudflare-kv";
   private kv: KVNamespace;
   private defaultTtl: number;
   private prefix: string;
@@ -29,17 +31,23 @@ export class KVCacheAdapter implements CacheAdapter {
   constructor(kv: KVNamespace, options?: KVCacheOptions) {
     this.kv = kv;
     this.defaultTtl = options?.defaultTtl ?? DEFAULT_TTL_SECONDS;
-    this.prefix = options?.prefix ?? '';
+    this.prefix = options?.prefix ?? "";
   }
 
   private buildKey(key: string): string {
     return this.prefix ? `${this.prefix}:${key}` : key;
   }
 
-  async get<T>(key: string, options?: CacheGetOptions): Promise<CacheEntry<T> | null> {
+  async get<T>(
+    key: string,
+    options?: CacheGetOptions
+  ): Promise<CacheEntry<T> | null> {
     try {
       const fullKey = this.buildKey(key);
-      const result = await this.kv.getWithMetadata<KVStoredEntry<T>>(fullKey, 'json');
+      const result = await this.kv.getWithMetadata<KVStoredEntry<T>>(
+        fullKey,
+        "json"
+      );
 
       if (!result.value) {
         return null;
@@ -56,13 +64,17 @@ export class KVCacheAdapter implements CacheAdapter {
       };
     } catch (error) {
       if (!options?.silent) {
-        console.error('[KVCacheAdapter] Get error:', error);
+        kvLog.error("Get error:", error);
       }
       return null;
     }
   }
 
-  async set<T>(key: string, value: T, options?: CacheSetOptions): Promise<void> {
+  async set<T>(
+    key: string,
+    value: T,
+    options?: CacheSetOptions
+  ): Promise<void> {
     try {
       const now = Date.now();
       const ttl = options?.ttl ?? this.defaultTtl;
@@ -83,7 +95,7 @@ export class KVCacheAdapter implements CacheAdapter {
         expirationTtl: effectiveTtl,
       });
     } catch (error) {
-      console.error('[KVCacheAdapter] Set error:', error);
+      kvLog.error("Set error:", error);
       throw error;
     }
   }
@@ -98,13 +110,13 @@ export class KVCacheAdapter implements CacheAdapter {
       await this.kv.delete(fullKey);
       return true;
     } catch (error) {
-      console.error('[KVCacheAdapter] Delete error:', error);
+      kvLog.error("Delete error:", error);
       return false;
     }
   }
 
   async clear(): Promise<void> {
-    console.warn('[KVCacheAdapter] Clear not supported for KV namespace');
+    kvLog.warn("Clear not supported for KV namespace");
   }
 
   async has(key: string): Promise<boolean> {
@@ -119,7 +131,7 @@ export class KVCacheAdapter implements CacheAdapter {
 
   async isAvailable(): Promise<boolean> {
     try {
-      await this.kv.get('__health_check__');
+      await this.kv.get("__health_check__");
       return true;
     } catch {
       return false;

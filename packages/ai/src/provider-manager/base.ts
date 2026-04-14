@@ -3,7 +3,7 @@ import type {
   ProviderHealth,
   StreamTextOptions,
   StreamTextResult,
-} from './types.js';
+} from "./types.js";
 
 export abstract class BaseProviderAdapter implements ProviderAdapter {
   abstract readonly id: string;
@@ -25,7 +25,10 @@ export abstract class BaseProviderAdapter implements ProviderAdapter {
   protected unhealthyThreshold: number;
   protected healthRecoveryTTL: number;
 
-  constructor(options?: { unhealthyThreshold?: number; healthRecoveryTTL?: number }) {
+  constructor(options?: {
+    unhealthyThreshold?: number;
+    healthRecoveryTTL?: number;
+  }) {
     this.unhealthyThreshold = options?.unhealthyThreshold ?? 3;
     this.healthRecoveryTTL = options?.healthRecoveryTTL ?? 60000;
   }

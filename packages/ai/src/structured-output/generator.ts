@@ -8,47 +8,76 @@ import type {
   GenerateStructuredOptions,
   TokenUsageStats,
   StructuredOutputStatus,
-} from './types.js';
+} from "./types.js";
 
-import { TIMEOUTS } from '../constants.js';
-import { createLogger } from '../utils/logger.js';
+import { TIMEOUTS } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
 
-const log = createLogger('structured-output');
+const log = createLogger("structured-output");
 
 const DEFAULT_TIMEOUT_MS = TIMEOUTS.EVIDENCE_ANALYSIS;
 const DEFAULT_MAX_OUTPUT_TOKENS = 500;
 const DEFAULT_TEMPERATURE = 0;
 
-function toTokenStats(usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number }): TokenUsageStats | undefined {
+function toTokenStats(usage?: {
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+}): TokenUsageStats | undefined {
   if (!usage) return undefined;
   return {
     inputTokens: usage.inputTokens ?? 0,
     outputTokens: usage.outputTokens ?? 0,
-    totalTokens: usage.totalTokens ?? (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0),
+    totalTokens:
+      usage.totalTokens ?? (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0),
   };
 }
 
 function extractJsonFromText(text: string): unknown | null {
   const trimmed = text.trim();
-  
-  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-    try { return JSON.parse(trimmed); } catch (e) { log.debug('JSON parse failed:', e instanceof Error ? e.message : String(e)); }
+
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    try {
+      return JSON.parse(trimmed);
+    } catch (e) {
+      log.debug(
+        "JSON parse failed:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
   }
-  
+
   const codeBlockMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (codeBlockMatch) {
-    try { return JSON.parse(codeBlockMatch[1].trim()); } catch (e) { log.debug('JSON parse failed:', e instanceof Error ? e.message : String(e)); }
+    try {
+      return JSON.parse(codeBlockMatch[1].trim());
+    } catch (e) {
+      log.debug(
+        "JSON parse failed:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
   }
-  
+
   const jsonMatch = trimmed.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
   if (jsonMatch) {
-    try { return JSON.parse(jsonMatch[1]); } catch (e) { log.debug('JSON parse failed:', e instanceof Error ? e.message : String(e)); }
+    try {
+      return JSON.parse(jsonMatch[1]);
+    } catch (e) {
+      log.debug(
+        "JSON parse failed:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
   }
-  
+
   return null;
 }
 
-function validateWithSchema<T>(data: unknown, schema: StructuredOutputConfig<T>['schema']): T | null {
+function validateWithSchema<T>(
+  data: unknown,
+  schema: StructuredOutputConfig<T>["schema"]
+): T | null {
   const result = schema.safeParse(data);
   if (result.success) {
     return result.data;
@@ -59,30 +88,24 @@ function validateWithSchema<T>(data: unknown, schema: StructuredOutputConfig<T>[
 export async function generateStructured<T>(
   options: GenerateStructuredOptions<T>
 ): Promise<StructuredOutputResult<T>> {
-  const {
-    config,
-    provider,
-    systemPrompt,
-    userPrompt,
-    abortSignal,
-  } = options;
+  const { config, provider, systemPrompt, userPrompt, abortSignal } = options;
 
   const {
     schema,
-    schemaName = 'output',
+    schemaName = "output",
     schemaDescription,
     fallbackParser,
-    repairStrategy = 'lenient',
+    repairStrategy = "lenient",
     timeoutMs = DEFAULT_TIMEOUT_MS,
     maxOutputTokens = DEFAULT_MAX_OUTPUT_TOKENS,
     temperature = DEFAULT_TEMPERATURE,
   } = config;
-  const allowTextRepair = repairStrategy !== 'none';
-  const allowFallbackParser = repairStrategy === 'lenient';
+  const allowTextRepair = repairStrategy !== "none";
+  const allowFallbackParser = repairStrategy === "lenient";
 
   const timeoutController = new AbortController();
   const timeoutId = setTimeout(() => timeoutController.abort(), timeoutMs);
-  
+
   const abortHandler = () => timeoutController.abort();
   if (abortSignal) {
     if (abortSignal.aborted) {
@@ -90,16 +113,16 @@ export async function generateStructured<T>(
       return {
         data: null,
         success: false,
-        status: 'timeout',
+        status: "timeout",
         fallbackUsed: false,
-        error: 'Request already aborted',
+        error: "Request already aborted",
       };
     }
-    abortSignal.addEventListener('abort', abortHandler, { once: true });
+    abortSignal.addEventListener("abort", abortHandler, { once: true });
   }
 
-  let status: StructuredOutputStatus = 'request_error';
-  let rawText = '';
+  let status: StructuredOutputStatus = "request_error";
+  let rawText = "";
   let usage: TokenUsageStats | undefined;
 
   try {
@@ -116,30 +139,33 @@ export async function generateStructured<T>(
 
     clearTimeout(timeoutId);
     usage = toTokenStats(result.usage);
-    
+
     const validated = validateWithSchema(result.object, schema);
     if (validated !== null) {
       return {
         data: validated,
         success: true,
-        status: 'success',
+        status: "success",
         fallbackUsed: false,
         rawText: JSON.stringify(result.object),
         usage,
       };
     }
 
-    status = 'schema_error';
+    status = "schema_error";
     rawText = JSON.stringify(result.object);
   } catch (error) {
     clearTimeout(timeoutId);
-    
-    if (timeoutController.signal.aborted || (error instanceof Error && error.name === 'AbortError')) {
-      status = 'timeout';
+
+    if (
+      timeoutController.signal.aborted ||
+      (error instanceof Error && error.name === "AbortError")
+    ) {
+      status = "timeout";
     }
   } finally {
     if (abortSignal) {
-      abortSignal.removeEventListener('abort', abortHandler);
+      abortSignal.removeEventListener("abort", abortHandler);
     }
   }
 
@@ -152,7 +178,9 @@ export async function generateStructured<T>(
       );
       const repairAbortHandler = () => repairAbortController.abort();
       if (abortSignal && !abortSignal.aborted) {
-        abortSignal.addEventListener('abort', repairAbortHandler, { once: true });
+        abortSignal.addEventListener("abort", repairAbortHandler, {
+          once: true,
+        });
       }
 
       try {
@@ -171,11 +199,18 @@ export async function generateStructured<T>(
         if (extracted) {
           const validated = validateWithSchema(extracted, schema);
           if (validated !== null) {
-            return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
+            return {
+              data: validated,
+              success: true,
+              status: "success_repaired",
+              fallbackUsed: true,
+              rawText,
+              usage,
+            };
           }
-          status = 'schema_error';
+          status = "schema_error";
         } else {
-          status = 'parse_error';
+          status = "parse_error";
         }
 
         if (fallbackParser && allowFallbackParser) {
@@ -183,17 +218,29 @@ export async function generateStructured<T>(
           if (fallbackData) {
             const validated = validateWithSchema(fallbackData, schema);
             if (validated !== null) {
-              return { data: validated, success: true, status: 'success_repaired', fallbackUsed: true, rawText, usage };
+              return {
+                data: validated,
+                success: true,
+                status: "success_repaired",
+                fallbackUsed: true,
+                rawText,
+                usage,
+              };
             }
           }
         }
       } finally {
         clearTimeout(repairTimeoutId);
         if (abortSignal && !abortSignal.aborted) {
-          abortSignal.removeEventListener('abort', repairAbortHandler);
+          abortSignal.removeEventListener("abort", repairAbortHandler);
         }
       }
-    } catch (e) { log.debug('Text repair fallback failed:', e instanceof Error ? e.message : String(e)); }
+    } catch (e) {
+      log.debug(
+        "Text repair fallback failed:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
   }
 
   return {
@@ -202,7 +249,10 @@ export async function generateStructured<T>(
     status,
     fallbackUsed: false,
     rawText,
-    error: status === 'timeout' ? 'Request timed out' : `Failed to generate valid ${schemaName}`,
+    error:
+      status === "timeout"
+        ? "Request timed out"
+        : `Failed to generate valid ${schemaName}`,
     usage,
   };
 }

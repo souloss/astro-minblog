@@ -125,7 +125,8 @@ describe("streamLLMResponse", () => {
     expect(adapter.recordSuccess).toHaveBeenCalledTimes(1);
     expect(
       writer.writes.some(
-        chunk => chunk.type === "text-delta" && String(chunk.delta).includes("抱歉")
+        chunk =>
+          chunk.type === "text-delta" && String(chunk.delta).includes("抱歉")
       )
     ).toBe(false);
   });
@@ -184,11 +185,7 @@ describe("streamMockFallback", () => {
   it("emits metadata, text, and finish through the shared helper", async () => {
     const writer = createWriter();
 
-    const response = await streamMockFallback(
-      writer as never,
-      "hello",
-      "en"
-    );
+    const response = await streamMockFallback(writer as never, "hello", "en");
 
     expect(typeof response).toBe("string");
     expect(response.length).toBeGreaterThan(0);
@@ -281,7 +278,9 @@ describe("streamCachedResponse", () => {
       "zh"
     );
 
-    expect(writer.writes.some(chunk => chunk.type === "data-source-snippet")).toBe(true);
+    expect(
+      writer.writes.some(chunk => chunk.type === "data-source-snippet")
+    ).toBe(true);
   });
 });
 
@@ -299,8 +298,12 @@ describe("writeSourceSnippets", () => {
       },
     ]);
 
-    const snippetChunk = writer.writes.find(chunk => chunk.type === "data-source-snippet");
+    const snippetChunk = writer.writes.find(
+      chunk => chunk.type === "data-source-snippet"
+    );
     expect(snippetChunk).toBeTruthy();
-    expect((snippetChunk as { data?: { heading?: string } }).data?.heading).toBe("Chat Hooks");
+    expect(
+      (snippetChunk as { data?: { heading?: string } }).data?.heading
+    ).toBe("Chat Hooks");
   });
 });

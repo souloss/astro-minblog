@@ -121,7 +121,9 @@ export function hybridSearch(
   const rrfScores = reciprocalRankFusion([bm25Ranking, vectorRanking], k);
 
   // 构建最终结果
-  const bm25Map = new Map(bm25Results.map((r, i) => [r.url, { result: r, index: i + 1 }]));
+  const bm25Map = new Map(
+    bm25Results.map((r, i) => [r.url, { result: r, index: i + 1 }])
+  );
   const vectorMap = new Map(vectorResults.map((r, i) => [r.url, i + 1]));
 
   const results: HybridSearchResult[] = [];
@@ -370,7 +372,9 @@ function extractLikelyQuotedText(query: string): string {
   const trimmed = query.trim();
   if (!trimmed) return "";
 
-  const quotedMatches = [...trimmed.matchAll(/["“”'‘’「」『』《》](.+?)["“”'‘’「」『』《》]/g)]
+  const quotedMatches = [
+    ...trimmed.matchAll(/["“”'‘’「」『』《》](.+?)["“”'‘’「」『』《》]/g),
+  ]
     .map(match => match[1]?.trim() ?? "")
     .filter(Boolean)
     .sort((a, b) => b.length - a.length);
@@ -396,8 +400,32 @@ export function formatChunksForInjection(
 ): string {
   if (!matches.length) return "";
 
-  // 动态计算每个段落的内容限制
-  // 80% 的 token 预算给段落内容，20% 给标题和来源等开销
+  // For full-article injection (many chunks with large budget), use sequential
+  // filling instead of uniform truncation. This preserves complete paragraph
+  // content for early chunks rather than truncating all chunks equally.
+  const useSequentialFill = matches.length > 10 && maxTokens > 5000;
+
+  if (useSequentialFill) {
+    // Sequential fill: format each chunk with full content, stop when budget exhausted.
+    // This gives early chunks complete content rather than uniformly truncating all.
+    const lines: string[] = [];
+    let totalTokens = 0;
+
+    for (const match of matches) {
+      const chunkText = formatChunkForInjection(match, defaultContentLimit);
+      const chunkTokens = estimateTokens(chunkText);
+
+      if (totalTokens + chunkTokens > maxTokens) break;
+
+      lines.push(chunkText);
+      totalTokens += chunkTokens;
+    }
+
+    return lines.join("\n\n");
+  }
+
+  // Original uniform truncation for small result sets
+  // 80% of token budget for content, 20% for headings/sources
   const perChunkContentLimit = Math.min(
     defaultContentLimit,
     Math.floor((maxTokens * 0.8) / matches.length)
@@ -424,15 +452,22 @@ function formatChunkForInjection(
   contentLimit: number = 1500
 ): string {
   const { article, chunk } = match;
-  const heading = chunk.heading ? `【${chunk.heading}】` : "";
+  const anchorLabel = (match as unknown as Record<string, unknown>)
+    .__anchorLabel as string | undefined;
+  const positionPrefix =
+    chunk.position !== undefined ? `[段落 ${chunk.position}] ` : "";
+  const heading = chunk.heading
+    ? `${positionPrefix}【${chunk.heading}】`
+    : positionPrefix.trim();
+  const labelLine = anchorLabel ? `\n${anchorLabel}` : "";
   const source = `来源: [${article.title}](${article.url})`;
 
-  // 根据动态计算的 contentLimit 限制内容长度
-  const truncatedContent = chunk.content.length > contentLimit
-    ? chunk.content.slice(0, contentLimit) + "..."
-    : chunk.content;
+  const truncatedContent =
+    chunk.content.length > contentLimit
+      ? chunk.content.slice(0, contentLimit) + "..."
+      : chunk.content;
 
-  return `${heading}\n${truncatedContent}\n\n${source}`;
+  return `${heading}${labelLine}\n${truncatedContent}\n\n${source}`;
 }
 
 function estimateTokens(text: string): number {
@@ -499,8 +534,12 @@ export function selectRelevantChunks(
   const globallyRanked = allMatches.sort((a, b) => b.score - a.score);
   const selected = cfg.currentArticleId
     ? [
-        ...globallyRanked.filter(match => match.article.id === cfg.currentArticleId),
-        ...globallyRanked.filter(match => match.article.id !== cfg.currentArticleId),
+        ...globallyRanked.filter(
+          match => match.article.id === cfg.currentArticleId
+        ),
+        ...globallyRanked.filter(
+          match => match.article.id !== cfg.currentArticleId
+        ),
       ].slice(0, 20)
     : globallyRanked.slice(0, 20);
   log.debug(
@@ -546,7 +585,12 @@ export function expandChunkMatchesWithNeighbors(
     const push = (candidate: ChunkMatchResult | undefined) => {
       if (!candidate) return;
       if (seen.has(candidate.chunk.id)) return;
-      if (candidate !== match && rawAnchors.length > 0 && !candidateHasAnchor(candidate)) return;
+      if (
+        candidate !== match &&
+        rawAnchors.length > 0 &&
+        !candidateHasAnchor(candidate)
+      )
+        return;
       seen.add(candidate.chunk.id);
       expanded.push(candidate);
     };

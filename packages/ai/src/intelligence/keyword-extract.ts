@@ -1,8 +1,8 @@
-import { generateText, type LanguageModel } from 'ai';
-import { tokenize } from '../utils/text.js';
-import type { KeywordExtractionResult, QueryComplexity } from './types.js';
-import { TIMEOUTS } from '../constants.js';
-import { classifyQueryComplexity } from './request-interpretation.js';
+import { generateText, type LanguageModel } from "ai";
+import { tokenize } from "../utils/text.js";
+import type { KeywordExtractionResult, QueryComplexity } from "./types.js";
+import { TIMEOUTS } from "../constants.js";
+import { classifyQueryComplexity } from "./request-interpretation.js";
 
 export const KEYWORD_EXTRACTION_TIMEOUT_MS = TIMEOUTS.KEYWORD_EXTRACTION;
 
@@ -30,7 +30,11 @@ export function shouldRunKeywordExtraction(params: {
  * Falls back to local tokenization if LLM call fails or times out.
  */
 export async function extractSearchKeywords(params: {
-  messages: Array<{ role: string; parts?: Array<{ type: string; text?: string }>; content?: string }>;
+  messages: Array<{
+    role: string;
+    parts?: Array<{ type: string; text?: string }>;
+    content?: string;
+  }>;
   provider: { chatModel: (model: string) => unknown };
   model: string;
   abortSignal?: AbortSignal;
@@ -44,7 +48,7 @@ export async function extractSearchKeywords(params: {
   const conversationText = messages
     .slice(-6) // Last 3 turns
     .map(m => `${m.role}: ${getMessageText(m)}`)
-    .join('\n');
+    .join("\n");
 
   const prompt = `你是一个搜索关键词提取助手。分析以下对话，提取最佳搜索关键词。
 
@@ -67,14 +71,17 @@ ${conversationText}
       abortSignal,
     });
 
-    const rawText = result.text?.trim() ?? '';
+    const rawText = result.text?.trim() ?? "";
 
     // Try to parse JSON response
     const jsonMatch = rawText.match(/\{[^}]+\}/);
     if (jsonMatch) {
       try {
-        const parsed = JSON.parse(jsonMatch[0]) as { query?: string; primaryQuery?: string };
-        const query = (parsed.query ?? '').trim();
+        const parsed = JSON.parse(jsonMatch[0]) as {
+          query?: string;
+          primaryQuery?: string;
+        };
+        const query = (parsed.query ?? "").trim();
         const primaryQuery = (parsed.primaryQuery ?? query).trim();
         if (query) {
           const u = result.usage;
@@ -83,11 +90,13 @@ ${conversationText}
             primaryQuery,
             complexity,
             usedFallback: false,
-            usage: u ? {
-              inputTokens: u.inputTokens ?? 0,
-              outputTokens: u.outputTokens ?? 0,
-              totalTokens: (u.inputTokens ?? 0) + (u.outputTokens ?? 0),
-            } : undefined,
+            usage: u
+              ? {
+                  inputTokens: u.inputTokens ?? 0,
+                  outputTokens: u.outputTokens ?? 0,
+                  totalTokens: (u.inputTokens ?? 0) + (u.outputTokens ?? 0),
+                }
+              : undefined,
           };
         }
       } catch {
@@ -95,26 +104,38 @@ ${conversationText}
       }
     }
 
-    return buildFallback(latestText, complexity, 'json_parse_failed');
+    return buildFallback(latestText, complexity, "json_parse_failed");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return buildFallback(latestText, complexity, message);
   }
 }
 
-function buildFallback(latestText: string, complexity: QueryComplexity, error: string): KeywordExtractionResult {
+function buildFallback(
+  latestText: string,
+  complexity: QueryComplexity,
+  error: string
+): KeywordExtractionResult {
   const tokens = tokenize(latestText);
-  const query = tokens.slice(0, 3).join(' ') || latestText.slice(0, 30);
+  const query = tokens.slice(0, 3).join(" ") || latestText.slice(0, 30);
   return { query, primaryQuery: query, complexity, usedFallback: true, error };
 }
 
-function getMessageText(message: { role: string; parts?: Array<{ type: string; text?: string }>; content?: string }): string {
-  if (message.content && typeof message.content === 'string') return message.content;
+function getMessageText(message: {
+  role: string;
+  parts?: Array<{ type: string; text?: string }>;
+  content?: string;
+}): string {
+  if (message.content && typeof message.content === "string")
+    return message.content;
   if (Array.isArray(message.parts)) {
     return message.parts
-      .filter((p): p is { type: 'text'; text: string } => p.type === 'text' && typeof p.text === 'string')
+      .filter(
+        (p): p is { type: "text"; text: string } =>
+          p.type === "text" && typeof p.text === "string"
+      )
       .map(p => p.text)
-      .join('');
+      .join("");
   }
-  return '';
+  return "";
 }

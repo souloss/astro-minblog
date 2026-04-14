@@ -102,7 +102,8 @@ describe("rankArticlesForQuery", () => {
               id: "chat-1",
               postId: "settings",
               heading: "Chat hooks",
-              content: "useChat 的配置中还包含 onToolCall，用于客户端动作执行。",
+              content:
+                "useChat 的配置中还包含 onToolCall，用于客户端动作执行。",
               position: 0,
               tokenCount: 20,
               headers: { H2: "Chat hooks" },
@@ -144,7 +145,9 @@ describe("shapeArticlesForQuery", () => {
 
     expect(result.interpretation.topic.primary).toBe("deployment");
     expect(result.articles[0]?.title).toBe("Deployment Guide");
-    expect(result.articles.length).toBeLessThanOrEqual(result.budget.maxArticles);
+    expect(result.articles.length).toBeLessThanOrEqual(
+      result.budget.maxArticles
+    );
   });
 
   it("boosts the current article for quoted article-mode queries", () => {
@@ -184,7 +187,7 @@ describe("shapeArticlesForQuery", () => {
 
   it("does not boost the current article for cross-article queries", () => {
     const result = shapeArticlesForQuery(
-      '和这个主题相关的其他文章还有哪些？',
+      "和这个主题相关的其他文章还有哪些？",
       [
         {
           id: "other-post",
@@ -221,7 +224,9 @@ describe("shapeArticlesForQuery", () => {
 describe("current article quoted-query helpers", () => {
   it("extracts the longest quoted candidate", () => {
     expect(
-      extractQuotedCandidate('请解释“短句”和“this is the longest quoted sentence here”')
+      extractQuotedCandidate(
+        "请解释“短句”和“this is the longest quoted sentence here”"
+      )
     ).toBe("this is the longest quoted sentence here");
   });
 
@@ -231,7 +236,7 @@ describe("current article quoted-query helpers", () => {
         '请解释这句话："Use pnpm build before pnpm deploy to ensure Cloudflare Pages receives the latest assets."'
       )
     ).toBe(true);
-    expect(isLikelyQuotedArticleQuery('解释一下“部署”')).toBe(false);
+    expect(isLikelyQuotedArticleQuery("解释一下“部署”")).toBe(false);
   });
 
   it("detects cross-article intent", () => {
@@ -400,7 +405,9 @@ describe("response cache source authority", () => {
         enabled: true,
         success: true,
         responseText: "ok",
-        sources: [{ title: "Fallback", url: "/f", reason: "retrieval-fallback" }],
+        sources: [
+          { title: "Fallback", url: "/f", reason: "retrieval-fallback" },
+        ],
       })
     ).toBe(false);
     expect(
@@ -445,7 +452,9 @@ describe("public question cache branching", () => {
         latestText: "Demo Post",
       })
     ).toEqual({ articleSlug: "demo-post", lang: "zh", queryKey: "demo post" });
-    expect(buildPublicCacheContext({ lang: "en", latestText: "Hello World" })).toEqual({
+    expect(
+      buildPublicCacheContext({ lang: "en", latestText: "Hello World" })
+    ).toEqual({
       articleSlug: undefined,
       lang: "en",
       queryKey: "hello world",
@@ -473,7 +482,11 @@ describe("public question cache branching", () => {
       })
     ).toEqual({
       enabled: true,
-      context: { articleSlug: "demo-post", lang: "zh", queryKey: "总结一下这篇文章" },
+      context: {
+        articleSlug: "demo-post",
+        lang: "zh",
+        queryKey: "总结一下这篇文章",
+      },
     });
   });
 

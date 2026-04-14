@@ -120,7 +120,7 @@ export interface CacheEnv {
 // Session Cache Types (imported from search module)
 // ============================================================================
 
-export type { CachedSearchContext } from '../search/types.js';
+export type { CachedSearchContext } from "../search/types.js";
 
 // ============================================================================
 // Utility Types
@@ -148,8 +148,11 @@ export interface CacheKeyBuilder {
 /**
  * Default cache key builder implementation.
  */
-export const createCacheKeyBuilder = (prefix: string = 'chat'): CacheKeyBuilder => ({
+export const createCacheKeyBuilder = (
+  prefix: string = "chat"
+): CacheKeyBuilder => ({
   session: (sessionId: string) => `${prefix}:sid:${sessionId}`,
-  article: (sessionId: string, slug: string) => `${prefix}:sid:${sessionId}:article:${slug}`,
-  custom: (...parts: string[]) => `${prefix}:${parts.join(':')}`,
+  article: (sessionId: string, slug: string) =>
+    `${prefix}:sid:${sessionId}:article:${slug}`,
+  custom: (...parts: string[]) => `${prefix}:${parts.join(":")}`,
 });

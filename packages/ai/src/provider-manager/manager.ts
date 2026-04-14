@@ -1,3 +1,5 @@
+import { createLogger } from "../utils/logger.js";
+const pmLog = createLogger("provider-manager");
 import type {
   ProviderAdapter,
   ProviderConfig,
@@ -8,16 +10,25 @@ import type {
   StreamTextResult,
   OpenAIProviderConfig,
   WorkersAIProviderConfig,
-} from './types.js';
-import { parseProviderConfigs, validateProviderConfig } from './config.js';
-import { OpenAIAdapter } from './openai.js';
-import { WorkersAIAdapter } from './workers.js';
-import { MockAdapter } from './mock.js';
+} from "./types.js";
+import { parseProviderConfigs, validateProviderConfig } from "./config.js";
+import { OpenAIAdapter } from "./openai.js";
+import { WorkersAIAdapter } from "./workers.js";
+import { MockAdapter } from "./mock.js";
 
 export class ProviderManager {
   private providers: ProviderAdapter[] = [];
   private mockAdapter: MockAdapter;
-  private options: Required<Omit<ProviderManagerOptions, 'onProviderSwitch' | 'onStreamError' | 'onHealthChange'>> & Pick<ProviderManagerOptions, 'onProviderSwitch' | 'onStreamError' | 'onHealthChange'>;
+  private options: Required<
+    Omit<
+      ProviderManagerOptions,
+      "onProviderSwitch" | "onStreamError" | "onHealthChange"
+    >
+  > &
+    Pick<
+      ProviderManagerOptions,
+      "onProviderSwitch" | "onStreamError" | "onHealthChange"
+    >;
 
   constructor(env: ProviderManagerEnv, options?: ProviderManagerOptions) {
     this.options = {
@@ -41,7 +52,7 @@ export class ProviderManager {
 
       const validationError = validateProviderConfig(config);
       if (validationError) {
-        console.warn(`[ProviderManager] Skipping invalid config: ${validationError}`);
+        pmLog.warn(`Skipping invalid config: ${validationError}`);
         continue;
       }
 
@@ -51,18 +62,21 @@ export class ProviderManager {
           this.providers.push(adapter);
         }
       } catch (error) {
-        console.warn(`[ProviderManager] Failed to create adapter for ${config.id}:`, error);
+        pmLog.warn(`Failed to create adapter for ${config.id}:`, error);
       }
     }
 
     this.providers.sort((a, b) => b.weight - a.weight);
   }
 
-  private createAdapter(config: ProviderConfig, env: ProviderManagerEnv): ProviderAdapter | null {
+  private createAdapter(
+    config: ProviderConfig,
+    env: ProviderManagerEnv
+  ): ProviderAdapter | null {
     switch (config.type) {
-      case 'openai':
+      case "openai":
         return new OpenAIAdapter(config as OpenAIProviderConfig);
-      case 'workers':
+      case "workers":
         return new WorkersAIAdapter(config as WorkersAIProviderConfig, env);
       default:
         return null;
@@ -97,7 +111,11 @@ export class ProviderManager {
         }
 
         if (lastProviderId && lastProviderId !== provider.id) {
-          this.options.onProviderSwitch?.(lastProviderId, provider.id, 'fallback success');
+          this.options.onProviderSwitch?.(
+            lastProviderId,
+            provider.id,
+            "fallback success"
+          );
         }
 
         return result;
@@ -114,11 +132,15 @@ export class ProviderManager {
     }
 
     if (this.options.enableMockFallback) {
-      this.options.onProviderSwitch?.(lastProviderId, 'mock', 'all providers failed');
+      this.options.onProviderSwitch?.(
+        lastProviderId,
+        "mock",
+        "all providers failed"
+      );
       return this.mockAdapter.streamText(options);
     }
 
-    throw lastError || new Error('No providers available');
+    throw lastError || new Error("No providers available");
   }
 
   getProviderStatus(): ProviderStatus[] {

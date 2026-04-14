@@ -17,6 +17,13 @@ import type {
 } from "../cache/response-cache.js";
 import { createResponsePlaybackGenerator } from "../cache/response-cache.js";
 import type { SourceSelection } from "../search/types.js";
+import {
+  getStreamResultMetadata,
+  streamResultHadToolCalls,
+  extractReasoningText,
+  parseTokenUsage,
+  consumeStreamWithErrors,
+} from "./stream-processor.js";
 
 const log = createLogger("stream-helpers");
 
@@ -31,40 +38,6 @@ interface SourceArticle {
   snippet?: string;
   score?: number;
   matchTerms?: string[];
-}
-
-type StreamResultMetadata = {
-  reasoning?: PromiseLike<unknown>;
-  usage?: PromiseLike<{
-    inputTokens?: number;
-    outputTokens?: number;
-    totalTokens?: number;
-  }>;
-};
-
-function getStreamResultMetadata(result: unknown): StreamResultMetadata {
-  return typeof result === "object" && result !== null
-    ? (result as StreamResultMetadata)
-    : {};
-}
-
-function streamResultHadToolCalls(result: unknown): boolean {
-  if (typeof result !== "object" || result === null) return false;
-
-  const candidate = result as {
-    steps?: Array<{ toolCalls?: unknown[] }>;
-    toolCalls?: unknown[];
-  };
-
-  if (Array.isArray(candidate.steps)) {
-    for (const step of candidate.steps) {
-      if (Array.isArray(step?.toolCalls) && step.toolCalls.length > 0) {
-        return true;
-      }
-    }
-  }
-
-  return Array.isArray(candidate.toolCalls) && candidate.toolCalls.length > 0;
 }
 
 interface StreamLLMParams {
@@ -95,7 +68,10 @@ interface StreamFailoverResult extends StreamLLMResult {
   adapter: ProviderAdapter | null;
 }
 
-interface StreamAnswerWithFallbackParams extends Omit<StreamFailoverParams, "adapters"> {
+interface StreamAnswerWithFallbackParams extends Omit<
+  StreamFailoverParams,
+  "adapters"
+> {
   adapters?: ProviderAdapter[];
   question: string;
 }
@@ -164,7 +140,12 @@ export function writeSourceArticles(
         url: article.url ?? "#",
         title: article.title,
       });
-    } catch (e) { log.debug('writeSourceArticles failed:', e instanceof Error ? e.message : String(e)); }
+    } catch (e) {
+      log.debug(
+        "writeSourceArticles failed:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
   }
 }
 
@@ -189,7 +170,12 @@ export function writeSourceSnippets(
           matchTerms: article.matchTerms ?? [],
         },
       });
-    } catch (e) { log.debug('writeSourceSnippets failed:', e instanceof Error ? e.message : String(e)); }
+    } catch (e) {
+      log.debug(
+        "writeSourceSnippets failed:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
   }
 }
 
@@ -241,61 +227,26 @@ export async function streamLLMResponse(
       maxOutputTokens,
       tools,
       onError: ({ error }) => {
-        console.error("[stream-helpers] streamText error:", error);
+        log.error("streamText error:", error);
       },
     });
-
-    const streamErrors: Error[] = [];
 
     writer.merge(result.toUIMessageStream({ sendFinish: false }));
-    await result.consumeStream({
-      onError: error => {
-        streamErrors.push(
-          error instanceof Error ? error : new Error(String(error))
-        );
-      },
-    });
+    const streamErrors = await consumeStreamWithErrors(opts =>
+      result.consumeStream(opts)
+    );
 
     const text = await result.text;
     const metadata = getStreamResultMetadata(result);
     const hadToolCalls = streamResultHadToolCalls(result);
 
-    let reasoningText: string | undefined;
-    const reasoningPromise = metadata.reasoning;
-    if (reasoningPromise) {
-      try {
-        const reasoningOutput = await Promise.resolve(reasoningPromise);
-        reasoningText =
-          typeof reasoningOutput === "string"
-            ? reasoningOutput
-            : Array.isArray(reasoningOutput)
-              ? reasoningOutput
-                  .map((r): string => {
-                    if (typeof r === "object" && r !== null && "text" in r)
-                      return (r as { text: string }).text;
-                    return String(r);
-                  })
-                  .join("")
-              : undefined;
-      } catch (e) { log.debug('reasoning extraction failed:', e instanceof Error ? e.message : String(e)); }
-    }
+    const reasoningText = metadata.reasoning
+      ? await extractReasoningText(metadata.reasoning)
+      : undefined;
 
-    let tokenUsage: TokenUsage | undefined;
-    const usagePromise = metadata.usage;
-    if (usagePromise) {
-      try {
-        const usage = await Promise.resolve(usagePromise);
-        const inputTokens = usage.inputTokens ?? 0;
-        const outputTokens = usage.outputTokens ?? 0;
-        tokenUsage = {
-          total: usage.totalTokens ?? inputTokens + outputTokens,
-          input: inputTokens,
-          output: outputTokens,
-        };
-      } catch {
-        /* usage is optional */
-      }
-    }
+    const tokenUsage = metadata.usage
+      ? await parseTokenUsage(metadata.usage)
+      : undefined;
 
     const generationMs = Date.now() - start;
 
@@ -351,7 +302,7 @@ export async function streamLLMResponse(
     };
   } catch (err) {
     adapter.recordFailure(err instanceof Error ? err : new Error(String(err)));
-    console.error("[stream-helpers] Provider threw:", (err as Error).message);
+    log.error("Provider threw:", (err as Error).message);
     return {
       success: false,
       responseText: "",

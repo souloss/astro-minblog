@@ -3,9 +3,9 @@ export {
   clearFactRegistry,
   getFactRegistry,
   queryFacts,
-} from './registry.js';
-export { matchFactsToQuery } from './fact-matcher.js';
-export { buildFactSection } from './prompt-injector.js';
+} from "./registry.js";
+export { matchFactsToQuery } from "./fact-matcher.js";
+export { buildFactSection } from "./prompt-injector.js";
 export type {
   Fact,
   FactCategory,
@@ -13,4 +13,4 @@ export type {
   FactRegistryFile,
   FactRegistryStats,
   FactQueryOptions,
-} from './types.js';
+} from "./types.js";

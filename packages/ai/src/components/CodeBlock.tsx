@@ -126,9 +126,12 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
   const normalizedLang = normalizeCodeBlockLang(lang);
 
   // For mermaid/markmap, pass empty code to avoid loading shiki, but still call hook at top level
-  const shikiCode = (normalizedLang === "mermaid" || normalizedLang === "markmap" || normalizedLang === "mindmap")
-    ? ""
-    : code;
+  const shikiCode =
+    normalizedLang === "mermaid" ||
+    normalizedLang === "markmap" ||
+    normalizedLang === "mindmap"
+      ? ""
+      : code;
 
   // ALWAYS call hooks at top level - Rules of Hooks violation if called conditionally
   const { html, loading, error } = useShikiHighlighter(shikiCode, lang);
@@ -186,7 +189,7 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
         </span>
       )}
       {error && (
-        <span class="text-accent absolute bottom-1 right-2 text-[10px]">
+        <span class="text-accent absolute right-2 bottom-1 text-[10px]">
           {error}
         </span>
       )}

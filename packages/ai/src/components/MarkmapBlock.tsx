@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
-import type { VNode } from 'preact';
-import type { CodeBlockProps } from './CodeBlock.tsx';
-import { SkeletonLoader, useDragPanScroll, useScaledCanvas, useVizScaleControls, VizToolbar } from './VizShared.tsx';
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import type { VNode } from "preact";
+import type { CodeBlockProps } from "./CodeBlock.tsx";
+import {
+  SkeletonLoader,
+  useDragPanScroll,
+  useScaledCanvas,
+  useVizScaleControls,
+  VizToolbar,
+} from "./VizShared.tsx";
 
 interface MarkmapResult {
   loading: boolean;
   error?: string;
-  markmapInstanceRef: { current: { destroy?: () => void; fit?: () => void } | null };
+  markmapInstanceRef: {
+    current: { destroy?: () => void; fit?: () => void } | null;
+  };
 }
 
 function useMarkmap(
@@ -16,7 +24,10 @@ function useMarkmap(
 ): MarkmapResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  const markmapInstanceRef = useRef<{ destroy?: () => void; fit?: () => void } | null>(null);
+  const markmapInstanceRef = useRef<{
+    destroy?: () => void;
+    fit?: () => void;
+  } | null>(null);
 
   useEffect(() => {
     if (!code || !visible) {
@@ -36,10 +47,7 @@ function useMarkmap(
       markmapInstanceRef.current = null;
     }
 
-    Promise.all([
-      import('markmap-lib'),
-      import('markmap-view'),
-    ])
+    Promise.all([import("markmap-lib"), import("markmap-view")])
       .then(async ([markmapLib, markmapView]) => {
         if (!mounted) return;
 
@@ -61,14 +69,14 @@ function useMarkmap(
           }
         } catch (err) {
           if (mounted) {
-            setError(err instanceof Error ? err.message : 'Markmap error');
+            setError(err instanceof Error ? err.message : "Markmap error");
             setLoading(false);
           }
         }
       })
       .catch(() => {
         if (mounted) {
-          setError('Markmap not available');
+          setError("Markmap not available");
           setLoading(false);
         }
       });
@@ -84,12 +92,16 @@ function useMarkmap(
   return { loading, error, markmapInstanceRef };
 }
 
-export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | null {
+export function MarkmapBlock({
+  code,
+  isStreaming,
+}: CodeBlockProps): VNode | null {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const { scale, handleZoomIn, handleZoomOut, handleReset, handleWheelZoom } = useVizScaleControls();
+  const { scale, handleZoomIn, handleZoomOut, handleReset, handleWheelZoom } =
+    useVizScaleControls();
   const [showSource, setShowSource] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -108,8 +120,12 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     return () => observer.disconnect();
   }, []);
 
-  const resolvedCode = isStreaming ? '' : code;
-  const { loading, error, markmapInstanceRef } = useMarkmap(svgRef, resolvedCode, isVisible);
+  const resolvedCode = isStreaming ? "" : code;
+  const { loading, error, markmapInstanceRef } = useMarkmap(
+    svgRef,
+    resolvedCode,
+    isVisible
+  );
   const showSkeleton = isStreaming || (loading && !error);
 
   const handleShowSource = useCallback(() => setShowSource(v => !v), []);
@@ -119,7 +135,7 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     if (document.fullscreenElement === containerRef.current) {
       document.exitFullscreen();
     } else {
-      containerRef.current.requestFullscreen().catch(() => { });
+      containerRef.current.requestFullscreen().catch(() => {});
     }
   }, []);
 
@@ -128,21 +144,21 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       setIsFullscreen(document.fullscreenElement === containerRef.current);
     };
 
-    document.addEventListener('fullscreenchange', handleChange);
-    return () => document.removeEventListener('fullscreenchange', handleChange);
+    document.addEventListener("fullscreenchange", handleChange);
+    return () => document.removeEventListener("fullscreenchange", handleChange);
   }, []);
 
   useEffect(() => {
     if (!isFullscreen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && document.fullscreenElement) {
+      if (e.key === "Escape" && document.fullscreenElement) {
         document.exitFullscreen();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isFullscreen]);
 
   useEffect(() => {
@@ -153,7 +169,13 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     container.scrollLeft = 0;
   }, [isFullscreen, scale, showSource]);
 
-  const { scaledStyle, transformStyle } = useScaledCanvas(contentRef, scale, [resolvedCode, showSource, isFullscreen, loading, error]);
+  const { scaledStyle, transformStyle } = useScaledCanvas(contentRef, scale, [
+    resolvedCode,
+    showSource,
+    isFullscreen,
+    loading,
+    error,
+  ]);
 
   useEffect(() => {
     if (!showDiagram || loading || error || !isVisible || showSkeleton) return;
@@ -174,9 +196,8 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     const frame = requestAnimationFrame(refit);
     const settleTimer = window.setTimeout(refit, 180);
     const lateTimer = window.setTimeout(refit, 420);
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(refit)
-      : null;
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(refit) : null;
 
     if (viewportRef.current) resizeObserver?.observe(viewportRef.current);
     if (svgRef.current) resizeObserver?.observe(svgRef.current);
@@ -188,51 +209,80 @@ export function MarkmapBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       window.clearTimeout(lateTimer);
       resizeObserver?.disconnect();
     };
-  }, [showDiagram, resolvedCode, isFullscreen, loading, error, isVisible, markmapInstanceRef, showSkeleton]);
+  }, [
+    showDiagram,
+    resolvedCode,
+    isFullscreen,
+    loading,
+    error,
+    isVisible,
+    markmapInstanceRef,
+    showSkeleton,
+  ]);
 
-  useDragPanScroll(viewportRef, showDiagram && !showSkeleton, [resolvedCode, isFullscreen, scale, showSkeleton]);
+  useDragPanScroll(viewportRef, showDiagram && !showSkeleton, [
+    resolvedCode,
+    isFullscreen,
+    scale,
+    showSkeleton,
+  ]);
 
   return (
     <div
       ref={containerRef}
-      class={`markmap-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
-        }`}
+      class={`markmap-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${
+        isFullscreen ? "flex h-full w-full flex-col overflow-hidden p-4" : "p-3"
+      }`}
       style={{
-        background: isFullscreen ? 'var(--background)' : undefined
+        background: isFullscreen ? "var(--background)" : undefined,
       }}
     >
       {showSkeleton && <SkeletonLoader height="120px" />}
       {error && !showSkeleton && (
         <>
-          <pre class="overflow-x-auto rounded-md bg-muted/60 px-3 py-2 text-[12px] leading-relaxed font-mono">
+          <pre class="bg-muted/60 overflow-x-auto rounded-md px-3 py-2 font-mono text-[12px] leading-relaxed">
             <code class="text-amber-600 dark:text-amber-400">{code}</code>
           </pre>
-          <div class="mt-1 px-1 text-[10px] text-foreground-soft">Markmap: {error}</div>
+          <div class="text-foreground-soft mt-1 px-1 text-[10px]">
+            Markmap: {error}
+          </div>
         </>
       )}
       {!error && (
         <>
           {showSource ? (
-            <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
-              }`}>
+            <pre
+              class={`text-foreground-soft overflow-auto font-mono text-[11px] leading-relaxed ${
+                isFullscreen ? "min-h-0 flex-1 pt-10" : ""
+              }`}
+            >
               <code>{code}</code>
             </pre>
           ) : (
             <div
               ref={viewportRef}
-              class={`overflow-auto cursor-grab active:cursor-grabbing ${isFullscreen ? 'min-h-0 flex-1 pt-10' : 'max-h-[400px]'}`}
+              class={`cursor-grab overflow-auto active:cursor-grabbing ${isFullscreen ? "min-h-0 flex-1 pt-10" : "max-h-[400px]"}`}
               onWheel={handleWheelZoom}
             >
               <div class="flex min-h-full min-w-full items-start justify-center">
-                <div style={{ ...scaledStyle, display: showSkeleton ? 'none' : undefined }}>
-                  <div ref={contentRef} class="markmap-content transition-transform duration-200" style={transformStyle}>
+                <div
+                  style={{
+                    ...scaledStyle,
+                    display: showSkeleton ? "none" : undefined,
+                  }}
+                >
+                  <div
+                    ref={contentRef}
+                    class="markmap-content transition-transform duration-200"
+                    style={transformStyle}
+                  >
                     <svg
                       ref={svgRef}
                       class="markmap-svg block"
                       style={{
-                        minHeight: '200px',
-                        width: '100%',
-                        height: isFullscreen ? '100%' : 'auto'
+                        minHeight: "200px",
+                        width: "100%",
+                        height: isFullscreen ? "100%" : "auto",
                       }}
                     />
                   </div>

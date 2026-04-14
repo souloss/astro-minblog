@@ -3,7 +3,7 @@
  * Injected into prompts to ground AI responses in real data and reduce hallucination.
  */
 
-export type FactCategory = 'author' | 'blog' | 'content' | 'project' | 'tech';
+export type FactCategory = "author" | "blog" | "content" | "project" | "tech";
 
 /**
  * How the fact was produced:
@@ -11,7 +11,7 @@ export type FactCategory = 'author' | 'blog' | 'content' | 'project' | 'tech';
  * - `derived`: computed from blog data (counts, aggregations)
  * - `aggregated`: synthesized from multiple posts/sources
  */
-export type FactSource = 'explicit' | 'derived' | 'aggregated';
+export type FactSource = "explicit" | "derived" | "aggregated";
 
 export interface Fact {
   id: string;

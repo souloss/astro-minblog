@@ -1,3 +1,5 @@
+import { createLogger } from "../utils/logger.js";
+const notifyLog = createLogger("notify");
 import type { UIMessage } from "ai";
 import type {
   NotifyArticleRef as ArticleRef,
@@ -5,6 +7,7 @@ import type {
   NotifyTokenUsage as TokenUsage,
   PhaseTiming,
 } from "./types.js";
+import { getMessageText } from "./chat-message-utils.js";
 
 type NotifyEnv = Record<string, unknown>;
 
@@ -49,9 +52,9 @@ async function loadNotifyRuntime(): Promise<NotifyRuntimeModule | null> {
     return (await import("@astro-minimax/notify")) as unknown as NotifyRuntimeModule;
   } catch (error) {
     if (
-      error instanceof Error
-      && ("code" in error)
-      && (error as Error & { code?: string }).code === "ERR_MODULE_NOT_FOUND"
+      error instanceof Error &&
+      "code" in error &&
+      (error as Error & { code?: string }).code === "ERR_MODULE_NOT_FOUND"
     ) {
       return null;
     }
@@ -59,7 +62,9 @@ async function loadNotifyRuntime(): Promise<NotifyRuntimeModule | null> {
   }
 }
 
-async function createEnvNotifier(env: NotifyEnv): Promise<RuntimeNotifier | null> {
+async function createEnvNotifier(
+  env: NotifyEnv
+): Promise<RuntimeNotifier | null> {
   const runtime = await loadNotifyRuntime();
   if (!runtime) {
     return null;
@@ -71,16 +76,6 @@ async function createEnvNotifier(env: NotifyEnv): Promise<RuntimeNotifier | null
   }
 
   return runtime.createNotifier(config);
-}
-
-function getMessageText(message: UIMessage): string {
-  if (Array.isArray(message.parts)) {
-    return message.parts
-      .filter((p): p is { type: "text"; text: string } => p.type === "text")
-      .map(p => p.text)
-      .join("");
-  }
-  return "";
 }
 
 export interface ChatNotifyOptions {
@@ -137,7 +132,7 @@ export function notifyAiChat(
       });
     })
     .catch(error => {
-      console.error("[notify] AI chat notification failed:", error);
+      notifyLog.error("AI chat notification failed:", error);
       return null;
     });
 }

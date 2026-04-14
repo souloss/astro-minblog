@@ -4,8 +4,8 @@ import type {
   CacheEntryMetadata,
   CacheSetOptions,
   CacheGetOptions,
-} from './types.js';
-import { CACHE } from '../constants.js';
+} from "./types.js";
+import { CACHE } from "../constants.js";
 
 interface InternalEntry<T> {
   value: T;
@@ -23,7 +23,7 @@ const DEFAULT_MAX_ENTRIES = 400;
 const DEFAULT_TTL_SECONDS = CACHE.DEFAULT_TTL;
 
 export class MemoryCacheAdapter implements CacheAdapter {
-  readonly name = 'memory';
+  readonly name = "memory";
   private cache = new Map<string, InternalEntry<unknown>>();
   private maxEntries: number;
   private defaultTtl: number;
@@ -41,7 +41,10 @@ export class MemoryCacheAdapter implements CacheAdapter {
     }
   }
 
-  async get<T>(key: string, _options?: CacheGetOptions): Promise<CacheEntry<T> | null> {
+  async get<T>(
+    key: string,
+    _options?: CacheGetOptions
+  ): Promise<CacheEntry<T> | null> {
     const entry = this.cache.get(key) as InternalEntry<T> | undefined;
 
     if (!entry) return null;
@@ -60,7 +63,11 @@ export class MemoryCacheAdapter implements CacheAdapter {
     };
   }
 
-  async set<T>(key: string, value: T, options?: CacheSetOptions): Promise<void> {
+  async set<T>(
+    key: string,
+    value: T,
+    options?: CacheSetOptions
+  ): Promise<void> {
     const now = Date.now();
     const ttl = options?.ttl ?? this.defaultTtl;
 

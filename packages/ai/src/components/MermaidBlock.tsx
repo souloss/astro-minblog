@@ -1,7 +1,19 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import type { VNode } from 'preact';
-import type { CodeBlockProps } from './CodeBlock.tsx';
-import { SkeletonLoader, useDragPanScroll, useScaledCanvas, useVizScaleControls, VizToolbar } from './VizShared.tsx';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "preact/hooks";
+import type { VNode } from "preact";
+import type { CodeBlockProps } from "./CodeBlock.tsx";
+import {
+  SkeletonLoader,
+  useDragPanScroll,
+  useScaledCanvas,
+  useVizScaleControls,
+  VizToolbar,
+} from "./VizShared.tsx";
 
 interface MermaidResult {
   svg: string;
@@ -10,7 +22,7 @@ interface MermaidResult {
 }
 
 function useMermaid(code: string): MermaidResult {
-  const [svg, setSvg] = useState('');
+  const [svg, setSvg] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
 
@@ -19,19 +31,20 @@ function useMermaid(code: string): MermaidResult {
     setLoading(true);
     setError(undefined);
 
-    import('mermaid')
+    import("mermaid")
       .then(async ({ default: mermaid }) => {
         if (!mounted) return;
 
         try {
-          const isDark = typeof document !== 'undefined' &&
-            document.documentElement.getAttribute('data-theme') === 'dark';
+          const isDark =
+            typeof document !== "undefined" &&
+            document.documentElement.getAttribute("data-theme") === "dark";
 
           // Initialize mermaid matching core implementation
           mermaid.initialize({
             startOnLoad: false,
-            securityLevel: 'strict',
-            theme: isDark ? 'dark' : 'default',
+            securityLevel: "strict",
+            theme: isDark ? "dark" : "default",
           } as any);
 
           const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -43,42 +56,51 @@ function useMermaid(code: string): MermaidResult {
           }
         } catch (err) {
           if (mounted) {
-            setError(err instanceof Error ? err.message : 'Mermaid error');
+            setError(err instanceof Error ? err.message : "Mermaid error");
             setLoading(false);
           }
         }
       })
       .catch(() => {
         if (mounted) {
-          setError('Mermaid not available');
+          setError("Mermaid not available");
           setLoading(false);
         }
       });
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [code]);
 
   return { svg, loading, error };
 }
 
-export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | null {
-  const { svg, loading, error } = useMermaid(isStreaming ? '' : code);
+export function MermaidBlock({
+  code,
+  isStreaming,
+}: CodeBlockProps): VNode | null {
+  const { svg, loading, error } = useMermaid(isStreaming ? "" : code);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [svgSize, setSvgSize] = useState<{ width: number; height: number } | null>(null);
-  const { scale, handleZoomIn, handleZoomOut, handleReset, handleWheelZoom } = useVizScaleControls();
+  const [svgSize, setSvgSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+  const { scale, handleZoomIn, handleZoomOut, handleReset, handleWheelZoom } =
+    useVizScaleControls();
   const [showSource, setShowSource] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const showDiagram = !showSource;
 
   // Stable key based on content hash for re-render persistence
   const contentKey = useMemo(() => {
-    if (!code) return '';
+    if (!code) return "";
     let hash = 0;
     for (let i = 0; i < code.length; i++) {
       const char = code.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return `mermaid-${Math.abs(hash).toString(36)}`;
@@ -91,7 +113,7 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     if (document.fullscreenElement === containerRef.current) {
       document.exitFullscreen();
     } else {
-      containerRef.current.requestFullscreen().catch(() => { });
+      containerRef.current.requestFullscreen().catch(() => {});
     }
   }, []);
 
@@ -100,8 +122,8 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
       setIsFullscreen(document.fullscreenElement === containerRef.current);
     };
 
-    document.addEventListener('fullscreenchange', handleChange);
-    return () => document.removeEventListener('fullscreenchange', handleChange);
+    document.addEventListener("fullscreenchange", handleChange);
+    return () => document.removeEventListener("fullscreenchange", handleChange);
   }, []);
 
   // Escape key to close fullscreen
@@ -109,13 +131,13 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     if (!isFullscreen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && document.fullscreenElement) {
+      if (e.key === "Escape" && document.fullscreenElement) {
         document.exitFullscreen();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isFullscreen]);
 
   useEffect(() => {
@@ -133,7 +155,7 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     }
 
     const content = contentRef.current;
-    const svgEl = content?.querySelector('svg');
+    const svgEl = content?.querySelector("svg");
     if (!(svgEl instanceof SVGSVGElement)) {
       setSvgSize(null);
       return;
@@ -141,33 +163,42 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
 
     const updateSvgSize = () => {
       const viewBox = svgEl.viewBox?.baseVal;
-      const widthAttr = Number(svgEl.getAttribute('width') || 0);
-      const heightAttr = Number(svgEl.getAttribute('height') || 0);
+      const widthAttr = Number(svgEl.getAttribute("width") || 0);
+      const heightAttr = Number(svgEl.getAttribute("height") || 0);
       const rect = svgEl.getBoundingClientRect();
-      const width = Math.max(1, Math.ceil(viewBox?.width || widthAttr || rect.width || 1));
-      const height = Math.max(1, Math.ceil(viewBox?.height || heightAttr || rect.height || 1));
+      const width = Math.max(
+        1,
+        Math.ceil(viewBox?.width || widthAttr || rect.width || 1)
+      );
+      const height = Math.max(
+        1,
+        Math.ceil(viewBox?.height || heightAttr || rect.height || 1)
+      );
 
-      svgEl.style.display = 'block';
+      svgEl.style.display = "block";
       svgEl.style.width = `${width}px`;
       svgEl.style.height = `${height}px`;
-      svgEl.style.maxWidth = 'none';
+      svgEl.style.maxWidth = "none";
 
-      setSvgSize(current => (
+      setSvgSize(current =>
         current?.width === width && current?.height === height
           ? current
           : { width, height }
-      ));
+      );
     };
 
     updateSvgSize();
 
     const frame = requestAnimationFrame(updateSvgSize);
-    const delayedFrame = requestAnimationFrame(() => requestAnimationFrame(updateSvgSize));
+    const delayedFrame = requestAnimationFrame(() =>
+      requestAnimationFrame(updateSvgSize)
+    );
     const settleTimer = window.setTimeout(updateSvgSize, 180);
     const lateTimer = window.setTimeout(updateSvgSize, 420);
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(updateSvgSize)
-      : null;
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(updateSvgSize)
+        : null;
 
     resizeObserver?.observe(svgEl);
     if (content) resizeObserver?.observe(content);
@@ -184,12 +215,16 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
 
   useDragPanScroll(viewportRef, showDiagram, [svg, isFullscreen, scale]);
 
-  const { scaledStyle, transformStyle } = useScaledCanvas(contentRef, scale, [svg, showSource, isFullscreen]);
+  const { scaledStyle, transformStyle } = useScaledCanvas(contentRef, scale, [
+    svg,
+    showSource,
+    isFullscreen,
+  ]);
   const effectiveScaledStyle = svgSize
     ? {
-      width: `${Math.max(1, Math.ceil(svgSize.width * scale))}px`,
-      height: `${Math.max(1, Math.ceil(svgSize.height * scale))}px`,
-    }
+        width: `${Math.max(1, Math.ceil(svgSize.width * scale))}px`,
+        height: `${Math.max(1, Math.ceil(svgSize.height * scale))}px`,
+      }
     : scaledStyle;
 
   if (isStreaming || loading) {
@@ -203,10 +238,12 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
   if (error) {
     return (
       <div class="mermaid-block">
-        <pre class="overflow-x-auto rounded-md bg-muted/60 px-3 py-2 text-[12px] leading-relaxed font-mono">
+        <pre class="bg-muted/60 overflow-x-auto rounded-md px-3 py-2 font-mono text-[12px] leading-relaxed">
           <code class="text-amber-600 dark:text-amber-400">{code}</code>
         </pre>
-        <div class="mt-1 px-1 text-[10px] text-foreground-soft">Mermaid: {error}</div>
+        <div class="text-foreground-soft mt-1 px-1 text-[10px]">
+          Mermaid: {error}
+        </div>
       </div>
     );
   }
@@ -215,19 +252,23 @@ export function MermaidBlock({ code, isStreaming }: CodeBlockProps): VNode | nul
     <div
       ref={containerRef}
       key={contentKey}
-      class={`mermaid-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${isFullscreen ? 'flex h-full w-full flex-col overflow-hidden p-4' : 'p-3'
-        }`}
-      style={isFullscreen ? { background: 'var(--background)' } : undefined}
+      class={`mermaid-block group relative rounded-md border border-[var(--viz-border)] bg-[var(--viz-bg)] ${
+        isFullscreen ? "flex h-full w-full flex-col overflow-hidden p-4" : "p-3"
+      }`}
+      style={isFullscreen ? { background: "var(--background)" } : undefined}
     >
       {showSource ? (
-        <pre class={`overflow-auto text-[11px] leading-relaxed font-mono text-foreground-soft ${isFullscreen ? 'min-h-0 flex-1 pt-10' : ''
-          }`}>
+        <pre
+          class={`text-foreground-soft overflow-auto font-mono text-[11px] leading-relaxed ${
+            isFullscreen ? "min-h-0 flex-1 pt-10" : ""
+          }`}
+        >
           <code>{code}</code>
         </pre>
       ) : (
         <div
           ref={viewportRef}
-          class={`overflow-auto cursor-grab active:cursor-grabbing ${isFullscreen ? 'min-h-0 flex-1 pt-10' : 'max-h-[400px]'}`}
+          class={`cursor-grab overflow-auto active:cursor-grabbing ${isFullscreen ? "min-h-0 flex-1 pt-10" : "max-h-[400px]"}`}
           onWheel={handleWheelZoom}
         >
           <div class="flex min-h-full min-w-full items-start justify-center">

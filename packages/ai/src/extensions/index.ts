@@ -1,6 +1,10 @@
-export * from './types.js';
-export { getExtensionRegistry, resetExtensionRegistry } from './registry.js';
-export { loadExtensions, loadExtensionsFromGlob, registerBuiltInExtensions } from './loader.js';
+export * from "./types.js";
+export { getExtensionRegistry, resetExtensionRegistry } from "./registry.js";
+export {
+  loadExtensions,
+  loadExtensionsFromGlob,
+  registerBuiltInExtensions,
+} from "./loader.js";
 export {
   resolveVoiceStyleMode,
   buildVoiceStylePrompt,
@@ -8,4 +12,4 @@ export {
   getSemanticFallback,
   mergeSearchDocuments,
   mergeFacts,
-} from './injector.js';
+} from "./injector.js";

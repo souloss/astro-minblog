@@ -64,7 +64,7 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
     if (abortSignal) {
       if (abortSignal.aborted) {
         clearTimeout(timeoutId);
-        throw new DOMException('The operation was aborted.', 'AbortError');
+        throw new DOMException("The operation was aborted.", "AbortError");
       }
       abortSignal.addEventListener("abort", abortHandler, { once: true });
     }

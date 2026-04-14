@@ -21,18 +21,18 @@ export function safeJoinUrl(baseUrl: string, path: string): string {
   if (!baseUrl) return path;
 
   // If no path, return the base URL without trailing slash
-  if (!path) return baseUrl.replace(/\/+$/, '');
+  if (!path) return baseUrl.replace(/\/+$/, "");
 
   // If path is already a full URL, return it as-is
-  if (path.startsWith('http://') || path.startsWith('https://')) {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
     return path;
   }
 
   // Remove trailing slashes from base URL
-  const cleanBase = baseUrl.replace(/\/+$/, '');
+  const cleanBase = baseUrl.replace(/\/+$/, "");
 
   // Ensure path starts with a single slash
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
 
   return `${cleanBase}${cleanPath}`;
 }

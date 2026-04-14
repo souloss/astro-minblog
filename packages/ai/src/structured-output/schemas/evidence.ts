@@ -1,19 +1,19 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const QuestionTypeSchema = z.enum([
-  'fact',
-  'list', 
-  'count',
-  'timeline',
-  'recommendation',
-  'opinion',
-  'mixed',
-  'unknown',
+  "fact",
+  "list",
+  "count",
+  "timeline",
+  "recommendation",
+  "opinion",
+  "mixed",
+  "unknown",
 ]);
 
-export const ConfidenceLevelSchema = z.enum(['high', 'medium', 'low']);
+export const ConfidenceLevelSchema = z.enum(["high", "medium", "low"]);
 
-export const CountModeSchema = z.enum(['exact', 'at_least', 'unknown']);
+export const CountModeSchema = z.enum(["exact", "at_least", "unknown"]);
 
 export const EvidenceEntitySchema = z.object({
   name: z.string(),

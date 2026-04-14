@@ -1,7 +1,5 @@
 import type { CacheAdapter } from "../cache/types.js";
-import type {
-  CachedSearchContext,
-} from "./types.js";
+import type { CachedSearchContext } from "./types.js";
 import { MemoryCacheAdapter } from "../cache/memory-adapter.js";
 import { createLogger } from "../utils/logger.js";
 import { CACHE } from "../constants.js";

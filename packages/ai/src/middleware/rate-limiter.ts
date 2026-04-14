@@ -3,7 +3,7 @@
  * Tiers: burst (short), sustained (medium), daily (long).
  */
 
-import { t } from '../utils/i18n.js';
+import { t } from "../utils/i18n.js";
 
 interface RateLimitWindow {
   maxRequests: number;
@@ -27,17 +27,17 @@ export interface RateLimitResult {
   retryAfterMs: number;
   limit: number;
   remaining: number;
-  triggeredBy: 'burst' | 'sustained' | 'daily' | null;
+  triggeredBy: "burst" | "sustained" | "daily" | null;
 }
 
 function parsePositiveInt(value: string | undefined, fallback: number): number {
-  const n = Number.parseInt(value ?? '', 10);
+  const n = Number.parseInt(value ?? "", 10);
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
 function parseBool(value: string | undefined, fallback: boolean): boolean {
   if (!value) return fallback;
-  return ['1', 'true', 'yes', 'on'].includes(value.trim().toLowerCase());
+  return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
 }
 
 function buildConfig(env: Record<string, string | undefined>): RateLimitConfig {
@@ -49,11 +49,17 @@ function buildConfig(env: Record<string, string | undefined>): RateLimitConfig {
     },
     sustained: {
       maxRequests: parsePositiveInt(env.CHAT_RATE_LIMIT_SUSTAINED_MAX, 20),
-      windowMs: parsePositiveInt(env.CHAT_RATE_LIMIT_SUSTAINED_WINDOW_MS, 60_000),
+      windowMs: parsePositiveInt(
+        env.CHAT_RATE_LIMIT_SUSTAINED_WINDOW_MS,
+        60_000
+      ),
     },
     daily: {
       maxRequests: parsePositiveInt(env.CHAT_RATE_LIMIT_DAILY_MAX, 100),
-      windowMs: parsePositiveInt(env.CHAT_RATE_LIMIT_DAILY_WINDOW_MS, 86_400_000),
+      windowMs: parsePositiveInt(
+        env.CHAT_RATE_LIMIT_DAILY_WINDOW_MS,
+        86_400_000
+      ),
     },
   };
 }
@@ -68,7 +74,10 @@ function pruneStaleClients(now: number, dailyWindowMs: number): void {
   lastGlobalCleanup = now;
   const cutoff = now - dailyWindowMs;
   for (const [ip, record] of clients) {
-    if (!record.timestamps.length || record.timestamps[record.timestamps.length - 1] < cutoff) {
+    if (
+      !record.timestamps.length ||
+      record.timestamps[record.timestamps.length - 1] < cutoff
+    ) {
       clients.delete(ip);
     }
   }
@@ -80,10 +89,10 @@ function pruneStaleClients(now: number, dailyWindowMs: number): void {
  */
 export function getClientIP(req: Request): string {
   return (
-    req.headers.get('cf-connecting-ip') ||
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
+    req.headers.get("cf-connecting-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "unknown"
   );
 }
 
@@ -93,12 +102,18 @@ export function getClientIP(req: Request): string {
  */
 export function checkRateLimit(
   ip: string,
-  env: Record<string, string | undefined> = {},
+  env: Record<string, string | undefined> = {}
 ): RateLimitResult {
   const config = buildConfig(env);
 
   if (!config.enabled) {
-    return { allowed: true, retryAfterMs: 0, limit: config.sustained.maxRequests, remaining: config.sustained.maxRequests, triggeredBy: null };
+    return {
+      allowed: true,
+      retryAfterMs: 0,
+      limit: config.sustained.maxRequests,
+      remaining: config.sustained.maxRequests,
+      triggeredBy: null,
+    };
   }
 
   const now = Date.now();
@@ -118,10 +133,13 @@ export function checkRateLimit(
   }
 
   // Check each tier from strictest to most lenient
-  const tiers: Array<{ name: 'burst' | 'sustained' | 'daily'; cfg: RateLimitWindow }> = [
-    { name: 'burst', cfg: config.burst },
-    { name: 'sustained', cfg: config.sustained },
-    { name: 'daily', cfg: config.daily },
+  const tiers: Array<{
+    name: "burst" | "sustained" | "daily";
+    cfg: RateLimitWindow;
+  }> = [
+    { name: "burst", cfg: config.burst },
+    { name: "sustained", cfg: config.sustained },
+    { name: "daily", cfg: config.daily },
   ];
 
   for (const { name, cfg } of tiers) {
@@ -131,7 +149,13 @@ export function checkRateLimit(
     if (count >= cfg.maxRequests) {
       const oldest = record.timestamps.find(t => t > windowStart) ?? now;
       const retryAfterMs = Math.max(oldest + cfg.windowMs - now, 1000);
-      return { allowed: false, retryAfterMs, limit: cfg.maxRequests, remaining: 0, triggeredBy: name };
+      return {
+        allowed: false,
+        retryAfterMs,
+        limit: cfg.maxRequests,
+        remaining: 0,
+        triggeredBy: name,
+      };
     }
   }
 
@@ -139,7 +163,9 @@ export function checkRateLimit(
   record.timestamps.push(now);
 
   const sustainedStart = now - config.sustained.windowMs;
-  const sustainedCount = record.timestamps.filter(t => t > sustainedStart).length;
+  const sustainedCount = record.timestamps.filter(
+    t => t > sustainedStart
+  ).length;
 
   return {
     allowed: true,
@@ -150,29 +176,35 @@ export function checkRateLimit(
   };
 }
 
-function getRateLimitMessage(triggeredBy: 'burst' | 'sustained' | 'daily', lang?: string): string {
+function getRateLimitMessage(
+  triggeredBy: "burst" | "sustained" | "daily",
+  lang?: string
+): string {
   const keyMap = {
-    burst: 'ai.error.rateLimit.burst',
-    sustained: 'ai.error.rateLimit.sustained',
-    daily: 'ai.error.rateLimit.daily',
+    burst: "ai.error.rateLimit.burst",
+    sustained: "ai.error.rateLimit.sustained",
+    daily: "ai.error.rateLimit.daily",
   } as const;
-  return t(keyMap[triggeredBy], lang ?? 'zh');
+  return t(keyMap[triggeredBy], lang ?? "zh");
 }
 
 /**
  * Builds a 429 response for a rejected rate limit check.
  */
-export function rateLimitResponse(result: RateLimitResult, lang?: string): Response {
-  const message = getRateLimitMessage(result.triggeredBy ?? 'burst', lang);
+export function rateLimitResponse(
+  result: RateLimitResult,
+  lang?: string
+): Response {
+  const message = getRateLimitMessage(result.triggeredBy ?? "burst", lang);
   const retryAfterSeconds = Math.ceil(result.retryAfterMs / 1000);
 
   return new Response(JSON.stringify({ error: message }), {
     status: 429,
     headers: {
-      'Content-Type': 'application/json',
-      'Retry-After': String(retryAfterSeconds),
-      'X-RateLimit-Limit': String(result.limit),
-      'X-RateLimit-Remaining': String(result.remaining),
+      "Content-Type": "application/json",
+      "Retry-After": String(retryAfterSeconds),
+      "X-RateLimit-Limit": String(result.limit),
+      "X-RateLimit-Remaining": String(result.remaining),
     },
   });
 }

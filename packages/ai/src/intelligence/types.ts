@@ -1,4 +1,4 @@
-export type QueryComplexity = 'simple' | 'moderate' | 'complex';
+export type QueryComplexity = "simple" | "moderate" | "complex";
 
 export interface KeywordExtractionResult {
   query: string;
@@ -28,4 +28,7 @@ export interface CitationGuardPreflight {
   actions: CitationGuardAction[];
 }
 
-export type CitationGuardAction = 'preflight_reject' | 'stream_rewrite' | 'stream_suppress';
+export type CitationGuardAction =
+  | "preflight_reject"
+  | "stream_rewrite"
+  | "stream_suppress";

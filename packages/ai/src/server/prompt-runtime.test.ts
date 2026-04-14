@@ -1,13 +1,13 @@
-import { describe, expect, it } from 'vitest';
-import { resolvePromptGuards } from './prompt-runtime.js';
+import { describe, expect, it } from "vitest";
+import { resolvePromptGuards } from "./prompt-runtime.js";
 
-describe('resolvePromptGuards', () => {
-  it('returns privacy refusal through interpretation-driven guard', () => {
+describe("resolvePromptGuards", () => {
+  it("returns privacy refusal through interpretation-driven guard", () => {
     const result = resolvePromptGuards({
-      latestText: '你多大了？',
+      latestText: "你多大了？",
       relatedArticles: [],
       relatedProjects: [],
-      lang: 'zh',
+      lang: "zh",
     });
 
     expect(result.preflight).toBeNull();
@@ -15,29 +15,29 @@ describe('resolvePromptGuards', () => {
     expect(result.unknownRefusal?.text).toMatch(/年龄|公开|分享/);
   });
 
-  it('returns preflight result for article-count questions', () => {
+  it("returns preflight result for article-count questions", () => {
     const result = resolvePromptGuards({
-      latestText: '有几篇文章？',
+      latestText: "有几篇文章？",
       relatedArticles: [
         {
-          title: 'A',
-          url: '/a',
+          title: "A",
+          url: "/a",
           keyPoints: [],
-          summary: '',
+          summary: "",
           categories: [],
           dateTime: Date.now(),
         },
         {
-          title: 'B',
-          url: '/b',
+          title: "B",
+          url: "/b",
           keyPoints: [],
-          summary: '',
+          summary: "",
           categories: [],
           dateTime: Date.now(),
         },
       ],
       relatedProjects: [],
-      lang: 'zh',
+      lang: "zh",
     });
 
     expect(result.preflight).not.toBeNull();

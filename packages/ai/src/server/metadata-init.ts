@@ -1,7 +1,4 @@
-import {
-  preloadKnowledgeBundle,
-  getKnowledgeBundle,
-} from "../data/index.js";
+import { preloadKnowledgeBundle, getKnowledgeBundle } from "../data/index.js";
 import {
   initArticleIndex,
   initProjectIndex,

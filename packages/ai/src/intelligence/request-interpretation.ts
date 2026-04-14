@@ -1,19 +1,19 @@
-import { getEvidenceBudget, type EvidenceBudget } from './evidence-budget.js';
-import { classifyIntent } from '../query/intent.js';
-import type { QueryIntentCategory } from '../query/types.js';
-import { shouldReuseSearchContext } from '../query/followup.js';
-import { resolveAnswerMode } from './citation-guard.js';
-import type { AnswerMode } from './citation-guard.js';
-import type { CachedSearchContext } from '../search/types.js';
-import type { QueryComplexity } from './types.js';
+import { getEvidenceBudget, type EvidenceBudget } from "./evidence-budget.js";
+import { classifyIntent } from "../query/intent.js";
+import type { QueryIntentCategory } from "../query/types.js";
+import { shouldReuseSearchContext } from "../query/followup.js";
+import { resolveAnswerMode } from "./citation-guard.js";
+import type { AnswerMode } from "./citation-guard.js";
+import type { CachedSearchContext } from "../search/types.js";
+import type { QueryComplexity } from "./types.js";
 
-export type SafetyDecision = 'allow' | 'constrain' | 'refuse';
+export type SafetyDecision = "allow" | "constrain" | "refuse";
 
 export type SafetyReason =
-  | 'privacy'
-  | 'policy'
-  | 'unsupported_capability'
-  | 'insufficient_public_evidence';
+  | "privacy"
+  | "policy"
+  | "unsupported_capability"
+  | "insufficient_public_evidence";
 
 export interface RequestInterpretation {
   conversation: {
@@ -48,25 +48,27 @@ export interface SearchInterpretation {
 
 export function classifyQueryComplexity(text: string): QueryComplexity {
   const trimmed = text.trim();
-  if (!trimmed || trimmed.length <= 10) return 'simple';
-  if (trimmed.length > 80) return 'complex';
+  if (!trimmed || trimmed.length <= 10) return "simple";
+  if (trimmed.length > 80) return "complex";
   const tokenCount = trimmed.split(/\s+/).filter(Boolean).length;
-  if (tokenCount <= 1) return 'simple';
-  if (tokenCount >= 5) return 'complex';
-  return 'moderate';
+  if (tokenCount <= 1) return "simple";
+  if (tokenCount >= 5) return "complex";
+  return "moderate";
 }
 
 function mapSafetyDecision(answerContract: AnswerMode): {
   decision: SafetyDecision;
   reason?: SafetyReason;
 } {
-  if (answerContract === 'unknown') {
-    return { decision: 'refuse', reason: 'privacy' };
+  if (answerContract === "unknown") {
+    return { decision: "refuse", reason: "privacy" };
   }
-  return { decision: 'allow' };
+  return { decision: "allow" };
 }
 
-export function interpretRequest(args: InterpretRequestArgs): RequestInterpretation {
+export function interpretRequest(
+  args: InterpretRequestArgs
+): RequestInterpretation {
   const {
     latestText,
     cachedContext,
