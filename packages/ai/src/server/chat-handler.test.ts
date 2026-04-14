@@ -26,12 +26,12 @@ describe("resolveSearchAnswerShaping", () => {
     expect(result.budget.enableDeepContent).toBe(false);
   });
 
-  it("uses the current query semantics for list-style questions", () => {
+  it("uses the current query semantics for recommendation-style questions", () => {
     const result = resolveSearchAnswerShaping("有哪些文章推荐？");
 
-    expect(result.interpretation.answer.contract).toBe("list");
-    expect(result.budget.maxArticles).toBe(8);
-    expect(result.budget.summaryMaxLength).toBe(80);
+    // "推荐" triggers recommendation mode before "哪些" triggers list mode
+    expect(result.interpretation.answer.contract).toBe("recommendation");
+    expect(result.budget.maxArticles).toBe(6);
   });
 
   it("still treats privacy-sensitive questions as unknown with constrained budget", () => {

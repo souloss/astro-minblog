@@ -50,7 +50,7 @@ describe("resolveAnswerMode", () => {
 
   describe("list mode", () => {
     it.each([
-      ["有哪些文章推荐？", "list"],
+      ["有哪些文章推荐？", "recommendation"],
       ["列举一下特点", "list"],
       ["有哪些主题？", "list"],
       ["list all features", "list"],

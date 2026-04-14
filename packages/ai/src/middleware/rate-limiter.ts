@@ -198,13 +198,22 @@ export function rateLimitResponse(
   const message = getRateLimitMessage(result.triggeredBy ?? "burst", lang);
   const retryAfterSeconds = Math.ceil(result.retryAfterMs / 1000);
 
-  return new Response(JSON.stringify({ error: message }), {
-    status: 429,
-    headers: {
-      "Content-Type": "application/json",
-      "Retry-After": String(retryAfterSeconds),
-      "X-RateLimit-Limit": String(result.limit),
-      "X-RateLimit-Remaining": String(result.remaining),
-    },
-  });
+  return new Response(
+    JSON.stringify({
+      error: message,
+      code: "RATE_LIMITED",
+      retryable: true,
+      retryAfter: retryAfterSeconds,
+    }),
+    {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Retry-After": String(retryAfterSeconds),
+        "X-RateLimit-Limit": String(result.limit),
+        "X-RateLimit-Remaining": String(result.remaining),
+      },
+    }
+  );
 }

@@ -38,10 +38,10 @@ export function resolveAnswerMode(query: string): AnswerMode {
   const q = query.toLowerCase();
 
   if (hasPrivacyIntent(query)) return "unknown";
+  if (/推荐|建议|suggest|recommend/u.test(q)) return "recommendation";
   if (/几次|多少|几篇|数量|count|how many/u.test(q)) return "count";
   if (/哪些|哪几个|列表|列举|list|what are/u.test(q)) return "list";
   if (/怎么看|怎么想|看法|观点|opinion|think about/u.test(q)) return "opinion";
-  if (/推荐|建议|suggest|recommend/u.test(q)) return "recommendation";
   if (/是什么|什么是|介绍|解释|what is|explain/u.test(q)) return "fact";
   if (/有没有|是否|是不是|真的吗|does|is there/u.test(q)) return "fact";
   return "general";

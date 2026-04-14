@@ -337,7 +337,8 @@ export function AssistantMessage({
     : fullText || actionConfirmations.join("\n");
   const displayedText = useTypewriter(effectiveText, isStreaming ?? false);
 
-  const reasoningParts = message.parts.filter(
+  const safeParts = message.parts ?? [];
+  const reasoningParts = safeParts.filter(
     (p): p is ReasoningPart => p.type === "reasoning"
   );
   const reasoningFullText = reasoningParts.map(p => p.text).join("");
@@ -349,10 +350,10 @@ export function AssistantMessage({
 
   const isWaitingForContent = isStreaming && !fullText && !reasoningFullText;
 
-  const sources = message.parts.filter(
+  const sources = safeParts.filter(
     p => p.type === "source-url" || p.type === "source-document"
   );
-  const sourceSnippets = message.parts.filter(
+  const sourceSnippets = safeParts.filter(
     (
       p
     ): p is {

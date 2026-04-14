@@ -13,7 +13,12 @@ export function buildArticleContextPrompt(context: ChatContext): string {
   if (context.scope !== "article" || !context.article) return "";
 
   const a = context.article;
-  const parts: string[] = ["\n[当前阅读文章]", `用户正在阅读：《${a.title}》`];
+  // Sanitize title: strip newlines, markdown formatting, and limit length
+  const sanitizedTitle = (a.title ?? "")
+    .replace(/[\n\r]/g, " ")
+    .replace(/[#*\[\]_~`>|]/g, "")
+    .slice(0, 100);
+  const parts: string[] = ["\n[当前阅读文章]", `用户正在阅读：《${sanitizedTitle}》`];
 
   if (a.categories?.length) parts.push(`分类：${a.categories.join("、")}`);
 

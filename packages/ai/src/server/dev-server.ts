@@ -488,8 +488,9 @@ async function main() {
     }
   });
 
-  server.listen(port, () => {
-    console.log(`\n✅ AI Dev Server running at http://localhost:${port}`);
+  const host = process.env.AI_DEV_HOST || '127.0.0.1';
+  server.listen(port, host, () => {
+    console.log(`\n✅ AI Dev Server running at http://${host}:${port}`);
     console.log(`   POST http://localhost:${port}/api/chat`);
     console.log(`   GET  http://localhost:${port}/api/ai-info`);
     console.log(
