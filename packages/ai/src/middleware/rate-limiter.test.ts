@@ -160,3 +160,45 @@ describe("rateLimitResponse", () => {
     expect(typeof body.error).toBe("string");
   });
 });
+
+// ── rateLimitResponse CORS ────────────────────────────────────
+
+describe("rateLimitResponse CORS", () => {
+  it("should use configured CORS origin via getCorsOrigin", async () => {
+    // Import setCorsOrigin to configure origin before testing
+    const { setCorsOrigin, getCorsOrigin } = await import("../server/errors.js");
+    const original = getCorsOrigin();
+    setCorsOrigin("https://example.com");
+    try {
+      const result = rateLimitResponse({
+        allowed: false,
+        retryAfterMs: 5000,
+        limit: 3,
+        remaining: 0,
+        triggeredBy: "burst",
+      });
+      expect(result.headers.get("Access-Control-Allow-Origin")).toBe("https://example.com");
+      expect(result.headers.get("Access-Control-Allow-Origin")).not.toBe("*");
+    } finally {
+      setCorsOrigin(original);
+    }
+  });
+
+  it("should fall back to * when CORS_ORIGIN not set", async () => {
+    const { setCorsOrigin, getCorsOrigin } = await import("../server/errors.js");
+    const original = getCorsOrigin();
+    setCorsOrigin("*");
+    try {
+      const result = rateLimitResponse({
+        allowed: false,
+        retryAfterMs: 5000,
+        limit: 3,
+        remaining: 0,
+        triggeredBy: "burst",
+      });
+      expect(result.headers.get("Access-Control-Allow-Origin")).toBe("*");
+    } finally {
+      setCorsOrigin(original);
+    }
+  });
+});

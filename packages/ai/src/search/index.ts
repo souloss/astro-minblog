@@ -7,6 +7,7 @@ export {
   searchProjects,
   searchArticleChunks,
   mergeResults,
+  resetSearchIndexes,
 } from "./search-api.js";
 export { getIDFMapForIndex } from "./search-index.js";
 export {

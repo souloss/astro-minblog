@@ -2,6 +2,7 @@ import type { LanguageModel } from "ai";
 import type { StreamTextOptions, StreamTextResult } from "./types.js";
 import { BaseProviderAdapter } from "./base.js";
 import { getMockResponse } from "../providers/mock.js";
+import { getCorsOrigin } from "../server/errors.js";
 
 const MOCK_WEIGHT = 0;
 const CHAR_DELAY_MS = 15;
@@ -72,7 +73,7 @@ export class MockAdapter extends BaseProviderAdapter {
       headers: {
         "Content-Type": "text/event-stream; charset=utf-8",
         "Cache-Control": "no-cache, no-store",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": getCorsOrigin(),
       },
     });
 

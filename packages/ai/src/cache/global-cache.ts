@@ -1,5 +1,10 @@
 import type { CacheAdapter, CachedSearchContext } from "./types.js";
+
 import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("global-cache");
+
+
 
 export type PublicQuestionType =
   | "tech"
@@ -208,4 +213,3 @@ export function getGlobalCacheTTL(type: PublicQuestionType): number {
   const pattern = PUBLIC_QUESTION_PATTERNS.find(p => p.type === type);
   return pattern?.ttl ?? 3600;
 }
-const log = createLogger("global-cache");

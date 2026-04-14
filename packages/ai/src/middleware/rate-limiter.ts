@@ -4,6 +4,7 @@
  */
 
 import { t } from "../utils/i18n.js";
+import { getCorsOrigin } from "../server/errors.js";
 
 interface RateLimitWindow {
   maxRequests: number;
@@ -209,7 +210,7 @@ export function rateLimitResponse(
       status: 429,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": getCorsOrigin(),
         "Retry-After": String(retryAfterSeconds),
         "X-RateLimit-Limit": String(result.limit),
         "X-RateLimit-Remaining": String(result.remaining),

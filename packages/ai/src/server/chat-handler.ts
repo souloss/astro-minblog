@@ -118,6 +118,29 @@ import { getAllTools } from "../tools/index.js";
 
 const log = createLogger("chat-handler");
 
+/** Handles errors inside createUIMessageStream execute() blocks. */
+function handleStreamError(
+  err: unknown,
+  writer: Parameters<typeof writeFinish>[0],
+  lang: string
+): void {
+  log.error("Stream execution error:", err);
+  try {
+    writer.write({
+      type: "message-metadata",
+      messageMetadata: createChatStatusData({
+        stage: "complete",
+        message: t("ai.error.generic", lang),
+        progress: 1,
+        done: true,
+      }),
+    });
+    writeFinish(writer);
+  } catch (e) {
+    log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
+  }
+}
+
 export async function handleChatRequest(
   options: ChatHandlerOptions
 ): Promise<Response> {
@@ -707,21 +730,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
               lang
             );
             } catch (err) {
-              log.error("Stream execution error:", err);
-              try {
-                writer.write({
-                  type: "message-metadata",
-                  messageMetadata: createChatStatusData({
-                    stage: "complete",
-                    message: t("ai.error.generic", lang),
-                    progress: 1,
-                    done: true,
-                  }),
-                });
-                writeFinish(writer);
-              } catch (e) {
-                log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
-              }
+              handleStreamError(err, writer, lang);
             }
           },
         });
@@ -846,21 +855,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
             responseText = await streamMockFallback(w, latestText, lang);
           }
           } catch (err) {
-            log.error("Stream execution error:", err);
-            try {
-              writer.write({
-                type: "message-metadata",
-                messageMetadata: createChatStatusData({
-                  stage: "complete",
-                  message: t("ai.error.generic", lang),
-                  progress: 1,
-                  done: true,
-                }),
-              });
-              writeFinish(writer);
-            } catch (e) {
-              log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
-            }
+            handleStreamError(err, writer, lang);
           }
         },
       });
@@ -1074,21 +1069,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         });
       }
       } catch (err) {
-        log.error("Stream execution error:", err);
-        try {
-          writer.write({
-            type: "message-metadata",
-            messageMetadata: createChatStatusData({
-              stage: "complete",
-              message: t("ai.error.generic", lang),
-              progress: 1,
-              done: true,
-            }),
-          });
-          writeFinish(writer);
-        } catch (e) {
-          log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
-        }
+        handleStreamError(err, writer, lang);
       }
     },
   });

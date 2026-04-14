@@ -61,6 +61,15 @@ export function initArticleChunks(
   );
 }
 
+/**
+ * Resets all search indexes. Useful for tests to ensure clean state.
+ */
+export function resetSearchIndexes(): void {
+  articleIndex = null;
+  projectIndex = null;
+  articleChunks = new Map();
+}
+
 export function getArticleChunks(postId: string): ArticleChunk[] | undefined {
   return articleChunks.get(postId);
 }
