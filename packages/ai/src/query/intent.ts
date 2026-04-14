@@ -154,7 +154,11 @@ export function rankArticlesByCategory(
     };
   });
 
-  const maxScore = Math.max(...scored.map(s => s.score), 0);
+  // Iterative max to avoid RangeError on large arrays
+  let maxScore = 0;
+  for (const s of scored) {
+    if (s.score > maxScore) maxScore = s.score;
+  }
   if (maxScore === 0) return articles;
 
   scored.sort((a, b) => b.score - a.score || a.index - b.index);
