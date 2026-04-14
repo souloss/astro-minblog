@@ -6,6 +6,7 @@ import {
 } from "../search/index.js";
 import { getExtensionRegistry } from "../extensions/index.js";
 import { safeJoinUrl } from "../utils/url.js";
+import { createLogger } from "../utils/logger.js";
 import type {
   KnowledgeBundleFile,
   KnowledgeDocument,
@@ -20,6 +21,8 @@ let initializedBundleRef: unknown = null;
 let initializedSiteUrl = "";
 
 type LoadedKnowledgeBundle = NonNullable<KnowledgeBundleFile>;
+
+const log = createLogger("metadata-init");
 
 export function initializeMetadata(
   config: MetadataConfig,
@@ -47,6 +50,11 @@ export function initializeMetadata(
   const knowledgeBundle = getKnowledgeBundle() as LoadedKnowledgeBundle | null;
   if (!knowledgeBundle) return;
 
+  if (!knowledgeBundle.corpus?.documents) {
+    log.warn("No corpus found in knowledge bundle");
+    return;
+  }
+
   const articleDocs: SearchDocument[] = knowledgeBundle.corpus.documents.map(
     (doc: KnowledgeDocument) => ({
       id: doc.id,
@@ -68,6 +76,11 @@ export function initializeMetadata(
   initProjectIndex([]);
 
   // Initialize article chunks for paragraph-level retrieval
+  if (!knowledgeBundle.passages?.passages) {
+    log.warn("No passages found in knowledge bundle");
+    return;
+  }
+
   const chunksData: Record<string, ArticleChunk[]> = Object.fromEntries(
     knowledgeBundle.passages.passages.reduce<Map<string, ArticleChunk[]>>(
       (map: Map<string, ArticleChunk[]>, passage: KnowledgePassage) => {

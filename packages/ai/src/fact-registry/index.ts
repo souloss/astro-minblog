@@ -1,9 +1,4 @@
-export {
-  loadFactRegistry,
-  clearFactRegistry,
-  getFactRegistry,
-  queryFacts,
-} from "./registry.js";
+export { loadFactRegistry, queryFacts } from "./registry.js";
 export { matchFactsToQuery } from "./fact-matcher.js";
 export { buildFactSection } from "./prompt-injector.js";
 export type {

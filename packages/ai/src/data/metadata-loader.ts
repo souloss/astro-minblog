@@ -12,15 +12,6 @@ export function preloadKnowledgeBundle(bundle: KnowledgeBundleFile): void {
   loadVectorIndexCache(bundle.runtime.vectorIndex ?? null);
 }
 
-/**
- * Clears the metadata cache and all associated sub-caches (useful for testing).
- */
-export function clearMetadataCache(): void {
-  cachedKnowledgeBundle = null;
-  loadFactRegistryCache(null);
-  loadVectorIndexCache(null);
-}
-
 export function getKnowledgeBundle(): KnowledgeBundleFile | null {
   return cachedKnowledgeBundle;
 }

@@ -1,10 +1,6 @@
 export * from "./types.js";
 export { getExtensionRegistry, resetExtensionRegistry } from "./registry.js";
-export {
-  loadExtensions,
-  loadExtensionsFromGlob,
-  registerBuiltInExtensions,
-} from "./loader.js";
+export { loadExtensions, loadExtensionsFromGlob } from "./loader.js";
 export {
   resolveVoiceStyleMode,
   buildVoiceStylePrompt,

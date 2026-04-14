@@ -61,10 +61,6 @@ export function initArticleChunks(
   );
 }
 
-export function hasArticleChunks(): boolean {
-  return articleChunks.size > 0;
-}
-
 export function getArticleChunks(postId: string): ArticleChunk[] | undefined {
   return articleChunks.get(postId);
 }

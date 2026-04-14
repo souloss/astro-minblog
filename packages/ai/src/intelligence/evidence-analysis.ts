@@ -218,7 +218,7 @@ export function buildEvidenceSection(
     lines.push(`- 直接结论：${analysis.directAnswer}`);
   }
 
-  if (analysis.entities.length > 0) {
+  if ((analysis.entities?.length ?? 0) > 0) {
     lines.push("");
     lines.push("### 相关实体");
     for (const entity of analysis.entities) {
@@ -234,7 +234,7 @@ export function buildEvidenceSection(
     }
   }
 
-  if (analysis.keyFindings.length > 0) {
+  if ((analysis.keyFindings?.length ?? 0) > 0) {
     lines.push("");
     lines.push("### 关键发现");
     for (const finding of analysis.keyFindings) {
@@ -242,7 +242,7 @@ export function buildEvidenceSection(
     }
   }
 
-  if (analysis.uncertainties.length > 0) {
+  if ((analysis.uncertainties?.length ?? 0) > 0) {
     lines.push("");
     lines.push("### 不确定项");
     for (const item of analysis.uncertainties) {

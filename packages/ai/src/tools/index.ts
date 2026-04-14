@@ -12,5 +12,4 @@ export {
   searchArticlesTool,
   getClientSideTools,
   getServerSideTools,
-  type ToolName,
 } from "./action-tools.js";

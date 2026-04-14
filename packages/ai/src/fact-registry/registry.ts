@@ -6,14 +6,6 @@ export function loadFactRegistry(data: FactRegistryFile | null): void {
   cachedRegistry = data;
 }
 
-export function clearFactRegistry(): void {
-  cachedRegistry = null;
-}
-
-export function getFactRegistry(): FactRegistryFile | null {
-  return cachedRegistry;
-}
-
 /**
  * Query facts with optional filters.
  * Returns facts sorted by confidence (highest first).

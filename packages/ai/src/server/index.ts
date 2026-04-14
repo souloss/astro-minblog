@@ -19,7 +19,7 @@ export type {
 } from "./chunk-injector.js";
 export { classifyQueryScope } from "./scope-classifier.js";
 export type { QueryScope, ArticleContextHint } from "./scope-classifier.js";
-export { createChatStatusData, isChatStatusData } from "./types.js";
+export { createChatStatusData } from "./types.js";
 export {
   getStreamResultMetadata,
   streamResultHadToolCalls,
@@ -27,11 +27,6 @@ export {
   parseTokenUsage,
   consumeStreamWithErrors,
 } from "./stream-processor.js";
-export {
-  withTimeout,
-  createTimeoutController,
-  createChainedTimeoutController,
-} from "./timeout.js";
 export type {
   ChatContext,
   ArticleChatContext,

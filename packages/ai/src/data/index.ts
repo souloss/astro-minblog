@@ -1,6 +1,5 @@
 export {
   preloadKnowledgeBundle,
-  clearMetadataCache,
   getAuthorContext,
   getKnowledgeBundle,
 } from "./metadata-loader.js";

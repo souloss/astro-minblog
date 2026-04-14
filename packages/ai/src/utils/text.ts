@@ -102,3 +102,32 @@ export function normalizeCodeBlockLang(lang?: string): string {
   const lower = lang.toLowerCase();
   return CODE_BLOCK_LANG_ALIASES[lower] || lower;
 }
+
+// ── Quoted-text extraction ───────────────────────────────────
+
+/**
+ * Regex pattern matching opening/closing quote characters:
+ * " " " " ' ' ' ' 「 」 『 』 《 》
+ */
+const QUOTED_TEXT_PATTERN =
+  /["\u201C\u201D'\u2018\u2019\u300C\u300D\u300E\u300F\u300A\u300B""''「」『』《》](.+?)["\u201C\u201D'\u2018\u2019\u300C\u300D\u300E\u300F\u300A\u300B""''「」『』《》]/g;
+
+/**
+ * Extracts the longest quoted substring from text.
+ *
+ * Matches content enclosed in matching quote pairs:
+ * ASCII quotes, smart quotes, CJK brackets, angle brackets.
+ *
+ * @returns The longest quoted substring (without quotes), or empty string.
+ */
+export function extractQuotedText(text: string): string {
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+
+  const matches = [...trimmed.matchAll(QUOTED_TEXT_PATTERN)]
+    .map(match => match[1]?.trim() ?? "")
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  return matches[0] ?? "";
+}

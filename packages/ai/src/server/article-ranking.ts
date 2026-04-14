@@ -21,6 +21,7 @@ import {
   extractCodeAnchors,
   hasCodeAnchors,
   normalizeText,
+  extractQuotedText,
 } from "../utils/text.js";
 
 // ── Constants ─────────────────────────────────────────────────
@@ -53,19 +54,7 @@ interface CurrentArticleBoostOptions {
 // ── Quoted-text utilities ─────────────────────────────────────
 
 export function extractQuotedCandidate(text: string): string {
-  const trimmed = text.trim();
-  if (!trimmed) return "";
-
-  const matches = [
-    ...trimmed.matchAll(
-      /["\u201C\u201D'\u2018\u2019\u300C\u300D\u300E\u300F\u300A\u300B](.+?)["\u201C\u201D'\u2018\u2019\u300C\u300D\u300E\u300F\u300A\u300B]/g
-    ),
-  ]
-    .map(match => match[1]?.trim() ?? "")
-    .filter(Boolean)
-    .sort((a, b) => b.length - a.length);
-
-  return matches[0] ?? "";
+  return extractQuotedText(text);
 }
 
 export function isLikelyQuotedArticleQuery(text: string): boolean {

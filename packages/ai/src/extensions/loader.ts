@@ -51,11 +51,3 @@ export async function loadExtensions(
 
   return registry.getLoadedExtensions();
 }
-
-export function registerBuiltInExtensions(extensions: Extension[]): void {
-  const registry = getExtensionRegistry();
-
-  for (const ext of extensions) {
-    registry.register(ext);
-  }
-}

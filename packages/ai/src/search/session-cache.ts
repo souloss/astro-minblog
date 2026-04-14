@@ -32,14 +32,6 @@ export function getSessionCacheKey(req: Request): string | null {
   return null;
 }
 
-export function setCacheAdapter(cache: CacheAdapter): void {
-  defaultCache = cache;
-}
-
-export function getCacheAdapter(): CacheAdapter {
-  return getDefaultCache();
-}
-
 export async function getCachedContext(
   key: string,
   cache?: CacheAdapter
@@ -62,18 +54,4 @@ export async function setCachedContext(
   log.debug(
     `setCachedContext: key=${key}, articles=${ctx.articles.length}, projects=${ctx.projects.length}, adapter=${adapter.name}`
   );
-}
-
-export async function deleteCachedContext(
-  key: string,
-  cache?: CacheAdapter
-): Promise<boolean> {
-  const adapter = cache ?? getDefaultCache();
-  log.debug(`deleteCachedContext: key=${key}, adapter=${adapter.name}`);
-  return adapter.delete(key);
-}
-
-export function cleanupCache(_now: number): void {
-  // No-op: MemoryCacheAdapter handles cleanup internally
-  // KV adapter handles TTL automatically
 }

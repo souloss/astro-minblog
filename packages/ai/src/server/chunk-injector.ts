@@ -445,7 +445,7 @@ export async function selectAndInjectChunks(
         if (directionalHint && anchorIndex !== -1) {
           for (const match of matchedChunks) {
             if (match.chunk.position === anchorIndex) {
-              (match as any).__anchorLabel =
+              match.anchorLabel =
                 directionalHint === "after"
                   ? "▶ 用户引用的段落（请回答此段落之后的内容）"
                   : "◀ 用户引用的段落（请回答此段落之前的内容）";
@@ -454,15 +454,13 @@ export async function selectAndInjectChunks(
               directionalHint === "after" &&
               match.chunk.position === anchorIndex + 1
             ) {
-              (match as any).__anchorLabel =
-                "▼ 用户问的「后面」内容（请引用此段落原文）";
+              match.anchorLabel = "▼ 用户问的「后面」内容（请引用此段落原文）";
             }
             if (
               directionalHint === "before" &&
               match.chunk.position === anchorIndex - 1
             ) {
-              (match as any).__anchorLabel =
-                "▲ 用户问的「前面」内容（请引用此段落原文）";
+              match.anchorLabel = "▲ 用户问的「前面」内容（请引用此段落原文）";
             }
           }
         }

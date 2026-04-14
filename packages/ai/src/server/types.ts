@@ -86,16 +86,6 @@ export function createChatStatusData(
   };
 }
 
-export function isChatStatusData(value: unknown): value is ChatStatusData {
-  if (!value || typeof value !== "object") return false;
-  const v = value as Record<string, unknown>;
-  return (
-    typeof v.stage === "string" &&
-    typeof v.message === "string" &&
-    typeof v.progress === "number"
-  );
-}
-
 // ── Error Response ────────────────────────────────────────────
 
 export interface ChatErrorResponse {

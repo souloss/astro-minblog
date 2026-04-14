@@ -8,7 +8,12 @@
  */
 
 import type { ArticleContext, ArticleChunk } from "./types.js";
-import { tokenize, normalizeText, extractCodeAnchors } from "../utils/text.js";
+import {
+  tokenize,
+  normalizeText,
+  extractCodeAnchors,
+  extractQuotedText,
+} from "../utils/text.js";
 import { createLogger } from "../utils/logger.js";
 
 export type { ArticleChunk } from "./types.js";
@@ -39,6 +44,7 @@ export interface ChunkMatchResult {
   article: ArticleWithChunks;
   chunk: ArticleChunk;
   score: number;
+  anchorLabel?: string;
 }
 
 export interface ChunkRelevanceOptions {
@@ -262,7 +268,7 @@ export function computeChunkRelevance(
   score += contentRatio * 2.0;
 
   // 标题层级加成
-  if (chunk.headers.H1 || chunk.headers.H2) {
+  if (chunk.headers?.H1 || chunk.headers?.H2) {
     score *= 1.1;
   }
 
@@ -369,21 +375,7 @@ function scoreExactQueryMatches(query: string, chunk: ArticleChunk): number {
 }
 
 function extractLikelyQuotedText(query: string): string {
-  const trimmed = query.trim();
-  if (!trimmed) return "";
-
-  const quotedMatches = [
-    ...trimmed.matchAll(/["“”'‘’「」『』《》](.+?)["“”'‘’「」『』《》]/g),
-  ]
-    .map(match => match[1]?.trim() ?? "")
-    .filter(Boolean)
-    .sort((a, b) => b.length - a.length);
-
-  if (quotedMatches[0]) {
-    return quotedMatches[0];
-  }
-
-  return trimmed;
+  return extractQuotedText(query);
 }
 
 /**
@@ -452,8 +444,7 @@ function formatChunkForInjection(
   contentLimit: number = 1500
 ): string {
   const { article, chunk } = match;
-  const anchorLabel = (match as unknown as Record<string, unknown>)
-    .__anchorLabel as string | undefined;
+  const anchorLabel = match.anchorLabel;
   const positionPrefix =
     chunk.position !== undefined ? `[段落 ${chunk.position}] ` : "";
   const heading = chunk.heading

@@ -158,11 +158,6 @@ export function validateProviderConfig(config: ProviderConfig): string | null {
   return null;
 }
 
-export function getAvailableProvidersCount(env: ProviderManagerEnv): number {
-  const configs = parseProviderConfigs(env);
-  return configs.filter(c => c.enabled !== false).length;
-}
-
 export function hasAnyProviderConfigured(env: ProviderManagerEnv): boolean {
   if (env.AI_PROVIDERS) {
     const configs = parseAIProvidersJSON(env.AI_PROVIDERS);

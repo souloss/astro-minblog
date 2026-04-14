@@ -42,11 +42,6 @@ export function loadVectorIndex(data: VectorIndex | null): void {
   }
 }
 
-export function clearVectorIndex(): void {
-  loadedIndex = null;
-  idfCache = null;
-}
-
 export function hasVectorIndex(): boolean {
   return loadedIndex !== null && loadedIndex.chunks.length > 0;
 }

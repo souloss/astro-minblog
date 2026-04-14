@@ -2,7 +2,6 @@ export {
   initArticleIndex,
   initProjectIndex,
   initArticleChunks,
-  hasArticleChunks,
   getArticleChunks,
   searchArticles,
   searchProjects,
@@ -12,7 +11,6 @@ export {
 export { getIDFMapForIndex } from "./search-index.js";
 export {
   loadVectorIndex,
-  clearVectorIndex,
   hasVectorIndex,
   rerankWithVectors,
 } from "./vector-reranker.js";
@@ -21,10 +19,6 @@ export {
   getSessionCacheKey,
   getCachedContext,
   setCachedContext,
-  deleteCachedContext,
-  setCacheAdapter,
-  getCacheAdapter,
-  cleanupCache,
   SESSION_CACHE_TTL_SECONDS,
   SESSION_CACHE_TTL_MS,
 } from "./session-cache.js";

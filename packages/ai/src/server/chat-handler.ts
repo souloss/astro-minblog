@@ -261,6 +261,10 @@ async function initializeContext(args: PipelineArgs): Promise<PipelineContext> {
     await initializeExtensions();
   }
   const extensions = getExtensionRegistry().getLoadedExtensions();
+  if (context.scope === "article" && !context.article?.slug) {
+    log.warn("article scope but no article context provided");
+  }
+
   const articleSlug =
     context.scope === "article" && context.article?.slug
       ? context.article.slug
