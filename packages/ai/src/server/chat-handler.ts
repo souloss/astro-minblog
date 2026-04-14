@@ -148,6 +148,14 @@ export async function handleChatRequest(
 
   const lang = getLang(body.lang ?? envString(env, "SITE_LANG"));
   const context: ChatContext = body.context ?? { scope: "global" };
+  // Validate context article fields to prevent prompt injection
+  if (context.scope === "article" && context.article) {
+    const a = context.article;
+    if (a.categories) a.categories = a.categories.map(c => String(c).slice(0, 50)).slice(0, 10);
+    if (a.keyPoints) a.keyPoints = a.keyPoints.map(kp => String(kp).slice(0, 200)).slice(0, 10);
+    if (a.summary) a.summary = String(a.summary).slice(0, 500).replace(/[\n\r]/g, " ");
+    if (a.slug) a.slug = String(a.slug).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 100);
+  }
   const rawMessages = (body.messages ?? []).slice(
     -CHAT_HANDLER.MAX_HISTORY_MESSAGES
   );

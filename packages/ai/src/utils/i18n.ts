@@ -240,6 +240,8 @@ export function t(
   // Interpolate variables like {count}, {title}, etc.
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
+            // Guard against regex injection: only allow safe key names
+      if (!/^[a-zA-Z_]\w*$/.test(k)) continue;
       text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
     }
   }
