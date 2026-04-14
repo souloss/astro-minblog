@@ -73,13 +73,14 @@ function createWorkersAIConfigFromEnv(
 function parseAIProvidersJSON(jsonString: string): ProviderConfig[] | null {
   try {
     const configs = JSON.parse(jsonString);
+    if (!Array.isArray(configs)) return null;
+
     // Sanitize parsed JSON to prevent prototype pollution
     for (const cfg of configs) {
       delete cfg.__proto__;
       delete cfg.constructor;
       delete cfg.prototype;
     }
-    if (!Array.isArray(configs)) return null;
 
     return configs
       .map((config, index) => {
