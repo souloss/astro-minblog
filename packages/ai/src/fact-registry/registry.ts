@@ -25,7 +25,8 @@ export function queryFacts(options: FactQueryOptions = {}): Fact[] {
   }
 
   if (options.minConfidence !== undefined) {
-    facts = facts.filter(f => f.confidence >= options.minConfidence!);
+    const minConf = options.minConfidence;
+    facts = facts.filter(f => f.confidence >= minConf);
   }
 
   if (options.tags?.length) {

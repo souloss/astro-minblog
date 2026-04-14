@@ -1,3 +1,5 @@
+import { createLogger } from "../utils/logger.js";
+const log = createLogger("chat-utils");
 import type { UIMessage } from "ai";
 import type {
   ChatContext,
@@ -80,7 +82,9 @@ export function sendNotification(args: SendNotificationArgs): void {
   if (waitUntil) {
     waitUntil(notifyPromise);
   } else {
-    void notifyPromise;
+    notifyPromise.catch(e => {
+      log.warn("Notification failed (no waitUntil):", e instanceof Error ? e.message : String(e));
+    });
   }
 }
 
@@ -94,7 +98,7 @@ export function parseNum(val: unknown, defaultVal: number): number {
   return defaultVal;
 }
 
-export function getTimeoutConfig(env: Record<string, unknown>) {
+export function getTimeoutConfig(env: Record<string, unknown>): { request: number; keywordExtraction: number; evidenceAnalysis: number; llmStreaming: number } {
   return {
     request: parseNum(env.AI_TIMEOUT_REQUEST, TIMEOUTS.REQUEST),
     keywordExtraction: parseNum(
@@ -109,7 +113,7 @@ export function getTimeoutConfig(env: Record<string, unknown>) {
   };
 }
 
-export function getHealthConfig(env: Record<string, unknown>) {
+export function getHealthConfig(env: Record<string, unknown>): { unhealthyThreshold: number; recoveryTtl: number } {
   return {
     unhealthyThreshold: parseNum(
       env.AI_HEALTH_THRESHOLD,

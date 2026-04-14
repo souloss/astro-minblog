@@ -30,11 +30,9 @@ export function chatError(
     retryable: options?.retryable ?? false,
     retryAfter: options?.retryAfter,
   };
-  const headers: HeadersInit = { ...corsHeaders() };
+  const headers = new Headers(corsHeaders());
   if (options?.retryAfter) {
-    (headers as Record<string, string>)["Retry-After"] = String(
-      options.retryAfter
-    );
+    headers.set("Retry-After", String(options.retryAfter));
   }
   return new Response(JSON.stringify(body), { status, headers });
 }

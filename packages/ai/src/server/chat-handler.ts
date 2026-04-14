@@ -549,9 +549,9 @@ async function retrieveContext(
           }
         } catch (err) {
           timing.keywordExtraction = Date.now() - kwStart;
-          log.debug(
+          log.warn(
             "Keyword extraction failed, using local query:",
-            (err as Error).message
+            err instanceof Error ? err.message : String(err)
           );
         } finally {
           clearTimeout(timeoutId);
@@ -710,8 +710,8 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
                   }),
                 });
                 writeFinish(writer);
-              } catch {
-                // Stream already closed, nothing to do
+              } catch (e) {
+                log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
               }
             }
           },
@@ -849,8 +849,8 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
                 }),
               });
               writeFinish(writer);
-            } catch {
-              // Stream already closed, nothing to do
+            } catch (e) {
+              log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
             }
           }
         },
@@ -1077,8 +1077,8 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
             }),
           });
           writeFinish(writer);
-        } catch {
-          // Stream already closed, nothing to do
+        } catch (e) {
+          log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
         }
       }
     },

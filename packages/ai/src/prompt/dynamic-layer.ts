@@ -1,4 +1,5 @@
 import type { DynamicLayerConfig } from "./types.js";
+import { sanitizePromptInput } from "../utils/text.js";
 import type {
   PromptContext,
   ContextData,
@@ -265,7 +266,7 @@ export function buildDynamicLayer(config: DynamicLayerConfig): string {
   }
 
   lines.push(`---`);
-  lines.push(l.instruction(userQuery.slice(0, 50)));
+  lines.push(l.instruction(sanitizePromptInput(userQuery, 50)));
 
   if (answerMode && answerMode !== "general") {
     const hint = l.answerModeHint(answerMode);

@@ -98,7 +98,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
       includeUsage: true,
     });
 
-    ensureProxySetup().catch(() => {});
+    ensureProxySetup().catch(e => openaiLog.debug("Proxy setup failed:", e instanceof Error ? e.message : String(e)));
   }
 
   async streamText(options: StreamTextOptions): Promise<StreamTextResult> {

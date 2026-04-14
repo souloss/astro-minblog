@@ -141,7 +141,7 @@ export function writeSourceArticles(
         title: article.title,
       });
     } catch (e) {
-      log.debug(
+      log.warn(
         "writeSourceArticles failed:",
         e instanceof Error ? e.message : String(e)
       );
@@ -171,7 +171,7 @@ export function writeSourceSnippets(
         },
       });
     } catch (e) {
-      log.debug(
+      log.warn(
         "writeSourceSnippets failed:",
         e instanceof Error ? e.message : String(e)
       );
@@ -302,7 +302,7 @@ export async function streamLLMResponse(
     };
   } catch (err) {
     adapter.recordFailure(err instanceof Error ? err : new Error(String(err)));
-    log.error("Provider threw:", (err as Error).message);
+    log.error("Provider threw:", err instanceof Error ? err.message : String(err));
     return {
       success: false,
       responseText: "",

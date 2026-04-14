@@ -186,7 +186,7 @@ export async function assemblePromptRuntime(
       );
       timing.evidenceAnalysis = Date.now() - evidenceStart;
     } catch (error) {
-      log.debug(
+      log.warn(
         `evidenceAnalysis: error=${error instanceof Error ? error.message : String(error)}`
       );
       timing.evidenceAnalysis = Date.now() - evidenceStart;

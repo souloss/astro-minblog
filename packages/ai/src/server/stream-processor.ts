@@ -68,7 +68,7 @@ async function extractReasoningText(
     }
     return undefined;
   } catch (e) {
-    log.debug(
+    log.warn(
       "reasoning extraction failed:",
       e instanceof Error ? e.message : String(e)
     );
@@ -101,7 +101,7 @@ async function parseTokenUsage(
       output: outputTokens,
     };
   } catch (e) {
-    log.debug(
+    log.warn(
       "parseTokenUsage failed:",
       e instanceof Error ? e.message : String(e)
     );

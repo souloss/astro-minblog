@@ -139,3 +139,27 @@ export function extractQuotedText(text: string): string {
 
   return matches[0] ?? "";
 }
+
+// ── Prompt input sanitization ───────────────────────────────
+
+/**
+ * Sanitizes user input before embedding it in AI prompts.
+ * Strips control characters, newlines, and common prompt-injection patterns.
+ */
+export function sanitizePromptInput(input: string, maxLength = 200): string {
+  return input
+    // Remove control characters (except space)
+    .replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/g, "")
+    // Normalize newlines to spaces
+    .replace(/[\n\r]/g, " ")
+    // Collapse multiple spaces
+    .replace(/\s+/g, " ")
+    // Remove common prompt injection delimiters
+    .replace(/---+/g, "")
+    .replace(/===+/g, "")
+    .replace(/\[INST\]/gi, "")
+    .replace(/\[\/INST\]/gi, "")
+    .replace(/<\|.*?\|>/g, "")
+    .trim()
+    .slice(0, maxLength);
+}
