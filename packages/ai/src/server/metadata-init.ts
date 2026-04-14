@@ -120,7 +120,6 @@ export function resetMetadataInit(): void {
  */
 export async function initializeExtensions(basePath?: string): Promise<void> {
   if (extensionsLoaded) return;
-  extensionsLoaded = true;
 
   try {
     const { loadExtensions } = await import("../extensions/loader.js");
@@ -132,6 +131,7 @@ export async function initializeExtensions(basePath?: string): Promise<void> {
     );
     // Extensions directory may not exist, that's fine
   }
+  extensionsLoaded = true;
 }
 
 /**

@@ -83,7 +83,7 @@ import type {
   PhaseTiming,
 } from "./types.js";
 import { createChatStatusData } from "./types.js";
-import { errors, corsPreflightResponse, setCorsOrigin } from "./errors.js";
+import { errors, corsPreflightResponse, setCorsOrigin, getCorsOrigin } from "./errors.js";
 import {
   writeSearchStatus,
   writeGeneratingStatus,
@@ -720,7 +720,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         return createUIMessageStreamResponse({
           stream,
           headers: {
-            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Origin": getCorsOrigin(),
             "Cache-Control": "no-cache",
           },
         });
@@ -859,7 +859,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
       return createUIMessageStreamResponse({
         stream,
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": getCorsOrigin(),
           "Cache-Control": "no-cache",
         },
       });
@@ -1087,7 +1087,7 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
   return createUIMessageStreamResponse({
     stream,
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": getCorsOrigin(),
       "Cache-Control": "no-cache",
     },
   });

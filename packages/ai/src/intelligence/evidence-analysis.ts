@@ -98,7 +98,7 @@ export async function analyzeRetrievedEvidenceStructured(params: {
   userQuery: string;
   articles: ArticleContext[];
   projects: ProjectContext[];
-  provider: { chatModel: (model: string) => unknown };
+  provider: { chatModel: (model: string) => LanguageModel };
   model: string;
   maxOutputTokens?: number;
   abortSignal?: AbortSignal;
@@ -118,7 +118,7 @@ ${evidenceSummary}`;
 
   try {
     const result = await generateObject({
-      model: provider.chatModel(model) as LanguageModel,
+      model: provider.chatModel(model),
       schema: EvidenceAnalysisSchema,
       schemaName: "evidence_analysis",
       schemaDescription: "Structured evidence analysis for answer planning",
@@ -149,7 +149,7 @@ export async function analyzeRetrievedEvidence(params: {
   userQuery: string;
   articles: ArticleContext[];
   projects: ProjectContext[];
-  provider: { chatModel: (model: string) => unknown };
+  provider: { chatModel: (model: string) => LanguageModel };
   model: string;
   maxOutputTokens?: number;
   abortSignal?: AbortSignal;
@@ -181,7 +181,7 @@ ${evidenceSummary}
 
   try {
     const result = await generateText({
-      model: provider.chatModel(model) as LanguageModel,
+      model: provider.chatModel(model),
       prompt,
       maxOutputTokens,
       temperature: 0.1,

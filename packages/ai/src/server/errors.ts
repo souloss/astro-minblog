@@ -7,6 +7,10 @@ export function setCorsOrigin(origin: string): void {
   _allowedOrigin = origin;
 }
 
+export function getCorsOrigin(): string {
+  return _allowedOrigin;
+}
+
 function corsHeaders(): HeadersInit {
   return {
     "Content-Type": "application/json",

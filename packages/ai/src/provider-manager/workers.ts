@@ -1,3 +1,4 @@
+import type { LanguageModel } from "ai";
 import { createWorkersAI } from "workers-ai-provider";
 import { streamText, convertToModelMessages } from "ai";
 import type { WorkersAISettings } from "workers-ai-provider";
@@ -95,8 +96,6 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
       };
 
       return streamResult;
-    } catch (error) {
-      throw error;
     } finally {
       clearTimeout(timeoutId);
       if (abortSignal) {
@@ -109,10 +108,10 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
     return { ...this.config };
   }
 
-  getProvider(): { chatModel: (model: string) => unknown } {
+  getProvider(): { chatModel: (model: string) => LanguageModel } {
     return {
       chatModel: (modelId: string) =>
-        this.provider(modelId, { safePrompt: true }),
+        this.provider(modelId, { safePrompt: true }) as LanguageModel,
     };
   }
 }

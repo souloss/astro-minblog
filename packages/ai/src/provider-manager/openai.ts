@@ -1,3 +1,4 @@
+import type { LanguageModel } from "ai";
 import { createLogger } from "../utils/logger.js";
 const openaiLog = createLogger("openai-adapter");
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
@@ -153,8 +154,6 @@ export class OpenAIAdapter extends BaseProviderAdapter {
       // initial connection. The stream lifecycle is managed by the consumer via
       // abortSignal. Clearing the timeout immediately would make it useless.
       return streamResult;
-    } catch (error) {
-      throw error;
     } finally {
       clearTimeout(timeoutId);
       if (abortSignal) {
@@ -167,7 +166,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
     return { ...this.config };
   }
 
-  getProvider(): { chatModel: (model: string) => unknown } {
+  getProvider(): { chatModel: (model: string) => LanguageModel } {
     return this.provider;
   }
 }

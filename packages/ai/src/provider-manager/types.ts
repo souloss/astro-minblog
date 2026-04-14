@@ -4,7 +4,7 @@
  * Supports multiple provider types with priority-based fallback.
  */
 
-import type { UIMessage, ToolSet } from "ai";
+import type { UIMessage, ToolSet, LanguageModel } from "ai";
 
 // ============================================================================
 // Provider Configuration Types
@@ -236,8 +236,8 @@ export interface ProviderAdapter {
 
   recordFailure(error: Error): void;
 
-  getProvider(): { chatModel: (model: string) => unknown };
-  chatModel(model?: string): unknown;
+  getProvider(): { chatModel: (model: string) => LanguageModel };
+  chatModel(model?: string): LanguageModel;
 
   dispose?(): void;
 }

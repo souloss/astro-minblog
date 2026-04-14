@@ -1,3 +1,4 @@
+import type { LanguageModel } from "ai";
 import type {
   ProviderAdapter,
   ProviderHealth,
@@ -71,9 +72,9 @@ export abstract class BaseProviderAdapter implements ProviderAdapter {
 
   abstract streamText(options: StreamTextOptions): Promise<StreamTextResult>;
 
-  abstract getProvider(): { chatModel: (model: string) => unknown };
+  abstract getProvider(): { chatModel: (model: string) => LanguageModel };
 
-  chatModel(model?: string): unknown {
+  chatModel(model?: string): LanguageModel {
     return this.getProvider().chatModel(model ?? this.model);
   }
 

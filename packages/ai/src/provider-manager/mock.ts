@@ -1,3 +1,4 @@
+import type { LanguageModel } from "ai";
 import type { StreamTextOptions, StreamTextResult } from "./types.js";
 import { BaseProviderAdapter } from "./base.js";
 import { getMockResponse } from "../providers/mock.js";
@@ -82,7 +83,7 @@ export class MockAdapter extends BaseProviderAdapter {
     };
   }
 
-  getProvider(): { chatModel: (model: string) => unknown } {
+  getProvider(): { chatModel: (model: string) => LanguageModel } {
     throw new Error("Mock provider does not support chatModel interface");
   }
 }

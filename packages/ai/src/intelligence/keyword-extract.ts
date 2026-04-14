@@ -39,7 +39,7 @@ export async function extractSearchKeywords(params: {
     parts?: Array<{ type: string; text?: string }>;
     content?: string;
   }>;
-  provider: { chatModel: (model: string) => unknown };
+  provider: { chatModel: (model: string) => LanguageModel };
   model: string;
   abortSignal?: AbortSignal;
 }): Promise<KeywordExtractionResult> {
@@ -68,7 +68,7 @@ ${conversationText}
 
   try {
     const result = await generateText({
-      model: provider.chatModel(model) as LanguageModel,
+      model: provider.chatModel(model),
       prompt,
       maxOutputTokens: 100,
       temperature: 0,
