@@ -1,6 +1,12 @@
 import type { UIMessage } from "ai";
 
-export function getMessageText(message: UIMessage): string {
+/**
+ * Extracts text content from a message's parts array.
+ * Accepts any object with an optional `parts` field for broad compatibility.
+ */
+export function getMessageText(message: {
+  parts?: Array<{ type: string; text?: string }>;
+}): string {
   if (Array.isArray(message.parts)) {
     return message.parts
       .filter((p): p is { type: "text"; text: string } => p.type === "text")

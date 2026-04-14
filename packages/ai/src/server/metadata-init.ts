@@ -125,7 +125,11 @@ export async function initializeExtensions(basePath?: string): Promise<void> {
   try {
     const { loadExtensions } = await import("../extensions/loader.js");
     await loadExtensions("datas/extensions/*.json", basePath);
-  } catch {
+  } catch (e) {
+    log.warn(
+      "Extension loading failed:",
+      e instanceof Error ? e.message : String(e)
+    );
     // Extensions directory may not exist, that's fine
   }
 }

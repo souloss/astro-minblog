@@ -1,5 +1,5 @@
-import { BotIcon } from "../MessageBubble.tsx";
-import { t, getLang } from "../../utils/i18n.ts";
+import { BotIcon } from "../MessageBubble.js";
+import { t, getLang } from "../../utils/i18n.js";
 
 type PanelSize = "S" | "M" | "L";
 

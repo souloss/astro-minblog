@@ -1,4 +1,4 @@
-import { generateText, type LanguageModel } from "ai";
+import { generateText, generateObject, type LanguageModel } from "ai";
 import type { ArticleContext, ProjectContext } from "../search/types.js";
 import type {
   EvidenceAnalysisResult,
@@ -11,6 +11,9 @@ import {
   EVIDENCE_ANALYSIS_SYSTEM_PROMPT,
 } from "../structured-output/index.js";
 import { TIMEOUTS, INTELLIGENCE } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("evidence-analysis");
 
 export const EVIDENCE_ANALYSIS_TIMEOUT_MS = TIMEOUTS.EVIDENCE_ANALYSIS;
 export const EVIDENCE_ANALYSIS_MAX_TOKENS =
@@ -74,7 +77,11 @@ async function extractUsage(
       outputTokens: u.outputTokens ?? 0,
       totalTokens: u.totalTokens ?? 0,
     };
-  } catch {
+  } catch (e) {
+    log.debug(
+      "extractUsage failed:",
+      e instanceof Error ? e.message : String(e)
+    );
     return undefined;
   }
 }
@@ -110,8 +117,6 @@ export async function analyzeRetrievedEvidenceStructured(params: {
 ${evidenceSummary}`;
 
   try {
-    const { generateObject } = await import("ai");
-
     const result = await generateObject({
       model: provider.chatModel(model) as LanguageModel,
       schema: EvidenceAnalysisSchema,

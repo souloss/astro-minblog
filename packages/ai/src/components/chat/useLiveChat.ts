@@ -3,9 +3,12 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import type { UIMessage } from "ai";
 
-import type { ArticleChatContext } from "../../server/types.ts";
-import { shouldAutoContinueAfterToolCalls } from "../tool-auto-continue.ts";
-import { TOOL_ACTION_MAP } from "./tool-actions.ts";
+import type { ArticleChatContext } from "../../server/types.js";
+import { shouldAutoContinueAfterToolCalls } from "../tool-auto-continue.js";
+import { TOOL_ACTION_MAP } from "./tool-actions.js";
+import { createLogger } from "../../utils/logger.js";
+
+const log = createLogger("useLiveChat");
 
 export interface UseLiveChatOptions {
   config: {
@@ -70,7 +73,7 @@ export function useLiveChat({
       const executor = window.__actionExecutor;
 
       if (!executor) {
-        console.warn("[ChatPanel] ActionExecutor not initialized");
+        log.warn("ActionExecutor not initialized");
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
@@ -85,7 +88,7 @@ export function useLiveChat({
 
       const mapper = TOOL_ACTION_MAP[toolCall.toolName];
       if (!mapper) {
-        console.warn("[ChatPanel] Unknown tool:", toolCall.toolName);
+        log.warn("Unknown tool:", toolCall.toolName);
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,
@@ -117,7 +120,7 @@ export function useLiveChat({
           },
         });
       } catch (error) {
-        console.error("[ChatPanel] Tool execution error:", error);
+        log.error("Tool execution error:", error);
         addToolOutput({
           tool: toolCall.toolName,
           toolCallId: toolCall.toolCallId,

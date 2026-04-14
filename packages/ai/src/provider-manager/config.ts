@@ -8,6 +8,9 @@ import type {
 export const DEFAULT_WORKERS_BINDING_NAME = "minimaxAI";
 
 import { PROVIDER, TIMEOUTS } from "../constants.js";
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("provider-config");
 
 const DEFAULT_WEIGHT = PROVIDER.DEFAULT_WEIGHT;
 const DEFAULT_TIMEOUT = TIMEOUTS.PROVIDER_DEFAULT;
@@ -97,7 +100,11 @@ function parseAIProvidersJSON(jsonString: string): ProviderConfig[] | null {
         return null;
       })
       .filter((c): c is ProviderConfig => c !== null);
-  } catch {
+  } catch (e) {
+    log.warn(
+      "AI_PROVIDERS JSON parse failed:",
+      e instanceof Error ? e.message : String(e)
+    );
     return null;
   }
 }

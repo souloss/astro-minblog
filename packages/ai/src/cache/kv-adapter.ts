@@ -124,7 +124,11 @@ export class KVCacheAdapter implements CacheAdapter {
       const fullKey = this.buildKey(key);
       const value = await this.kv.get(fullKey);
       return value !== null;
-    } catch {
+    } catch (e) {
+      kvLog.debug(
+        "KV has check failed:",
+        e instanceof Error ? e.message : String(e)
+      );
       return false;
     }
   }
@@ -133,7 +137,11 @@ export class KVCacheAdapter implements CacheAdapter {
     try {
       await this.kv.get("__health_check__");
       return true;
-    } catch {
+    } catch (e) {
+      kvLog.debug(
+        "KV availability check failed:",
+        e instanceof Error ? e.message : String(e)
+      );
       return false;
     }
   }

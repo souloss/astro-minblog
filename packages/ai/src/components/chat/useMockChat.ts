@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { getMockResponse, createMockStream } from "../../providers/mock.ts";
+import { getMockResponse, createMockStream } from "../../providers/mock.js";
 
 export interface MockMessage {
   id: string;

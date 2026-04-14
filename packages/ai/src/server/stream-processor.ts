@@ -100,7 +100,11 @@ async function parseTokenUsage(
       input: inputTokens,
       output: outputTokens,
     };
-  } catch {
+  } catch (e) {
+    log.debug(
+      "parseTokenUsage failed:",
+      e instanceof Error ? e.message : String(e)
+    );
     /* usage is optional */
     return undefined;
   }

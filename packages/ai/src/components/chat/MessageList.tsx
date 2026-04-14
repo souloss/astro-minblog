@@ -1,14 +1,14 @@
 import type { UIMessage } from "ai";
-import type { ArticleChatContext } from "../../server/types.ts";
-import type { MockMessage } from "./useMockChat.ts";
-import { RichText } from "../RichText.tsx";
-import { ReasoningBlock } from "../ReasoningBlock.tsx";
+import type { ArticleChatContext } from "../../server/types.js";
+import type { MockMessage } from "./useMockChat.js";
+import { RichText } from "../RichText.js";
+import { ReasoningBlock } from "../ReasoningBlock.js";
 import {
   AssistantMessage,
   BotAvatar,
   TypingDots,
   getTextFromMessage,
-} from "../MessageBubble.tsx";
+} from "../MessageBubble.js";
 
 interface MessageListProps {
   isMockMode: boolean;

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { UIMessage } from "ai";
-import type { ArticleChatContext } from "../server/types.ts";
-import { RichText } from "./RichText.tsx";
-import { ReasoningBlock } from "./ReasoningBlock.tsx";
+import type { ArticleChatContext } from "../server/types.js";
+import { RichText } from "./RichText.js";
+import { ReasoningBlock } from "./ReasoningBlock.js";
 import {
   generateFollowUpSuggestions,
   FollowUpSuggestions,

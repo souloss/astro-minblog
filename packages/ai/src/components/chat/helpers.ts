@@ -1,7 +1,7 @@
 import { APICallError } from "@ai-sdk/provider";
 import type { UIMessage } from "ai";
-import type { ArticleChatContext } from "../../server/types.ts";
-import { t, getLang } from "../../utils/i18n.ts";
+import type { ArticleChatContext } from "../../server/types.js";
+import { t, getLang } from "../../utils/i18n.js";
 
 // ── Quick Prompts ─────────────────────────────────────────────
 

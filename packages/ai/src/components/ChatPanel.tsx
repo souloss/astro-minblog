@@ -5,14 +5,14 @@ import {
   useRef,
   useState,
 } from "preact/hooks";
-import type { ArticleChatContext } from "../server/types.ts";
-import { t, getLang } from "../utils/i18n.ts";
-import { BotAvatar } from "./MessageBubble.tsx";
-import { ChatInput, resetInputHeight } from "./ChatInput.tsx";
-import { useMockChat } from "./chat/useMockChat.ts";
-import { useLiveChat } from "./chat/useLiveChat.ts";
-import { MessageList } from "./chat/MessageList.tsx";
-import { ChatToolbar } from "./chat/ChatToolbar.tsx";
+import type { ArticleChatContext } from "../server/types.js";
+import { t, getLang } from "../utils/i18n.js";
+import { BotAvatar } from "./MessageBubble.js";
+import { ChatInput, resetInputHeight } from "./ChatInput.js";
+import { useMockChat } from "./chat/useMockChat.js";
+import { useLiveChat } from "./chat/useLiveChat.js";
+import { MessageList } from "./chat/MessageList.js";
+import { ChatToolbar } from "./chat/ChatToolbar.js";
 import {
   getChatActionLabel,
   getQuickPrompts,
@@ -20,8 +20,8 @@ import {
   parseErrorMessage,
   isRetryable,
   PANEL_SIZE_CONFIG,
-} from "./chat/helpers.ts";
-import type { PanelSize } from "./chat/helpers.ts";
+} from "./chat/helpers.js";
+import type { PanelSize } from "./chat/helpers.js";
 
 export interface AIChatConfig {
   enabled?: boolean;

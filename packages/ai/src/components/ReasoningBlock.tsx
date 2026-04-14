@@ -1,4 +1,4 @@
-import { t, getLang } from "../utils/i18n.ts";
+import { t, getLang } from "../utils/i18n.js";
 
 export function ReasoningBlock({
   text,

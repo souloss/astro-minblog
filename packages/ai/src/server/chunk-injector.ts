@@ -20,7 +20,13 @@ import type {
   ArticleWithChunks,
   ChunkMatchResult,
 } from "../search/hybrid-search.js";
+import {
+  selectRelevantChunks,
+  expandChunkMatchesWithNeighbors,
+  formatChunksForInjection,
+} from "../search/hybrid-search.js";
 import { classifyQueryScope } from "./scope-classifier.js";
+import { injectionCache } from "../cache/injection-cache.js";
 import { extractQuotedCandidate } from "./article-ranking.js";
 
 const log = createLogger("chunk-injector");
@@ -343,13 +349,6 @@ export async function selectAndInjectChunks(
   }
 
   if (articlesWithChunks.length > 0) {
-    const {
-      selectRelevantChunks,
-      expandChunkMatchesWithNeighbors,
-      formatChunksForInjection,
-    } = await import("../search/hybrid-search.js");
-    const { injectionCache } = await import("../cache/injection-cache.js");
-
     const maxChunksPerArticle = articleSlugForChunks
       ? CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE * 2
       : CHUNK_INJECTION.MAX_CHUNKS_PER_ARTICLE;

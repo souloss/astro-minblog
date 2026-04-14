@@ -3,6 +3,10 @@ import { tokenize } from "../utils/text.js";
 import type { KeywordExtractionResult, QueryComplexity } from "./types.js";
 import { TIMEOUTS } from "../constants.js";
 import { classifyQueryComplexity } from "./request-interpretation.js";
+import { getMessageText } from "../server/chat-message-utils.js";
+import { createLogger } from "../utils/logger.js";
+
+const log = createLogger("keyword-extract");
 
 export const KEYWORD_EXTRACTION_TIMEOUT_MS = TIMEOUTS.KEYWORD_EXTRACTION;
 
@@ -99,8 +103,11 @@ ${conversationText}
               : undefined,
           };
         }
-      } catch {
-        // Parse failed — fall through to fallback
+      } catch (e) {
+        log.debug(
+          "Keyword JSON parse failed:",
+          e instanceof Error ? e.message : String(e)
+        );
       }
     }
 
@@ -119,23 +126,4 @@ function buildFallback(
   const tokens = tokenize(latestText);
   const query = tokens.slice(0, 3).join(" ") || latestText.slice(0, 30);
   return { query, primaryQuery: query, complexity, usedFallback: true, error };
-}
-
-function getMessageText(message: {
-  role: string;
-  parts?: Array<{ type: string; text?: string }>;
-  content?: string;
-}): string {
-  if (message.content && typeof message.content === "string")
-    return message.content;
-  if (Array.isArray(message.parts)) {
-    return message.parts
-      .filter(
-        (p): p is { type: "text"; text: string } =>
-          p.type === "text" && typeof p.text === "string"
-      )
-      .map(p => p.text)
-      .join("");
-  }
-  return "";
 }
