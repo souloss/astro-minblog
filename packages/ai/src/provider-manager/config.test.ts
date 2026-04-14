@@ -178,3 +178,28 @@ describe("hasAnyProviderConfigured", () => {
     ).toBe(false);
   });
 });
+
+describe("parseAIProvidersJSON prototype pollution guard", () => {
+  it("should strip __proto__ from parsed configs", () => {
+    const result = parseProviderConfigs({
+      AI_PROVIDERS: JSON.stringify([
+        { type: "openai", baseURL: "https://api.test.com/v1", apiKey: "sk-test", model: "test", __proto__: { injected: true } },
+      ]),
+    });
+    expect(result).toBeDefined();
+    expect(result.length).toBeGreaterThan(0);
+    // The parsed config should NOT have __proto__ as an own property
+    expect(Object.getOwnPropertyDescriptor(result[0] as Record<string, unknown>, "__proto__")).toBeUndefined();
+  });
+
+  it("should strip constructor and prototype from parsed configs", () => {
+    const malicious = { type: "openai", baseURL: "https://api.test.com/v1", apiKey: "sk-test", model: "test", constructor: { polluted: true }, prototype: { polluted: true } };
+    const result = parseProviderConfigs({
+      AI_PROVIDERS: JSON.stringify([malicious]),
+    });
+    expect(result).toBeDefined();
+    expect(result.length).toBeGreaterThan(0);
+    expect(Object.getOwnPropertyDescriptor(result[0] as Record<string, unknown>, "constructor")).toBeUndefined();
+    expect(Object.getOwnPropertyDescriptor(result[0] as Record<string, unknown>, "prototype")).toBeUndefined();
+  });
+});

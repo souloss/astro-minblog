@@ -119,3 +119,28 @@ describe("setCorsOrigin + corsPreflightResponse", () => {
     expect(res.headers.get("Access-Control-Allow-Headers")).toContain("x-session-id");
   });
 });
+
+describe("getCorsOrigin", () => {
+  beforeEach(() => {
+    setCorsOrigin("*");
+  });
+
+  it("should return default wildcard origin", async () => {
+    const { getCorsOrigin } = await import("./errors.js");
+    expect(getCorsOrigin()).toBe("*");
+  });
+
+  it("should return configured origin after setCorsOrigin", async () => {
+    const { getCorsOrigin } = await import("./errors.js");
+    setCorsOrigin("https://myblog.com");
+    expect(getCorsOrigin()).toBe("https://myblog.com");
+  });
+
+  it("should reflect latest setCorsOrigin call", async () => {
+    const { getCorsOrigin } = await import("./errors.js");
+    setCorsOrigin("https://first.com");
+    expect(getCorsOrigin()).toBe("https://first.com");
+    setCorsOrigin("https://second.com");
+    expect(getCorsOrigin()).toBe("https://second.com");
+  });
+});
