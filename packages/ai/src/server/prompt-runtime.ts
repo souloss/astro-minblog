@@ -1,4 +1,5 @@
 import { getAuthorContext } from "../data/index.js";
+import { envString } from "./chat-utils.js";
 import { buildSystemPrompt } from "../prompt/index.js";
 import type { ChatContext } from "./types.js";
 import type { PhaseTiming } from "./types.js";
@@ -114,8 +115,8 @@ export function buildRuntimeSystemPrompt(
 ): string {
   return buildSystemPrompt({
     static: {
-      authorName: (args.env.SITE_AUTHOR as string) || "博主",
-      siteUrl: (args.env.SITE_URL as string) || "",
+      authorName: envString(args.env, "SITE_AUTHOR") || "博主",
+      siteUrl: envString(args.env, "SITE_URL") || "",
       lang: args.lang,
       voiceStylePrompt: args.voiceStylePrompt,
     },

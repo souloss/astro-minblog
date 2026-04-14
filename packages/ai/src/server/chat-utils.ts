@@ -122,3 +122,14 @@ export function getHealthConfig(env: Record<string, unknown>): { unhealthyThresh
     recoveryTtl: parseNum(env.AI_HEALTH_RECOVERY_TTL, HEALTH.RECOVERY_TTL),
   };
 }
+
+// ── Environment Access Helpers ──────────────────────────────
+
+/**
+ * Safely extracts a string value from an environment object.
+ * Returns undefined if the value is not a string.
+ */
+export function envString(env: Record<string, unknown>, key: string): string | undefined {
+  const val = env[key];
+  return typeof val === "string" && val.length > 0 ? val : undefined;
+}

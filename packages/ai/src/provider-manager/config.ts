@@ -12,6 +12,11 @@ import { createLogger } from "../utils/logger.js";
 
 const log = createLogger("provider-config");
 
+function envString(env: Record<string, unknown>, key: string): string | undefined {
+  const val = env[key];
+  return typeof val === "string" && val.length > 0 ? val : undefined;
+}
+
 const DEFAULT_WEIGHT = PROVIDER.DEFAULT_WEIGHT;
 const DEFAULT_TIMEOUT = TIMEOUTS.PROVIDER_DEFAULT;
 const DEFAULT_MODEL = "gpt-4o-mini";
@@ -22,7 +27,7 @@ function hasOpenAIConfig(env: ProviderManagerEnv): boolean {
 
 function hasWorkersAIBinding(env: ProviderManagerEnv): boolean {
   const bindingName =
-    (env.AI_BINDING_NAME as string) || DEFAULT_WORKERS_BINDING_NAME;
+    envString(env, "AI_BINDING_NAME") || DEFAULT_WORKERS_BINDING_NAME;
   return !!(env as Record<string, unknown>)[bindingName];
 }
 
@@ -35,11 +40,11 @@ function createOpenAIConfigFromEnv(
     id: "openai-default",
     type: "openai",
     weight: DEFAULT_WEIGHT - 10, // Lower priority than Workers AI (fallback)
-    baseURL: env.AI_BASE_URL as string,
-    apiKey: env.AI_API_KEY as string,
-    model: (env.AI_MODEL as string) || DEFAULT_MODEL,
-    keywordModel: env.AI_KEYWORD_MODEL as string | undefined,
-    evidenceModel: env.AI_EVIDENCE_MODEL as string | undefined,
+    baseURL: envString(env, "AI_BASE_URL")!,
+    apiKey: envString(env, "AI_API_KEY")!,
+    model: envString(env, "AI_MODEL") || DEFAULT_MODEL,
+    keywordModel: envString(env, "AI_KEYWORD_MODEL"),
+    evidenceModel: envString(env, "AI_EVIDENCE_MODEL"),
     timeout: DEFAULT_TIMEOUT,
     enabled: true,
   };
@@ -49,7 +54,7 @@ function createWorkersAIConfigFromEnv(
   env: ProviderManagerEnv
 ): WorkersAIProviderConfig | null {
   const bindingName =
-    (env.AI_BINDING_NAME as string) || DEFAULT_WORKERS_BINDING_NAME;
+    envString(env, "AI_BINDING_NAME") || DEFAULT_WORKERS_BINDING_NAME;
   if (!(env as Record<string, unknown>)[bindingName]) return null;
 
   return {
@@ -57,7 +62,7 @@ function createWorkersAIConfigFromEnv(
     type: "workers",
     weight: DEFAULT_WEIGHT,
     bindingName,
-    model: (env.AI_WORKERS_MODEL as string) || "@cf/zai-org/glm-4.7-flash",
+    model: envString(env, "AI_WORKERS_MODEL") || "@cf/zai-org/glm-4.7-flash",
     keywordModel: (env.AI_WORKERS_MODEL as string) || undefined,
     evidenceModel: (env.AI_WORKERS_MODEL as string) || undefined,
     timeout: DEFAULT_TIMEOUT,

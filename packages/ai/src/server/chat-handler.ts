@@ -84,6 +84,7 @@ import type {
 } from "./types.js";
 import { createChatStatusData } from "./types.js";
 import { errors, corsPreflightResponse, setCorsOrigin, getCorsOrigin } from "./errors.js";
+import { envString } from "./chat-utils.js";
 import {
   writeSearchStatus,
   writeGeneratingStatus,
@@ -123,10 +124,10 @@ export async function handleChatRequest(
   const { env, request: req, waitUntil } = options;
 
   if (env.AI_DEBUG) setLogLevel("debug");
-  if (env.CORS_ORIGIN) setCorsOrigin(env.CORS_ORIGIN as string);
+  if (env.CORS_ORIGIN) setCorsOrigin(envString(env, "CORS_ORIGIN")!);
   if (req.method === "OPTIONS") return corsPreflightResponse();
   if (req.method !== "POST")
-    return errors.methodNotAllowed((env.SITE_LANG as string) ?? "zh");
+    return errors.methodNotAllowed(envString(env, "SITE_LANG") ?? "zh");
 
   const ip = getClientIP(req);
   const rateCheck = checkRateLimit(
@@ -134,18 +135,18 @@ export async function handleChatRequest(
     env as Record<string, string | undefined>
   );
   if (!rateCheck.allowed)
-    return rateLimitResponse(rateCheck, (env.SITE_LANG as string) ?? "zh");
+    return rateLimitResponse(rateCheck, envString(env, "SITE_LANG") ?? "zh");
 
   let body: ChatRequestBody;
   try {
     body = await req.json();
   } catch {
     return errors.invalidRequest(
-      t("ai.error.format", (env.SITE_LANG as string) ?? "zh")
+      t("ai.error.format", envString(env, "SITE_LANG") ?? "zh")
     );
   }
 
-  const lang = getLang(body.lang ?? (env.SITE_LANG as string | undefined));
+  const lang = getLang(body.lang ?? envString(env, "SITE_LANG"));
   const context: ChatContext = body.context ?? { scope: "global" };
   const rawMessages = (body.messages ?? []).slice(
     -CHAT_HANDLER.MAX_HISTORY_MESSAGES
@@ -164,7 +165,7 @@ export async function handleChatRequest(
   if (latestText.length > CHAT_HANDLER.MAX_INPUT_LENGTH)
     return errors.inputTooLong(CHAT_HANDLER.MAX_INPUT_LENGTH, lang);
 
-  const timeouts = getTimeoutConfig(env as Record<string, unknown>);
+  const timeouts = getTimeoutConfig(env);
   const requestAbort = new AbortController();
   const requestTimer = setTimeout(() => requestAbort.abort(), timeouts.request);
 
@@ -248,7 +249,7 @@ async function initializeContext(args: PipelineArgs): Promise<PipelineContext> {
   const timing: TimingTracker = { start: Date.now() };
   const cache = createCacheAdapter(env);
   const responseCacheConfig = getResponseCacheConfig(env);
-  const healthConfig = getHealthConfig(env as Record<string, unknown>);
+  const healthConfig = getHealthConfig(env);
   const manager = getProviderManager(env, {
     enableMockFallback: true,
     unhealthyThreshold: healthConfig.unhealthyThreshold,
@@ -1054,8 +1055,8 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
           model: usedAdapter
             ? {
                 name: usedAdapter.model,
-                provider: (env.AI_PROVIDER as string) || undefined,
-                apiHost: (env.AI_BASE_URL as string) || undefined,
+                provider: envString(env, "AI_PROVIDER"),
+                apiHost: envString(env, "AI_BASE_URL"),
               }
             : undefined,
           usage: tokenUsage,

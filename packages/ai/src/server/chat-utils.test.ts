@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildArticleContextPrompt } from "./chat-utils.js";
+import { buildArticleContextPrompt, envString } from "./chat-utils.js";
 import type { ChatContext } from "./types.js";
 
 function ctx(overrides: Partial<ChatContext> = {}): ChatContext {
@@ -95,5 +95,26 @@ describe("buildArticleContextPrompt", () => {
       })
     );
     expect(result).toContain("当前阅读文章");
+  });
+});
+
+describe("envString", () => {
+
+  it("should return string value when present", () => {
+    expect(envString({ KEY: "value" }, "KEY")).toBe("value");
+  });
+
+  it("should return undefined for missing key", () => {
+    expect(envString({}, "KEY")).toBeUndefined();
+  });
+
+  it("should return undefined for empty string", () => {
+    expect(envString({ KEY: "" }, "KEY")).toBeUndefined();
+  });
+
+  it("should return undefined for non-string value", () => {
+    expect(envString({ KEY: 123 }, "KEY")).toBeUndefined();
+    expect(envString({ KEY: true }, "KEY")).toBeUndefined();
+    expect(envString({ KEY: null }, "KEY")).toBeUndefined();
   });
 });

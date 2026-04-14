@@ -1,4 +1,5 @@
 import { preloadKnowledgeBundle, getKnowledgeBundle } from "../data/index.js";
+import { envString } from "./chat-utils.js";
 import {
   initArticleIndex,
   initProjectIndex,
@@ -28,7 +29,7 @@ export function initializeMetadata(
   config: MetadataConfig,
   env?: ChatHandlerEnv
 ): void {
-  const siteUrl = config.siteUrl ?? (env?.SITE_URL as string | undefined) ?? "";
+  const siteUrl = config.siteUrl ?? envString(env ?? {}, "SITE_URL") ?? "";
   const bundleRef = config.knowledgeBundle;
 
   if (
