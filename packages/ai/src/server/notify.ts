@@ -54,7 +54,7 @@ async function loadNotifyRuntime(): Promise<NotifyRuntimeModule | null> {
     if (
       error instanceof Error &&
       "code" in error &&
-      (error as Error & { code?: string }).code === "ERR_MODULE_NOT_FOUND"
+      (error as { code?: string }).code === "ERR_MODULE_NOT_FOUND"
     ) {
       return null;
     }

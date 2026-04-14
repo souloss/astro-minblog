@@ -28,7 +28,7 @@ function hasOpenAIConfig(env: ProviderManagerEnv): boolean {
 function hasWorkersAIBinding(env: ProviderManagerEnv): boolean {
   const bindingName =
     envString(env, "AI_BINDING_NAME") || DEFAULT_WORKERS_BINDING_NAME;
-  return !!(env as Record<string, unknown>)[bindingName];
+  return !!env[bindingName];
 }
 
 function createOpenAIConfigFromEnv(
@@ -55,7 +55,7 @@ function createWorkersAIConfigFromEnv(
 ): WorkersAIProviderConfig | null {
   const bindingName =
     envString(env, "AI_BINDING_NAME") || DEFAULT_WORKERS_BINDING_NAME;
-  if (!(env as Record<string, unknown>)[bindingName]) return null;
+  if (!env[bindingName]) return null;
 
   return {
     id: "workers-ai-default",

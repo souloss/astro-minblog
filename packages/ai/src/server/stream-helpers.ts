@@ -208,8 +208,8 @@ export async function streamLLMResponse(
     systemPrompt,
     messages,
     lang,
-    temperature = CHAT_HANDLER.CACHED_REPLAY_TEMPERATURE as number,
-    maxOutputTokens = CHAT_HANDLER.CACHED_REPLAY_MAX_OUTPUT_TOKENS as number,
+    temperature = Number(CHAT_HANDLER.CACHED_REPLAY_TEMPERATURE),
+    maxOutputTokens = Number(CHAT_HANDLER.CACHED_REPLAY_MAX_OUTPUT_TOKENS),
     tools,
   } = params;
 
@@ -218,7 +218,7 @@ export async function streamLLMResponse(
   try {
     const provider = adapter.getProvider();
     const result = streamText({
-      model: (provider as { chatModel: (m: string) => never }).chatModel(
+      model: provider.chatModel(
         adapter.model
       ),
       system: systemPrompt,

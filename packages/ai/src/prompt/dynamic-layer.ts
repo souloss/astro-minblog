@@ -151,7 +151,7 @@ export function buildDynamicLayer(config: DynamicLayerConfig): string {
     answerMode,
     extensions,
   } = config;
-  const lang = getLang(config.lang) as keyof typeof LABELS;
+  const lang = getLang(config.lang);
   const l = LABELS[lang];
 
   const promptContext: PromptContext = {
