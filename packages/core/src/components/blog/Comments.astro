@@ -34,7 +34,8 @@ const enabled = SITE.waline?.enabled;
         </div>
       </noscript>
       
-      <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+      <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" media="print" onload="this.media='all'" />
+      <noscript><link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" /></noscript>
       
       <script is:inline type="module" define:vars={{ 
         serverURL: SITE.waline?.serverURL ?? '', 

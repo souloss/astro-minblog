@@ -29,7 +29,15 @@ const uniqueId = `mermaid-${randomUUID()}`;
 </VizContainer>
 
 <script>
-  import mermaid from "mermaid";
+  let mermaidModule: typeof import("mermaid") | null = null;
+
+  async function loadMermaid() {
+    if (!mermaidModule) {
+      const mod = await import("mermaid");
+      mermaidModule = mod.default;
+    }
+    return mermaidModule;
+  }
 
   function getIsDark(): boolean {
     return document.documentElement.getAttribute("data-theme") === "dark";
@@ -87,8 +95,9 @@ const uniqueId = `mermaid-${randomUUID()}`;
   let isInitialized = false;
   let currentTheme: boolean | null = null;
 
-  function initMermaid(isDark: boolean) {
+  async function initMermaid(isDark: boolean) {
     if (isInitialized && currentTheme === isDark) return;
+    const mermaid = await loadMermaid();
     isInitialized = true;
     currentTheme = isDark;
     mermaid.initialize({
@@ -100,6 +109,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
   }
 
   async function renderDiagram(wrapper: HTMLElement, isDark: boolean) {
+    const mermaid = await loadMermaid();
     const id = wrapper.getAttribute("data-mermaid-id");
     const codeScript = wrapper.querySelector("script.mermaid-code");
     const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
@@ -120,6 +130,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
   }
 
   async function renderPreBlock(pre: HTMLElement, isDark: boolean) {
+    const mermaid = await loadMermaid();
     const code = pre.textContent || "";
     const uniqueId = `mermaid-pre-${Math.random().toString(36).slice(2, 11)}`;
 
@@ -153,7 +164,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
 
   async function renderAllVisible() {
     const isDark = getIsDark();
-    initMermaid(isDark);
+    await initMermaid(isDark);
 
     const observer = new IntersectionObserver(
       (entries, obs) => {
@@ -186,7 +197,7 @@ const uniqueId = `mermaid-${randomUUID()}`;
 
   async function reRenderAll() {
     const isDark = getIsDark();
-    initMermaid(isDark);
+    await initMermaid(isDark);
 
     const wrappers = document.querySelectorAll<HTMLElement>(".mermaid-wrapper");
     for (const wrapper of wrappers) {
