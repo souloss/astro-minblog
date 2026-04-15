@@ -215,7 +215,7 @@ export async function assemblePromptRuntime(
     extensions
   );
   const voiceStylePrompt = buildVoiceStylePrompt(voiceMode, extensions);
-  const articlePrompt = buildArticleContextPrompt(context);
+  const articlePrompt = buildArticleContextPrompt(context, lang);
 
   const {
     chunksSection,

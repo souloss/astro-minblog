@@ -11,26 +11,43 @@ import type {
 import { notifyAiChat } from "./notify.js";
 import { NOTIFICATION, TIMEOUTS, HEALTH } from "../constants.js";
 
-export function buildArticleContextPrompt(context: ChatContext): string {
+export function buildArticleContextPrompt(context: ChatContext, lang?: string): string {
   if (context.scope !== "article" || !context.article) return "";
 
+  const isEn = lang === "en";
   const a = context.article;
   // Sanitize title: strip newlines, markdown formatting, and limit length
   const sanitizedTitle = (a.title ?? "")
     .replace(/[\n\r]/g, " ")
     .replace(/[#*\[\]_~`>|]/g, "")
     .slice(0, 100);
-  const parts: string[] = ["\n[当前阅读文章]", `用户正在阅读：《${sanitizedTitle}》`];
+  const articleLabel = isEn ? "[Current Article]" : "[当前阅读文章]";
+  const readingLabel = isEn ? `User is reading: "${sanitizedTitle}"` : `用户正在阅读：《${sanitizedTitle}》`;
+  const parts: string[] = [`\n${articleLabel}`, readingLabel];
 
-  if (a.categories?.length) parts.push(`分类：${a.categories.join("、")}`);
+  if (a.categories?.length) {
+    const categoryLabel = isEn ? "Categories" : "分类";
+    const sep = isEn ? ", " : "、";
+    parts.push(`${categoryLabel}：${a.categories.join(sep)}`);
+  }
 
-  parts.push(
-    "",
-    "你正在陪用户阅读这篇文章。优先围绕这篇文章的内容回答问题。",
-    "当用户的问题与当前文章相关时，优先使用当前文章原文段落作答，而不是只复述摘要。",
-    "如果问题是在问“前面/后面是什么”“这一节讲了什么”“这一项后续内容是什么”，默认优先依据当前文章已注入的原文段落回答。",
-    "当用户想要延伸时，推荐相关的博客文章。"
-  );
+  if (isEn) {
+    parts.push(
+      "",
+      "You are accompanying the user in reading this article. Prioritize answering questions about this article's content.",
+      "When the user's question relates to the current article, prefer using the article's original text passages rather than just restating the summary.",
+      'If the user asks "what comes before/after", "what does this section cover", or "what follows this part", prioritize answering based on the original text passages injected from the current article.',
+      "When the user wants to explore further, recommend related blog articles."
+    );
+  } else {
+    parts.push(
+      "",
+      "你正在陪用户阅读这篇文章。优先围绕这篇文章的内容回答问题。",
+      "当用户的问题与当前文章相关时，优先使用当前文章原文段落作答，而不是只复述摘要。",
+      "如果问题是在问“前面/后面是什么”“这一节讲了什么”“这一项后续内容是什么”，默认优先依据当前文章已注入的原文段落回答。",
+      "当用户想要延伸时，推荐相关的博客文章。"
+    );
+  }
 
   return parts.join("\n");
 }

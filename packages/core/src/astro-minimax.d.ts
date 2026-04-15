@@ -39,7 +39,7 @@ declare module "astro:content" {
   export type CollectionEntry<TCollection extends string> = {
     id: string;
     filePath?: string;
-    data: Record<string, any>;
+    data: Record<string, unknown>;
     body: string;
     slug?: string;
     collection?: TCollection;

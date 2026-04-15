@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { AstroIntegration } from "astro";
 import type { RemarkPlugin, RehypePlugin } from "@astrojs/markdown-remark";
-import type { SiteConfig, SocialLink, FriendLink } from "./types";
+import type { SiteConfig, FeaturesConfig, SocialLink, FriendLink } from "./types";
 import type { DeepPartial, Preferences } from "./preferences/types";
 import { remarkMermaidCodeblock } from "./plugins/viz/remark-mermaid-codeblock";
 import { remarkMarkmapCodeblock } from "./plugins/viz/remark-markmap-codeblock";
@@ -184,7 +184,12 @@ export default function minimax(
           },
         });
 
-        const features = (userConfig.site as SiteConfig).features ?? {};
+        function validateFeatures(features: unknown): FeaturesConfig {
+          if (!features || typeof features !== "object") return {} as FeaturesConfig;
+          return features as FeaturesConfig;
+        }
+
+        const features = validateFeatures((userConfig.site as SiteConfig).features);
 
         injectRoute({
           pattern: "/",

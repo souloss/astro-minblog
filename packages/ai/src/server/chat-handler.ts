@@ -174,6 +174,7 @@ export async function handleChatRequest(
   // Validate context article fields to prevent prompt injection
   if (context.scope === "article" && context.article) {
     const a = context.article;
+    if (a.title) a.title = String(a.title).replace(/[\n\r]/g, " ").slice(0, 200);
     if (a.categories) a.categories = a.categories.map(c => String(c).slice(0, 50)).slice(0, 10);
     if (a.keyPoints) a.keyPoints = a.keyPoints.map(kp => String(kp).slice(0, 200)).slice(0, 10);
     if (a.summary) a.summary = String(a.summary).slice(0, 500).replace(/[\n\r]/g, " ");
