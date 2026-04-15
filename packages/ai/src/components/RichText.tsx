@@ -275,12 +275,13 @@ export function InlineRichText({ text }: { text: string }) {
 // ── Block-level Markdown Rendering ────────────────────────────
 
 interface BlockNode {
-  type: "paragraph" | "code-block" | "blockquote" | "list";
+  type: "paragraph" | "code-block" | "blockquote" | "list" | "heading";
   content: string;
   lang?: string;
   ordered?: boolean;
   items?: string[];
   unclosed?: boolean;
+  level?: number; // 1-6 for headings
 }
 
 export function parseBlocks(text: string): BlockNode[] {
@@ -347,6 +348,18 @@ export function parseBlocks(text: string): BlockNode[] {
       continue;
     }
 
+    // Heading detection: 1-6 # followed by a space
+    const headingMatch = line.match(/^(#{1,6})\s(.*)$/);
+    if (headingMatch) {
+      blocks.push({
+        type: "heading",
+        content: headingMatch[2].trim(),
+        level: headingMatch[1].length,
+      });
+      i++;
+      continue;
+    }
+
     if (!line.trim()) {
       i++;
       continue;
@@ -360,7 +373,8 @@ export function parseBlocks(text: string): BlockNode[] {
       !lines[i].startsWith("> ") &&
       lines[i] !== ">" &&
       !/^[-*]\s/.test(lines[i]) &&
-      !/^\d+\.\s/.test(lines[i])
+      !/^\d+\.\s/.test(lines[i]) &&
+      !/^#{1,6}\s/.test(lines[i])
     ) {
       paraLines.push(lines[i]);
       i++;
@@ -424,6 +438,20 @@ export function RichText({
                 ))}
               </ul>
             );
+          case "heading": {
+            const level = block.level ?? 3;
+            const sizeClass =
+              level <= 2
+                ? "text-sm font-bold"
+                : level <= 4
+                  ? "text-[13px] font-bold"
+                  : "text-[12px] font-semibold";
+            return (
+              <p key={i} class={sizeClass}>
+                <InlineRichText text={block.content} />
+              </p>
+            );
+          }
           case "paragraph":
           default:
             return (

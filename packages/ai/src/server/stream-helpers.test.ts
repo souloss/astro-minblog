@@ -132,6 +132,47 @@ describe("streamLLMResponse", () => {
   });
 });
 
+describe("streamLLMResponse — stream error path", () => {
+  it("does NOT write error text chunk or finish when stream has errors", async () => {
+    const writer = createWriter();
+    const adapter = createAdapter("failing-adapter");
+
+    // Stream result that simulates stream-level errors
+    const failingStreamResult = {
+      toUIMessageStream: vi.fn(() => ({ mocked: true })),
+      consumeStream: vi.fn(async ({ onError }: { onError: (e: unknown) => void }) => {
+        onError(new Error("stream timeout"));
+      }),
+      text: Promise.resolve("partial text"),
+      usage: Promise.resolve({ inputTokens: 2, outputTokens: 3, totalTokens: 5 }),
+    };
+
+    aiMocks.streamTextMock.mockReturnValue(failingStreamResult);
+
+    const result = await streamLLMResponse({
+      writer: writer as never,
+      adapter: adapter as never,
+      systemPrompt: "system",
+      messages: [],
+      lang: "zh",
+    });
+
+    expect(result.success).toBe(false);
+    expect(adapter.recordFailure).toHaveBeenCalledTimes(1);
+
+    // Critical: no error text chunk or finish event should be written
+    const textDeltas = writer.writes.filter(
+      chunk => chunk.type === "text-delta"
+    );
+    expect(textDeltas.length).toBe(0);
+
+    const finishEvents = writer.writes.filter(
+      chunk => chunk.type === "finish"
+    );
+    expect(finishEvents.length).toBe(0);
+  });
+});
+
 describe("streamLLMWithFailover", () => {
   it("keeps tools when delegating to failover attempts", async () => {
     const writer = createWriter();
@@ -159,6 +200,83 @@ describe("streamLLMWithFailover", () => {
     expect(aiMocks.streamTextMock).toHaveBeenCalledTimes(1);
     expect(aiMocks.streamTextMock.mock.calls[0]?.[0]).toMatchObject({ tools });
   });
+
+  it("first adapter fails with stream errors, second succeeds — no error text in writer", async () => {
+    const writer = createWriter();
+    const firstAdapter = createAdapter("first-fail");
+    const secondAdapter = createAdapter("second-ok");
+
+    // First adapter: stream produces errors
+    const failingStreamResult = {
+      toUIMessageStream: vi.fn(() => ({ mocked: true })),
+      consumeStream: vi.fn(async ({ onError }: { onError: (e: unknown) => void }) => {
+        onError(new Error("stream timeout from first"));
+      }),
+      text: Promise.resolve("partial from first"),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+    };
+
+    // Second adapter: succeeds
+    const successStreamResult = {
+      toUIMessageStream: vi.fn(() => ({ mocked: true })),
+      consumeStream: vi.fn(async () => {}),
+      text: Promise.resolve("real answer from second"),
+      usage: Promise.resolve({ inputTokens: 5, outputTokens: 10, totalTokens: 15 }),
+    };
+
+    aiMocks.streamTextMock
+      .mockReturnValueOnce(failingStreamResult)
+      .mockReturnValueOnce(successStreamResult);
+
+    const result = await streamLLMWithFailover({
+      writer: writer as never,
+      adapters: [firstAdapter as never, secondAdapter as never],
+      systemPrompt: "system",
+      messages: [],
+      lang: "zh",
+    });
+
+    // Second adapter should be the winner
+    expect(result.success).toBe(true);
+    expect(result.adapter).toBe(secondAdapter);
+    expect(result.responseText).toBe("real answer from second");
+
+    // First adapter recorded a failure
+    expect(firstAdapter.recordFailure).toHaveBeenCalledTimes(1);
+    // Second adapter recorded a success
+    expect(secondAdapter.recordSuccess).toHaveBeenCalledTimes(1);
+
+    // Critical: no error text-delta should have been written
+    const errorTextDeltas = writer.writes.filter(
+      chunk => chunk.type === "text-delta" && String(chunk.delta).includes("抱歉")
+    );
+    expect(errorTextDeltas.length).toBe(0);
+  });
+
+  it("first adapter throws, second succeeds — returns second adapter result", async () => {
+    const writer = createWriter();
+    const firstAdapter = createAdapter("first-throw");
+    const secondAdapter = createAdapter("second-ok");
+
+    // First adapter: throws outright (caught by catch block)
+    aiMocks.streamTextMock
+      .mockImplementationOnce(() => {
+        throw new Error("connection refused");
+      })
+      .mockReturnValueOnce(createStreamResult("answer from second"));
+
+    const result = await streamLLMWithFailover({
+      writer: writer as never,
+      adapters: [firstAdapter as never, secondAdapter as never],
+      systemPrompt: "system",
+      messages: [],
+      lang: "en",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.adapter).toBe(secondAdapter);
+    expect(result.responseText).toBe("answer from second");
+  });
 });
 
 describe("streamAnswerWithFallback", () => {
@@ -178,6 +296,48 @@ describe("streamAnswerWithFallback", () => {
     expect(result.adapter).toBeNull();
     expect(result.responseText.length).toBeGreaterThan(0);
     expect(writer.writes.some(chunk => chunk.type === "finish")).toBe(true);
+  });
+
+  it("does NOT use mock fallback when first adapter fails but second succeeds", async () => {
+    const writer = createWriter();
+    const firstAdapter = createAdapter("first-fail");
+    const secondAdapter = createAdapter("second-ok");
+
+    // First adapter: stream errors
+    const failingStreamResult = {
+      toUIMessageStream: vi.fn(() => ({ mocked: true })),
+      consumeStream: vi.fn(async ({ onError }: { onError: (e: unknown) => void }) => {
+        onError(new Error("stream error"));
+      }),
+      text: Promise.resolve("partial"),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 1, totalTokens: 2 }),
+    };
+
+    // Second adapter: succeeds
+    const successStreamResult = {
+      toUIMessageStream: vi.fn(() => ({ mocked: true })),
+      consumeStream: vi.fn(async () => {}),
+      text: Promise.resolve("real answer"),
+      usage: Promise.resolve({ inputTokens: 3, outputTokens: 5, totalTokens: 8 }),
+    };
+
+    aiMocks.streamTextMock
+      .mockReturnValueOnce(failingStreamResult)
+      .mockReturnValueOnce(successStreamResult);
+
+    const result = await streamAnswerWithFallback({
+      writer: writer as never,
+      adapters: [firstAdapter as never, secondAdapter as never],
+      systemPrompt: "system",
+      messages: [],
+      question: "hello",
+      lang: "en",
+    });
+
+    // Should use the real answer, NOT mock fallback
+    expect(result.usedMockFallback).toBe(false);
+    expect(result.adapter).toBe(secondAdapter);
+    expect(result.responseText).toBe("real answer");
   });
 });
 

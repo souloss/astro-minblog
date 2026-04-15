@@ -252,8 +252,10 @@ export async function streamLLMResponse(
 
     if (streamErrors.length > 0) {
       adapter.recordFailure(streamErrors[0]);
-      writeTextChunk(writer, t("ai.error.generic", lang), "error");
-      writeFinish(writer, "error");
+      // Do NOT write error text or finish event here — the failover loop
+      // in streamLLMWithFailover will try the next adapter.  Writing error
+      // chunks now causes "double content" (error text from first provider
+      // plus real answer from second provider) visible to the user.
       return {
         success: false,
         responseText: text,

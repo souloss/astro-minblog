@@ -130,6 +130,23 @@ function MockMessageList({
 
 // ── Live Message Rendering ──────────────────────────────────────
 
+/**
+ * Determines whether to show the waiting placeholder (BotAvatar + ReasoningBlock).
+ * Returns true only when streaming and no assistant message exists yet in the array.
+ * This prevents double BotAvatar when AI SDK has already created an empty assistant message.
+ */
+export function shouldShowWaitingPlaceholder(
+  messages: UIMessage[],
+  isStreaming: boolean
+): boolean {
+  const lastMessage = messages[messages.length - 1];
+  return (
+    isStreaming &&
+    lastMessage?.role === "user" &&
+    !messages.some(m => m.role === "assistant")
+  );
+}
+
 function LiveMessageList({
   messages,
   isStreaming,
@@ -151,8 +168,7 @@ function LiveMessageList({
   const lastAssistantMsgId = [...messages]
     .reverse()
     .find(m => m.role === "assistant")?.id;
-  const lastMessage = messages[messages.length - 1];
-  const isWaitingForAssistant = isStreaming && lastMessage?.role === "user";
+  const isWaitingForAssistant = shouldShowWaitingPlaceholder(messages, isStreaming);
 
   return (
     <>
