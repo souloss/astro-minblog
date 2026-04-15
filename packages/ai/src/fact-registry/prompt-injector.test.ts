@@ -38,7 +38,7 @@ const sampleFacts: Fact[] = [
     category: "tech",
     statement: "使用 TypeScript strict mode",
     evidence: "tsconfig",
-    source: "inferred",
+    source: "derived",
     confidence: 0.9,
     tags: ["typescript"],
     lang: "zh",

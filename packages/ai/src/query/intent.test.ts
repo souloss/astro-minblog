@@ -47,7 +47,8 @@ describe("classifyIntent", () => {
 describe("rankArticlesByCategory", () => {
   const articles: ArticleContext[] = [
     {
-      slug: "deploy-guide",
+      id: "deploy-guide",
+      url: "/posts/deploy-guide/",
       title: "部署指南",
       summary: "如何部署到 Cloudflare",
       categories: ["deployment"],
@@ -55,7 +56,8 @@ describe("rankArticlesByCategory", () => {
       dateTime: Date.now(),
     },
     {
-      slug: "setup-guide",
+      id: "setup-guide",
+      url: "/posts/setup-guide/",
       title: "入门教程",
       summary: "如何开始搭建",
       categories: ["tutorial"],
@@ -77,7 +79,7 @@ describe("rankArticlesByCategory", () => {
   it("should rank articles by intent match", () => {
     const result = rankArticlesByCategory("deployment", articles);
     // Deploy guide should rank higher for deployment intent
-    expect(result[0].slug).toBe("deploy-guide");
+    expect(result[0].id).toBe("deploy-guide");
   });
 });
 
@@ -85,7 +87,8 @@ describe("rankArticlesByIntent", () => {
   it("should classify and rank in one call", () => {
     const articles: ArticleContext[] = [
       {
-        slug: "config-guide",
+        id: "config-guide",
+        url: "/posts/config-guide/",
         title: "配置指南",
         summary: "环境变量配置",
         categories: ["config"],

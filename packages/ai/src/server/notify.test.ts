@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { notifyAiChat } from "./notify.js";
 import type { ChatNotifyOptions } from "./notify.js";
-import type { UIMessage } from "ai";
 
 // ── Mock notify module ───────────────────────────────────────────
 
@@ -11,24 +10,18 @@ const mockCreateNotifier = vi.fn(() => ({
 }));
 const mockCreateNotifyConfigFromEnv = vi.fn();
 
-// We need to mock the dynamic import of @astro-minimax/notify
-// The function uses `import("@astro-minimax/notify")` dynamically
-// We'll mock it by intercepting module loading
-
 vi.mock("@astro-minimax/notify", () => ({
-  createNotifier: (...args: unknown[]) => mockCreateNotifier(...args),
-  createNotifyConfigFromEnv: (...args: unknown[]) =>
-    mockCreateNotifyConfigFromEnv(...args),
+  createNotifier: mockCreateNotifier,
+  createNotifyConfigFromEnv: mockCreateNotifyConfigFromEnv,
 }));
 
 // ── Helpers ──────────────────────────────────────────────────────
 
-function makeMessage(role: string, text: string): UIMessage {
+function makeMessage(role: "user" | "assistant", text: string) {
   return {
     id: `msg-${Date.now()}`,
-    role: role as "user" | "assistant",
-    content: text,
-    parts: [{ type: "text", text }],
+    role,
+    parts: [{ type: "text" as const, text }],
     createdAt: new Date(),
   };
 }

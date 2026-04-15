@@ -49,10 +49,11 @@ vi.mock("../utils/text.js", () => ({
 
 // ── Fixtures ─────────────────────────────────────────────────────
 
-function makeChunk(id: string, content: string, overrides: Partial<ArticleChunk> = {}): ArticleChunk {
+function makeChunk(id: string, content: string, overrides: Partial<ArticleChunk> = {}) {
   return {
     id,
     postId: "zh/test-article",
+    headers: {},
     content,
     tokenCount: Math.ceil(content.length / 2),
     position: 0,

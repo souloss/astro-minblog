@@ -189,7 +189,7 @@ describe("parseAIProvidersJSON prototype pollution guard", () => {
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
     // The parsed config should NOT have __proto__ as an own property
-    expect(Object.getOwnPropertyDescriptor(result[0] as Record<string, unknown>, "__proto__")).toBeUndefined();
+    expect(Object.getOwnPropertyDescriptor(result[0] as unknown as Record<string, unknown>, "__proto__")).toBeUndefined();
   });
 
   it("should strip constructor and prototype from parsed configs", () => {
@@ -199,7 +199,7 @@ describe("parseAIProvidersJSON prototype pollution guard", () => {
     });
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
-    expect(Object.getOwnPropertyDescriptor(result[0] as Record<string, unknown>, "constructor")).toBeUndefined();
-    expect(Object.getOwnPropertyDescriptor(result[0] as Record<string, unknown>, "prototype")).toBeUndefined();
+    expect(Object.getOwnPropertyDescriptor(result[0] as unknown as Record<string, unknown>, "constructor")).toBeUndefined();
+    expect(Object.getOwnPropertyDescriptor(result[0] as unknown as Record<string, unknown>, "prototype")).toBeUndefined();
   });
 });

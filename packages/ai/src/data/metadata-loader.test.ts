@@ -1,8 +1,16 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { preloadKnowledgeBundle, getKnowledgeBundle, getAuthorContext } from "./metadata-loader.js";
 import type { KnowledgeBundleFile } from "./knowledge-types.js";
+import type { AuthorContextFile, AuthorPost } from "./types.js";
 
 // ── Fixtures ─────────────────────────────────────────────────────
+
+function makeAuthorContext(): AuthorContextFile {
+  return {
+    profile: { name: "Test Author", siteUrl: "https://test.com", description: "Test" },
+    posts: [],
+  };
+}
 
 function makeBundle(overrides: Partial<KnowledgeBundleFile> = {}): KnowledgeBundleFile {
   return {
@@ -13,23 +21,20 @@ function makeBundle(overrides: Partial<KnowledgeBundleFile> = {}): KnowledgeBund
       projects: { zh: 2 },
     },
     runtime: {
-      authorContext: {
-        authorName: "Test Author",
-        siteUrl: "https://test.com",
-        posts: [],
-      },
+      summaries: null,
+      authorContext: makeAuthorContext(),
+      voiceProfile: null,
       factRegistry: null,
       vectorIndex: null,
     },
     ...overrides,
-  };
+  } as KnowledgeBundleFile;
 }
 
 // ── Tests ────────────────────────────────────────────────────────
 
 describe("metadata-loader", () => {
   beforeEach(() => {
-    // Reset by preloading null
     preloadKnowledgeBundle(makeBundle());
   });
 
@@ -42,10 +47,10 @@ describe("metadata-loader", () => {
   });
 
   describe("getKnowledgeBundle", () => {
-    it("returns null when not loaded", () => {
-      // This test depends on state from beforeEach, so we test a fresh instance
+    it("returns the loaded bundle", () => {
       const bundle = getKnowledgeBundle();
       expect(bundle).toBeDefined();
+      expect(bundle!.version).toBe(1);
     });
   });
 
@@ -54,17 +59,19 @@ describe("metadata-loader", () => {
       preloadKnowledgeBundle(makeBundle());
       const ctx = getAuthorContext();
       expect(ctx).not.toBeNull();
-      expect(ctx!.authorName).toBe("Test Author");
+      expect(ctx!.profile.name).toBe("Test Author");
     });
 
     it("returns null when bundle has no author context", () => {
       preloadKnowledgeBundle(makeBundle({
         runtime: {
+          summaries: null,
           authorContext: null,
+          voiceProfile: null,
           factRegistry: null,
           vectorIndex: null,
         },
-      }));
+      } as unknown as KnowledgeBundleFile));
       expect(getAuthorContext()).toBeNull();
     });
   });
