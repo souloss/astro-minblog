@@ -5,6 +5,7 @@
  */
 
 import { createLogger } from "../utils/logger.js";
+const log = createLogger("injection-cache");
 
 export interface InjectionCacheEntry {
   sessionId: string;
@@ -130,4 +131,4 @@ class InjectionCacheManager {
 
 export const injectionCache = new InjectionCacheManager();
 
-const log = createLogger("injection-cache");
+

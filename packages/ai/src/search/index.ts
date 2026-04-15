@@ -9,7 +9,7 @@ export {
   mergeResults,
   resetSearchIndexes,
 } from "./search-api.js";
-export { getIDFMapForIndex } from "./search-index.js";
+export { getIDFMapForIndex, resetIDFMap } from "./search-index.js";
 export {
   loadVectorIndex,
   hasVectorIndex,

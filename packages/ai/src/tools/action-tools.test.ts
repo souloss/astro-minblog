@@ -255,5 +255,30 @@ describe("action-tools", () => {
 
       expect(searchProjects).not.toHaveBeenCalled();
     });
+
+    it("propagates article lang instead of hardcoding zh", async () => {
+      const enArticles: ArticleContext[] = [{
+        title: "English Post",
+        url: "/en/post",
+        summary: "English summary",
+        keyPoints: ["k1"],
+        categories: ["tech"],
+        dateTime: 1_700_000_000,
+        score: 10,
+        lang: "en",
+      }];
+      vi.mocked(searchArticles).mockReturnValue(enArticles);
+      vi.mocked(searchProjects).mockReturnValue([]);
+
+      const execute = searchArticlesTool.execute;
+      if (execute === undefined) throw new Error("execute required");
+      const raw = await execute(
+        { query: "english", limit: 5, includeProjects: false },
+        { ...execOpts, messages: [] }
+      );
+      if (isAsyncIterable(raw)) throw new Error("expected plain object");
+      expect(raw.articles[0]?.lang).toBe("en");
+    });
   });
 });
+

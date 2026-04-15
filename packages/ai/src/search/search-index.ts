@@ -29,6 +29,11 @@ export function getIDFMapForIndex(): IDFMap | null {
   return cachedIDFMap;
 }
 
+/** Resets the cached IDF map. Useful for tests. */
+export function resetIDFMap(): void {
+  cachedIDFMap = null;
+}
+
 function buildDocumentTokens(doc: SearchDocument): string[] {
   const parts = [
     doc.title,

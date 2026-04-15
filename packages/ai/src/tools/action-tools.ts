@@ -161,7 +161,7 @@ export const searchArticlesTool = tool({
         tags: [],
         keyPoints: a.keyPoints ?? [],
         dateTime: a.dateTime,
-        lang: "zh",
+        lang: a.lang ?? "zh",
         score: a.score,
       })),
       projects: projects.slice(0, 3).map(p => ({
