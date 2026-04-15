@@ -1,18 +1,12 @@
 import { existsSync, readdirSync, readFileSync, statSync, mkdirSync } from "node:fs";
-import { join, basename, dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, basename, resolve } from "node:path";
 import type {
-  ExtensionType,
   Extension,
   ExtensionFile,
   ExtensionValidationResult,
 } from "./types.js";
 import { VALID_EXTENSION_TYPES, EMOJI } from "./types.js";
-import { runToolDirect } from "./run-tool.js";
 import { transformAllExtensions } from "../../tools/transform-extensions.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 export async function handleExtensionsCommand(
   args: string[],
@@ -417,16 +411,9 @@ function showExtensionsStatus(args: string[], extensionsDir: string): void {
   }
 }
 
-async function loadExtensionsCmd(args: string[], cwd: string): Promise<void> {
-  const verbose = args.includes("--verbose") || args.includes("-v");
-
-  console.log("\n" + EMOJI.folder + " Loading Extensions");
-  console.log("━".repeat(50));
-
-  const toolArgs = [join(__dirname, "..", "..", "tools", "load-extensions.ts")];
-  if (verbose) toolArgs.push("--verbose");
-
-  await runToolDirect(toolArgs, cwd);
+async function loadExtensionsCmd(): Promise<void> {
+  console.log("\n  ℹ️  Use 'astro-minimax ai extensions build' to compile extensions.");
+  console.log("     The build command validates and transforms extensions in one step.\n");
 }
 
 function validateExtensionFile(
@@ -435,12 +422,11 @@ function validateExtensionFile(
 ): ExtensionValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
-  const byType: Record<ExtensionType, number> = {
+  const byType: Record<string, number> = {
     searchable: 0,
     facts: 0,
     context: 0,
     "voice-style": 0,
-    "semantic-fallback": 0,
   };
 
   if (!file.$schema || typeof file.$schema !== "string") {
@@ -536,10 +522,6 @@ function getExtensionDataSummary(ext: Extension): string {
     case "voice-style": {
       const modes = (data.modes as unknown[]) || [];
       return "     Modes: " + modes.length;
-    }
-    case "semantic-fallback": {
-      const rules = (data.rules as unknown[]) || [];
-      return "     Rules: " + rules.length;
     }
     default:
       return "     (Unknown type)";

@@ -2,15 +2,12 @@ import { describe, it, expect } from "vitest";
 import {
   resolveVoiceStyleMode,
   buildVoiceStylePrompt,
-  getSemanticFallback,
   mergeSearchDocuments,
   mergeFacts,
 } from "./injector.js";
 import type {
   LoadedExtensions,
   VoiceStyleMode,
-  VoiceStyleData,
-  SemanticFallbackRule,
 } from "./types.js";
 import type { Fact } from "../fact-registry/types.js";
 
@@ -101,25 +98,6 @@ describe("buildVoiceStylePrompt", () => {
   it("should include frequent expressions", () => {
     const result = buildVoiceStylePrompt(null, mockExtensions);
     expect(result).toContain("哈");
-  });
-});
-
-describe("getSemanticFallback", () => {
-  it("should return null when no rules match", () => {
-    const result = getSemanticFallback("今天天气", mockExtensions);
-    expect(result).toBeNull();
-  });
-
-  it("should match rule pattern and return fallback query", () => {
-    const result = getSemanticFallback("用什么框架", mockExtensions);
-    expect(result).not.toBeNull();
-    expect(result!.query).toBe("astro 技术栈");
-    expect(result!.primaryQuery).toBe("框架 技术");
-  });
-
-  it("should return empty extensions for no rules", () => {
-    const result = getSemanticFallback("test", emptyExtensions);
-    expect(result).toBeNull();
   });
 });
 

@@ -3,7 +3,6 @@ import { getExtensionRegistry, resetExtensionRegistry } from "./registry.js";
 import {
   resolveVoiceStyleMode,
   buildVoiceStylePrompt,
-  getSemanticFallback,
   mergeSearchDocuments,
   mergeFacts,
 } from "./injector.js";
@@ -536,97 +535,6 @@ describe("buildVoiceStylePrompt", () => {
     const prompt = buildVoiceStylePrompt(null, extensions);
 
     expect(prompt).toBe("");
-  });
-});
-
-describe("getSemanticFallback", () => {
-  it("should return null when no rules match", () => {
-    const extensions = createLoadedExtensions({
-      semanticFallback: [
-        { id: "r1", patterns: [/旅行/], fallbackQuery: "travel" },
-      ],
-    });
-
-    const result = getSemanticFallback("如何学习编程", extensions);
-
-    expect(result).toBeNull();
-  });
-
-  it("should return fallback query when pattern matches", () => {
-    const extensions = createLoadedExtensions({
-      semanticFallback: [
-        { id: "r1", patterns: [/旅行|旅游/], fallbackQuery: "travel journey" },
-      ],
-    });
-
-    const result = getSemanticFallback("推荐日本旅行", extensions);
-
-    expect(result).not.toBeNull();
-    expect(result?.query).toBe("travel journey");
-  });
-
-  it("should replace $1, $2 capture groups in fallbackQuery", () => {
-    const extensions = createLoadedExtensions({
-      semanticFallback: [
-        {
-          id: "r1",
-          patterns: [/(日本|韩国|美国).{0,6}(几次|多少次)/],
-          fallbackQuery: "$1 旅行 游记",
-        },
-      ],
-    });
-
-    const result = getSemanticFallback("你去过日本几次", extensions);
-
-    expect(result).not.toBeNull();
-    expect(result?.query).toBe("日本 旅行 游记");
-  });
-
-  it("should replace capture groups in primaryQuery", () => {
-    const extensions = createLoadedExtensions({
-      semanticFallback: [
-        {
-          id: "r1",
-          patterns: [/(日本|韩国)/],
-          fallbackQuery: "fallback",
-          primaryQuery: "$1 攻略",
-        },
-      ],
-    });
-
-    const result = getSemanticFallback("推荐日本旅游", extensions);
-
-    expect(result?.primaryQuery).toBe("日本 攻略");
-  });
-
-  it("should return complexity from rule", () => {
-    const extensions = createLoadedExtensions({
-      semanticFallback: [
-        {
-          id: "r1",
-          patterns: [/test/],
-          fallbackQuery: "query",
-          complexity: "complex",
-        },
-      ],
-    });
-
-    const result = getSemanticFallback("test query", extensions);
-
-    expect(result?.complexity).toBe("complex");
-  });
-
-  it("should return first matching rule", () => {
-    const extensions = createLoadedExtensions({
-      semanticFallback: [
-        { id: "r1", patterns: [/first/], fallbackQuery: "first-query" },
-        { id: "r2", patterns: [/first/], fallbackQuery: "second-query" },
-      ],
-    });
-
-    const result = getSemanticFallback("first match", extensions);
-
-    expect(result?.query).toBe("first-query");
   });
 });
 

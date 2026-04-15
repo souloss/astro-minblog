@@ -50,10 +50,19 @@ RELEASE_REPORT.md
 tests/e2e-results.json
 tests/__pycache__/
 tests/**/*.pyc
-apps/blog/datas/qa-*.json
-apps/blog/datas/qa-*.jsonl
-apps/blog/datas/eval/report.json
+
+# AI build intermediates
 apps/blog/datas/knowledge/
+apps/blog/datas/ai-seo.json
+apps/blog/datas/ai-skip-list.json
+apps/blog/datas/ai-summaries.json
+apps/blog/datas/author-context.json
+apps/blog/datas/author-profile-context.json
+apps/blog/datas/author-profile-report.json
+apps/blog/datas/voice-profile.json
+apps/blog/datas/user-questions-taxonomy.json
+apps/blog/datas/eval/
+apps/blog/datas/sources/
 packages/*/*.tgz
 
 .wrangler

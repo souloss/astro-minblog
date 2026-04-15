@@ -5,7 +5,6 @@ export {
   resolveVoiceStyleMode,
   buildVoiceStylePrompt,
   buildContextSections,
-  getSemanticFallback,
   mergeSearchDocuments,
   mergeFacts,
 } from "./injector.js";

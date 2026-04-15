@@ -130,6 +130,7 @@ export interface LoadedExtensions {
   facts: Map<string, FactsData>;
   context: ContextData[];
   voiceStyle: VoiceStyleData | null;
+  /** @deprecated No longer populated by the extension pipeline */
   semanticFallback: SemanticFallbackRule[];
 }
 

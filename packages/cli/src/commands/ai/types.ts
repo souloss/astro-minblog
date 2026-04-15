@@ -1,6 +1,6 @@
 export type FactCategory = "author" | "blog" | "content" | "project" | "tech";
 export type FactSource = "explicit" | "derived" | "aggregated";
-export type ExtensionType = "searchable" | "facts" | "context" | "voice-style" | "semantic-fallback";
+export type ExtensionType = "searchable" | "facts" | "context" | "voice-style";
 
 export interface Fact {
   id: string;
@@ -46,7 +46,6 @@ export const VALID_EXTENSION_TYPES: ExtensionType[] = [
   "facts",
   "context",
   "voice-style",
-  "semantic-fallback",
 ];
 
 export const EMOJI = {
@@ -84,7 +83,7 @@ export interface ExtensionValidationResult {
   warnings: string[];
   stats: {
     totalExtensions: number;
-    byType: Record<ExtensionType, number>;
+    byType: Record<string, number>;
     enabled: number;
     disabled: number;
   };
