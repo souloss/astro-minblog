@@ -9,6 +9,8 @@
 import type { ArticleContext } from "./types.js";
 import { createLogger } from "../utils/logger.js";
 
+const log = createLogger("vector-reranker");
+
 // ── Vector Index Types (mirrors cli/lib/vectors.ts) ──────────
 
 export interface VectorChunk {
@@ -201,4 +203,3 @@ function extractSlugFromUrl(url: string): string {
   if (match) return `${match[1]}/${match[2]}`;
   return path.replace(/^\/|\/$/g, "");
 }
-const log = createLogger("vector-reranker");
