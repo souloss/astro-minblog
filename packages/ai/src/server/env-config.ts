@@ -22,6 +22,7 @@ export function applyAiConfigDefaults(
           recoveryTtl?: number;
         };
         mockMode?: boolean;
+        voiceStyle?: "friendly" | "professional" | "casual" | "technical";
       }
     | null
     | undefined
@@ -51,6 +52,7 @@ export function applyAiConfigDefaults(
   setIfMissing("AI_HEALTH_RECOVERY_TTL", aiConfig.health?.recoveryTtl);
 
   setIfMissing("AI_MOCK_MODE", aiConfig.mockMode);
+  setIfMissing("AI_VOICE_STYLE", aiConfig.voiceStyle);
 
   return envWithConfig;
 }

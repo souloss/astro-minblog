@@ -138,6 +138,28 @@ export function buildRuntimeSystemPrompt(
   });
 }
 
+function getVoiceStylePreset(preset: string): { overallTone: string; traits: string[] } | null {
+  const presets: Record<string, { overallTone: string; traits: string[] }> = {
+    friendly: {
+      overallTone: "友好、简洁、乐于助人",
+      traits: ["使用自然口语", "适当使用比喻帮助理解", "给出具体建议而非泛泛而谈"],
+    },
+    professional: {
+      overallTone: "专业、准确、结构化",
+      traits: ["使用准确的技术术语", "分点阐述", "引用权威来源"],
+    },
+    casual: {
+      overallTone: "轻松、随意、像朋友聊天",
+      traits: ["使用口语化表达", "可以偶尔用emoji", "讲个人经验"],
+    },
+    technical: {
+      overallTone: "严谨、深入、代码导向",
+      traits: ["给出代码示例", "解释底层原理", "对比不同方案的优劣"],
+    },
+  };
+  return presets[preset] ?? null;
+}
+
 export async function assemblePromptRuntime(
   args: PromptAssemblyArgs
 ): Promise<PromptAssemblyResult> {
@@ -215,6 +237,19 @@ export async function assemblePromptRuntime(
     extensions
   );
   const voiceStylePrompt = buildVoiceStylePrompt(voiceMode, extensions);
+
+  // If no extension-provided voice style, apply config preset
+  let resolvedVoiceStylePrompt = voiceStylePrompt;
+  if (!voiceStylePrompt) {
+    const configPreset = envString(env, "AI_VOICE_STYLE");
+    if (configPreset) {
+      const preset = getVoiceStylePreset(configPreset);
+      if (preset) {
+        resolvedVoiceStylePrompt = `## 语言风格（L5 style_only，仅影响表达）\n语气基调：${preset.overallTone}\n本轮表达参考：\n${preset.traits.map(t => `- ${t}`).join('\n')}`;
+      }
+    }
+  }
+
   const articlePrompt = buildArticleContextPrompt(context, lang);
 
   const {
@@ -244,7 +279,7 @@ export async function assemblePromptRuntime(
     answerMode,
     extensions,
     cacheKey,
-    voiceStylePrompt,
+    voiceStylePrompt: resolvedVoiceStylePrompt,
     chunksSection,
     preferInjectedChunks,
   });

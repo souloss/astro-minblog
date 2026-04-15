@@ -1,0 +1,19 @@
+{
+  "title": "知乎回答",
+  "items": [
+    {
+      "title": "2025 年前端技术选型建议",
+      "url": "https://zhihu.com/question/xxx/answer/yyy",
+      "content": "对比了 React、Vue、Svelte、Astro 等框架在个人博客、企业后台、内容站点等不同场景下的优劣。推荐 Astro 作为内容优先的站点框架，Vue/React 适合交互密集型应用。",
+      "tags": ["前端", "技术选型", "react", "vue", "astro"],
+      "date": "2026-01-10"
+    },
+    {
+      "title": "如何优雅地管理 Node.js 版本",
+      "url": "https://zhihu.com/question/aaa/answer/bbb",
+      "content": "介绍了 fnm、nvm、Volta 三种 Node.js 版本管理工具的对比，推荐使用 fnm（Fast Node Manager），因为它基于 Rust 编写，启动速度快，支持 .node-version 和 .nvmrc 文件。",
+      "tags": ["nodejs", "工具", "开发环境", "fnm"],
+      "date": "2025-07-22"
+    }
+  ]
+}

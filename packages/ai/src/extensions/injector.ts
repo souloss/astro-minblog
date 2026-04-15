@@ -128,6 +128,11 @@ function replaceCaptureGroups(
   });
 }
 
+/**
+ * @deprecated Semantic fallback is no longer used in the chat pipeline.
+ * The AI keyword extractor (extractSearchKeywords) handles query rewriting.
+ * This function is kept for interface compatibility.
+ */
 export function getSemanticFallback(
   query: string,
   extensions: LoadedExtensions

@@ -1,3 +1,5 @@
+// Extension types — the LoadedExtensions interface is stable and consumed by
+// prompt-runtime.ts, chat-handler.ts, dynamic-layer.ts. DO NOT change it.
 import type { ArticleContext, ProjectContext } from "../search/types.js";
 
 export type ExtensionType =

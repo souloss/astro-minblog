@@ -66,7 +66,6 @@ import {
 } from "../middleware/index.js";
 import {
   getExtensionRegistry,
-  getSemanticFallback,
   resolveVoiceStyleMode,
   mergeSearchDocuments,
   mergeFacts,
@@ -523,11 +522,6 @@ async function retrieveContext(
     reuseContext && cachedContext ? cachedContext.projects : [];
   let { budget } = initialSearchInterpretation;
   let { interpretation } = initialSearchInterpretation;
-
-  const semanticFallback = getSemanticFallback(latestText, extensions);
-  if (semanticFallback) {
-    searchQuery = semanticFallback.query;
-  }
 
   if (reuseContext && cachedContext && cacheKey) {
     searchQuery = cachedContext.query;

@@ -1,0 +1,27 @@
+{
+  "title": "B 站视频",
+  "items": [
+    {
+      "title": "我用 Astro 搭建博客的全过程",
+      "url": "https://bilibili.com/video/BV1xx411c7xx",
+      "content": "详细讲解了从零开始用 Astro 框架搭建个人博客的完整流程，包括主题选择、MDX 配置、Tailwind CSS 集成、部署到 Cloudflare Pages。视频中演示了 AI 聊天功能的使用和 Mermaid 图表的渲染效果。",
+      "tags": ["astro", "博客搭建", "前端", "部署", "cloudflare"],
+      "date": "2025-12-20"
+    },
+    {
+      "title": "TypeScript 高级类型体操实战",
+      "url": "https://bilibili.com/video/BV2yy311d7yy",
+      "content": "讲解了条件类型（Conditional Types）、模板字面量类型（Template Literal Types）、递归类型等高级技巧。通过实现 DeepPartial、DeepReadonly 等工具类型来掌握 TypeScript 类型系统的精髓。",
+      "tags": ["typescript", "前端", "类型系统", "编程"],
+      "date": "2025-11-15"
+    },
+    {
+      "title": "从零搭建 Cloudflare Workers API",
+      "url": "https://bilibili.com/video/BV3zz411e7zz",
+      "content": "演示了如何使用 Wrangler CLI 创建 Cloudflare Workers 项目，实现 API 路由、环境变量管理、KV 存储绑定，以及如何与 AI 模型集成实现流式响应。最后展示了如何在 Pages 项目中集成 Workers Functions。",
+      "tags": ["cloudflare", "workers", "api", "serverless", "ai"],
+      "date": "2025-09-08"
+    }
+  ],
+  "voiceHint": "聊到技术视频时，可以引用视频中的具体演示内容"
+}

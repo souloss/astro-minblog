@@ -112,6 +112,8 @@ export interface AiConfig {
   timeouts?: AiTimeoutConfig;
   /** Provider health configuration */
   health?: AiHealthConfig;
+  /** Voice style preset for AI responses */
+  voiceStyle?: "friendly" | "professional" | "casual" | "technical";
 }
 
 export interface SponsorMethod {

@@ -1,96 +1,27 @@
 {
-  "$schema": "extension-v1",
-  "version": 1,
-  "extensions": [
+  "title": "旅行足迹",
+  "items": [
     {
-      "id": "blog-travel",
-      "type": "voice-style",
-      "name": "Travel Voice",
-      "description": "Voice style for travel-related questions",
-      "enabled": true,
-      "priority": 80,
-      "data": {
-        "modes": [
-          {
-            "id": "travel",
-            "name": "Travel Mode",
-            "description": "Style for travel and journey related questions",
-            "matchKeywords": ["旅行", "旅游", "去过", "游记", "travel", "trip", "journey"],
-            "matchCategories": ["travel", "photography"],
-            "traits": [
-              "按时间线叙述",
-              "会提到具体地名和体验",
-              "偶尔加个人感悟",
-              "推荐实用信息"
-            ]
-          }
-        ],
-        "defaultMode": "travel",
-        "overallTone": "轻松分享，注重实用性和体验感"
-      }
+      "title": "日本关西 7 日自由行",
+      "url": "https://example.com/travel/japan-kansai",
+      "content": "大阪、京都、奈良的行程规划，包含交通攻略（JR Pass 使用指南）、美食推荐（道顿堀、锦市场）、住宿选择（民宿 vs 酒店）。总花费约 8000 元，最佳季节是 3-4 月樱花季或 11 月红叶季。",
+      "tags": ["日本", "旅行", "自由行", "攻略", "关西"],
+      "date": "2025-10-01"
     },
     {
-      "id": "travel-semantic-fallback",
-      "type": "semantic-fallback",
-      "name": "Travel Query Fallback",
-      "description": "Semantic fallback rules for travel queries",
-      "enabled": true,
-      "priority": 70,
-      "data": {
-        "rules": [
-          {
-            "id": "travel-countries",
-            "patterns": [
-              "去过.{0,6}(国家|城市|地方|哪里|哪些)",
-              "(国家|城市).{0,6}去过",
-              "都去过"
-            ],
-            "fallbackQuery": "旅行 游记 海外 出国 国家 城市 目的地",
-            "primaryQuery": "旅行",
-            "complexity": "complex"
-          },
-          {
-            "id": "travel-count",
-            "patterns": [
-              "(日本|韩国|美国|欧洲).{0,8}(几次|多少次|几回)"
-            ],
-            "fallbackQuery": "$1 旅行 游记",
-            "primaryQuery": "$1",
-            "complexity": "count"
-          }
-        ]
-      }
+      "title": "泰国清迈数字游民生活",
+      "url": "https://example.com/travel/chiang-mai",
+      "content": "在清迈远程工作一个月的体验，介绍了适合远程工作的咖啡馆、coworking space、生活成本（月均 5000 元）、签证办理流程，以及周边周末游推荐（拜县、清莱白庙）。",
+      "tags": ["泰国", "清迈", "数字游民", "远程工作", "旅行"],
+      "date": "2025-08-15"
     },
     {
-      "id": "blog-semantic-fallback",
-      "type": "semantic-fallback",
-      "name": "Blog Query Fallback",
-      "description": "General semantic fallback rules for blog queries",
-      "enabled": true,
-      "priority": 60,
-      "data": {
-        "rules": [
-          {
-            "id": "tech-stack",
-            "patterns": [
-              "(技术栈|用什么技术|技术选型)",
-              "怎么(搭建|部署|实现).*博客"
-            ],
-            "fallbackQuery": "技术 栈 博客 Astro",
-            "primaryQuery": "技术栈",
-            "complexity": "simple"
-          },
-          {
-            "id": "how-to",
-            "patterns": [
-              "如何(添加|配置|设置|使用)",
-              "怎么(添加|配置|设置|使用)"
-            ],
-            "fallbackQuery": "教程 配置 设置",
-            "complexity": "moderate"
-          }
-        ]
-      }
+      "title": "欧洲三国自驾游：德法瑞",
+      "url": "https://example.com/travel/europe-roadtrip",
+      "content": "从法兰克福出发，经斯特拉斯堡、瑞士阿尔卑斯、慕尼黑的自驾路线。全程 2000 公里，耗时 14 天。高速不限速路段体验极佳，瑞士山路需要谨慎驾驶。沿途推荐的城堡和小镇。",
+      "tags": ["欧洲", "自驾", "德国", "法国", "瑞士", "旅行"],
+      "date": "2025-06-20"
     }
-  ]
+  ],
+  "voiceHint": "聊到旅行话题时，用轻松分享的口吻，会提到具体体验和花费，偶尔加个人感悟"
 }

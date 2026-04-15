@@ -9,6 +9,7 @@ import type {
 } from "./types.js";
 import { VALID_EXTENSION_TYPES, EMOJI } from "./types.js";
 import { runToolDirect } from "./run-tool.js";
+import { transformAllExtensions } from "../../tools/transform-extensions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,12 +40,11 @@ Description:
   Manage extension data that augments the AI chat system.
   Extensions are stored in datas/extensions/*.json
 
-Extension Types:
-  searchable         Add searchable documents to AI knowledge
-  facts              Add structured facts to the registry
-  context            Add custom prompt sections
-  voice-style        Define AI personality modes
-  semantic-fallback  Define query rewriting rules
+Extension Data Format:
+  Each file in datas/extensions/ should follow the simple format:
+  { "title": "Topic Name", "items": [{ "title": "...", "content": "...", "tags": [...] }] }
+  
+  Optional: add "voiceHint" for topic-specific tone adjustment.
 
 Examples:
   astro-minimax ai extensions status
@@ -62,7 +62,7 @@ Examples:
 
   switch (subcommand) {
     case "build":
-      await buildExtensions(subArgs, cwd, extensionsDir);
+      await buildExtensions(subArgs, cwd, extensionsDir, datasDir);
       break;
     case "validate":
       await validateExtensions(subArgs, extensionsDir);
@@ -83,7 +83,8 @@ Examples:
 async function buildExtensions(
   args: string[],
   cwd: string,
-  extensionsDir: string
+  extensionsDir: string,
+  datasDir: string
 ): Promise<void> {
   const verbose = args.includes("--verbose") || args.includes("-v");
 
@@ -108,6 +109,7 @@ async function buildExtensions(
 
   let totalExtensions = 0;
   let validFiles = 0;
+  let simpleFormatFiles = 0;
   let errorCount = 0;
 
   for (const file of files) {
@@ -115,23 +117,35 @@ async function buildExtensions(
 
     try {
       const content = readFileSync(file, "utf-8");
-      const parsed = JSON.parse(content) as ExtensionFile;
-      const result = validateExtensionFile(parsed, fileName);
+      const parsed = JSON.parse(content);
 
-      if (result.valid) {
+      // Detect simple format: { title, items: [...] }
+      if (parsed.title && Array.isArray(parsed.items)) {
+        simpleFormatFiles++;
         validFiles++;
-        totalExtensions += parsed.extensions.length;
+        if (verbose) {
+          console.log("\n  " + EMOJI.success + " " + fileName + " (simple format, " + parsed.items.length + " items)");
+        }
+        continue;
+      }
+
+      // Legacy format: { $schema, version, extensions: [...] }
+      const legacyResult = validateExtensionFile(parsed as ExtensionFile, fileName);
+
+      if (legacyResult.valid) {
+        validFiles++;
+        totalExtensions += (parsed as ExtensionFile).extensions.length;
 
         if (verbose) {
-          console.log("\n  " + EMOJI.success + " " + fileName);
-          for (const ext of parsed.extensions) {
+          console.log("\n  " + EMOJI.success + " " + fileName + " (legacy format)");
+          for (const ext of (parsed as ExtensionFile).extensions) {
             console.log("     - " + ext.id + " (" + ext.type + ") priority=" + ext.priority);
           }
         }
       } else {
         errorCount++;
         console.log("\n  " + EMOJI.error + " " + fileName);
-        for (const error of result.errors) {
+        for (const error of legacyResult.errors) {
           console.log("     Error: " + error);
         }
       }
@@ -146,14 +160,23 @@ async function buildExtensions(
   console.log("\n" + EMOJI.chart + " Build Statistics:");
   console.log("   Files: " + files.length);
   console.log("   Valid: " + validFiles);
-  console.log("   Extensions: " + totalExtensions);
+  console.log("   Simple format: " + simpleFormatFiles);
+  console.log("   Legacy extensions: " + totalExtensions);
 
   if (errorCount > 0) {
     console.log("   Errors: " + errorCount);
     console.log("\n" + EMOJI.error + " Build completed with errors\n");
     process.exit(1);
+  }
+
+  // Transform all extensions (simple + legacy) into compiled bundle
+  if (validFiles > 0) {
+    const runtimeDir = join(datasDir, "knowledge", "runtime");
+    await transformAllExtensions(extensionsDir, runtimeDir);
+    console.log("\n" + EMOJI.success + " Build completed successfully");
+    console.log("  📦 Extension bundle: " + join(runtimeDir, "extensions-bundle.json") + "\n");
   } else {
-    console.log("\n" + EMOJI.success + " Build completed successfully\n");
+    console.log("\n" + EMOJI.warning + "  No valid extension files found\n");
   }
 }
 
