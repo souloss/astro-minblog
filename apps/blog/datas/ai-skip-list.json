@@ -1,1 +1,546 @@
-{}
+{
+  "summary:zh/security-guide": {
+    "slug": "zh/security-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:28.072Z",
+    "firstFailedAt": "2026-04-15T03:31:28.073Z"
+  },
+  "summary:zh/settings-panel": {
+    "slug": "zh/settings-panel",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:30.875Z",
+    "firstFailedAt": "2026-04-15T03:31:30.875Z"
+  },
+  "summary:en/settings-panel": {
+    "slug": "en/settings-panel",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:32.058Z",
+    "firstFailedAt": "2026-04-15T03:31:32.058Z"
+  },
+  "summary:zh/ai-tool-calling": {
+    "slug": "zh/ai-tool-calling",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:32.132Z",
+    "firstFailedAt": "2026-04-15T03:31:32.132Z"
+  },
+  "summary:en/search-guide": {
+    "slug": "en/search-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:32.178Z",
+    "firstFailedAt": "2026-04-15T03:31:32.178Z"
+  },
+  "summary:en/security-guide": {
+    "slug": "en/security-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:32.688Z",
+    "firstFailedAt": "2026-04-15T03:31:32.688Z"
+  },
+  "summary:zh/search-guide": {
+    "slug": "zh/search-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:32.741Z",
+    "firstFailedAt": "2026-04-15T03:31:32.741Z"
+  },
+  "summary:en/ai-module-architecture": {
+    "slug": "en/ai-module-architecture",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:32.872Z",
+    "firstFailedAt": "2026-04-15T03:31:32.872Z"
+  },
+  "summary:zh/ai-module-architecture": {
+    "slug": "zh/ai-module-architecture",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:33.143Z",
+    "firstFailedAt": "2026-04-15T03:31:33.143Z"
+  },
+  "summary:en/ai-tool-calling": {
+    "slug": "en/ai-tool-calling",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:33.318Z",
+    "firstFailedAt": "2026-04-15T03:31:33.318Z"
+  },
+  "summary:en/cloudflare-env-vars": {
+    "slug": "en/cloudflare-env-vars",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:33.971Z",
+    "firstFailedAt": "2026-04-15T03:31:33.971Z"
+  },
+  "summary:en/complete-setup-guide": {
+    "slug": "en/complete-setup-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:39.549Z",
+    "firstFailedAt": "2026-04-15T03:31:39.549Z"
+  },
+  "summary:zh/setup-waline-on-vercel": {
+    "slug": "zh/setup-waline-on-vercel",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:42.000Z",
+    "firstFailedAt": "2026-04-15T03:31:42.000Z"
+  },
+  "summary:en/ai-guide": {
+    "slug": "en/ai-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:42.519Z",
+    "firstFailedAt": "2026-04-15T03:31:42.519Z"
+  },
+  "summary:zh/complete-setup-guide": {
+    "slug": "zh/complete-setup-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:42.540Z",
+    "firstFailedAt": "2026-04-15T03:31:42.540Z"
+  },
+  "summary:en/setup-waline-on-vercel": {
+    "slug": "en/setup-waline-on-vercel",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:43.117Z",
+    "firstFailedAt": "2026-04-15T03:31:43.117Z"
+  },
+  "summary:zh/cloudflare-env-vars": {
+    "slug": "zh/cloudflare-env-vars",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:43.671Z",
+    "firstFailedAt": "2026-04-15T03:31:43.671Z"
+  },
+  "summary:en/cli-guide": {
+    "slug": "en/cli-guide",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:46.100Z",
+    "firstFailedAt": "2026-04-15T03:31:46.100Z"
+  },
+  "summary:en/why-astro-minimax": {
+    "slug": "en/why-astro-minimax",
+    "task": "summary",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:47.116Z",
+    "firstFailedAt": "2026-04-15T03:31:47.116Z"
+  },
+  "seo:zh/ai-module-architecture": {
+    "slug": "zh/ai-module-architecture",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:52.463Z",
+    "firstFailedAt": "2026-04-15T03:31:52.463Z"
+  },
+  "seo:zh/ai-tool-calling": {
+    "slug": "zh/ai-tool-calling",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:52.695Z",
+    "firstFailedAt": "2026-04-15T03:31:52.695Z"
+  },
+  "seo:en/ai-tool-calling": {
+    "slug": "en/ai-tool-calling",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:53.463Z",
+    "firstFailedAt": "2026-04-15T03:31:53.463Z"
+  },
+  "seo:zh/settings-panel": {
+    "slug": "zh/settings-panel",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:58.072Z",
+    "firstFailedAt": "2026-04-15T03:31:58.072Z"
+  },
+  "seo:en/ai-module-architecture": {
+    "slug": "en/ai-module-architecture",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:58.079Z",
+    "firstFailedAt": "2026-04-15T03:31:58.079Z"
+  },
+  "seo:en/settings-panel": {
+    "slug": "en/settings-panel",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:58.161Z",
+    "firstFailedAt": "2026-04-15T03:31:58.161Z"
+  },
+  "seo:zh/search-guide": {
+    "slug": "zh/search-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:58.185Z",
+    "firstFailedAt": "2026-04-15T03:31:58.185Z"
+  },
+  "seo:en/search-guide": {
+    "slug": "en/search-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:58.343Z",
+    "firstFailedAt": "2026-04-15T03:31:58.343Z"
+  },
+  "seo:zh/security-guide": {
+    "slug": "zh/security-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:58.392Z",
+    "firstFailedAt": "2026-04-15T03:31:58.392Z"
+  },
+  "seo:en/security-guide": {
+    "slug": "en/security-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:31:59.193Z",
+    "firstFailedAt": "2026-04-15T03:31:59.193Z"
+  },
+  "seo:en/complete-setup-guide": {
+    "slug": "en/complete-setup-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:04.671Z",
+    "firstFailedAt": "2026-04-15T03:32:04.671Z"
+  },
+  "seo:zh/cloudflare-env-vars": {
+    "slug": "zh/cloudflare-env-vars",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:04.824Z",
+    "firstFailedAt": "2026-04-15T03:32:04.824Z"
+  },
+  "seo:en/cloudflare-env-vars": {
+    "slug": "en/cloudflare-env-vars",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:04.927Z",
+    "firstFailedAt": "2026-04-15T03:32:04.927Z"
+  },
+  "seo:en/setup-waline-on-vercel": {
+    "slug": "en/setup-waline-on-vercel",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:05.233Z",
+    "firstFailedAt": "2026-04-15T03:32:05.233Z"
+  },
+  "seo:zh/setup-waline-on-vercel": {
+    "slug": "zh/setup-waline-on-vercel",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:05.504Z",
+    "firstFailedAt": "2026-04-15T03:32:05.504Z"
+  },
+  "seo:en/cli-guide": {
+    "slug": "en/cli-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:08.141Z",
+    "firstFailedAt": "2026-04-15T03:32:08.141Z"
+  },
+  "seo:zh/complete-setup-guide": {
+    "slug": "zh/complete-setup-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:08.636Z",
+    "firstFailedAt": "2026-04-15T03:32:08.636Z"
+  },
+  "seo:en/why-astro-minimax": {
+    "slug": "en/why-astro-minimax",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:08.922Z",
+    "firstFailedAt": "2026-04-15T03:32:08.922Z"
+  },
+  "seo:en/ai-guide": {
+    "slug": "en/ai-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:32:09.680Z",
+    "firstFailedAt": "2026-04-15T03:32:09.680Z"
+  },
+  "summary:en/getting-started": {
+    "slug": "en/getting-started",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:34:06.827Z",
+    "firstFailedAt": "2026-04-15T03:34:06.827Z"
+  },
+  "summary:en/feature-overview": {
+    "slug": "en/feature-overview",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:34:06.872Z",
+    "firstFailedAt": "2026-04-15T03:34:06.872Z"
+  },
+  "summary:zh/getting-started": {
+    "slug": "zh/getting-started",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:34:06.878Z",
+    "firstFailedAt": "2026-04-15T03:34:06.878Z"
+  },
+  "summary:zh/cli-guide": {
+    "slug": "zh/cli-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:36.950Z",
+    "firstFailedAt": "2026-04-15T03:35:36.950Z"
+  },
+  "summary:zh/deployment-guide": {
+    "slug": "zh/deployment-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:40.023Z",
+    "firstFailedAt": "2026-04-15T03:35:40.023Z"
+  },
+  "summary:zh/ai-guide": {
+    "slug": "zh/ai-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:40.614Z",
+    "firstFailedAt": "2026-04-15T03:35:40.614Z"
+  },
+  "summary:zh/dynamic-og-images": {
+    "slug": "zh/dynamic-og-images",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:41.244Z",
+    "firstFailedAt": "2026-04-15T03:35:41.244Z"
+  },
+  "summary:zh/adding-new-post": {
+    "slug": "zh/adding-new-post",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:41.655Z",
+    "firstFailedAt": "2026-04-15T03:35:41.655Z"
+  },
+  "summary:en/adding-new-post": {
+    "slug": "en/adding-new-post",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:41.716Z",
+    "firstFailedAt": "2026-04-15T03:35:41.716Z"
+  },
+  "summary:zh/why-astro-minimax": {
+    "slug": "zh/why-astro-minimax",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:43.601Z",
+    "firstFailedAt": "2026-04-15T03:35:43.601Z"
+  },
+  "summary:zh/feature-overview": {
+    "slug": "zh/feature-overview",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:45.067Z",
+    "firstFailedAt": "2026-04-15T03:35:45.067Z"
+  },
+  "summary:en/deployment-guide": {
+    "slug": "en/deployment-guide",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:46.794Z",
+    "firstFailedAt": "2026-04-15T03:35:46.794Z"
+  },
+  "summary:en/dynamic-og-images": {
+    "slug": "en/dynamic-og-images",
+    "task": "summary",
+    "reason": "API 错误 (429): {\"error\":{\"message\":\"Your account org-8576200c529146d6925fd79c93e0ec19\\u003cak-f8twsddzao8111h11m9i\\u003e request reached max organization concurrency: 3, please try again after 1 seconds\",\"type\":\"rat",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:35:50.311Z",
+    "firstFailedAt": "2026-04-15T03:35:50.311Z"
+  },
+  "summary:en/how-to-configure-astro-minimax-theme": {
+    "slug": "en/how-to-configure-astro-minimax-theme",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:37:22.635Z",
+    "firstFailedAt": "2026-04-15T03:37:22.635Z"
+  },
+  "summary:zh/how-to-configure-astro-minimax-theme": {
+    "slug": "zh/how-to-configure-astro-minimax-theme",
+    "task": "summary",
+    "reason": "Unexpected end of JSON input",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:37:23.322Z",
+    "firstFailedAt": "2026-04-15T03:37:23.322Z"
+  },
+  "seo:en/dynamic-og-images": {
+    "slug": "en/dynamic-og-images",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:08.713Z",
+    "firstFailedAt": "2026-04-15T03:38:08.713Z"
+  },
+  "seo:zh/why-astro-minimax": {
+    "slug": "zh/why-astro-minimax",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:08.918Z",
+    "firstFailedAt": "2026-04-15T03:38:08.918Z"
+  },
+  "seo:zh/deployment-guide": {
+    "slug": "zh/deployment-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:08.921Z",
+    "firstFailedAt": "2026-04-15T03:38:08.921Z"
+  },
+  "seo:zh/feature-overview": {
+    "slug": "zh/feature-overview",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:09.765Z",
+    "firstFailedAt": "2026-04-15T03:38:09.765Z"
+  },
+  "seo:zh/getting-started": {
+    "slug": "zh/getting-started",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:13.916Z",
+    "firstFailedAt": "2026-04-15T03:38:13.916Z"
+  },
+  "seo:en/deployment-guide": {
+    "slug": "en/deployment-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:13.955Z",
+    "firstFailedAt": "2026-04-15T03:38:13.955Z"
+  },
+  "seo:zh/ai-guide": {
+    "slug": "zh/ai-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:14.013Z",
+    "firstFailedAt": "2026-04-15T03:38:14.013Z"
+  },
+  "seo:zh/cli-guide": {
+    "slug": "zh/cli-guide",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:14.078Z",
+    "firstFailedAt": "2026-04-15T03:38:14.078Z"
+  },
+  "seo:en/getting-started": {
+    "slug": "en/getting-started",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:14.488Z",
+    "firstFailedAt": "2026-04-15T03:38:14.488Z"
+  },
+  "seo:en/feature-overview": {
+    "slug": "en/feature-overview",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:14.581Z",
+    "firstFailedAt": "2026-04-15T03:38:14.581Z"
+  },
+  "seo:en/adding-new-post": {
+    "slug": "en/adding-new-post",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:22.114Z",
+    "firstFailedAt": "2026-04-15T03:38:22.114Z"
+  },
+  "seo:en/how-to-configure-astro-minimax-theme": {
+    "slug": "en/how-to-configure-astro-minimax-theme",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:22.150Z",
+    "firstFailedAt": "2026-04-15T03:38:22.150Z"
+  },
+  "seo:zh/adding-new-post": {
+    "slug": "zh/adding-new-post",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:22.298Z",
+    "firstFailedAt": "2026-04-15T03:38:22.298Z"
+  },
+  "seo:zh/dynamic-og-images": {
+    "slug": "zh/dynamic-og-images",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:22.427Z",
+    "firstFailedAt": "2026-04-15T03:38:22.427Z"
+  },
+  "seo:zh/how-to-configure-astro-minimax-theme": {
+    "slug": "zh/how-to-configure-astro-minimax-theme",
+    "task": "seo",
+    "reason": "API 错误 (503): {\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}",
+    "failCount": 1,
+    "lastFailedAt": "2026-04-15T03:38:22.779Z",
+    "firstFailedAt": "2026-04-15T03:38:22.779Z"
+  }
+}

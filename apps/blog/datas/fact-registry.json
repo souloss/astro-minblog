@@ -1,12 +1,12 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-04-01T19:30:07.595Z",
+  "generatedAt": "2026-04-15T03:39:00.326Z",
   "version": 1,
   "facts": [
     {
       "id": "author-name",
       "category": "author",
-      "statement": "博客作者名为 博主",
+      "statement": "博客作者名为 Souloss",
       "evidence": "author-context.json → profile.name",
       "source": "explicit",
       "confidence": 1,
@@ -15,28 +15,28 @@
         "名字",
         "author",
         "name",
-        "博主"
+        "souloss"
       ],
       "lang": "zh"
     },
     {
       "id": "author-name-en",
       "category": "author",
-      "statement": "The blog author is 博主",
+      "statement": "The blog author is Souloss",
       "evidence": "author-context.json → profile.name",
       "source": "explicit",
       "confidence": 1,
       "tags": [
         "author",
         "name",
-        "博主"
+        "souloss"
       ],
       "lang": "en"
     },
     {
       "id": "author-site",
       "category": "author",
-      "statement": "博客网址为 https://example.com",
+      "statement": "博客网址为 https://blog.souloss.cn/",
       "evidence": "author-context.json → profile.siteUrl",
       "source": "explicit",
       "confidence": 1,
@@ -52,7 +52,7 @@
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 0 篇文章（中文 0 篇，英文 0 篇）",
+      "statement": "博客共有 78 篇文章（中文 39 篇，英文 39 篇）",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -72,7 +72,7 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 0 posts (0 in Chinese, 0 in English)",
+      "statement": "The blog has 78 posts (39 in Chinese, 39 in English)",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -84,6 +84,145 @@
         "statistics"
       ],
       "lang": "en"
+    },
+    {
+      "id": "blog-categories",
+      "category": "blog",
+      "statement": "博客的主要分类包括：Examples、教程/配置、教程/博客、Tutorial/Configuration、Release",
+      "evidence": "author-context.json → stableFacts.focusAreas",
+      "source": "derived",
+      "confidence": 0.95,
+      "tags": [
+        "分类",
+        "类别",
+        "领域",
+        "方向",
+        "category",
+        "area",
+        "focus",
+        "examples",
+        "教程/配置",
+        "教程/博客",
+        "tutorial/configuration",
+        "release"
+      ],
+      "lang": "zh"
+    },
+    {
+      "id": "blog-top-tags",
+      "category": "blog",
+      "statement": "博客最常用的标签有：docs、release、configuration、tutorial、ai、examples、Rust、changelog、deployment、tools",
+      "evidence": "author-context.json → stableFacts.topTags",
+      "source": "derived",
+      "confidence": 0.9,
+      "tags": [
+        "标签",
+        "tag",
+        "topic",
+        "主题",
+        "docs",
+        "release",
+        "configuration",
+        "tutorial",
+        "ai",
+        "examples",
+        "rust",
+        "changelog",
+        "deployment",
+        "tools"
+      ],
+      "lang": "zh"
+    },
+    {
+      "id": "blog-recurring-topics",
+      "category": "blog",
+      "statement": "博客反复讨论的技术话题包括：astro-minimax、and、Rust、docs、to、AI、the、release",
+      "evidence": "author-context.json → stableFacts.recurringTopics",
+      "source": "aggregated",
+      "confidence": 0.85,
+      "tags": [
+        "话题",
+        "主题",
+        "讨论",
+        "topic",
+        "recurring",
+        "astro-minimax",
+        "and",
+        "rust",
+        "docs",
+        "to",
+        "ai",
+        "the",
+        "release"
+      ],
+      "lang": "zh"
+    },
+    {
+      "id": "blog-date-range",
+      "category": "blog",
+      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-03-30",
+      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: 安全加固指南 (2026-03-30)",
+      "source": "derived",
+      "confidence": 1,
+      "tags": [
+        "时间",
+        "日期",
+        "最早",
+        "最新",
+        "date",
+        "range",
+        "when"
+      ],
+      "lang": "zh"
+    },
+    {
+      "id": "blog-lang-dist",
+      "category": "blog",
+      "statement": "博客文章的语言分布：英文 39 篇，中文 39 篇",
+      "evidence": "author-context.json → posts[].lang aggregation",
+      "source": "derived",
+      "confidence": 1,
+      "tags": [
+        "语言",
+        "中文",
+        "英文",
+        "language",
+        "chinese",
+        "english"
+      ],
+      "lang": "zh"
+    },
+    {
+      "id": "content-category-dist",
+      "category": "content",
+      "statement": "按分类统计：Examples(8篇)、教程/配置(7篇)、教程/博客(7篇)、Tutorial/Configuration(6篇)、Release(6篇)、Release Notes(4篇)、发布说明(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/AI(2篇)、教程/AI(2篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Tools(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
+      "evidence": "author-context.json → posts[].category aggregation",
+      "source": "derived",
+      "confidence": 1,
+      "tags": [
+        "分类",
+        "统计",
+        "category",
+        "distribution"
+      ],
+      "lang": "zh"
+    },
+    {
+      "id": "content-flagship",
+      "category": "content",
+      "statement": "最新的代表性文章：《\"AI Tool Calling and Action System\"》(2026-03-30)、《Search Configuration Guide》(2026-03-30)、《Security Hardening Guide》(2026-03-30)、《\"AI Tool Calling 与 Action 系统\"》(2026-03-30)、《搜索功能配置指南》(2026-03-30)",
+      "evidence": "author-context.json → stableFacts.flagshipPosts",
+      "source": "derived",
+      "confidence": 0.95,
+      "tags": [
+        "最新",
+        "代表",
+        "推荐",
+        "latest",
+        "recent",
+        "flagship"
+      ],
+      "lang": "zh"
     },
     {
       "id": "tech-stack",
@@ -162,17 +301,41 @@
         "markdown"
       ],
       "lang": "zh"
+    },
+    {
+      "id": "content-tech-mentions",
+      "category": "content",
+      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(42次)、configuration(14次)、ai(6次)、deployment(6次)、architecture(4次)、tools(4次)、vercel(4次)、neon(4次)",
+      "evidence": "46 markdown files → frontmatter.tags aggregation",
+      "source": "aggregated",
+      "confidence": 0.9,
+      "tags": [
+        "技术",
+        "提及",
+        "频率",
+        "tech",
+        "mention",
+        "docs",
+        "configuration",
+        "ai",
+        "deployment",
+        "architecture",
+        "tools",
+        "vercel",
+        "neon"
+      ],
+      "lang": "zh"
     }
   ],
   "stats": {
-    "total": 8,
+    "total": 16,
     "byCategory": {
       "author": 3,
-      "blog": 2,
-      "content": 1,
+      "blog": 7,
+      "content": 4,
       "project": 0,
       "tech": 2
     },
-    "avgConfidence": 0.981
+    "avgConfidence": 0.962
   }
 }
