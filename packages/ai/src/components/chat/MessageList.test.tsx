@@ -1,6 +1,6 @@
 import type { UIMessage } from "ai";
 import { describe, expect, it } from "vitest";
-import { shouldShowWaitingPlaceholder } from "./MessageList.tsx";
+import { shouldShowWaitingPlaceholder, shouldSkipEmptyAssistant } from "./MessageList.tsx";
 
 function makeMessage(id: string, role: "user" | "assistant" | "system"): UIMessage {
   return {
@@ -67,5 +67,62 @@ describe("shouldShowWaitingPlaceholder", () => {
 
   it("returns false for empty messages array even when not streaming", () => {
     expect(shouldShowWaitingPlaceholder([], false)).toBe(false);
+  });
+});
+
+describe("shouldSkipEmptyAssistant", () => {
+  it("skips empty assistant message when not streaming", () => {
+    const msg = makeMessage("a1", "assistant");
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(true);
+  });
+
+  it("does not skip empty assistant message when it is the last streaming one", () => {
+    const msg = makeMessage("a1", "assistant");
+    expect(shouldSkipEmptyAssistant(msg, true, true)).toBe(false);
+  });
+
+  it("does not skip assistant message with text content", () => {
+    const msg = {
+      id: "a1",
+      role: "assistant",
+      content: "Hello",
+      parts: [{ type: "text", text: "Hello" }],
+    } as UIMessage;
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
+  });
+
+  it("does not skip assistant message with reasoning parts", () => {
+    const msg = {
+      id: "a1",
+      role: "assistant",
+      content: "",
+      parts: [{ type: "reasoning", text: "thinking..." }],
+    } as UIMessage;
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
+  });
+
+  it("does not skip assistant message with tool parts", () => {
+    const msg = {
+      id: "a1",
+      role: "assistant",
+      content: "",
+      parts: [{ type: "tool-searchArticles", state: "output-available", toolCallId: "tc1", input: {}, output: {} }],
+    } as unknown as UIMessage;
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
+  });
+
+  it("does not skip assistant message with source parts", () => {
+    const msg = {
+      id: "a1",
+      role: "assistant",
+      content: "",
+      parts: [{ type: "source-url", sourceId: "src1", url: "/posts/test", title: "Test" }],
+    } as unknown as UIMessage;
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
+  });
+
+  it("does not skip user messages", () => {
+    const msg = makeMessage("u1", "user");
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
   });
 });

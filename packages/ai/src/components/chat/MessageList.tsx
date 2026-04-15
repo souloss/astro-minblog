@@ -147,6 +147,44 @@ export function shouldShowWaitingPlaceholder(
   );
 }
 
+/**
+ * Checks whether an assistant message with no text content should be skipped
+ * entirely (no BotAvatar, no empty content div).
+ * An empty assistant message is rendered only if it has reasoning, tool parts,
+ * or source parts — otherwise it's a ghost message from a failed provider or
+ * a tool call that produced no follow-up.
+ */
+export function shouldSkipEmptyAssistant(
+  msg: UIMessage,
+  isStreaming: boolean,
+  isLastAssistantStreaming: boolean
+): boolean {
+  if (msg.role !== "assistant") return false;
+  if (isLastAssistantStreaming) return false;
+
+  const parts = msg.parts ?? [];
+  const textContent = parts
+    .filter((p): p is { type: "text"; text: string } => p.type === "text")
+    .map(p => p.text)
+    .join("");
+
+  if (textContent) return false;
+
+  const hasReasoning = parts.some(
+    (p: { type: string }) => p.type === "reasoning"
+  );
+  const hasToolParts = parts.some(
+    (p: { type: string }) =>
+      p.type.startsWith("tool-") || p.type === "tool-result"
+  );
+  const hasSources = parts.some(
+    (p: { type: string }) =>
+      p.type === "source-url" || p.type === "source-document"
+  );
+
+  return !hasReasoning && !hasToolParts && !hasSources;
+}
+
 function LiveMessageList({
   messages,
   isStreaming,
@@ -202,6 +240,13 @@ function LiveMessageList({
         const isAssistant = msg.role === "assistant";
         const isLastAssistantStreaming =
           isStreaming && msg.id === lastAssistantMsgId;
+
+        // Skip rendering assistant messages that have no content and are not
+        // currently streaming. This prevents empty BotAvatar boxes when a
+        // provider fails or a tool call produces no follow-up text.
+        if (shouldSkipEmptyAssistant(msg, isStreaming, isLastAssistantStreaming)) {
+          return null;
+        }
 
         return (
           <div
