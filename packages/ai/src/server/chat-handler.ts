@@ -570,9 +570,10 @@ async function retrieveContext(
               const searchStart = Date.now();
               const primary = searchArticles(kwResult.primaryQuery, {
                 enableDeepContent: false,
+                lang,
               });
               relatedArticles = mergeResults(
-                searchArticles(searchQuery, { enableDeepContent: true }),
+                searchArticles(searchQuery, { enableDeepContent: true, lang }),
                 primary
               );
               relatedProjects = searchProjects(searchQuery);
@@ -595,6 +596,7 @@ async function retrieveContext(
       const searchStart = Date.now();
       relatedArticles = searchArticles(searchQuery, {
         enableDeepContent: true,
+        lang,
       });
       relatedProjects = searchProjects(searchQuery);
       timing.search = Date.now() - searchStart;

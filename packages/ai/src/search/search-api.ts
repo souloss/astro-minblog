@@ -85,6 +85,7 @@ export function searchArticles(
     siteUrl?: string;
     enableRRF?: boolean;
     sessionId?: string;
+    lang?: string;
   } = {}
 ): ArticleContext[] {
   if (!query.trim() || !articleIndex) return [];
@@ -92,8 +93,14 @@ export function searchArticles(
   const tokens = tokenize(query);
   if (!tokens.length) return [];
 
+  // Filter index by language before scoring — avoids wasting scoring budget
+  // on articles that will never be shown to the user.
+  const langFilteredIndex = options.lang
+    ? articleIndex.filter(doc => doc.lang === options.lang)
+    : articleIndex;
+
   const limit = tokens.length <= 2 ? ARTICLE_LIMIT_BROAD : ARTICLE_LIMIT;
-  const rawResults = scoreDocs(articleIndex, tokens, limit * 2);
+  const rawResults = scoreDocs(langFilteredIndex, tokens, limit * 2);
   const filtered = applyAnchorFilter(rawResults, query, tokens);
   const deduplicated = filterLowRelevance(
     filtered.length > 0 ? filtered : rawResults

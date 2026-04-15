@@ -69,6 +69,27 @@ const articleDocs: SearchDocument[] = [
     keyPoints: ["pandas", "numpy", "数据可视化"],
     categories: ["编程", "数据科学"],
   }),
+  // English articles
+  makeDoc({
+    id: "ts-guide-en",
+    title: "TypeScript Getting Started Guide",
+    url: "/en/posts/typescript-guide/",
+    content:
+      "TypeScript is a superset of JavaScript that adds static typing and modern development features.",
+    keyPoints: ["type system", "interfaces", "generics"],
+    categories: ["programming", "frontend"],
+    lang: "en",
+  }),
+  makeDoc({
+    id: "react-hooks-en",
+    title: "React Hooks Explained",
+    url: "/en/posts/react-hooks/",
+    content:
+      "React Hooks let you use state and side effects in function components. useState and useEffect are the most common hooks.",
+    keyPoints: ["useState", "useEffect", "custom hooks"],
+    categories: ["programming", "frontend"],
+    lang: "en",
+  }),
 ];
 
 const projectDocs: SearchDocument[] = [
@@ -260,6 +281,36 @@ describe("search-api", () => {
         initArticleIndex([]);
         const results = searchArticles("TypeScript");
         expect(results).toEqual([]);
+      });
+
+      // ── Language filtering ──────────────────────────────────────
+
+      describe("language filtering", () => {
+        it("should filter results by lang when provided", () => {
+          const results = searchArticles("TypeScript", { lang: "zh" });
+          // Should only return Chinese articles
+          expect(results.length).toBeGreaterThan(0);
+          expect(results.every(r => r.lang === "zh")).toBe(true);
+        });
+
+        it("should filter to English articles when lang=en", () => {
+          const results = searchArticles("TypeScript", { lang: "en" });
+          expect(results.length).toBeGreaterThan(0);
+          expect(results.every(r => r.lang === "en")).toBe(true);
+        });
+
+        it("should return all articles when lang is not provided", () => {
+          const results = searchArticles("TypeScript");
+          const allLangs = results.map(r => r.lang);
+          // Should include both zh and en articles
+          expect(allLangs).toContain("zh");
+          expect(allLangs).toContain("en");
+        });
+
+        it("should return empty when no articles match the lang", () => {
+          const results = searchArticles("TypeScript", { lang: "ja" });
+          expect(results).toEqual([]);
+        });
       });
     });
 
