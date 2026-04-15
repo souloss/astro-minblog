@@ -148,11 +148,19 @@ export function shouldShowWaitingPlaceholder(
 }
 
 /**
- * Checks whether an assistant message with no text content should be skipped
- * entirely (no BotAvatar, no empty content div).
- * An empty assistant message is rendered only if it has reasoning, tool parts,
- * or source parts — otherwise it's a ghost message from a failed provider or
- * a tool call that produced no follow-up.
+ * Checks whether an assistant message has no visible content and should be
+ * skipped entirely (no BotAvatar, no empty content div).
+ *
+ * A message is skipped when:
+ * - It's not the currently-streaming last assistant message
+ * - It has no text content
+ * - It has no reasoning content
+ * - It has no source parts
+ * - Its tool parts don't produce visible output (only action tools like
+ *   toggleTheme produce confirmation text; search/analysis tools don't)
+ *
+ * This prevents ghost BotAvatar when tool auto-continue creates a first
+ * assistant with only tool-call parts, then a second with actual text.
  */
 export function shouldSkipEmptyAssistant(
   msg: UIMessage,
@@ -173,16 +181,40 @@ export function shouldSkipEmptyAssistant(
   const hasReasoning = parts.some(
     (p: { type: string }) => p.type === "reasoning"
   );
-  const hasToolParts = parts.some(
-    (p: { type: string }) =>
-      p.type.startsWith("tool-") || p.type === "tool-result"
-  );
+  if (hasReasoning) return false;
+
   const hasSources = parts.some(
     (p: { type: string }) =>
       p.type === "source-url" || p.type === "source-document"
   );
+  if (hasSources) return false;
 
-  return !hasReasoning && !hasToolParts && !hasSources;
+  // Check if any tool parts would produce visible output.
+  // Action tools (toggleTheme, navigateToArticle, etc.) produce confirmation
+  // text that the user should see. Other tool calls (search, analysis) don't.
+  const ACTION_TOOL_NAMES = new Set([
+    "toggleTheme",
+    "navigateToArticle",
+    "scrollToSection",
+    "toggleReadingMode",
+    "highlightText",
+    "setPreference",
+  ]);
+  const hasVisibleToolOutput = parts.some((p: { type: string }) => {
+    if (!p.type.startsWith("tool-")) return false;
+    const toolName = p.type.slice("tool-".length);
+    if (!ACTION_TOOL_NAMES.has(toolName)) return false;
+    // Only count if the tool has completed with success output
+    const part = p as { state?: string; output?: unknown };
+    return part.state === "output-available" &&
+      typeof part.output === "object" && part.output !== null &&
+      "success" in part.output && part.output.success === true;
+  });
+  if (hasVisibleToolOutput) return false;
+
+  // All remaining cases: no text, no reasoning, no sources, no visible tool
+  // output → skip this message to prevent ghost BotAvatar.
+  return true;
 }
 
 function LiveMessageList({
@@ -241,11 +273,32 @@ function LiveMessageList({
         const isLastAssistantStreaming =
           isStreaming && msg.id === lastAssistantMsgId;
 
-        // Skip rendering assistant messages that have no content and are not
-        // currently streaming. This prevents empty BotAvatar boxes when a
-        // provider fails or a tool call produces no follow-up text.
+        // Skip rendering assistant messages that have no visible content.
+        // This prevents ghost BotAvatar when:
+        // - A tool-call-only assistant exists before the text response
+        // - A provider fails and leaves an empty assistant message
         if (shouldSkipEmptyAssistant(msg, isStreaming, isLastAssistantStreaming)) {
           return null;
+        }
+
+        // For assistant messages, check if AssistantMessage would produce
+        // visible output. If not (e.g., streaming with no content yet),
+        // the isWaitingForAssistant placeholder handles the loading state.
+        if (isAssistant && !text && !isWaitingForAssistant) {
+          const parts = msg.parts ?? [];
+          const hasReasoning = parts.some(
+            (p: { type: string }) => p.type === "reasoning"
+          );
+          const hasSources = parts.some(
+            (p: { type: string }) =>
+              p.type === "source-url" || p.type === "source-document"
+          );
+          // If the assistant message has no text, no reasoning, no sources,
+          // and is NOT the currently streaming last message, skip it entirely.
+          // The streaming case is handled by isWaitingForAssistant placeholder.
+          if (!hasReasoning && !hasSources && !isLastAssistantStreaming) {
+            return null;
+          }
         }
 
         return (

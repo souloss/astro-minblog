@@ -101,14 +101,34 @@ describe("shouldSkipEmptyAssistant", () => {
     expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
   });
 
-  it("does not skip assistant message with tool parts", () => {
+  it("skips assistant message with only non-action tool parts (searchArticles)", () => {
     const msg = {
       id: "a1",
       role: "assistant",
       content: "",
       parts: [{ type: "tool-searchArticles", state: "output-available", toolCallId: "tc1", input: {}, output: {} }],
     } as unknown as UIMessage;
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(true);
+  });
+
+  it("does not skip assistant message with successful action tool output", () => {
+    const msg = {
+      id: "a1",
+      role: "assistant",
+      content: "",
+      parts: [{ type: "tool-toggleTheme", state: "output-available", toolCallId: "tc1", input: { theme: "dark" }, output: { success: true, confirmation: "Switched to dark mode." } }],
+    } as unknown as UIMessage;
     expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(false);
+  });
+
+  it("skips assistant message with failed action tool output", () => {
+    const msg = {
+      id: "a1",
+      role: "assistant",
+      content: "",
+      parts: [{ type: "tool-toggleTheme", state: "output-available", toolCallId: "tc1", input: {}, output: { success: false, error: "failed" } }],
+    } as unknown as UIMessage;
+    expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(true);
   });
 
   it("does not skip assistant message with source parts", () => {
