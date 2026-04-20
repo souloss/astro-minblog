@@ -65,7 +65,7 @@ Examples:
       showExtensionsStatus(subArgs, extensionsDir);
       break;
     case "load":
-      await loadExtensionsCmd(subArgs, cwd);
+      await loadExtensionsCmd();
       break;
     default:
       console.error("Unknown subcommand: " + subcommand);
