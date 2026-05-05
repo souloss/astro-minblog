@@ -17,6 +17,8 @@
   import { initVizContainers } from "../../scripts/viz-controls";
 
   let mermaidModule: typeof import("mermaid") | null = null;
+  let shikiModule: typeof import("shiki") | null = null;
+  let shikiHighlighter: import("shiki").Highlighter | null = null;
 
   async function loadMermaid() {
     if (!mermaidModule) {
@@ -24,6 +26,17 @@
       mermaidModule = mod.default;
     }
     return mermaidModule;
+  }
+
+  async function loadShikiHighlighter() {
+    if (shikiHighlighter) return shikiHighlighter;
+    const shiki = await import("shiki");
+    shikiModule = shiki;
+    shikiHighlighter = await shiki.createHighlighter({
+      themes: [getIsDark() ? "night-owl" : "github-light"],
+      langs: ["mermaid"],
+    });
+    return shikiHighlighter;
   }
 
   document.addEventListener("astro:page-load", initVizContainers);
@@ -230,7 +243,7 @@
 
     // Create code view panel (hidden by default)
     const codeView = document.createElement("div");
-    codeView.className = "mermaid-code-view hidden p-4 overflow-auto max-h-[60vh]";
+    codeView.className = "mermaid-code-view hidden";
     codeView.innerHTML = `<pre class="text-sm"><code class="language-mermaid">${escapeHtml(code)}</code></pre>`;
 
     // Assemble the structure
@@ -258,7 +271,7 @@
           output.innerHTML = svg;
           
           // Setup code toggle button first
-          setupCodeToggle(container, output, codeView);
+          setupCodeToggle(container, output, codeView, code);
           
           // Initialize viz controls for the new container with a small delay
           // to ensure DOM mutation is complete
@@ -280,12 +293,14 @@
   function setupCodeToggle(
     container: HTMLElement,
     output: HTMLElement,
-    codeView: HTMLElement
+    codeView: HTMLElement,
+    code: string
   ) {
     const toggleBtn = container.querySelector(".viz-toggle-code");
     let showingCode = false;
+    let highlighted = false;
 
-    toggleBtn?.addEventListener("click", (e) => {
+    toggleBtn?.addEventListener("click", async (e) => {
       e.preventDefault();
       e.stopPropagation();
       
@@ -295,6 +310,23 @@
         output.classList.add("hidden");
         codeView.classList.remove("hidden");
         (toggleBtn as HTMLElement).title = "View diagram";
+
+        // Apply Shiki highlighting on first view (lazy, non-blocking)
+        if (!highlighted) {
+          try {
+            const highlighter = await loadShikiHighlighter();
+            const isDark = getIsDark();
+            const theme = isDark ? "night-owl" : "github-light";
+            const html = highlighter.codeToHtml(code, {
+              lang: "mermaid",
+              theme,
+            });
+            codeView.innerHTML = html;
+            highlighted = true;
+          } catch {
+            // Shiki highlighting failed — keep the plain code view
+          }
+        }
       } else {
         output.classList.remove("hidden");
         codeView.classList.add("hidden");
@@ -420,7 +452,7 @@
   /* Hover behavior for controls - using pure CSS for reliability */
   .viz-container[data-mermaid-id] .viz-controls {
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--transition-base) var(--ease-out-expo);
   }
 
   .viz-container[data-mermaid-id]:hover .viz-controls,
@@ -469,21 +501,43 @@
     padding: 1rem;
   }
 
-  /* Code view styles */
+  /* Code view styles — matches .astro-code pattern for visual consistency */
   .mermaid-code-view {
     background: var(--surface);
-    border-radius: 0.5rem;
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    max-height: 60vh;
+    overflow: auto;
   }
 
   .mermaid-code-view pre {
     margin: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.6;
+    background: none !important;
   }
 
   .mermaid-code-view code {
     font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-    color: var(--foreground);
+    font-size: 0.875rem;
+    tab-size: 2;
+    counter-reset: step;
+    counter-increment: step 0;
+  }
+
+  /* Shiki light/dark token colors for highlighted code view */
+  .mermaid-code-view {
+    color: var(--shiki-light, var(--foreground));
+  }
+  .mermaid-code-view span {
+    color: var(--shiki-light, inherit);
+  }
+  html[data-theme="dark"] .mermaid-code-view {
+    color: var(--shiki-dark, var(--foreground));
+  }
+  html[data-theme="dark"] .mermaid-code-view span {
+    color: var(--shiki-dark, inherit);
   }
 
   /* Ensure hidden class works correctly */
@@ -493,5 +547,10 @@
 
   .viz-container[data-mermaid-id] .mermaid-code-view.hidden {
     display: none !important;
+  }
+
+  /* When code view is visible, allow container to scroll vertically */
+  .viz-container[data-mermaid-id]:has(.mermaid-code-view:not(.hidden)) {
+    overflow: auto;
   }
 </style>

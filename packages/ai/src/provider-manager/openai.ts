@@ -1,4 +1,5 @@
 import type { LanguageModel } from "ai";
+import { MODEL } from "../constants.js";
 import { createLogger } from "../utils/logger.js";
 const openaiLog = createLogger("openai-adapter");
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
@@ -74,6 +75,7 @@ export class OpenAIAdapter extends BaseProviderAdapter {
   readonly keywordModel: string;
   readonly evidenceModel: string;
   readonly timeout: number;
+  readonly contextWindowTokens: number;
 
   private provider: ReturnType<typeof createOpenAICompatible>;
   private config: OpenAIProviderConfig;
@@ -89,6 +91,8 @@ export class OpenAIAdapter extends BaseProviderAdapter {
     this.keywordModel = config.keywordModel ?? config.model;
     this.evidenceModel = config.evidenceModel ?? this.keywordModel;
     this.timeout = config.timeout ?? 30000;
+    this.contextWindowTokens =
+      config.contextWindowTokens ?? MODEL.DEFAULT_CONTEXT_WINDOW_TOKENS;
     this.config = config;
 
     this.provider = createOpenAICompatible({

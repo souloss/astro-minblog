@@ -73,6 +73,8 @@ export interface PromptAssemblyArgs {
     | "recommendation"
     | "unknown"
     | "general";
+  /** Maximum tokens allowed for chunk injection; calculated from context window budget */
+  maxChunkTokens?: number;
 }
 
 export interface PromptAssemblyResult {
@@ -179,6 +181,7 @@ export async function assemblePromptRuntime(
     relatedProjects,
     budget,
     answerMode,
+    maxChunkTokens,
   } = args;
 
   let evidenceSection = "";
@@ -263,6 +266,7 @@ export async function assemblePromptRuntime(
     env,
     cacheKey,
     relatedArticles,
+    maxChunkTokens,
   });
   selectedSources = chunkSources;
 

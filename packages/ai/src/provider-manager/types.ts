@@ -28,6 +28,8 @@ export interface BaseProviderConfig {
    */
   unhealthyThreshold?: number;
   enabled?: boolean;
+  /** Maximum context window in tokens for this provider's model. Default: 128000 */
+  contextWindowTokens?: number;
 }
 
 /**
@@ -71,6 +73,8 @@ export interface ProviderManagerEnv {
   AI_MODEL?: string;
   AI_KEYWORD_MODEL?: string;
   AI_EVIDENCE_MODEL?: string;
+  /** Context window size in tokens for the model specified by AI_MODEL */
+  AI_CONTEXT_WINDOW_TOKENS?: number | string;
   // Workers AI provider config
   AI_BINDING_NAME?: string;
   AI_WORKERS_MODEL?: string;
@@ -217,6 +221,7 @@ export interface ProviderAdapter {
   readonly keywordModel: string;
   readonly evidenceModel: string;
   readonly timeout: number;
+  readonly contextWindowTokens: number;
 
   isAvailable(): Promise<boolean>;
 

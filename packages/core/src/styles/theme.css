@@ -152,6 +152,7 @@ html[data-theme="dark"] {
   --color-muted-foreground: var(--foreground-soft);
   --color-border: var(--border);
   --color-shadow-elevated: var(--shadow-elevated);
+  --color-success: #22c55e;
   
   /* === Special Colors === */
   --color-series-glow: var(--series-glow);
@@ -170,6 +171,7 @@ html[data-theme="dark"] {
   --radius-2xl: 1rem;       /* 16px - 大：卡片、模态框 */
   --radius-3xl: 1.25rem;    /* 20px - 更大：主卡片、主要容器 */
   --radius-full: 9999px;    /* 圆形：头像、圆形按钮 */
+  --radius-4xl: 1.5rem;    /* 24px - extra large: SettingsPanel xl option */
   
   /* === Animation === */
   --transition-fast: 150ms;
@@ -504,7 +506,7 @@ html[data-theme="dark"] .app-prose h5,
 html[data-theme="dark"] .app-prose h6,
 html[data-theme="dark"] .prose h5,
 html[data-theme="dark"] .prose h6 {
-  color: #f5f5f7 !important;
+  color: var(--foreground) !important;
 }
 
 /* ============================================
@@ -584,7 +586,7 @@ body,
   inset: -2px;
   border-radius: 50%;
   opacity: 0;
-  transition: opacity 0.3s ease-out;
+  transition: opacity var(--transition-normal) var(--ease-out-expo);
   pointer-events: none;
 }
 
@@ -978,7 +980,7 @@ html[data-theme="dark"][data-reading-theme="oled"] {
 /* Focus Mode - Highlight current paragraph */
 .focus-mode .app-prose p,
 .focus-mode .app-prose li {
-  transition: opacity 0.3s ease, filter 0.3s ease;
+  transition: opacity var(--transition-normal) var(--ease-out-expo), filter var(--transition-normal) var(--ease-out-expo);
 }
 
 .focus-mode .app-prose p:hover,
@@ -998,7 +1000,7 @@ html[data-theme="dark"][data-reading-theme="oled"] {
 .focus-mode .app-prose h2,
 .focus-mode .app-prose h3,
 .focus-mode .app-prose h4 {
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal) var(--ease-out-expo);
 }
 
 .focus-mode .app-prose h1:hover,

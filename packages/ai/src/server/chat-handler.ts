@@ -101,6 +101,7 @@ import {
   getMessageText,
   filterValidMessages,
   getLatestUserText,
+  trimMessagesToTokenBudget,
 } from "./chat-message-utils.js";
 import {
   sendNotification,
@@ -111,8 +112,9 @@ import {
   buildRuntimeSystemPrompt,
   assemblePromptRuntime,
 } from "./prompt-runtime.js";
-import { CHAT_HANDLER, RESPONSE, CHUNK_INJECTION } from "../constants.js";
+import { CHAT_HANDLER, RESPONSE, CHUNK_INJECTION, MODEL } from "../constants.js";
 import { createLogger, setLogLevel } from "../utils/logger.js";
+import { estimateTokens } from "../utils/text.js";
 import { getAllTools } from "../tools/index.js";
 
 const log = createLogger("chat-handler");
@@ -326,7 +328,8 @@ async function initializeContext(args: PipelineArgs): Promise<PipelineContext> {
 
 async function analyzeAndBuildPrompt(
   ctx: PipelineContext,
-  search: SearchPhaseResult
+  search: SearchPhaseResult,
+  maxChunkTokens?: number
 ): Promise<import("./prompt-runtime.js").PromptAssemblyResult> {
   return assemblePromptRuntime({
     env: ctx.env,
@@ -350,6 +353,7 @@ async function analyzeAndBuildPrompt(
     relatedProjects: search.relatedProjects,
     budget: search.budget,
     answerMode: search.interpretation.answer.contract,
+    maxChunkTokens,
   });
 }
 
@@ -870,8 +874,31 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
   const search = await retrieveContext(ctx, args.req);
   const { searchQuery, relatedArticles, relatedProjects, interpretation } =
     search;
+
+  const contextWindow = adapter?.contextWindowTokens ?? MODEL.DEFAULT_CONTEXT_WINDOW_TOKENS;
+  const maxInputTokens = Math.floor(contextWindow * MODEL.MAX_INPUT_TOKEN_RATIO);
+  const reservedOutputTokens = Math.max(MODEL.MIN_OUTPUT_TOKENS, Math.min(CHAT_HANDLER.STREAMING_MAX_OUTPUT_TOKENS, Math.floor(contextWindow * 0.15)));
+  const maxChunkBudget = Math.max(0, maxInputTokens - MODEL.SAFETY_MARGIN_TOKENS - reservedOutputTokens - 8000);
+
   const { systemPrompt, preflight, unknownRefusal, selectedSources } =
-    await analyzeAndBuildPrompt(ctx, search);
+    await analyzeAndBuildPrompt(ctx, search, maxChunkBudget > 0 ? maxChunkBudget : undefined);
+
+  const promptTokens = estimateTokens(systemPrompt);
+  const messageBudget = Math.max(0, maxInputTokens - promptTokens - MODEL.SAFETY_MARGIN_TOKENS - reservedOutputTokens);
+  const { messages: trimmedMessages, budget: msgBudget } = trimMessagesToTokenBudget(messages, messageBudget);
+
+  const cappedMaxOutputTokens = Math.min(
+    CHAT_HANDLER.STREAMING_MAX_OUTPUT_TOKENS,
+    contextWindow - promptTokens - msgBudget.usedTokens - MODEL.SAFETY_MARGIN_TOKENS
+  );
+  const effectiveMaxOutputTokens = Math.max(MODEL.MIN_OUTPUT_TOKENS, Math.floor(cappedMaxOutputTokens));
+
+  if (msgBudget.wasTrimmed || cappedMaxOutputTokens < CHAT_HANDLER.STREAMING_MAX_OUTPUT_TOKENS) {
+    log.debug(
+      `Token budget: contextWindow=${contextWindow}, promptTokens=${promptTokens}, messageTokens=${msgBudget.usedTokens}, maxOutput=${effectiveMaxOutputTokens}, trimmed=${msgBudget.wasTrimmed}`
+    );
+  }
+
   const finalSources = buildFinalSources({
     relatedArticles,
     selectedSources,
@@ -958,11 +985,11 @@ async function runPipeline(args: PipelineArgs): Promise<Response> {
         writer,
         adapters,
         systemPrompt,
-        messages,
+        messages: trimmedMessages,
         question: latestText,
         lang,
         temperature: CHAT_HANDLER.STREAMING_TEMPERATURE,
-        maxOutputTokens: CHAT_HANDLER.STREAMING_MAX_OUTPUT_TOKENS,
+        maxOutputTokens: effectiveMaxOutputTokens,
         tools,
       });
 

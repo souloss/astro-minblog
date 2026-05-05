@@ -271,6 +271,8 @@ export interface ChunkInjectionArgs {
   env: Record<string, unknown>;
   cacheKey: string | null;
   relatedArticles: ArticleContext[];
+  /** Maximum tokens allowed for chunk injection; overrides internal defaults */
+  maxChunkTokens?: number;
 }
 
 export interface ChunkInjectionResult {
@@ -282,7 +284,7 @@ export interface ChunkInjectionResult {
 export async function selectAndInjectChunks(
   args: ChunkInjectionArgs
 ): Promise<ChunkInjectionResult> {
-  const { latestText, context, lang, env, cacheKey, relatedArticles } = args;
+  const { latestText, context, lang, env, cacheKey, relatedArticles, maxChunkTokens } = args;
 
   let chunksSection = "";
   const selectedSources: SourceSelection[] = [];
@@ -356,11 +358,13 @@ export async function selectAndInjectChunks(
     const articleTotalTokens = context.article?.totalTokens;
     const shortArticle = isShortArticle(articleTotalTokens);
     const effectiveMaxTokens =
-      articleSlugForChunks && queryScope === "article-local"
-        ? ARTICLE_FULL_INJECTION_TOKENS
-        : shortArticle
-          ? SHORT_ARTICLE_MAX_TOKENS
-          : CHUNK_INJECTION.MAX_TOKENS;
+      maxChunkTokens != null
+        ? maxChunkTokens
+        : articleSlugForChunks && queryScope === "article-local"
+          ? ARTICLE_FULL_INJECTION_TOKENS
+          : shortArticle
+            ? SHORT_ARTICLE_MAX_TOKENS
+            : CHUNK_INJECTION.MAX_TOKENS;
 
     let matchedChunks = selectRelevantChunks(latestText, articlesWithChunks, {
       maxTokens: effectiveMaxTokens,

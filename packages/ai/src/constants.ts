@@ -1,3 +1,14 @@
+export const MODEL = {
+  /** Default context window size in tokens — override per-provider via AI_CONTEXT_WINDOW_TOKENS */
+  DEFAULT_CONTEXT_WINDOW_TOKENS: 128_000,
+  /** Maximum fraction of context window usable for input (system prompt + messages) */
+  MAX_INPUT_TOKEN_RATIO: 0.85,
+  /** Minimum output tokens to reserve regardless of context pressure */
+  MIN_OUTPUT_TOKENS: 2_000,
+  /** Safety margin tokens kept free to account for estimation imprecision */
+  SAFETY_MARGIN_TOKENS: 2_000,
+} as const;
+
 export const CHAT_HANDLER = {
   MAX_HISTORY_MESSAGES: 20,
   MAX_INPUT_LENGTH: 500,

@@ -1,5 +1,6 @@
 import type { LanguageModel } from "ai";
 import type { StreamTextOptions, StreamTextResult } from "./types.js";
+import { MODEL } from "../constants.js";
 import { BaseProviderAdapter } from "./base.js";
 import { getMockResponse } from "../providers/mock.js";
 import { getCorsOrigin } from "../server/errors.js";
@@ -15,6 +16,7 @@ export class MockAdapter extends BaseProviderAdapter {
   readonly keywordModel = "mock";
   readonly evidenceModel = "mock";
   readonly timeout = 0;
+  readonly contextWindowTokens = MODEL.DEFAULT_CONTEXT_WINDOW_TOKENS;
 
   constructor() {
     super({ unhealthyThreshold: 999 });

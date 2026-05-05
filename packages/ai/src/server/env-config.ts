@@ -23,6 +23,7 @@ export function applyAiConfigDefaults(
         };
         mockMode?: boolean;
         voiceStyle?: "friendly" | "professional" | "casual" | "technical";
+        contextWindowTokens?: number;
       }
     | null
     | undefined
@@ -53,6 +54,7 @@ export function applyAiConfigDefaults(
 
   setIfMissing("AI_MOCK_MODE", aiConfig.mockMode);
   setIfMissing("AI_VOICE_STYLE", aiConfig.voiceStyle);
+  setIfMissing("AI_CONTEXT_WINDOW_TOKENS", aiConfig.contextWindowTokens);
 
   return envWithConfig;
 }

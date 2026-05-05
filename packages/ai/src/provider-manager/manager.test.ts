@@ -23,6 +23,7 @@ function createMockAdapter(
     keywordModel: "mock-model",
     evidenceModel: "mock-model",
     timeout: 30000,
+    contextWindowTokens: 128000,
     isAvailable: vi.fn(async () => health.healthy),
     isInRecovery: vi.fn(() => !health.healthy),
     canAttemptRecovery: vi.fn(() => {

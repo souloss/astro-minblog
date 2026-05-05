@@ -7,7 +7,7 @@ import type {
 
 export const DEFAULT_WORKERS_BINDING_NAME = "minimaxAI";
 
-import { PROVIDER, TIMEOUTS } from "../constants.js";
+import { PROVIDER, TIMEOUTS, MODEL } from "../constants.js";
 import { createLogger } from "../utils/logger.js";
 
 const log = createLogger("provider-config");
@@ -20,6 +20,7 @@ function envString(env: Record<string, unknown>, key: string): string | undefine
 const DEFAULT_WEIGHT = PROVIDER.DEFAULT_WEIGHT;
 const DEFAULT_TIMEOUT = TIMEOUTS.PROVIDER_DEFAULT;
 const DEFAULT_MODEL = "gpt-4o-mini";
+const DEFAULT_CONTEXT_WINDOW = MODEL.DEFAULT_CONTEXT_WINDOW_TOKENS;
 
 function hasOpenAIConfig(env: ProviderManagerEnv): boolean {
   return !!(env.AI_BASE_URL && env.AI_API_KEY);
@@ -36,6 +37,11 @@ function createOpenAIConfigFromEnv(
 ): OpenAIProviderConfig | null {
   if (!hasOpenAIConfig(env)) return null;
 
+  const contextWindowRaw = envString(env, "AI_CONTEXT_WINDOW_TOKENS");
+  const contextWindowTokens = contextWindowRaw
+    ? parseInt(contextWindowRaw, 10)
+    : undefined;
+
   return {
     id: "openai-default",
     type: "openai",
@@ -47,6 +53,10 @@ function createOpenAIConfigFromEnv(
     evidenceModel: envString(env, "AI_EVIDENCE_MODEL"),
     timeout: DEFAULT_TIMEOUT,
     enabled: true,
+    contextWindowTokens:
+      contextWindowTokens && Number.isFinite(contextWindowTokens)
+        ? contextWindowTokens
+        : undefined,
   };
 }
 
@@ -87,6 +97,8 @@ function parseAIProvidersJSON(jsonString: string): ProviderConfig[] | null {
         const weight = config.weight ?? DEFAULT_WEIGHT;
         const timeout = config.timeout ?? DEFAULT_TIMEOUT;
         const enabled = config.enabled ?? true;
+        const contextWindowTokens =
+          config.contextWindowTokens ?? DEFAULT_CONTEXT_WINDOW;
 
         if (config.type === "openai") {
           return {
@@ -94,6 +106,7 @@ function parseAIProvidersJSON(jsonString: string): ProviderConfig[] | null {
             weight,
             timeout,
             enabled,
+            contextWindowTokens,
             id: config.id || `openai-${index}`,
           } as OpenAIProviderConfig;
         }
@@ -104,6 +117,7 @@ function parseAIProvidersJSON(jsonString: string): ProviderConfig[] | null {
             weight,
             timeout,
             enabled,
+            contextWindowTokens,
             id: config.id || `workers-${index}`,
             bindingName: config.bindingName || DEFAULT_WORKERS_BINDING_NAME,
           } as WorkersAIProviderConfig;

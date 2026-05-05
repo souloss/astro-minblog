@@ -198,4 +198,19 @@
   .astro-code .highlighted-word {
     @apply rounded-md border border-accent/30 bg-accent/10 px-1;
   }
+
+  /* Focus mode — dim non-focused lines */
+  .astro-code:has(.line.focused) .line:not(.focused) {
+    filter: blur(0.5px);
+    opacity: 0.4;
+    transition: filter 0.2s, opacity 0.2s;
+  }
+  .astro-code:has(.line.focused) .line.focused {
+    filter: none;
+    opacity: 1;
+  }
+  .astro-code:has(.line.focused):hover .line:not(.focused) {
+    filter: none;
+    opacity: 0.7;
+  }
 }

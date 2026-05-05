@@ -21,6 +21,8 @@ import {
   transformerNotationDiff,
   transformerNotationHighlight,
   transformerNotationWordHighlight,
+  transformerNotationFocus,
+  transformerMetaHighlight,
 } from "@shikijs/transformers";
 import {
   updateStyle,
@@ -44,6 +46,8 @@ const shikiTransformers = [
   transformerNotationHighlight(),
   transformerNotationWordHighlight(),
   transformerNotationDiff({ matchAlgorithm: "v3" }),
+  transformerNotationFocus(),
+  transformerMetaHighlight(),
 ];
 
 const zoomableRemarkPlugin = [remarkAddZoomable, { className: "zoomable" }] as [
@@ -54,6 +58,12 @@ const zoomableRemarkPlugin = [remarkAddZoomable, { className: "zoomable" }] as [
 export default defineConfig({
   site: SITE.website,
   output: "static",
+  experimental: {
+    queuedRendering: {
+      enabled: true,
+      contentCache: true,
+    },
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: "hover",

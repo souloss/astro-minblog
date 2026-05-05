@@ -1,3 +1,4 @@
+import { MODEL } from "../constants.js";
 import type { LanguageModel } from "ai";
 import type {
   ProviderAdapter,
@@ -14,6 +15,7 @@ export abstract class BaseProviderAdapter implements ProviderAdapter {
   abstract readonly keywordModel: string;
   abstract readonly evidenceModel: string;
   abstract readonly timeout: number;
+  abstract readonly contextWindowTokens: number;
 
   protected health: ProviderHealth = {
     healthy: true,

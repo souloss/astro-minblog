@@ -8,6 +8,7 @@ import type {
   StreamTextResult,
   ProviderManagerEnv,
 } from "./types.js";
+import { MODEL } from "../constants.js";
 import { BaseProviderAdapter } from "./base.js";
 
 export class WorkersAIAdapter extends BaseProviderAdapter {
@@ -18,6 +19,7 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
   readonly keywordModel: string;
   readonly evidenceModel: string;
   readonly timeout: number;
+  readonly contextWindowTokens: number;
 
   private provider: ReturnType<typeof createWorkersAI>;
   private config: WorkersAIProviderConfig;
@@ -33,6 +35,8 @@ export class WorkersAIAdapter extends BaseProviderAdapter {
     this.keywordModel = config.keywordModel ?? config.model;
     this.evidenceModel = config.evidenceModel ?? this.keywordModel;
     this.timeout = config.timeout ?? 30000;
+    this.contextWindowTokens =
+      config.contextWindowTokens ?? MODEL.DEFAULT_CONTEXT_WINDOW_TOKENS;
     this.config = config;
 
     const binding = env[config.bindingName];

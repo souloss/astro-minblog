@@ -14,6 +14,7 @@ import {
   useVizScaleControls,
   VizToolbar,
 } from "./VizShared.tsx";
+import { useShikiHighlighter } from "./CodeBlock.tsx";
 
 interface MermaidResult {
   svg: string;
@@ -40,11 +41,52 @@ function useMermaid(code: string): MermaidResult {
             typeof document !== "undefined" &&
             document.documentElement.getAttribute("data-theme") === "dark";
 
+          // Get CSS variable value with fallback (matching core MermaidInit.astro)
+          const getCSSVar = (name: string, fallback: string): string => {
+            if (typeof document === "undefined") return fallback;
+            const value = getComputedStyle(document.documentElement)
+              .getPropertyValue(name)
+              .trim();
+            return value || fallback;
+          };
+
+          const foreground = getCSSVar('--foreground', isDark ? '#f5f5f7' : '#1d1d1f');
+          const foregroundSoft = getCSSVar('--foreground-soft', isDark ? '#a1a1a6' : '#6e6e73');
+          const muted = getCSSVar('--muted', isDark ? '#6e6e73' : '#86868b');
+          const accent = getCSSVar('--accent', isDark ? '#4fd1c5' : '#0a9396');
+          const card = getCSSVar('--card', isDark ? 'rgba(44, 44, 46, 0.6)' : 'rgba(255, 255, 255, 0.65)');
+          const surface = getCSSVar('--surface', isDark ? 'rgba(28, 28, 30, 0.78)' : 'rgba(255, 255, 255, 0.72)');
+
           // Initialize mermaid matching core implementation
           mermaid.initialize({
             startOnLoad: false,
-            securityLevel: "strict",
-            theme: isDark ? "dark" : "default",
+            securityLevel: "loose",
+            theme: "base" as const,
+            themeVariables: {
+              fontSize: "14px",
+              fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+              primaryColor: surface,
+              primaryTextColor: foreground,
+              primaryBorderColor: accent,
+              lineColor: muted,
+              background: "transparent",
+              nodeBkg: surface,
+              nodeBorder: accent,
+              nodeTextColor: foreground,
+              clusterBkg: card,
+              clusterBorder: accent,
+              edgeLabelBackground: surface,
+              actorBorder: accent,
+              actorBkg: surface,
+              actorTextColor: foreground,
+              actorLineColor: muted,
+              signalColor: muted,
+              signalTextColor: foreground,
+              sequenceNumberColor: foreground,
+              noteBkg: card,
+              noteBorder: accent,
+              noteTextColor: foreground,
+            },
           } as any);
 
           const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -93,6 +135,7 @@ export function MermaidBlock({
   const [showSource, setShowSource] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const showDiagram = !showSource;
+  const { html: highlightedCode } = useShikiHighlighter(code, "mermaid");
 
   // Stable key based on content hash for re-render persistence
   const contentKey = useMemo(() => {
@@ -258,13 +301,22 @@ export function MermaidBlock({
       style={isFullscreen ? { background: "var(--background)" } : undefined}
     >
       {showSource ? (
-        <pre
-          class={`text-foreground-soft overflow-auto font-mono text-[11px] leading-relaxed ${
-            isFullscreen ? "min-h-0 flex-1 pt-10" : ""
-          }`}
-        >
-          <code>{code}</code>
-        </pre>
+        highlightedCode ? (
+          <div
+            class={`overflow-auto text-[11px] leading-relaxed [&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:m-0 ${
+              isFullscreen ? "min-h-0 flex-1 pt-10" : ""
+            }`}
+            dangerouslySetInnerHTML={{ __html: highlightedCode }}
+          />
+        ) : (
+          <pre
+            class={`text-foreground-soft overflow-auto font-mono text-[11px] leading-relaxed ${
+              isFullscreen ? "min-h-0 flex-1 pt-10" : ""
+            }`}
+          >
+            <code>{code}</code>
+          </pre>
+        )
       ) : (
         <div
           ref={viewportRef}

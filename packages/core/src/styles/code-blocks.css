@@ -5,7 +5,7 @@
   flex-direction: column;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   overflow: hidden;
 }
@@ -53,11 +53,11 @@
   padding: 0.25rem 0.75rem;
   border-bottom: 1px solid var(--border);
   background: var(--muted);
-  border-radius: 0.75rem 0.75rem 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .astro-code:has(.code-title) pre {
-  border-radius: 0 0 0.75rem 0.75rem;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
 
 /* ===== Language Label ===== */
@@ -88,7 +88,7 @@
   align-items: center;
   justify-content: center;
   padding: 0.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background-color: var(--card);
   color: var(--foreground-soft);
@@ -110,7 +110,7 @@
 
 .astro-code .code-copy.copied .success {
   display: block;
-  color: #22c55e;
+  color: var(--color-success, #22c55e);
 }
 
 .astro-code:has(.code-title) .code-copy {

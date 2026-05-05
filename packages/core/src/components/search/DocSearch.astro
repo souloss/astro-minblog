@@ -83,12 +83,12 @@ const searchPlaceholder = placeholder || (lang === 'zh' ? '搜索文档...' : 'S
     margin: 0;
     padding: 0 6px 0 8px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     font-size: 0.875rem;
     color: var(--foreground-soft);
     background: var(--muted);
     border: 1px solid var(--border);
-    transition: all 0.15s ease;
+    transition: all var(--transition-fast) var(--ease-out-expo);
     cursor: pointer;
     display: inline-flex;
     align-items: center;

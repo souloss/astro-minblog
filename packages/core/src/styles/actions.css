@@ -2,7 +2,7 @@
 
 .ai-section-highlight {
   animation: section-pulse 3s ease-out;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 @keyframes section-pulse {
@@ -18,7 +18,7 @@
 
 .ai-highlight {
   border-radius: 2px;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--transition-normal) var(--ease-out-expo);
 }
 
 .ai-highlight-accent {
@@ -39,5 +39,5 @@
 
 /* Theme transition support */
 .theme-transition {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color var(--transition-normal) var(--ease-out-expo), color var(--transition-normal) var(--ease-out-expo);
 }

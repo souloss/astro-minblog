@@ -80,10 +80,10 @@ const animationDelay = Math.min(index * 80, 400);
     <article
       class="post-card card-animate relative flex h-full w-full flex-col overflow-hidden
              rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl cursor-pointer
-             shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
+             shadow-[var(--shadow-card)]
              transition-all duration-300 ease-out
              hover:border-accent/40 hover:bg-card/90 
-             hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
+             hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5
              focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
       style={`animation-delay: var(--delay)`}
     >
@@ -154,10 +154,10 @@ const animationDelay = Math.min(index * 80, 400);
     <article
       class="post-card card-animate grid-card relative flex h-full flex-col overflow-hidden
              rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl cursor-pointer
-             shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.08)]
+             shadow-[var(--shadow-card)]
              transition-all duration-300 ease-out
              hover:border-accent/40 hover:bg-card/90 
-             hover:shadow-[0_8px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-0.5
+             hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5
              focus-within:outline-2 focus-within:outline-dashed focus-within:outline-accent"
       style={`animation-delay: var(--delay)`}
     >

@@ -2,7 +2,7 @@
   padding: 1rem 1.25rem;
   margin-bottom: 1.25rem;
   border-left: 4px solid;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl);
   backdrop-filter: blur(8px);
 }
 
@@ -98,7 +98,7 @@ html[data-theme="dark"] .app-prose .markdown-alert p,
 html[data-theme="dark"] .app-prose .markdown-alert li,
 html[data-theme="dark"] .app-prose .markdown-alert span,
 html[data-theme="dark"] .app-prose .markdown-alert strong {
-  color: #f5f5f7 !important;
+  color: var(--foreground) !important;
 }
 
 html[data-theme="dark"] .markdown-alert-note {
@@ -144,14 +144,14 @@ html[data-theme="dark"] .markdown-alert a:hover {
 }
 html[data-theme="dark"] .markdown-alert code {
   background-color: rgba(110, 118, 129, 0.35) !important;
-  color: #f5f5f7 !important;
+  color: var(--foreground) !important;
 }
 
 html[data-theme="dark"] .katex {
-  color: #f5f5f7;
+  color: var(--foreground);
 }
 html[data-theme="dark"] .katex-display {
-  color: #f5f5f7;
+  color: var(--foreground);
   margin: 1rem 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -164,13 +164,13 @@ html[data-theme="dark"] .katex .mclose,
 html[data-theme="dark"] .katex .mpunct,
 html[data-theme="dark"] .katex .minner,
 html[data-theme="dark"] .katex .mathnormal {
-  color: #f5f5f7;
+  color: var(--foreground);
 }
 html[data-theme="dark"] .katex .frac-line,
 html[data-theme="dark"] .katex .overline-line,
 html[data-theme="dark"] .katex .underline-line,
 html[data-theme="dark"] .katex .sqrt-line {
-  border-color: #f5f5f7;
+  border-color: var(--foreground);
 }
 html[data-theme="dark"] .katex .sqrt-sign,
 html[data-theme="dark"] .katex .msupsub,
@@ -179,14 +179,14 @@ html[data-theme="dark"] .katex .nulldelimiter,
 html[data-theme="dark"] .katex .col-align-c,
 html[data-theme="dark"] .katex .col-align-l,
 html[data-theme="dark"] .katex .col-align-r {
-  color: #f5f5f7;
+  color: var(--foreground);
 }
 
 kbd {
   padding: 0.2rem 0.5rem;
   font-family: inherit;
   font-size: 0.85em;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(0, 0, 0, 0.12);
   background-color: rgba(0, 0, 0, 0.04);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -194,13 +194,13 @@ kbd {
 }
 html[data-theme="dark"] kbd {
   background-color: rgba(110, 118, 129, 0.3);
-  color: #f5f5f7;
+  color: var(--foreground);
   border-color: rgba(110, 118, 129, 0.5);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 html[data-theme="dark"] .app-prose kbd {
   background-color: rgba(110, 118, 129, 0.3) !important;
-  color: #f5f5f7 !important;
+  color: var(--foreground) !important;
   border-color: rgba(110, 118, 129, 0.5) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
@@ -212,10 +212,10 @@ html[data-theme="dark"] .app-prose kbd {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.88);
+  background: var(--shadow-elevated, rgba(0, 0, 0, 0.88));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal) var(--ease-out-expo);
   backdrop-filter: blur(8px);
 }
 #lightbox-overlay.active {
@@ -226,7 +226,7 @@ html[data-theme="dark"] .app-prose kbd {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
-  border-radius: 1rem;
+  border-radius: var(--radius-2xl);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
   transform: scale(0.92);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -242,10 +242,10 @@ html[data-theme="dark"] .app-prose kbd {
   color: #fff;
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   cursor: pointer;
   opacity: 0.8;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base) var(--ease-out-expo);
   line-height: 1;
   z-index: 1;
   width: 3rem;

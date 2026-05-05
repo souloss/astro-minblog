@@ -13,6 +13,7 @@ class TestProvider extends BaseProviderAdapter {
   readonly keywordModel = "test-keyword-model";
   readonly evidenceModel = "test-evidence-model";
   readonly timeout = 30000;
+  readonly contextWindowTokens = 128000;
 
   streamText = vi.fn<() => Promise<StreamTextResult>>(() =>
     Promise.resolve({
