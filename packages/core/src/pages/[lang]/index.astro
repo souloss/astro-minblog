@@ -45,7 +45,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           <span class="text-gradient">{t("hero.greeting", lang)}</span>
         </h1>
         
-        <div class="animate-fade-in-up delay-100 flex items-center gap-4">
+        <div class="animate-fade-in-up delay-100 flex items-center gap-4 immersive-mode-hide">
           <a
             target="_blank"
             href="/rss.xml"
@@ -64,7 +64,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           {t("hero.desc", lang)}
         </p>
         
-        <p class="animate-fade-in-up delay-300 mt-3 text-foreground-soft">
+        <p class="animate-fade-in-up delay-300 mt-3 text-foreground-soft immersive-mode-hide">
           {t("hero.readMore", lang)}
           <LinkButton
             class="ml-1 font-medium text-accent underline decoration-accent/30 
@@ -78,7 +78,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         
         {
           SOCIALS.length > 0 && (
-            <div class="animate-fade-in-up delay-400 mt-6 flex max-sm:flex-col sm:items-center">
+            <div class="animate-fade-in-up delay-400 mt-6 flex max-sm:flex-col sm:items-center immersive-mode-hide">
               <div class="me-3 mb-1 whitespace-nowrap text-sm font-medium text-foreground-soft sm:mb-0">
                 {t("hero.socialLinks", lang)}
               </div>

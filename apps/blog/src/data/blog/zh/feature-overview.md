@@ -340,14 +340,14 @@ import AsciinemaPlayer from '@astro-minimax/core/components/viz/AsciinemaPlayer.
 - **边读边聊** — 文章页自动注入上下文，实现阅读伴侣模式
 - **全局/会话缓存** — 公共问题跨用户缓存，提升响应速度
 - **Mock 模式** — 开发时无需真实 API
-- **AI 工具调用（Tool Calling）** — AI 助手可直接控制页面 UI：主题切换、文章导航、章节滚动、阅读模式、文本高亮等
+- **AI 工具调用（Tool Calling）** — AI 助手可直接控制页面 UI：主题切换、文章导航、章节滚动、沉浸模式、文本高亮等
 - **Action 执行器** — 客户端执行动作，支持跨页动作链与基于 URL 的动作持久化
 - **ChatPanel** — 可调整大小的对话面板，提供 S/M/L 三档预设
 - **CodeBlock** — 增强可视化工具栏：缩放、全屏、复制按钮
 
 ### AI 工具调用
 
-AI 助手内置 7 个页面交互工具，可直接操控当前页面：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleReadingMode`、`highlightText`、`setPreference`、`searchArticles`。用户无需离开对话窗口就能完成主题切换、文章跳转、章节滚动等操作。
+AI 助手内置 7 个页面交互工具，可直接操控当前页面：`toggleTheme`、`navigateToArticle`、`scrollToSection`、`toggleImmersiveMode`、`highlightText`、`setPreference`、`searchArticles`。用户无需离开对话窗口就能完成主题切换、文章跳转、章节滚动等操作。
 
 详见 [AI 工具调用指南](/zh/posts/ai-tool-calling)。
 

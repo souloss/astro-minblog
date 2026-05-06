@@ -1,0 +1,57 @@
+---
+import { SITE } from "virtual:astro-minimax/config";
+
+const lang = SITE.lang;
+---
+
+<button
+  id="immersive-exit-btn"
+  class="immersive-exit-btn"
+  aria-label={lang === 'zh' ? '退出沉浸模式' : 'Exit immersive mode'}
+  title={lang === 'zh' ? '退出沉浸模式 (Esc)' : 'Exit immersive mode (Esc)'}
+>
+  <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 6 6 18"></path>
+    <path d="m6 6 12 12"></path>
+  </svg>
+</button>
+
+<script>
+  type SettingsPanelController = {
+    toggleImmersiveMode?: () => void;
+    toggleReadingMode?: () => void;
+  };
+
+  type NavWindow = Window & {
+    __settingsPanel?: SettingsPanelController;
+  };
+
+  function initImmersiveExit() {
+    const btn = document.getElementById('immersive-exit-btn');
+    if (!btn) return;
+
+    const appWindow = window as NavWindow;
+
+    btn.addEventListener('click', () => {
+      if (typeof appWindow.__settingsPanel?.toggleImmersiveMode === 'function') {
+        appWindow.__settingsPanel.toggleImmersiveMode();
+      } else if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
+        appWindow.__settingsPanel.toggleReadingMode();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.documentElement.classList.contains('immersive-mode')) {
+        e.preventDefault();
+        if (typeof appWindow.__settingsPanel?.toggleImmersiveMode === 'function') {
+          appWindow.__settingsPanel.toggleImmersiveMode();
+        } else if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
+          appWindow.__settingsPanel.toggleReadingMode();
+        }
+      }
+    });
+  }
+
+  initImmersiveExit();
+  document.addEventListener('astro:after-swap', initImmersiveExit);
+</script>

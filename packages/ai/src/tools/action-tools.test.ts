@@ -76,7 +76,7 @@ describe("action-tools", () => {
           "scrollToSection",
           "searchArticles",
           "setPreference",
-          "toggleReadingMode",
+          "toggleImmersiveMode",
           "toggleTheme",
         ].sort()
       );

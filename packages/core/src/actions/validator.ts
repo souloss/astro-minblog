@@ -4,7 +4,7 @@ const VALID_TYPES: Set<string> = new Set([
   "scroll-to-section",
   "highlight-text",
   "toggle-theme",
-  "toggle-reading-mode",
+  "toggle-immersive-mode",
   "set-preference",
   "navigate",
 ]);
@@ -126,7 +126,7 @@ function validateToggleTheme(
   return { valid: true };
 }
 
-function validateToggleReadingMode(
+function validateToggleImmersiveMode(
   payload: unknown
 ): { valid: true } | { valid: false; error: string } {
   if (!isObject(payload)) {
@@ -205,7 +205,7 @@ const VALIDATORS: Record<
   "scroll-to-section": validateScrollToSection,
   "highlight-text": validateHighlightText,
   "toggle-theme": validateToggleTheme,
-  "toggle-reading-mode": validateToggleReadingMode,
+  "toggle-immersive-mode": validateToggleImmersiveMode,
   "set-preference": validateSetPreference,
   navigate: validateNavigate,
 };

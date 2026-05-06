@@ -50,7 +50,7 @@ export function ChatInput({
 
   return (
     <div class="border-border shrink-0 border-t px-3 pt-2 pb-2.5">
-      <div class="border-border bg-muted/30 focus-within:border-accent/40 focus-within:bg-background flex items-end gap-1.5 rounded-xl border px-2.5 py-1.5 transition-colors">
+      <div class="border-border bg-muted/30 focus-within:border-accent/40 focus-within:bg-background flex items-end gap-1.5 rounded-2xl border px-3 py-2 transition-colors">
         <label class="sr-only" for="ai-chat-input">
           {label}
         </label>
@@ -78,11 +78,11 @@ export function ChatInput({
           disabled={!value.trim() || isStreaming || cooldown}
           aria-label={isStreaming ? sendingLabel : sendLabel}
           title={isStreaming ? sendingLabel : sendLabel}
-          class="bg-accent text-background hover:bg-accent/90 mb-0.5 flex size-6 shrink-0 items-center justify-center rounded-md transition-all disabled:cursor-not-allowed disabled:opacity-30"
+          class="bg-accent text-background hover:bg-accent/90 mb-0.5 flex size-7 shrink-0 items-center justify-center rounded-xl transition-all disabled:cursor-not-allowed disabled:opacity-30"
         >
           {isStreaming ? (
             <svg
-              class="size-3 animate-spin"
+              class="size-3.5 animate-spin"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -93,7 +93,7 @@ export function ChatInput({
             </svg>
           ) : (
             <svg
-              class="size-3"
+              class="size-3.5"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

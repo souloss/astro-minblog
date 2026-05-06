@@ -4,7 +4,9 @@ import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "virtual:astro-minimax/config";
 import { userDefaults } from "virtual:astro-minimax/preferences-defaults";
 import FloatingActions from "../components/nav/FloatingActions.astro";
+import ImmersiveExitButton from "../components/nav/ImmersiveExitButton.astro";
 import SettingsPanel from "../components/nav/SettingsPanel.astro";
+import SearchPalette from "../components/search/SearchPalette.astro";
 import AIChatWidget from "virtual:astro-minimax/ai-widget";
 import "virtual:astro-minimax/styles";
 
@@ -435,7 +437,9 @@ const structuredData = pubDatetime
   <body>
     <slot />
     <FloatingActions />
+    <ImmersiveExitButton />
     <SettingsPanel />
+    <SearchPalette lang={lang} />
     <AIChatWidget lang={lang} articleContext={articleContext} />
 
     <script is:inline>

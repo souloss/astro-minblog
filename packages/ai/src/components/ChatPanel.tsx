@@ -202,12 +202,17 @@ export function ChatPanel({
       aria-describedby={
         articleContext ? "ai-chat-description-reading" : "ai-chat-description"
       }
-      class={`border-border bg-background fixed z-[90] flex flex-col overflow-hidden rounded-2xl border shadow-2xl transition-all duration-300 ease-out ${
+      class={`border-border fixed z-[90] flex flex-col overflow-hidden rounded-2xl border shadow-2xl transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
         panelSize === "L"
           ? "right-[10vw] bottom-[10vh] z-[100]"
           : "right-4 bottom-20 sm:right-6 sm:bottom-20"
       } ${sizeConfig.class}`}
-      style={{ height: sizeConfig.height }}
+      style={{
+        height: sizeConfig.height,
+        background: "color-mix(in oklch, var(--background) 92%, transparent)",
+        backdropFilter: "saturate(180%) blur(16px)",
+        WebkitBackdropFilter: "saturate(180%) blur(16px)",
+      }}
     >
       {/* Header */}
       <ChatToolbar

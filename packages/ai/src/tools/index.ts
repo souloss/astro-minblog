@@ -6,7 +6,7 @@ export {
   toggleThemeTool,
   navigateToArticleTool,
   scrollToSectionTool,
-  toggleReadingModeTool,
+  toggleImmersiveModeTool,
   highlightTextTool,
   setPreferenceTool,
   searchArticlesTool,

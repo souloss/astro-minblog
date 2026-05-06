@@ -1,0 +1,11 @@
+---
+const pathSegments = Astro.url.pathname.replace(/\/$/, '').split('/').slice(0, -1);
+const href = pathSegments.length > 1 ? pathSegments.join('/') + '/' : '/';
+---
+
+<div class="immersive-back-link print:hidden">
+  <span class="font-mono opacity-50">&gt; </span>
+  <a href={href} class="font-mono hover:opacity-100! transition-opacity duration-300">
+    cd ..
+  </a>
+</div>

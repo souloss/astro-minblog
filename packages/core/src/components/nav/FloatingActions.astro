@@ -1,13 +1,16 @@
 ---
 import IconArrowNarrowUp from "../../assets/icons/IconArrowNarrowUp.svg";
-import IconMoon from "../../assets/icons/IconMoon.svg";
-import IconSunHigh from "../../assets/icons/IconSunHigh.svg";
 import { SITE } from "virtual:astro-minimax/config";
 import { t } from "../../utils/i18n.js";
 
-const aiEnabled = SITE.ai?.enabled ?? false;
 const lang = SITE.lang;
 ---
+
+{/*
+  FloatingActions now only contains the back-to-top button.
+  All other widgets (theme toggle, reading mode, settings, AI chat)
+  have been moved into the navbar (Header.astro).
+*/}
 
 <div
   class="fixed right-5 bottom-5 z-50 flex flex-col items-center gap-3"
@@ -15,129 +18,6 @@ const lang = SITE.lang;
   role="group"
   aria-label="Page actions"
 >
-  {
-    aiEnabled && (
-      <button
-        id="ai-chat-toggle-fab"
-        class="fab-btn group relative flex size-12 items-center justify-center 
-               rounded-2xl border border-accent/20 bg-accent text-white
-               shadow-lg shadow-accent/25 backdrop-blur-sm
-               transition-all duration-300 ease-out
-               hover:scale-105 hover:shadow-xl hover:shadow-accent/30
-               active:scale-95"
-        aria-label={t('ai.assistantName')}
-        title={t('ai.assistantName')}
-      >
-        <svg
-          class="size-5 transition-transform duration-300 group-hover:scale-110"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M12 8V4H8" />
-          <rect width="16" height="12" x="4" y="8" rx="2" />
-          <path d="M2 14h2" />
-          <path d="M20 14h2" />
-          <path d="M15 13v2" />
-          <path d="M9 13v2" />
-        </svg>
-        <span class="absolute inset-0 rounded-2xl bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
-      </button>
-    )
-  }
-
-  <button
-    id="reading-mode-btn"
-    class="fab-btn group hidden size-12 items-center justify-center 
-           rounded-2xl border border-border/50 bg-glass-bg
-           shadow-lg backdrop-blur-md
-           transition-all duration-300 ease-out
-           hover:border-accent/30 hover:shadow-xl hover:shadow-shadow-elevated/20
-           active:scale-95"
-    aria-label={lang === 'zh' ? '阅读模式' : 'Reading Mode'}
-    aria-pressed="false"
-    title={lang === 'zh' ? '阅读模式' : 'Reading Mode'}
-  >
-    <svg
-      id="reading-icon-off"
-      class="size-5 text-foreground-soft transition-all duration-300 group-hover:text-accent"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-    </svg>
-    <svg
-      id="reading-icon-on"
-      class="hidden size-5 text-accent"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18"></path>
-      <path d="m6 6 12 12"></path>
-    </svg>
-  </button>
-
-  {
-    SITE.darkMode && (
-      <button
-        id="theme-btn"
-        class="fab-btn group relative size-12 rounded-2xl border border-border/50 
-               bg-glass-bg shadow-lg backdrop-blur-md
-               transition-all duration-300 ease-out
-               hover:border-accent/30 hover:shadow-xl hover:shadow-shadow-elevated/20"
-        title={lang === 'zh' ? '切换主题' : 'Toggle theme'}
-        aria-label={lang === 'zh' ? '切换主题' : 'Toggle theme'}
-        aria-live="polite"
-      >
-        <IconMoon class="icon-moon text-foreground-soft absolute top-1/2 left-1/2 size-5 
-                          -translate-x-1/2 -translate-y-1/2 
-                          transition-all duration-500 ease-out group-hover:text-accent" />
-        <IconSunHigh class="icon-sun text-foreground-soft absolute top-1/2 left-1/2 size-5 
-                             -translate-x-1/2 -translate-y-1/2 
-                             transition-all duration-500 ease-out group-hover:text-accent" />
-      </button>
-    )
-  }
-
-  <button
-    id="settings-btn"
-    class="fab-btn group relative size-12 items-center justify-center 
-           rounded-2xl border border-border/50 bg-glass-bg
-           shadow-lg backdrop-blur-md hidden sm:flex
-           transition-all duration-300 ease-out
-           hover:border-accent/30 hover:shadow-xl hover:shadow-shadow-elevated/20
-           active:scale-95"
-    aria-label={lang === 'zh' ? '偏好设置' : 'Preferences'}
-    title={lang === 'zh' ? '偏好设置' : 'Preferences'}
-  >
-    <svg
-      class="size-5 text-foreground-soft transition-all duration-300 group-hover:text-accent group-hover:rotate-45"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-      <circle cx="12" cy="12" r="3"></circle>
-    </svg>
-  </button>
-
   <button
     id="back-to-top-btn"
     class="fab-btn pointer-events-none relative size-12 rounded-2xl border border-border/50 
@@ -181,86 +61,10 @@ const lang = SITE.lang;
 <script>
   import { getGlobalEventManager } from "../../utils/performance";
 
-  type SettingsPanelController = {
-    toggle?: () => void;
-    toggleReadingMode?: () => void;
-  };
-
-  type FloatingActionsWindow = Window & {
-    __aiChatToggle?: () => void;
-    __settingsPanel?: SettingsPanelController;
-  };
-
   function initFloatingActions() {
     const manager = getGlobalEventManager();
-    const appWindow = window as FloatingActionsWindow;
-
-    const aiFab = document.getElementById("ai-chat-toggle-fab");
-    if (aiFab) {
-      manager.add(aiFab, "click", () => {
-        if (typeof appWindow.__aiChatToggle === 'function') {
-          appWindow.__aiChatToggle();
-        }
-      });
-    }
-
-    const settingsBtn = document.getElementById("settings-btn");
-    if (settingsBtn) {
-      manager.add(settingsBtn, "click", () => {
-        if (typeof appWindow.__settingsPanel?.toggle === 'function') {
-          appWindow.__settingsPanel.toggle();
-        }
-      });
-    }
 
     const backToTopBtn = document.getElementById("back-to-top-btn");
-    const readingModeBtn = document.getElementById("reading-mode-btn");
-    const iconOff = document.getElementById("reading-icon-off");
-    const iconOn = document.getElementById("reading-icon-on");
-
-    const isArticlePage = !!document.querySelector("article#article");
-
-    if (readingModeBtn) {
-      if (isArticlePage) {
-        readingModeBtn.classList.remove("hidden");
-        readingModeBtn.classList.add("flex");
-      } else {
-        readingModeBtn.classList.add("hidden");
-        readingModeBtn.classList.remove("flex");
-      }
-
-      const syncReadingModeUI = (active: boolean) => {
-        readingModeBtn.setAttribute("aria-pressed", String(active));
-        if (active) {
-          readingModeBtn.classList.add("border-accent/40", "bg-accent/10");
-          readingModeBtn.classList.remove("bg-glass-bg");
-          iconOff?.classList.add("hidden");
-          iconOn?.classList.remove("hidden");
-        } else {
-          readingModeBtn.classList.remove("border-accent/40", "bg-accent/10");
-          readingModeBtn.classList.add("bg-glass-bg");
-          iconOff?.classList.remove("hidden");
-          iconOn?.classList.add("hidden");
-        }
-      };
-
-      const initialActive = document.documentElement.classList.contains("reading-mode");
-      syncReadingModeUI(initialActive);
-
-      manager.add(readingModeBtn, "click", () => {
-        if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
-          appWindow.__settingsPanel.toggleReadingMode();
-        }
-      });
-
-      const observer = new MutationObserver(() => {
-        const active = document.documentElement.classList.contains("reading-mode");
-        syncReadingModeUI(active);
-      });
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-      manager.trackObserver(observer, 'mutation');
-    }
-
     if (!backToTopBtn) return;
 
     const progressCircle = document.getElementById("progress-ring-circle");

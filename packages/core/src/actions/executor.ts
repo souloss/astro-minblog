@@ -17,8 +17,8 @@ export const ActionExecutor = {
         case "toggle-theme":
           return this.toggleTheme(action.payload);
 
-        case "toggle-reading-mode":
-          return this.toggleReadingMode(action.payload);
+        case "toggle-immersive-mode":
+          return this.toggleImmersiveMode(action.payload);
 
         case "set-preference":
           return this.setPreference(action.payload);
@@ -190,7 +190,7 @@ export const ActionExecutor = {
     return { success: true };
   },
 
-  toggleReadingMode(payload: Record<string, unknown>): ActionResult {
+  toggleImmersiveMode(payload: Record<string, unknown>): ActionResult {
     const enabled = payload.enabled as boolean | undefined;
     const settings = payload.settings as
         | {
@@ -203,9 +203,11 @@ export const ActionExecutor = {
     const html = document.documentElement;
 
     if (enabled !== undefined) {
-      html.classList.toggle("reading-mode", enabled);
+      html.classList.toggle("immersive-mode", enabled);
+      html.classList.remove("reading-mode");
     } else {
-      html.classList.toggle("reading-mode");
+      html.classList.toggle("immersive-mode");
+      html.classList.remove("reading-mode");
     }
 
     if (settings) {

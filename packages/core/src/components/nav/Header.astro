@@ -1,14 +1,9 @@
 ---
 import IconX from "../../assets/icons/IconX.svg";
-import IconHome from "../../assets/icons/IconHome.svg";
-import IconArticle from "../../assets/icons/IconArticle.svg";
-import IconTag from "../../assets/icons/IconTag.svg";
-import IconUser from "../../assets/icons/IconUser.svg";
 import IconSearch from "../../assets/icons/IconSearch.svg";
-import IconArchive from "../../assets/icons/IconArchive.svg";
-import IconSeries from "../../assets/icons/IconSeries.svg";
-import IconProject from "../../assets/icons/IconProject.svg";
 import IconMenuDeep from "../../assets/icons/IconMenuDeep.svg";
+import IconMoon from "../../assets/icons/IconMoon.svg";
+import IconSunHigh from "../../assets/icons/IconSunHigh.svg";
 import { SITE } from "virtual:astro-minimax/config";
 import { t, type TranslationKey } from "../../utils/i18n";
 import { isPathActive } from "../../utils/pathUtils";
@@ -23,18 +18,6 @@ const isActive = (path: string) => isPathActive(path, pathname);
 const { lang = "zh" } = Astro.props;
 
 const base = `/${lang}`;
-
-const iconMap: Record<string, typeof IconHome> = {
-  home: IconHome,
-  posts: IconArticle,
-  tags: IconTag,
-  categories: IconTag,
-  series: IconSeries,
-  projects: IconProject,
-  about: IconUser,
-  friends: IconUser,
-  archives: IconArchive,
-};
 
 const hrefMap: Record<string, string> = {
   home: `${base}/`,
@@ -54,291 +37,403 @@ const navItems = (SITE.nav?.items ?? [])
   .map(i => ({
     href: hrefMap[i.key] ?? `${base}/${i.key}`,
     label: t(`nav.${i.key}` as TranslationKey, lang),
-    icon: iconMap[i.key] ?? IconArticle,
   }));
+
+const aiEnabled = SITE.ai?.enabled ?? false;
+const darkMode = SITE.darkMode ?? true;
 ---
 
 <a
   id="skip-to-content"
   href="#main-content"
-  class="absolute start-16 -top-full z-50 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white 
+  class="absolute start-16 -top-full z-50 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white
          backdrop-blur-lg transition-all duration-300 focus:top-4 focus:shadow-lg focus:shadow-accent/25"
 >
   Skip to content
 </a>
 
-<header
-  id="main-header"
-  data-nav-overflow="false"
-  class="fixed top-0 left-0 right-0 z-40 w-full
-         border-b border-border/50 bg-surface/70 backdrop-blur-xl
-         transition-all duration-300 ease-out
-         supports-[backdrop-filter]:bg-surface/60"
->
-  <div
-    class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8"
-  >
-    <a
-      href={`/${lang}/`}
-      class="text-lg font-bold tracking-tight text-foreground 
-             transition-all duration-200 
-             hover:text-accent hover:tracking-normal
-             sm:text-xl"
-    >
-      <span class="text-gradient">{SITE.title}</span>
-    </a>
+<div id="header-wrapper" class="header-wrapper">
+  <header id="main-header" data-nav-overflow="false">
+    <nav class="nav-inner">
+      {/* LEFT: Logo */}
+      <div class="nav-logo">
+        <a href={`/${lang}/`} class="nav-logo-link" accesskey="h" title={`${SITE.title} (Alt + H)`}>
+          <span class="nav-logo-text">{SITE.title}</span>
+        </a>
+      </div>
 
-    <nav id="nav-menu" class="flex items-center">
-      {/* Desktop: Icon-only on sm, full on lg+ */}
-      <ul id="desktop-nav" class="hidden items-center gap-0.5 sm:flex lg:gap-1">
+      {/* CENTER: Navigation Links */}
+      <ul id="desktop-nav" class="nav-links">
         {
-          navItems.map(({ href, label, icon: Icon }) => (
+          navItems.map(({ href, label }) => (
             <li>
               <a
                 href={href}
                 title={label}
                 class:list={[
-                  // Base styles
-                  "flex items-center rounded-xl py-2 transition-all duration-200 ease-out",
-                  // Icon-only on sm, with text on lg+
-                  "px-2.5 lg:px-3.5 lg:gap-2",
-                  // Colors
-                  "text-foreground-soft hover:bg-accent/10 hover:text-accent",
-                  // Active state
-                  { "bg-accent/15 text-accent font-semibold": isActive(href) },
+                  "nav-link",
+                  { "nav-link--active": isActive(href) },
                 ]}
               >
-                <Icon class="size-4 shrink-0 opacity-80" />
-                <span class="hidden text-sm font-medium lg:inline">{label}</span>
+                <span class="nav-link-text">{label}</span>
               </a>
             </li>
           ))
         }
-        {/* Language & Search - always visible */}
-        <li class="ml-1 flex items-center gap-0.5 border-l border-border/60 pl-2 lg:ml-2 lg:gap-1 lg:pl-3">
-          <button
-            id="lang-switch-btn"
-            class="rounded-xl px-2 py-2 text-xs font-bold tracking-wide
-                   text-muted transition-all duration-200 
-                   hover:bg-accent/10 hover:text-accent"
-            title="Switch language"
-            aria-label="Switch language"
-          >
-            <span id="lang-label">EN</span>
-          </button>
-          {useDocSearch && dsConfig ? (
-            <DocSearch
-              appId={dsConfig.appId}
-              apiKey={dsConfig.apiKey}
-              indexName={dsConfig.indexName}
-              placeholder={dsConfig.placeholder}
-              lang={lang}
-            />
-          ) : (
-            <a
-              href={`/${lang}/search`}
-              class:list={[
-                "rounded-xl p-2 transition-all duration-200 ease-out",
-                "text-foreground-soft hover:bg-accent/10 hover:text-accent",
-                { "bg-accent/15 text-accent": isActive(`/${lang}/search`) },
-              ]}
-              title={t("nav.search", lang)}
-              aria-label={t("nav.search", lang)}
-            >
-              <IconSearch class="size-4" />
-            </a>
-          )}
-        </li>
       </ul>
 
-<button
-  id="menu-btn"
-  class="rounded-xl p-2.5 transition-all duration-200 
-         hover:bg-accent/10 hover:text-accent sm:hidden"
-  aria-label="Open Menu"
-  aria-expanded="false"
-  aria-controls="mobile-menu"
->
-        <IconX id="close-icon" class="hidden size-5" />
-        <IconMenuDeep id="menu-icon" class="size-5" />
-      </button>
-    </nav>
-  </div>
+      {/* RIGHT: Widget Area */}
+      <div class="nav-widgets">
+        {/* Search Chip */}
+        {useDocSearch && dsConfig ? (
+          <DocSearch
+            appId={dsConfig.appId}
+            apiKey={dsConfig.apiKey}
+            indexName={dsConfig.indexName}
+            placeholder={dsConfig.placeholder}
+            lang={lang}
+          />
+        ) : (
+          <button
+            id="nav-search-trigger"
+            class="nav-search-trigger"
+            data-search-trigger="nav"
+            aria-haspopup="dialog"
+            aria-controls="search-command-palette"
+            aria-expanded="false"
+            title={lang === 'zh' ? '搜索 (⌘K)' : 'Search (⌘K)'}
+          >
+            <span class="nav-search-trigger__icon" aria-hidden="true">
+              <IconSearch class="size-4" />
+            </span>
+            <span class="nav-search-trigger__label">{lang === 'zh' ? '搜索' : 'Search'}</span>
+            <span class="nav-search-trigger__keys" aria-hidden="true">
+              <kbd>⌘</kbd>
+              <kbd>K</kbd>
+            </span>
+          </button>
+        )}
 
-  <div
-    id="mobile-menu"
-    class="hidden border-t border-border/50 bg-surface/95 backdrop-blur-xl"
-  >
-    <ul class="flex flex-col gap-1 p-4">
-      {
-        navItems.map(({ href, label, icon: Icon }) => (
-          <li>
-            <a
-              href={href}
-              class:list={[
-                "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium",
-                "transition-all duration-200 ease-out",
-                "text-foreground-soft hover:bg-accent/10 hover:text-accent",
-                { "bg-accent/15 text-accent font-semibold": isActive(href) },
-              ]}
-            >
-              <Icon class="size-5 opacity-80" />
-              <span>{label}</span>
-            </a>
-          </li>
-        ))
-      }
-      <li class="mt-2 border-t border-border/50 pt-3">
-        <a
-          href={`/${lang}/search`}
-          class:list={[
-            "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium",
-            "transition-all duration-200 ease-out",
-            "text-foreground-soft hover:bg-accent/10 hover:text-accent",
-            { "bg-accent/15 text-accent": isActive(`/${lang}/search`) },
-          ]}
-        >
-          <IconSearch class="size-5" />
-          <span>{t("nav.search", lang)}</span>
-        </a>
-      </li>
-      <li>
+        {/* Language Switcher */}
         <button
-          id="lang-switch-btn-mobile"
-          class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium
-                 text-foreground-soft transition-all duration-200 
-                 hover:bg-accent/10 hover:text-accent"
+          id="lang-switch-btn"
+          class="nav-widget-btn nav-lang-btn"
+          title="Switch language"
           aria-label="Switch language"
         >
+          <span id="lang-label">EN</span>
+        </button>
+
+        {/* AI Chat */}
+        {
+          aiEnabled && (
+            <button
+              id="ai-chat-toggle-nav"
+              class="nav-widget-btn nav-ai-btn"
+              aria-label={t('ai.assistantName', lang)}
+              title={t('ai.assistantName', lang)}
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 8V4H8" />
+                <rect width="16" height="12" x="4" y="8" rx="2" />
+                <path d="M2 14h2" />
+                <path d="M20 14h2" />
+                <path d="M15 13v2" />
+                <path d="M9 13v2" />
+              </svg>
+            </button>
+          )
+        }
+
+        {/* Immersive Mode */}
+        <button
+          id="immersive-mode-btn-nav"
+          class="nav-widget-btn nav-immersive-btn flex"
+          aria-label={lang === 'zh' ? '沉浸模式' : 'Immersive Mode'}
+          aria-pressed="false"
+          title={lang === 'zh' ? '沉浸模式' : 'Immersive Mode'}
+        >
           <svg
-            class="size-5 opacity-80"
+            id="immersive-icon-off-nav"
+            class="size-4"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M2 12h20"></path>
-            <path
-              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
-            ></path>
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
           </svg>
-          <span id="lang-label-mobile">English</span>
+          <svg
+            id="immersive-icon-on-nav"
+            class="hidden size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
         </button>
-      </li>
+
+        {/* Theme Toggle */}
+        {
+          darkMode && (
+            <button
+              id="theme-btn"
+              class="nav-widget-btn nav-theme-btn"
+              title={lang === 'zh' ? '切换主题' : 'Toggle theme'}
+              aria-label={lang === 'zh' ? '切换主题' : 'Toggle theme'}
+              aria-live="polite"
+            >
+              <IconMoon class="icon-moon size-4" />
+              <IconSunHigh class="icon-sun size-4" />
+            </button>
+          )
+        }
+
+        {/* Settings */}
+        <button
+          id="settings-btn-nav"
+          class="nav-widget-btn nav-settings-btn"
+          aria-label={lang === 'zh' ? '偏好设置' : 'Preferences'}
+          title={lang === 'zh' ? '偏好设置' : 'Preferences'}
+        >
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+
+        {/* Hamburger (mobile) */}
+        <button
+          id="menu-btn"
+          class="hamburger-menu"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <IconX id="close-icon" class="hidden size-5" />
+          <IconMenuDeep id="menu-icon" class="size-5" />
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  {/* Mobile Menu Dropdown */}
+  <div
+    id="mobile-menu"
+    class="mobile-menu hidden"
+  >
+    <ul class="mobile-menu-list">
+        {
+          navItems.map(({ href, label }) => (
+            <li>
+              <a
+                href={href}
+                class:list={[
+                  "mobile-menu-link",
+                  { "mobile-menu-link--active": isActive(href) },
+                ]}
+              >
+                <span>{label}</span>
+              </a>
+            </li>
+          ))
+        }
     </ul>
   </div>
-</header>
+</div>
 
 <div class="h-14"></div>
 
 <script>
-  function toggleNav() {
-    const menuBtn = document.querySelector("#menu-btn");
-    const mobileMenu = document.querySelector("#mobile-menu");
-    const menuIcon = document.querySelector("#menu-icon");
-    const closeIcon = document.querySelector("#close-icon");
+  import { getGlobalEventManager } from "../../utils/performance";
 
-    if (!menuBtn || !mobileMenu || !menuIcon || !closeIcon) return;
+  type SettingsPanelController = {
+    toggle?: () => void;
+    toggleReadingMode?: () => void;
+  };
 
-    menuBtn.addEventListener("click", () => {
-      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+  type NavWindow = Window & {
+    __aiChatToggle?: () => void;
+    __settingsPanel?: SettingsPanelController;
+  };
 
-      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? "Open Menu" : "Close Menu");
+  function initHeader() {
+    const manager = getGlobalEventManager();
+    const appWindow = window as NavWindow;
 
-      mobileMenu.classList.toggle("hidden");
-      menuIcon.classList.toggle("hidden");
-      closeIcon.classList.toggle("hidden");
-    });
-  }
-
-  toggleNav();
-  document.addEventListener("astro:after-swap", toggleNav);
-
-  // Overflow detection for responsive nav
-  function checkNavOverflow() {
-    const header = document.getElementById("main-header");
-    const desktopNav = document.getElementById("desktop-nav");
+    // === Mobile menu toggle ===
     const menuBtn = document.getElementById("menu-btn");
     const mobileMenu = document.getElementById("mobile-menu");
+    const menuIcon = document.getElementById("menu-icon");
+    const closeIcon = document.getElementById("close-icon");
 
-    if (!header || !desktopNav || !menuBtn || !mobileMenu) return;
+    if (menuBtn && mobileMenu && menuIcon && closeIcon) {
+      manager.add(menuBtn, "click", () => {
+        const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+        menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
+        menuBtn.setAttribute("aria-label", openMenu ? "Toggle menu" : "Close menu");
+        mobileMenu.classList.toggle("hidden");
+        menuIcon.classList.toggle("hidden");
+        closeIcon.classList.toggle("hidden");
+      });
 
-    // Get header inner container
-    const container = header.querySelector(".mx-auto") as HTMLElement | null;
-    if (!container) return;
+      // Close menu when clicking outside
+      manager.add(document, "click", (e) => {
+        if (!mobileMenu.classList.contains("hidden") &&
+            !mobileMenu.contains(e.target as Node) &&
+            !menuBtn.contains(e.target as Node)) {
+          mobileMenu.classList.add("hidden");
+          menuBtn.setAttribute("aria-expanded", "false");
+          menuBtn.setAttribute("aria-label", "Toggle menu");
+          menuIcon.classList.remove("hidden");
+          closeIcon.classList.add("hidden");
+        }
+      });
+    }
 
-    // Get logo link
-    const logo = container.querySelector("a[href]") as HTMLElement | null;
-    if (!logo) return;
+    // === Auto-hide navbar on scroll (Medium-style) ===
+    const headerWrapper = document.getElementById("header-wrapper");
+    if (headerWrapper) {
+      let lastScrollY = 0;
+      let ticking = false;
+      const THRESHOLD = 80;
 
-    // Calculate available space for nav
-    const containerWidth = container.offsetWidth;
-    const logoWidth = logo.offsetWidth;
+      function updateScroll() {
+        const currentY = window.scrollY || window.pageYOffset;
+        const mobileMenuOpen = mobileMenu && !mobileMenu.classList.contains("hidden");
 
-    // Check if nav items overflow the available space
-    // Add some buffer (20px) for gap/padding
-    const availableWidth = containerWidth - logoWidth - 20;
-    const navWidth = desktopNav.scrollWidth;
-
-    const isOverflow = navWidth > availableWidth;
-
-    // Update header state
-    header.setAttribute("data-nav-overflow", isOverflow ? "true" : "false");
-
-    // Toggle visibility based on overflow
-    if (isOverflow) {
-      // Hide desktop nav, show hamburger
-      desktopNav.classList.remove("sm:flex");
-      desktopNav.classList.add("sm:hidden");
-      menuBtn.classList.remove("sm:hidden");
-      menuBtn.classList.add("sm:flex");
-    } else {
-      // Show desktop nav, hide hamburger
-      desktopNav.classList.remove("sm:hidden");
-      desktopNav.classList.add("sm:flex");
-      menuBtn.classList.remove("sm:flex");
-      menuBtn.classList.add("sm:hidden");
-      // Close mobile menu if open (when switching back to desktop nav)
-      if (!mobileMenu.classList.contains("hidden")) {
-        mobileMenu.classList.add("hidden");
-        menuBtn.setAttribute("aria-expanded", "false");
-        menuBtn.setAttribute("aria-label", "Open Menu");
-        const menuIcon = document.getElementById("menu-icon");
-        const closeIcon = document.getElementById("close-icon");
-        menuIcon?.classList.remove("hidden");
-        closeIcon?.classList.add("hidden");
+        if (!mobileMenuOpen) {
+          if (currentY > THRESHOLD && currentY > lastScrollY) {
+            headerWrapper.classList.add("nav-scroll-hidden");
+          } else {
+            headerWrapper.classList.remove("nav-scroll-hidden");
+          }
+        }
+        lastScrollY = currentY;
+        ticking = false;
       }
+
+      manager.add(window, "scroll", () => {
+        if (!ticking) {
+          requestAnimationFrame(updateScroll);
+          ticking = true;
+        }
+      }, { passive: true });
     }
-  }
 
-  // Initial check
-  checkNavOverflow();
-
-  // Re-check on resize
-  const resizeObserver = new ResizeObserver(() => {
-    checkNavOverflow();
-  });
-
-  const header = document.getElementById("main-header");
-  if (header) {
-    resizeObserver.observe(header);
-  }
-
-  // Re-init on Astro page transitions
-  document.addEventListener("astro:after-swap", () => {
-    checkNavOverflow();
-    const newHeader = document.getElementById("main-header");
-    if (newHeader) {
-      resizeObserver.observe(newHeader);
+    // === Search trigger (open command palette) ===
+    const searchTrigger = document.getElementById("nav-search-trigger");
+    if (searchTrigger) {
+      manager.add(searchTrigger, "click", () => {
+        const palette = (window as NavWindow & { __searchPalette?: { open: () => void } }).__searchPalette;
+        if (palette?.open) {
+          palette.open();
+        } else {
+          const lang = document.documentElement.lang?.startsWith("zh") ? "zh" : "en";
+          window.location.href = `/${lang}/search`;
+        }
+      });
     }
-  });
 
-  function initLangSwitcher() {
-    const btns = [
+    // === AI Chat toggle (nav) ===
+    const aiNavBtn = document.getElementById("ai-chat-toggle-nav");
+    if (aiNavBtn) {
+      manager.add(aiNavBtn, "click", () => {
+        if (typeof appWindow.__aiChatToggle === 'function') {
+          appWindow.__aiChatToggle();
+        }
+      });
+    }
+
+    // === Settings toggle (nav) ===
+    const settingsNavBtn = document.getElementById("settings-btn-nav");
+    if (settingsNavBtn) {
+      manager.add(settingsNavBtn, "click", () => {
+        if (typeof appWindow.__settingsPanel?.toggle === 'function') {
+          appWindow.__settingsPanel.toggle();
+        }
+      });
+    }
+
+    // === Settings toggle (mobile menu) ===
+    const settingsMobileBtn = document.getElementById("settings-btn-mobile-menu");
+    if (settingsMobileBtn) {
+      manager.add(settingsMobileBtn, "click", () => {
+        if (typeof appWindow.__settingsPanel?.toggle === 'function') {
+          appWindow.__settingsPanel.toggle();
+        }
+      });
+    }
+
+    // === Theme toggle (mobile menu) ===
+    const themeMobileBtn = document.getElementById("theme-btn-mobile-menu");
+    if (themeMobileBtn) {
+      manager.add(themeMobileBtn, "click", (e) => {
+        // Forward to the main theme button click
+        const mainThemeBtn = document.getElementById("theme-btn");
+        if (mainThemeBtn) {
+          mainThemeBtn.click();
+        }
+      });
+    }
+
+    // === Immersive mode toggle (nav) ===
+    const immersiveModeNavBtn = document.getElementById("immersive-mode-btn-nav");
+    if (immersiveModeNavBtn) {
+      const syncImmersiveModeUI = (active: boolean) => {
+        immersiveModeNavBtn.setAttribute("aria-pressed", String(active));
+        const iconOff = document.getElementById("immersive-icon-off-nav");
+        const iconOn = document.getElementById("immersive-icon-on-nav");
+        if (active) {
+          immersiveModeNavBtn.classList.add("nav-immersive-btn--active");
+          iconOff?.classList.add("hidden");
+          iconOn?.classList.remove("hidden");
+        } else {
+          immersiveModeNavBtn.classList.remove("nav-immersive-btn--active");
+          iconOff?.classList.remove("hidden");
+          iconOn?.classList.add("hidden");
+        }
+      };
+
+      const initialActive = document.documentElement.classList.contains("immersive-mode");
+      syncImmersiveModeUI(initialActive);
+
+      manager.add(immersiveModeNavBtn, "click", () => {
+        if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
+          appWindow.__settingsPanel.toggleReadingMode();
+        }
+      });
+
+      const observer = new MutationObserver(() => {
+        const active = document.documentElement.classList.contains("immersive-mode");
+        syncImmersiveModeUI(active);
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      manager.trackObserver(observer, 'mutation');
+    }
+
+    // === Immersive mode toggle (mobile menu) ===
+    const immersiveModeMobileBtn = document.getElementById("immersive-mode-btn-mobile-menu");
+    if (immersiveModeMobileBtn) {
+      manager.add(immersiveModeMobileBtn, "click", () => {
+        if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
+          appWindow.__settingsPanel.toggleReadingMode();
+        }
+      });
+    }
+
+    // === Language switcher ===
+    const langBtns = [
       document.getElementById("lang-switch-btn"),
       document.getElementById("lang-switch-btn-mobile"),
     ];
@@ -351,8 +446,9 @@ const navItems = (SITE.nav?.items ?? [])
     if (label) label.textContent = isZh ? "EN" : "中";
     if (labelMobile) labelMobile.textContent = isZh ? "English" : "中文";
 
-    btns.forEach(btn => {
-      btn?.addEventListener("click", () => {
+    langBtns.forEach(btn => {
+      if (!btn) return;
+      manager.add(btn, "click", () => {
         if (isZh) {
           const newPath = path.replace(/^\/zh\/?/, "/en/") || "/en/";
           window.location.href = newPath;
@@ -362,8 +458,557 @@ const navItems = (SITE.nav?.items ?? [])
         }
       });
     });
+
+    // === Overflow detection for responsive nav ===
+    function checkNavOverflow() {
+      const header = document.getElementById("main-header");
+      const desktopNav = document.getElementById("desktop-nav");
+      const menuBtnEl = document.getElementById("menu-btn");
+      const mobileMenuEl = document.getElementById("mobile-menu");
+
+      if (!header || !desktopNav || !menuBtnEl || !mobileMenuEl) return;
+
+      const container = header.querySelector(".nav-inner") as HTMLElement | null;
+      if (!container) return;
+
+      const logo = container.querySelector(".nav-logo") as HTMLElement | null;
+      if (!logo) return;
+
+      const containerWidth = container.offsetWidth;
+      const logoWidth = logo.offsetWidth;
+      const widgets = container.querySelector(".nav-widgets") as HTMLElement | null;
+      const widgetsWidth = widgets ? widgets.offsetWidth : 0;
+
+      // Temporarily force nav-links visible to measure content width
+      const wasOverflow = header.getAttribute("data-nav-overflow") === "true";
+      const prevDisplay = desktopNav.style.display;
+      desktopNav.style.display = "flex";
+
+      // Measure the actual content width of nav items
+      const navContentWidth = desktopNav.scrollWidth;
+      // The available space for nav links = container - logo - widgets - margins
+      const marginBuffer = window.innerWidth >= 640 ? 24 : 0;
+      const availableSpace = containerWidth - logoWidth - widgetsWidth - marginBuffer;
+
+      // Reset display
+      desktopNav.style.display = prevDisplay;
+
+      // Check if nav content overflows the available space
+      // Use hysteresis: need 16px more room to exit overflow than to enter
+      const enterThreshold = availableSpace;
+      const exitThreshold = availableSpace + 16;
+      const isOverflow = wasOverflow
+        ? navContentWidth > exitThreshold
+        : navContentWidth > enterThreshold;
+
+      header.setAttribute("data-nav-overflow", isOverflow ? "true" : "false");
+
+      // CSS rules via :global([data-nav-overflow]) handle display toggling
+      // Only need to close mobile menu when not overflowing
+      if (!isOverflow && !mobileMenuEl.classList.contains("hidden")) {
+        mobileMenuEl.classList.add("hidden");
+        menuBtnEl.setAttribute("aria-expanded", "false");
+        menuBtnEl.setAttribute("aria-label", "Toggle menu");
+        menuIcon?.classList.remove("hidden");
+        closeIcon?.classList.add("hidden");
+      }
+    }
+
+    checkNavOverflow();
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkNavOverflow();
+    });
+
+    const headerEl = document.getElementById("main-header");
+    if (headerEl) {
+      resizeObserver.observe(headerEl);
+    }
   }
 
-  initLangSwitcher();
-  document.addEventListener("astro:after-swap", initLangSwitcher);
+  initHeader();
+  document.addEventListener("astro:after-swap", initHeader);
 </script>
+
+<style>
+  /* === Header Wrapper — Sticky with frosted glass === */
+  .header-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(251, 249, 244, 0.72);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom: 1px solid rgba(30, 35, 30, 0.06);
+    transition: transform 0.25s ease;
+    will-change: transform;
+  }
+
+  .header-wrapper.nav-scroll-hidden {
+    transform: translateY(-100%);
+  }
+
+  html[data-theme="dark"] .header-wrapper {
+    background: rgba(20, 22, 24, 0.72);
+    border-bottom-color: rgba(226, 227, 225, 0.06);
+  }
+
+  html:lang(en) .header-wrapper {
+    background: rgba(249, 249, 247, 0.72);
+  }
+
+  /* === Nav Container — 3-zone flex layout === */
+  .nav-inner {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    max-width: 1072px;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    padding: 0 1rem;
+    line-height: 44px;
+    gap: 0;
+    min-height: 52px;
+    overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .nav-inner {
+      padding: 0 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-inner {
+      padding: 0 2rem;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .nav-inner {
+      max-width: 1320px;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    .nav-inner {
+      max-width: 1500px;
+    }
+  }
+
+  @media (min-width: 1920px) {
+    .nav-inner {
+      max-width: 1760px;
+    }
+  }
+
+  /* === Logo (left zone) === */
+  .nav-logo {
+    margin: auto 0 auto 0;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 640px) {
+    .nav-logo {
+      margin-right: 12px;
+    }
+  }
+
+  .nav-logo-link {
+    font-family: var(--font-body, system-ui, sans-serif);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .nav-logo-link:hover {
+    color: var(--accent);
+  }
+
+  /* === Nav Links (center zone) === */
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    white-space: nowrap;
+    overflow-x: auto;
+    word-break: keep-all;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  @media (min-width: 640px) {
+    .nav-links {
+      display: flex;
+    }
+
+    :global([data-nav-overflow="true"]) .nav-links {
+      display: none;
+    }
+
+    :global([data-nav-overflow="true"]) .hamburger-menu {
+      display: flex;
+    }
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--radius-md, 6px);
+    background: transparent;
+    color: var(--foreground-soft);
+    font-family: var(--font-body, system-ui, sans-serif);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border: none;
+    line-height: 1.4;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .nav-link:hover {
+    background: rgba(30, 35, 30, 0.05);
+    color: var(--foreground);
+  }
+
+  html[data-theme="dark"] .nav-link:hover {
+    background: rgba(226, 227, 225, 0.06);
+  }
+
+  .nav-link--active {
+    color: var(--foreground);
+    font-weight: 500;
+    background: rgba(30, 35, 30, 0.04);
+  }
+
+  html[data-theme="dark"] .nav-link--active {
+    background: rgba(226, 227, 225, 0.05);
+  }
+
+  .nav-link-text {
+    display: inline;
+  }
+
+  /* Hide scrollbar on nav-links horizontal scroll */
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* === Widget Area (right zone) === */
+  .nav-widgets {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    gap: 2px;
+    margin: auto 0 auto 0;
+  }
+
+  @media (min-width: 640px) {
+    .nav-widgets {
+      margin-left: 12px;
+    }
+  }
+
+  /* === Search Chip === */
+  .nav-search-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 30px;
+    padding: 0 9px;
+    border-radius: var(--radius-md, 6px);
+    border: 1px solid rgba(30, 35, 30, 0.1);
+    background: rgba(30, 35, 30, 0.02);
+    color: var(--foreground-soft);
+    font-size: 12.5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .nav-search-trigger:hover {
+    background: rgba(30, 35, 30, 0.05);
+    border-color: rgba(30, 35, 30, 0.15);
+    color: var(--foreground);
+  }
+
+  html[data-theme="dark"] .nav-search-trigger {
+    border-color: rgba(226, 227, 225, 0.1);
+    background: rgba(226, 227, 225, 0.03);
+  }
+
+  html[data-theme="dark"] .nav-search-trigger:hover {
+    background: rgba(226, 227, 225, 0.07);
+    border-color: rgba(226, 227, 225, 0.18);
+  }
+
+  .nav-search-trigger__label {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .nav-search-trigger__keys {
+    display: inline-flex;
+    gap: 4px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .nav-search-trigger kbd {
+    min-width: 18px;
+    padding: 1px 5px;
+    font-size: 10px;
+    border-radius: 3px;
+    border: 1px solid rgba(30, 35, 30, 0.08);
+    background: rgba(30, 35, 30, 0.05);
+    color: var(--foreground-soft);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  html[data-theme="dark"] .nav-search-trigger kbd {
+    background: rgba(226, 227, 225, 0.06);
+    border-color: rgba(226, 227, 225, 0.1);
+  }
+
+  /* === Widget Buttons (theme, lang, AI, immersive, settings) === */
+  .nav-widget-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: var(--radius-md, 6px);
+    background: transparent;
+    color: var(--foreground-soft);
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .nav-widget-btn.hidden {
+    display: none !important;
+  }
+
+  .nav-widget-btn:hover {
+    background: rgba(30, 35, 30, 0.05);
+    color: var(--foreground);
+  }
+
+  html[data-theme="dark"] .nav-widget-btn:hover {
+    background: rgba(226, 227, 225, 0.06);
+  }
+
+  /* Language button wider */
+  .nav-lang-btn {
+    width: auto;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+  }
+
+  /* AI chat button accent */
+  .nav-ai-btn:hover {
+    color: var(--accent);
+  }
+
+  /* Immersive mode active state */
+  .nav-immersive-btn--active {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  /* Theme toggle icon visibility */
+  .icon-moon { display: block; }
+  .icon-sun { display: none; }
+  html[data-theme="dark"] .icon-moon { display: none; }
+  html[data-theme="dark"] .icon-sun { display: block; }
+
+  /* Settings button: hidden on mobile, visible on desktop */
+  .nav-settings-btn {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .nav-settings-btn {
+      display: inline-flex;
+    }
+  }
+
+  /* Settings button hover rotate */
+  .nav-settings-btn:hover svg {
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+  }
+
+  /* === Hamburger (mobile only) === */
+  .hamburger-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md, 6px);
+    cursor: pointer;
+    color: var(--foreground);
+    transition: background-color 0.15s ease;
+  }
+
+  .hamburger-menu:hover {
+    background: rgba(30, 35, 30, 0.05);
+  }
+
+  html[data-theme="dark"] .hamburger-menu:hover {
+    background: rgba(226, 227, 225, 0.06);
+  }
+
+  @media (min-width: 640px) {
+    .hamburger-menu {
+      display: none;
+    }
+  }
+
+  /* === Mobile Menu Dropdown === */
+  .mobile-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    border: 1px solid rgba(30, 35, 30, 0.08);
+    border-radius: 10px;
+    background: var(--surface-strong);
+    box-shadow: 0 8px 24px rgba(30, 35, 30, 0.08);
+    min-width: 200px;
+    z-index: 1000;
+  }
+
+  html[data-theme="dark"] .mobile-menu {
+    border-color: rgba(226, 227, 225, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobile-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px;
+    list-style: none;
+    margin: 0;
+  }
+
+  .mobile-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--foreground-soft);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .mobile-menu-link:hover {
+    background: rgba(30, 35, 30, 0.05);
+    color: var(--foreground);
+  }
+
+  html[data-theme="dark"] .mobile-menu-link:hover {
+    background: rgba(226, 227, 225, 0.06);
+  }
+
+  .mobile-menu-link--active {
+    color: var(--foreground);
+    font-weight: 600;
+    background: rgba(30, 35, 30, 0.04);
+  }
+
+  html[data-theme="dark"] .mobile-menu-link--active {
+    background: rgba(226, 227, 225, 0.05);
+  }
+
+  .mobile-widget-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: var(--radius-md, 6px);
+    background: transparent;
+    border: none;
+    color: var(--foreground-soft);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .mobile-widget-btn:hover {
+    background: rgba(30, 35, 30, 0.05);
+    color: var(--foreground);
+  }
+
+  html[data-theme="dark"] .mobile-widget-btn:hover {
+    background: rgba(226, 227, 225, 0.06);
+  }
+
+  /* === Search chip: icon-only on mobile === */
+  @media (max-width: 639px) {
+    .nav-search-trigger__label,
+    .nav-search-trigger__keys {
+      display: none;
+    }
+
+    .nav-search-trigger {
+      width: 44px;
+      height: 44px;
+      min-height: 44px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      justify-content: center;
+      border-radius: var(--radius-md, 6px);
+    }
+
+    .nav-search-trigger:hover {
+      background: rgba(30, 35, 30, 0.05);
+    }
+
+    html[data-theme="dark"] .nav-search-trigger:hover {
+      background: rgba(226, 227, 225, 0.06);
+    }
+
+    .nav-widget-btn {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* === Scroll anchor padding === */
+  html {
+    scroll-padding-top: 72px;
+  }
+</style>

@@ -22,6 +22,7 @@ export const defaultPreferences: Preferences = {
     colorScheme: 'teal',
     mode: 'system',
     radius: 'lg',
+    hue: 165,
   },
 
   appearance: {
@@ -39,13 +40,13 @@ export const defaultPreferences: Preferences = {
     theme: 'default',
     fontFamily: 'system',
     focusMode: false,
+    immersiveMode: false,
   },
 
   widgets: {
     themeToggle: true,
     backToTop: true,
     readingTime: true,
-    stickyBackToTop: true,
   },
 
   animations: {

@@ -14,7 +14,7 @@ export type ActionType =
   | 'scroll-to-section'
   | 'highlight-text'
   | 'toggle-theme'
-  | 'toggle-reading-mode'
+  | 'toggle-immersive-mode'
   | 'set-preference'
   | 'navigate';
 
@@ -84,10 +84,10 @@ export interface ThemeAction extends BaseAction {
 }
 
 /**
- * Toggle reading mode
+ * Toggle immersive mode
  */
-export interface ReadingModeAction extends BaseAction {
-  type: 'toggle-reading-mode';
+export interface ImmersiveModeAction extends BaseAction {
+  type: 'toggle-immersive-mode';
   payload: {
     enabled?: boolean;
     /** Reading mode settings */
@@ -134,7 +134,7 @@ export type Action =
   | ScrollAction
   | HighlightAction
   | ThemeAction
-  | ReadingModeAction
+  | ImmersiveModeAction
   | PreferenceAction
   | NavigateAction;
 

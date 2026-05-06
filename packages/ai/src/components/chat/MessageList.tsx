@@ -87,7 +87,7 @@ function MockMessageList({
                 key={q}
                 type="button"
                 onClick={() => onQuickPrompt(q)}
-                class="border-border bg-muted/30 text-foreground-soft hover:border-accent/40 hover:bg-accent/10 hover:text-foreground rounded-lg border px-2.5 py-1 text-[12px] transition-colors"
+                class="border-border bg-muted/30 text-foreground-soft hover:border-accent/40 hover:bg-accent/10 hover:text-foreground rounded-full border px-3 py-1.5 text-[12px] transition-colors"
               >
                 {q}
               </button>
@@ -108,7 +108,7 @@ function MockMessageList({
           <div
             class={
               msg.role === "user"
-                ? "bg-accent text-background max-w-[82%] rounded-2xl rounded-br-md px-3 py-2 text-[13px] leading-relaxed"
+                ? "bg-accent text-background max-w-[82%] rounded-2xl rounded-br-sm px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm"
                 : "text-foreground min-w-0 flex-1 pt-0.5 text-[13px] leading-relaxed"
             }
           >
@@ -196,7 +196,7 @@ export function shouldSkipEmptyAssistant(
     "toggleTheme",
     "navigateToArticle",
     "scrollToSection",
-    "toggleReadingMode",
+    "toggleImmersiveMode",
     "highlightText",
     "setPreference",
   ]);
@@ -258,7 +258,7 @@ function LiveMessageList({
                     key={q}
                     type="button"
                     onClick={() => onQuickPrompt(q)}
-                    class="border-border bg-muted/30 text-foreground-soft hover:border-accent/40 hover:bg-accent/10 hover:text-foreground rounded-lg border px-2.5 py-1 text-[12px] transition-colors"
+                    class="border-border bg-muted/30 text-foreground-soft hover:border-accent/40 hover:bg-accent/10 hover:text-foreground rounded-full border px-3 py-1.5 text-[12px] transition-colors"
                   >
                     {q}
                   </button>
@@ -314,7 +314,7 @@ function LiveMessageList({
             <div
               class={
                 msg.role === "user"
-                  ? "bg-accent text-background max-w-[82%] rounded-2xl rounded-br-md px-3 py-2 text-[13px] leading-relaxed"
+                  ? "bg-accent text-background max-w-[82%] rounded-2xl rounded-br-sm px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm"
                   : "text-foreground min-w-0 flex-1 pt-0.5 text-[13px] leading-relaxed"
               }
             >

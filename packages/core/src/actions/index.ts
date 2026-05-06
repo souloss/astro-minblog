@@ -4,7 +4,7 @@ export type {
   ScrollAction,
   HighlightAction,
   ThemeAction,
-  ReadingModeAction,
+  ImmersiveModeAction,
   PreferenceAction,
   NavigateAction,
   QueuedActionItem,

@@ -440,7 +440,7 @@ interface MinimaxEventMap {
   'adapter:loaded': { name: string; category: string };
   'adapter:destroyed': { name: string };
   'ai:chat-toggle': { open: boolean };
-  'reading-mode:toggle': { immersive: boolean };
+  'immersive-mode:toggle': { immersive: boolean };
 }
 
 // 使用方式
@@ -1442,7 +1442,7 @@ interface Preferences {
   appearance: AppearancePreferences; // fontSize
   layout: LayoutPreferences;        // postsLayout
   reading: ReadingPreferences;      // fontSize, lineHeight, contentWidth, theme, fontFamily, focusMode
-  widgets: WidgetPreferences;       // themeToggle, backToTop, readingTime, stickyBackToTop
+  widgets: WidgetPreferences;       // themeToggle, backToTop, readingTime
   animations: AnimationPreferences; // enabled, cardHover, smoothScroll
   version: number;                  // 迁移版本号
 }
@@ -1483,14 +1483,14 @@ interface Preferences {
 | 按钮 | 条件 | 功能 |
 |------|------|------|
 | AI 对话 | `features.ai === true` | 打开/关闭 AI 聊天面板 |
-| 阅读模式 | 仅文章页 | 切换阅读模式 |
+| 沉浸模式 | 仅文章页 | 切换沉浸模式 |
 | 主题切换 | `darkMode` 配置 | 亮/暗模式切换 |
 | 偏好设置 | 桌面端 | 打开设置面板 |
 | 返回顶部 | 始终 | 滚动到顶部 + 进度环 |
 
 **交互规范**：
 - 返回顶部按钮带 SVG 进度环，实时反映滚动进度
-- 阅读模式按钮仅在文章页显示
+- 沉浸模式按钮仅在文章页显示
 - AI 按钮使用主题色（`bg-accent`），与其他按钮的玻璃拟态风格区分
 - 所有按钮通过 `getGlobalEventManager()` 统一管理事件监听
 
@@ -2216,7 +2216,7 @@ interface PostListConfig {
 
 ### 9.1 需求概述
 
-提供一键切换的极简阅读模式，去除所有干扰元素，仅保留文章核心内容。
+提供一键切换的沉浸模式，去除所有干扰元素，仅保留文章核心内容。
 
 ### 9.2 行为规格
 
@@ -2733,7 +2733,7 @@ function parseWithFriendlyErrors(schema: ZodSchema, data: unknown) {
 | 主页小组件 | ✅ 计划 | ✅ 双侧边栏+丰富组件 | ❌ | ❌ |
 | 闪念/说说 | ✅ 计划 | ❌ | ❌ | ❌ |
 | AI 对话 | ✅ 已有 | ❌ | ❌ | ❌ |
-| 阅读模式 | ✅ 已有 | ❌ | ❌ | ❌ |
+| 沉浸模式 | ✅ 已有 | ❌ | ❌ | ❌ |
 | 360°色相 | ✅ 计划 | ✅ | ❌ | ❌ |
 | 多评论系统 | ✅ 计划 | ✅ Waline+Giscus | ❌ | ✅ Giscus+Waline |
 | FlexSearch | ✅ 计划 | ❌ | ❌ | ✅ CJK编码器 |

@@ -1,0 +1,583 @@
+---
+/**
+ * Search Command Palette Modal
+ *
+ * Opens with ⌘K / Ctrl+K, shows Pagefind search results inline,
+ * and provides a "Full Search →" link to the /search page.
+ *
+ * Uses the existing Pagefind integration (window.pagefind) — no new deps.
+ */
+import "@pagefind/default-ui/css/ui.css";
+
+interface Props {
+  lang?: string;
+}
+
+const { lang = "zh" } = Astro.props;
+
+const searchPlaceholder = lang === "zh" ? "搜索文章..." : "Search posts...";
+const fullSearchLabel = lang === "zh" ? "完整搜索" : "Full Search";
+const loadingLabel = lang === "zh" ? "搜索加载中…" : "Loading search…";
+const noResultsLabel = lang === "zh" ? "没有找到结果" : "No results found";
+---
+
+<div
+  id="search-command-palette"
+  class="search-palette"
+  role="dialog"
+  aria-modal="true"
+  aria-label={lang === "zh" ? "搜索" : "Search"}
+  data-lang={lang}
+  data-hidden="true"
+>
+  {/* Backdrop */}
+  <div class="search-palette__backdrop" aria-hidden="true"></div>
+
+  {/* Modal panel */}
+  <div class="search-palette__panel">
+    {/* Search input area */}
+    <div class="search-palette__input-area">
+      <svg
+        class="search-palette__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <input
+        id="search-palette-input"
+        class="search-palette__input"
+        type="search"
+        placeholder={searchPlaceholder}
+        autocomplete="off"
+        autofocus
+      />
+      <kbd class="search-palette__esc-key">Esc</kbd>
+    </div>
+
+    {/* Results area */}
+    <div class="search-palette__results">
+      <div id="search-palette-pagefind" class="search-palette__pagefind"></div>
+      <div id="search-palette-loading" class="search-palette__loading">
+        <div class="search-palette__loading-spinner"></div>
+        <span>{loadingLabel}</span>
+      </div>
+      <div id="search-palette-empty" class="search-palette__empty" data-visible="false">
+        <span>{noResultsLabel}</span>
+      </div>
+    </div>
+
+    {/* Footer with Full Search link */}
+    <div class="search-palette__footer">
+      <a
+        id="search-palette-full-link"
+        class="search-palette__full-link"
+        href={`/${lang}/search`}
+      >
+        {fullSearchLabel}
+        <svg
+          class="search-palette__arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
+      </a>
+      <div class="search-palette__footer-hint">
+        <kbd>↵</kbd>
+        <span>{lang === "zh" ? "打开" : "Open"}</span>
+        <kbd>Esc</kbd>
+        <span>{lang === "zh" ? "关闭" : "Close"}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  type SearchPaletteAPI = {
+    open: (initialQuery?: string) => void;
+    close: () => void;
+  };
+
+  function initSearchPalette() {
+    const palette = document.getElementById("search-command-palette");
+    const input = document.getElementById("search-palette-input") as HTMLInputElement | null;
+    const pagefindContainer = document.getElementById("search-palette-pagefind");
+    const loadingEl = document.getElementById("search-palette-loading");
+    const emptyEl = document.getElementById("search-palette-empty");
+    const fullLink = document.getElementById("search-palette-full-link") as HTMLAnchorElement | null;
+
+    if (!palette || !input || !pagefindContainer || !loadingEl || !emptyEl) return;
+
+    const lang = palette.dataset.lang || "zh";
+    let pagefindUI: InstanceType<typeof import("@pagefind/default-ui").PagefindUI> | null = null;
+    let isInitialized = false;
+    let lastQuery = "";
+
+    // === Open / Close ===
+    function open(initialQuery?: string) {
+      palette.dataset.hidden = "false";
+      document.body.style.overflow = "hidden";
+      input.focus();
+
+      // Update full search link with current query
+      if (fullLink && input.value) {
+        fullLink.href = `/${lang}/search?q=${encodeURIComponent(input.value)}`;
+      }
+
+      if (initialQuery) {
+        input.value = initialQuery;
+        triggerSearch(initialQuery);
+      }
+
+      // Initialize Pagefind UI lazily on first open
+      if (!isInitialized) {
+        initPagefind();
+      }
+    }
+
+    function close() {
+      palette.dataset.hidden = "true";
+      document.body.style.overflow = "";
+      // Return focus to the trigger button
+      const trigger = document.getElementById("nav-search-trigger");
+      trigger?.focus();
+    }
+
+    // === Pagefind initialization ===
+    async function initPagefind() {
+      try {
+        const { PagefindUI } = await import("@pagefind/default-ui");
+
+        if (import.meta.env.DEV) {
+          loadingEl.innerHTML = `
+            <div style="padding: 1rem; text-align: center; color: var(--foreground-soft); font-size: 0.875rem;">
+              <strong>DEV mode</strong> — Run <code style="background: var(--surface); padding: 2px 6px; border-radius: 4px;">pnpm build</code> first to enable search.
+            </div>
+          `;
+          isInitialized = true;
+          return;
+        }
+
+        pagefindUI = new PagefindUI({
+          element: "#search-palette-pagefind",
+          showImages: false,
+          showSubResults: true,
+          showEmptyFilters: false,
+          processTerm: (term: string) => {
+            lastQuery = term;
+            // Update full search link dynamically
+            if (fullLink) {
+              fullLink.href = `/${lang}/search?q=${encodeURIComponent(term)}`;
+            }
+            return term;
+          },
+        });
+
+        loadingEl.style.display = "none";
+        isInitialized = true;
+      } catch {
+        loadingEl.textContent = lang === "zh" ? "搜索不可用" : "Search unavailable";
+      }
+    }
+
+    function triggerSearch(term: string) {
+      if (pagefindUI) {
+        pagefindUI.triggerSearch(term);
+      }
+    }
+
+    // === Expose global API ===
+    (window as Window & { __searchPalette?: SearchPaletteAPI }).__searchPalette = {
+      open,
+      close,
+    };
+
+    // === Keyboard: ⌘K / Ctrl+K to open ===
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (palette.dataset.hidden !== "false") {
+          open();
+        } else {
+          close();
+        }
+      }
+
+      // Escape to close
+      if (e.key === "Escape" && palette.dataset.hidden !== "true") {
+        e.preventDefault();
+        close();
+      }
+    });
+
+    // === Click backdrop to close ===
+    const backdrop = palette.querySelector(".search-palette__backdrop");
+    if (backdrop) {
+      backdrop.addEventListener("click", () => close());
+    }
+
+    // === Sync input to Pagefind ===
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    input.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const term = input.value.trim();
+
+      debounceTimer = setTimeout(() => {
+        if (pagefindUI) {
+          if (term) {
+            pagefindUI.triggerSearch(term);
+          } else {
+            pagefindUI.triggerSearch("");
+          }
+        }
+
+        // Update full search link
+        if (fullLink) {
+          fullLink.href = term
+            ? `/${lang}/search?q=${encodeURIComponent(term)}`
+            : `/${lang}/search`;
+        }
+      }, 200);
+    });
+
+    // === Trap focus inside modal ===
+    palette.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      const focusable = palette.querySelectorAll<HTMLElement>(
+        'input, a[href], button, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+  }
+
+  initSearchPalette();
+  document.addEventListener("astro:after-swap", initSearchPalette);
+</script>
+
+<style>
+  /* === Palette container (hidden by default) === */
+  .search-palette {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: min(20vh, 120px);
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--transition-normal) var(--ease-out-expo),
+      visibility var(--transition-normal) var(--ease-out-expo);
+  }
+
+  .search-palette[data-hidden="true"] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* === Backdrop === */
+  .search-palette__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  html[data-theme="dark"] .search-palette__backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  /* === Modal panel === */
+  .search-palette__panel {
+    position: relative;
+    width: min(560px, calc(100vw - 2rem));
+    max-height: min(480px, calc(100vh - 160px));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-3xl);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: scale(1);
+    transition:
+      transform var(--transition-normal) var(--ease-out-expo),
+      opacity var(--transition-normal) var(--ease-out-expo);
+  }
+
+  .search-palette[data-hidden="true"] .search-palette__panel {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+
+  html[data-theme="dark"] .search-palette__panel {
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* === Input area === */
+  .search-palette__input-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-palette__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--foreground-soft);
+  }
+
+  .search-palette__input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-family: var(--font-app, system-ui, sans-serif);
+    color: var(--foreground);
+    line-height: 1.5;
+  }
+
+  .search-palette__input::placeholder {
+    color: var(--muted);
+  }
+
+  .search-palette__esc-key {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--foreground-soft);
+    line-height: 1.4;
+  }
+
+  /* === Results area === */
+  .search-palette__results {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    min-height: 0;
+  }
+
+  .search-palette__pagefind {
+    /* Pagefind UI container */
+  }
+
+  .search-palette__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 2rem;
+    color: var(--foreground-soft);
+    font-size: 0.875rem;
+  }
+
+  .search-palette__loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .search-palette__empty {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--foreground-soft);
+    font-size: 0.875rem;
+  }
+
+  .search-palette__empty[data-visible="true"] {
+    display: flex;
+  }
+
+  /* === Footer === */
+  .search-palette__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--foreground-soft);
+  }
+
+  .search-palette__full-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    transition: color var(--transition-fast) ease, gap var(--transition-fast) ease;
+  }
+
+  .search-palette__full-link:hover {
+    gap: 8px;
+  }
+
+  .search-palette__arrow {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--transition-fast) ease;
+  }
+
+  .search-palette__full-link:hover .search-palette__arrow {
+    transform: translateX(2px);
+  }
+
+  .search-palette__footer-hint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .search-palette__footer-hint kbd {
+    padding: 1px 5px;
+    font-size: 10px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--foreground-soft);
+    line-height: 1.4;
+  }
+
+  .search-palette__footer-hint span {
+    margin-right: 6px;
+  }
+</style>
+
+<style is:global>
+  /* === Pagefind UI overrides inside palette === */
+  #search-palette-pagefind {
+    --pagefind-ui-font: var(--font-app);
+    --pagefind-ui-text: var(--foreground);
+    --pagefind-ui-background: transparent;
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-tag: var(--surface);
+    --pagefind-ui-border-radius: var(--radius-md);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-image-border-radius: var(--radius-lg);
+    --pagefind-ui-image-box-ratio: 3 / 2;
+  }
+
+  /* Hide Pagefind's own search input — we have our own */
+  #search-palette-pagefind .pagefind-ui__search {
+    display: none;
+  }
+
+  /* Style result items compactly */
+  #search-palette-pagefind .pagefind-ui__results {
+    padding: 0;
+  }
+
+  #search-palette-pagefind .pagefind-ui__result {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition-fast) ease;
+  }
+
+  #search-palette-pagefind .pagefind-ui__result:hover {
+    background: var(--accent-soft);
+  }
+
+  #search-palette-pagefind .pagefind-ui__result:last-of-type {
+    border-bottom: 0;
+  }
+
+  #search-palette-pagefind .pagefind-ui__result-title a {
+    color: var(--accent);
+    text-decoration: none;
+    outline-offset: 1px;
+    outline-color: var(--accent);
+  }
+
+  #search-palette-pagefind .pagefind-ui__result-title a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  #search-palette-pagefind .pagefind-ui__result-title a:focus-visible {
+    text-decoration-line: none;
+    outline-width: 2px;
+    outline-style: dashed;
+  }
+
+  #search-palette-pagefind .pagefind-ui__filter-panel {
+    display: none;
+  }
+
+  #search-palette-pagefind .pagefind-ui__message {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--foreground-soft);
+  }
+
+  #search-palette-pagefind
+    .pagefind-ui__result-nested
+    .pagefind-ui__result-link:before {
+    font-family: system-ui;
+  }
+
+  /* Hide Pagefind drawer header */
+  #search-palette-pagefind .pagefind-ui__drawer > .pagefind-ui__message:first-child {
+    padding-top: 8px;
+  }
+</style>

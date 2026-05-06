@@ -30,7 +30,7 @@ export function ChatToolbar({
     : "ai-chat-description";
 
   return (
-    <div class="border-border flex shrink-0 items-center justify-between border-b px-3.5 py-2.5">
+    <div class="border-border flex shrink-0 items-center justify-between border-b px-3.5 py-2.5" style="background: color-mix(in oklch, var(--background) 88%, transparent); backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px);">
       <div class="flex items-center gap-2">
         <div class="bg-accent/15 flex size-6 shrink-0 items-center justify-center rounded-full">
           <BotIcon class="text-accent size-3" aria-hidden="true" />

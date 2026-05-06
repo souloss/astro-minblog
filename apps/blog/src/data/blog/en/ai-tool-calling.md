@@ -10,7 +10,7 @@ tags:
   - ai
   - tools
   - actions
-description: "Learn about astro-minimax AI Tool Calling: 7 built-in tools (theme toggle, article navigation, section scrolling, reading mode, text highlighting, preference settings, article search) and the client-side Action pipeline (ActionExecutor, ActionQueue, URLHandler)."
+description: "Learn about astro-minimax AI Tool Calling: 7 built-in tools (theme toggle, article navigation, section scrolling, immersive mode, text highlighting, preference settings, article search) and the client-side Action pipeline (ActionExecutor, ActionQueue, URLHandler)."
 ---
 
 astro-minimax's AI chat is more than text conversation. When you say "switch to dark mode" or "open the architecture article", the model doesn't just give you instructions. It performs the action directly. The core of this capability is Tool Calling combined with a client-side Action system.
@@ -34,7 +34,7 @@ These tools declare their schemas on the server. The model generates call instru
 | `toggleTheme` | Switch between light / dark / system theme modes | `theme`: "light" / "dark" / "system" |
 | `navigateToArticle` | Navigate to an article by slug, optionally scrolling to a section | `slug`, `sectionId`(optional), `lang`(optional) |
 | `scrollToSection` | Scroll to a specific section on the current page and highlight it | `sectionId`, `highlight`(default: true), `behavior` |
-| `toggleReadingMode` | Toggle reading mode on/off, with font size and family options | `enabled`, `fontSize`, `fontFamily` |
+| `toggleImmersiveMode` | Toggle immersive mode on/off, with font size and family options | `enabled`, `fontSize`, `fontFamily` |
 | `highlightText` | Highlight page elements by text content or CSS selector | `text` / `selector`, `style`, `duration`(default: 3000ms) |
 | `setPreference` | Write a preference value aligned with the site preferences system | `key`, `value` |
 
@@ -59,7 +59,7 @@ Defined in `packages/core/src/actions/executor.ts`. Maps 6 action types to real 
 - `scroll-to-section`: Finds the target element by ID or heading match, smooth-scrolls with offset, applies highlight CSS class with auto-removal
 - `highlight-text`: Uses TreeWalker to find text nodes, wraps matches in highlighted spans with configurable style (accent/warning/info/success)
 - `toggle-theme`: Updates `<html>` classes, calls `updatePreferences()`, triggers theme transition animation
-- `toggle-reading-mode`: Toggles `reading-mode` class on `<html>`, applies font size and family settings
+- `toggle-immersive-mode`: Toggles `immersive-mode` class on `<html>`, applies font size and family settings
 - `set-preference`: Parses dot-notation keys (e.g., `reading.fontSize`) and calls `updatePreferences()`
 - `navigate`: Constructs target URL, queues follow-up actions via ActionQueue, uses View Transitions API if available
 

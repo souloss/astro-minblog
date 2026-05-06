@@ -52,7 +52,7 @@ const ACTION_TOOL_NAMES = new Set([
   "toggleTheme",
   "navigateToArticle",
   "scrollToSection",
-  "toggleReadingMode",
+  "toggleImmersiveMode",
   "highlightText",
   "setPreference",
 ]);
@@ -102,14 +102,14 @@ function buildActionToolConfirmation(
         ? "I switched to system theme mode."
         : "已为你切换为跟随系统主题。";
     }
-    case "toggleReadingMode":
+    case "toggleImmersiveMode":
       return input.enabled === false
         ? lang === "en"
-          ? "I turned off reading mode."
-          : "已为你关闭阅读模式。"
+          ? "I turned off immersive mode."
+          : "已为你关闭沉浸模式。"
         : lang === "en"
-          ? "I turned on reading mode."
-          : "已为你开启阅读模式。";
+          ? "I turned on immersive mode."
+          : "已为你开启沉浸模式。";
     case "scrollToSection":
       return lang === "en"
         ? "I jumped to the requested section."
@@ -278,7 +278,7 @@ export function BotIcon({ class: cls }: { class?: string }) {
 
 export function BotAvatar() {
   return (
-    <div class="bg-accent/15 mt-0.5 flex size-5.5 shrink-0 items-center justify-center rounded-full">
+    <div class="bg-accent/15 mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full shadow-sm">
       <BotIcon class="text-accent size-3" />
     </div>
   );
@@ -288,9 +288,9 @@ export function TypingDots({ statusMessage }: { statusMessage?: string }) {
   return (
     <div class="flex items-center gap-2">
       <span class="inline-flex gap-1">
-        <span class="bg-foreground-soft size-1.5 animate-bounce rounded-full [animation-delay:0ms]" />
-        <span class="bg-foreground-soft size-1.5 animate-bounce rounded-full [animation-delay:150ms]" />
-        <span class="bg-foreground-soft size-1.5 animate-bounce rounded-full [animation-delay:300ms]" />
+        <span class="bg-foreground-soft size-1.5 animate-pulse rounded-full [animation-delay:0ms]" />
+        <span class="bg-foreground-soft size-1.5 animate-pulse rounded-full [animation-delay:150ms]" />
+        <span class="bg-foreground-soft size-1.5 animate-pulse rounded-full [animation-delay:300ms]" />
       </span>
       {statusMessage && (
         <span class="text-foreground-soft text-[11px]">{statusMessage}</span>

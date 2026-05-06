@@ -119,7 +119,7 @@ def test_article_detail(page) -> None:
         raise AssertionError("Article heading missing")
 
     assert_visible(page, "[data-inline-toc]", "Inline TOC present")
-    assert_visible(page, "#reading-mode-btn", "Reading mode button present")
+    assert_visible(page, "#immersive-mode-btn-nav", "Immersive mode button present")
     assert_visible(page, "#waline", "Waline container present")
     assert_count(
         page, "[data-pagefind-filter='tag']", 1, "Pagefind tag metadata present"

@@ -15,38 +15,38 @@
 
 /* ============================================
    TEAL - Default Theme (青绿)
-   Fresh and natural, great for tech blogs
+   PaperMod warm cream palette with teal accent
    ============================================ */
 
 html[data-color-scheme="teal"][data-theme="light"],
 html[data-color-scheme="teal"]:not([data-theme="dark"]) {
-  --background: #e8eaed;
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-strong: rgba(255, 255, 255, 0.92);
-  --foreground: #1d1d1f;
-  --foreground-soft: #6e6e73;
-  --muted: #6b7280;
+  --background: #fbf9f4;
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-strong: rgba(255, 255, 255, 0.95);
+  --foreground: #1e1e1e;
+  --foreground-soft: #6c6c6c;
+  --muted: #6c6c6c;
   --accent: #0f766e;
   --accent-soft: rgba(15, 118, 110, 0.12);
-  --border: rgba(0, 0, 0, 0.10);
-  --border-strong: rgba(0, 0, 0, 0.18);
-  --card: rgba(255, 255, 255, 0.70);
-  --card-hover: rgba(255, 255, 255, 0.88);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --card: rgba(255, 255, 255, 0.92);
+  --card-hover: rgba(255, 255, 255, 0.98);
 }
 
 html[data-color-scheme="teal"][data-theme="dark"] {
-  --background: #0c0c0e;
-  --surface: rgba(28, 28, 30, 0.78);
-  --surface-strong: rgba(44, 44, 46, 0.92);
-  --foreground: #f5f5f7;
-  --foreground-soft: #a1a1a6;
-  --muted: #71717a;
+  --background: #1d1e20;
+  --surface: rgba(46, 46, 51, 0.85);
+  --surface-strong: rgba(65, 66, 68, 0.92);
+  --foreground: #dadadb;
+  --foreground-soft: #9b9c9d;
+  --muted: #9b9c9d;
   --accent: #4fd1c5;
   --accent-soft: rgba(79, 209, 197, 0.15);
-  --border: rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --card: rgba(38, 38, 42, 0.80);
-  --card-hover: rgba(48, 48, 52, 0.92);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --card: rgba(46, 46, 51, 0.88);
+  --card-hover: rgba(55, 56, 62, 0.95);
 }
 
 /* ============================================
@@ -343,4 +343,23 @@ html[data-color-scheme="github"][data-theme="dark"] {
   --shadow-card-hover:
     0 4px 12px var(--border),
     0 16px 40px var(--border-strong);
+}
+
+/* ============================================
+   OKLCH HUE SYSTEM - Dynamic accent colors
+   Override accent colors when hue is customized
+   ============================================ */
+
+:root {
+  --hue: 165;
+
+  --accent-oklch: oklch(0.55 0.14 var(--hue));
+  --accent-oklch-soft: oklch(0.55 0.14 var(--hue) / 0.12);
+  --accent-oklch-light: oklch(0.70 0.10 var(--hue));
+  --accent-oklch-dark: oklch(0.75 0.14 var(--hue));
+}
+
+html[data-theme="dark"] {
+  --accent-oklch: oklch(0.75 0.14 var(--hue));
+  --accent-oklch-soft: oklch(0.75 0.14 var(--hue) / 0.15);
 }

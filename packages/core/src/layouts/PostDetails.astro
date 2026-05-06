@@ -7,6 +7,7 @@ import Tag from "../components/ui/Tag.astro";
 import Datetime from "../components/ui/Datetime.astro";
 import PostMeta from "../components/ui/PostMeta.astro";
 import BackButton from "../components/nav/BackButton.astro";
+import BackLink from "../components/nav/BackLink.astro";
 import { getLocalizedPostPath, getPostSlug } from "../utils/getPath";
 import { t } from "../utils/i18n";
 import { slugifyStr } from "../utils/slugify";
@@ -179,75 +180,6 @@ const nextPost =
   />
   <Header lang={lang} />
 
-  <!-- Sticky Header for Article Reading Progress -->
-  <div
-    id="sticky-header"
-    class="fixed start-0 top-0 z-50 w-full -translate-y-full transform border-b border-border bg-background/80 opacity-0 backdrop-blur-md transition-all duration-300"
-  >
-    <div class="app-layout flex h-14 items-center justify-between">
-      <div class="flex items-center gap-4 overflow-hidden">
-        <span
-          class="cursor-pointer truncate text-sm font-medium text-foreground hover:text-accent"
-          onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-        >
-          {title}
-        </span>
-      </div>
-      <div class="flex items-center gap-2">
-        <button
-          id="sticky-toc-toggle"
-          class="text-muted-foreground flex items-center gap-1 rounded-md p-2 hover:bg-muted/50 hover:text-accent sm:hidden"
-          aria-label="Toggle Table of Contents"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-          </svg>
-        </button>
-        <button
-          id="sticky-back-to-top"
-          class="sticky-back-to-top-btn text-muted-foreground rounded-md p-2 hover:bg-muted/50 hover:text-accent"
-          onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-          aria-label="Scroll to top"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M12 19V5"></path>
-            <polyline points="5 12 12 5 19 12"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div class="absolute start-0 bottom-0 h-[2px] w-full bg-muted/30">
-      <div
-        id="progress-bar"
-        class="h-full w-0 bg-accent transition-all duration-150 ease-out"
-      >
-      </div>
-    </div>
-  </div>
-
   <BackButton />
   <main
     id="main-content"
@@ -312,6 +244,7 @@ const nextPost =
     >
       <Content />
     </article>
+    <BackLink />
     <slot name="post-scripts" />
     <FloatingTOC headings={headings} />
     <FloatingSeriesNav post={post} lang={lang} />
@@ -375,76 +308,7 @@ const nextPost =
 
 <script is:inline data-astro-rerun>
   (function() {
-    let scrollHandler = null;
-    let tocClickHandler = null;
     let afterSwapHandler = null;
-
-    function initStickyHeader() {
-      const header = document.getElementById("sticky-header");
-      const progressBar = document.getElementById("progress-bar");
-      const tocToggle = document.getElementById("sticky-toc-toggle");
-      const stickyBackToTopBtn = document.getElementById("sticky-back-to-top");
-
-      if (!header || !progressBar) return;
-
-      function applyStickyBackToTopVisibility() {
-        const enabled = document.documentElement.getAttribute('data-sticky-backtotop') !== 'false';
-        if (header) {
-          if (enabled) {
-            header.style.removeProperty('display');
-          } else {
-            header.style.display = 'none';
-          }
-        }
-      }
-
-      applyStickyBackToTopVisibility();
-
-      window.addEventListener('astro-minimax:preferences-change', () => {
-        applyStickyBackToTopVisibility();
-      });
-
-      let rafId = null;
-      scrollHandler = function() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(function() {
-          const winScroll =
-            document.body.scrollTop || document.documentElement.scrollTop;
-          const height =
-            document.documentElement.scrollHeight -
-            document.documentElement.clientHeight;
-          const scrolled = (winScroll / height) * 100;
-
-          progressBar.style.width = scrolled + "%";
-
-          if (winScroll > 300) {
-            header.classList.remove("-translate-y-full", "opacity-0");
-          } else {
-            header.classList.add("-translate-y-full", "opacity-0");
-          }
-          rafId = null;
-        });
-      };
-
-      document.addEventListener("scroll", scrollHandler, { passive: true });
-
-      if (tocToggle) {
-        tocClickHandler = function() {
-          const inlineToc = document.querySelector("[data-inline-toc]");
-          if (inlineToc) {
-            inlineToc.scrollIntoView({ behavior: "smooth", block: "center" });
-            const toggleBtn = inlineToc.querySelector("[data-toc-toggle]");
-            if (
-              toggleBtn &&
-              toggleBtn.getAttribute("aria-expanded") === "false"
-            ) {
-              toggleBtn.click();
-            }
-          }
-        };
-        tocToggle.addEventListener("click", tocClickHandler);
-      }
-    }
 
     function addHeadingLinks() {
       const headings = Array.from(
@@ -466,15 +330,6 @@ const nextPost =
     }
 
     function cleanup() {
-      if (scrollHandler) {
-        document.removeEventListener("scroll", scrollHandler);
-        scrollHandler = null;
-      }
-      if (tocClickHandler) {
-        const tocToggle = document.getElementById("sticky-toc-toggle");
-        if (tocToggle) tocToggle.removeEventListener("click", tocClickHandler);
-        tocClickHandler = null;
-      }
       if (afterSwapHandler) {
         document.removeEventListener("astro:after-swap", afterSwapHandler);
         afterSwapHandler = null;
@@ -488,7 +343,6 @@ const nextPost =
     };
     document.addEventListener("astro:after-swap", afterSwapHandler);
 
-    initStickyHeader();
     addHeadingLinks();
   })();
 </script>

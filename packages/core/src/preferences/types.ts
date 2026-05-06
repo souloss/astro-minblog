@@ -58,6 +58,8 @@ export interface ThemePreferences {
   mode: ThemeModeType;
   /** Border radius */
   radius: RadiusType;
+  /** OKLCH hue value (0-360) for dynamic accent color */
+  hue: number;
 }
 
 // === Appearance Preferences ===
@@ -86,6 +88,8 @@ export interface ReadingPreferences {
   fontFamily: ReadingFontFamilyType;
   /** Focus mode - highlight current paragraph */
   focusMode: boolean;
+  /** Immersive mode - hide all chrome for distraction-free reading */
+  immersiveMode: boolean;
 }
 
 // === Widget Preferences ===
@@ -96,8 +100,6 @@ export interface WidgetPreferences {
   backToTop: boolean;
   /** Show reading time */
   readingTime: boolean;
-  /** Show sticky back to top in article */
-  stickyBackToTop: boolean;
 }
 
 // === Animation Preferences ===

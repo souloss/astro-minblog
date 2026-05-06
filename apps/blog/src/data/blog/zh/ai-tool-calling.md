@@ -10,7 +10,7 @@ tags:
   - ai
   - tools
   - actions
-description: "了解 astro-minimax 的 AI Tool Calling 功能： 7 个内置工具（主题切换、文章导航、章节滚动、阅读模式、文本高亮、偏好设置、文章搜索）和客户端 Action 管线（ActionExecutor、ActionQueue、URLHandler）。"
+description: "了解 astro-minimax 的 AI Tool Calling 功能： 7 个内置工具（主题切换、文章导航、章节滚动、沉浸模式、文本高亮、偏好设置、文章搜索）和客户端 Action 管线（ActionExecutor、ActionQueue、URLHandler）。"
 ---
 
 astro-minimax 的 AI 聊天不只是文字对话。当你说「切换到深色模式」或「打开架构那篇文章」，模型不会只给你一段操作说明，而是直接帮你完成操作。这套能力的核心是 Tool Calling 和客户端 Action 系统。
@@ -34,7 +34,7 @@ Tool Calling 让 AI 模型在对话中决定调用预定义的工具函数，而
 | `toggleTheme` | 在浅色 / 深色 / 跟随系统之间切换主题 | `theme`: "light" / "dark" / "system" |
 | `navigateToArticle` | 按 slug 跳转到文章页，可选跳到某个章节 | `slug`, `sectionId`(可选), `lang`(可选) |
 | `scrollToSection` | 在当前页滚动到指定章节并高亮 | `sectionId`, `highlight`(默认 true), `behavior` |
-| `toggleReadingMode` | 开启或关闭阅读模式，可调字号和字体 | `enabled`, `fontSize`, `fontFamily` |
+| `toggleImmersiveMode` | 开启或关闭沉浸模式，可调字号和字体 | `enabled`, `fontSize`, `fontFamily` |
 | `highlightText` | 按文本内容或 CSS 选择器高亮页面元素 | `text` / `selector`, `style`, `duration`(默认 3000ms) |
 | `setPreference` | 写入用户偏好（与偏好系统对齐的键值） | `key`, `value` |
 
@@ -57,7 +57,7 @@ Tool Calling 让 AI 模型在对话中决定调用预定义的工具函数，而
 - `scroll-to-section`: 查找目标元素（支持 `getElementById`、`data-section-id`、模糊匹配），平滑滚动并可选高亮
 - `highlight-text`: 通过 TreeWalker 遍历文本节点匹配内容，或使用 CSS 选择器定位元素
 - `toggle-theme`: 写入偏好并通过 `window.theme` API 反映到 DOM
-- `toggle-reading-mode`: 切换 `reading-mode` CSS 类，可同步更新字号和字体偏好
+- `toggle-immersive-mode`: 切换 `immersive-mode` CSS 类，可同步更新字号和字体偏好
 - `set-preference`: 通过 `updatePreferences()` 写入偏好系统的键值（支持点号分隔的嵌套路径如 `reading.fontSize`）
 - `navigate`: 构建目标 URL，支持 View Transitions 动画，可在导航后追加后续动作
 

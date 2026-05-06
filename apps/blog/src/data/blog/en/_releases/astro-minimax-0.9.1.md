@@ -26,7 +26,7 @@ The assistant can now control the page through tool calls. Seven built-in tools 
 - **`toggleTheme`**: Switch theme (light / dark / system)
 - **`navigateToArticle`**: Navigate to a specific post
 - **`scrollToSection`**: Scroll to a heading or section
-- **`toggleReadingMode`**: Toggle reading mode
+- **`toggleImmersiveMode`**: Toggle immersive mode
 - **`highlightText`**: Highlight text in the article
 - **`setPreference`**: Update user preferences
 - **`searchArticles`**: Search blog posts (server-side)

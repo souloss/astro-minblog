@@ -30,8 +30,19 @@ export const TOOL_ACTION_MAP: Record<string, ToolMapper> = {
       behavior: i.behavior ?? "smooth",
     },
   }),
+  toggleImmersiveMode: i => ({
+    type: "toggle-immersive-mode",
+    payload: {
+      enabled: i.enabled,
+      settings: {
+        ...(i.fontSize ? { fontSize: i.fontSize } : {}),
+        ...(i.fontFamily ? { fontFamily: i.fontFamily } : {}),
+      },
+    },
+  }),
+  // Backward compat: AI may still call toggleReadingMode
   toggleReadingMode: i => ({
-    type: "toggle-reading-mode",
+    type: "toggle-immersive-mode",
     payload: {
       enabled: i.enabled,
       settings: {

@@ -932,7 +932,7 @@ Tool calling has become a complete dual-ended pipeline rather than the kind of e
 | `toggleTheme` | client tool | browser |
 | `navigateToArticle` | client tool | browser |
 | `scrollToSection` | client tool | browser |
-| `toggleReadingMode` | client tool | browser |
+| `toggleImmersiveMode` | client tool | browser |
 | `highlightText` | client tool | browser |
 | `setPreference` | client tool | browser |
 | `searchArticles` | server tool | AI server |

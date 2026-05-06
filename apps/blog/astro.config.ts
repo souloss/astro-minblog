@@ -100,7 +100,6 @@ export default defineConfig({
           themeToggle: true,
           backToTop: true,
           readingTime: true,
-          stickyBackToTop: true,
         },
         animations: {
           enabled: true,

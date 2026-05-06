@@ -12,40 +12,38 @@
    ============================================ */
 
 :root {
-  /* === Core Colors (teal default) === */
-  --background: #e8eaed;
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-strong: rgba(255, 255, 255, 0.92);
-  --card: rgba(255, 255, 255, 0.70);
-  --card-hover: rgba(255, 255, 255, 0.88);
+  /* === Core Colors (PaperMod warm cream) === */
+  --background: #fbf9f4;
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-strong: rgba(255, 255, 255, 0.95);
+  --card: rgba(255, 255, 255, 0.92);
+  --card-hover: rgba(255, 255, 255, 0.98);
   
   /* === Text Colors (WCAG AA compliant) === */
-  --foreground: #1d1d1f;
-  --foreground-soft: #6e6e73;
-  --muted: #6b7280;  /* 4.44:1 contrast on background */
+  --foreground: #1e1e1e;
+  --foreground-soft: #6c6c6c;
+  --muted: #6c6c6c;
   
   /* === Brand Colors === */
-  --accent: #0f766e;  /* 5.03:1 contrast on background */
+  --accent: #0f766e;
   --accent-soft: rgba(15, 118, 110, 0.12);
   --accent-gradient-from: #0f766e;
   --accent-gradient-to: #134e4a;
   --brand-secondary: #5eead4;
   
   /* === Border & Shadow === */
-  --border: rgba(0, 0, 0, 0.10);
-  --border-strong: rgba(0, 0, 0, 0.18);
-  --shadow-elevated: rgba(0, 0, 0, 0.10);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --shadow-elevated: rgba(0, 0, 0, 0.08);
   --shadow-card: 
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 1px 2px rgba(20, 40, 50, 0.04),
+    0 2px 8px rgba(20, 40, 50, 0.03);
   --shadow-card-hover:
-    0 8px 16px rgba(0, 0, 0, 0.08),
-    0 16px 48px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    0 4px 16px rgba(20, 40, 50, 0.06),
+    0 1px 4px rgba(20, 40, 50, 0.04);
   
   /* === Glass Effect === */
-  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-blur: 12px;
   
@@ -58,36 +56,36 @@
   --series-glow: rgba(15, 118, 110, 0.1);
   --series-border: rgba(15, 118, 110, 0.25);
   --series-bg-from: rgba(255, 255, 255, 0.8);
-  --series-bg-to: rgba(245, 245, 247, 0.6);
+  --series-bg-to: rgba(251, 249, 244, 0.6);
   --series-pulse: rgba(15, 118, 110, 0.7);
   
   /* === Visualization Containers === */
-  --viz-bg: rgba(250, 250, 252, 0.85);
+  --viz-bg: rgba(251, 249, 244, 0.85);
   --viz-border: rgba(0, 0, 0, 0.08);
   --viz-btn-bg: rgba(255, 255, 255, 0.95);
   --viz-btn-hover: rgba(15, 118, 110, 0.12);
   
   /* === Animation Tokens === */
-  --transition-fast: 150ms;    /* Micro-interactions: progress, instant feedback */
-  --transition-base: 200ms;    /* Hover effects: color, opacity changes */
-  --transition-normal: 300ms;  /* Card animations: transform, shadows */
-  --transition-slow: 500ms;    /* Long animations: image zoom, page transitions */
+  --transition-fast: 150ms;
+  --transition-base: 200ms;
+  --transition-normal: 300ms;
+  --transition-slow: 500ms;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Dark mode default (teal) */
+/* Dark mode default (PaperMod) */
 html[data-theme="dark"] {
-  --background: #0c0c0e;
-  --surface: rgba(28, 28, 30, 0.78);
-  --surface-strong: rgba(44, 44, 46, 0.92);
-  --card: rgba(38, 38, 42, 0.80);
-  --card-hover: rgba(48, 48, 52, 0.92);
+  --background: #1d1e20;
+  --surface: rgba(46, 46, 51, 0.85);
+  --surface-strong: rgba(65, 66, 68, 0.92);
+  --card: rgba(46, 46, 51, 0.88);
+  --card-hover: rgba(55, 56, 62, 0.95);
   
-  --foreground: #f5f5f7;
-  --foreground-soft: #a1a1a6;
-  --muted: #71717a;  /* 4.04:1 contrast on background */
+  --foreground: #dadadb;
+  --foreground-soft: #9b9c9d;
+  --muted: #9b9c9d;
   
   --accent: #4fd1c5;
   --accent-soft: rgba(79, 209, 197, 0.15);
@@ -95,20 +93,18 @@ html[data-theme="dark"] {
   --accent-gradient-to: #38b2ac;
   --brand-secondary: #81e6d9;
   
-  --border: rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
   --shadow-elevated: rgba(0, 0, 0, 0.5);
   --shadow-card:
     0 2px 8px rgba(0, 0, 0, 0.3),
-    0 8px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 8px 24px rgba(0, 0, 0, 0.4);
   --shadow-card-hover:
     0 8px 16px rgba(0, 0, 0, 0.35),
-    0 16px 48px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 16px 48px rgba(0, 0, 0, 0.5);
   
-  --glass-bg: rgba(44, 44, 46, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(46, 46, 51, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 16px;
   
   --hero-orb-a: rgba(79, 209, 197, 0.15);
@@ -117,13 +113,13 @@ html[data-theme="dark"] {
   
   --series-glow: rgba(79, 209, 197, 0.12);
   --series-border: rgba(79, 209, 197, 0.28);
-  --series-bg-from: rgba(28, 28, 30, 0.9);
-  --series-bg-to: rgba(44, 44, 46, 0.65);
+  --series-bg-from: rgba(29, 30, 32, 0.9);
+  --series-bg-to: rgba(46, 46, 51, 0.65);
   --series-pulse: rgba(79, 209, 197, 0.85);
   
-  --viz-bg: rgba(44, 44, 46, 0.55);
-  --viz-border: rgba(255, 255, 255, 0.1);
-  --viz-btn-bg: rgba(58, 58, 60, 0.9);
+  --viz-bg: rgba(46, 46, 51, 0.55);
+  --viz-border: rgba(255, 255, 255, 0.08);
+  --viz-btn-bg: rgba(55, 56, 62, 0.9);
   --viz-btn-hover: rgba(79, 209, 197, 0.18);
 }
 
@@ -702,13 +698,13 @@ html.theme-transition body {
     font-size: 12pt;
   }
   
-  header,
+  .header-wrapper,
   footer,
   nav,
   #floating-actions,
   #ai-chat-panel,
   #ai-chat-toggle-fab,
-  #sticky-header,
+  #ai-chat-toggle-nav,
   #back-button,
   .floating-toc-container,
   .post-actions,
@@ -717,6 +713,7 @@ html.theme-transition body {
   .code-collapse-toggle,
   .code-collapse-fade,
   #lightbox-overlay,
+  #search-command-palette,
   [data-pagefind-ignore] {
     display: none !important;
   }
@@ -943,7 +940,7 @@ html[data-theme="dark"][data-reading-theme="oled"] {
 }
 
 /* ============================================
-   READING MODE STYLES
+   IMMERSIVE MODE STYLES
    ============================================ */
 
 /* Global font family - applies to entire site */
@@ -951,29 +948,62 @@ html[data-theme="dark"][data-reading-theme="oled"] {
   font-family: var(--reading-font-family, ui-sans-serif, system-ui, sans-serif);
 }
 
-
-.reading-mode .app-prose#article .text-muted,
-.reading-mode .app-prose#article .text-foreground-soft {
-  color: var(--reading-muted);
+/* Hide ALL navigation chrome in immersive mode */
+.immersive-mode .header-wrapper,
+.immersive-mode footer,
+.immersive-mode #floating-actions,
+.immersive-mode aside:not(.floating-toc-container),
+.immersive-mode .sidebar,
+.immersive-mode .floating-series-nav,
+.immersive-mode #featured,
+.immersive-mode #recent-posts,
+.immersive-mode .socials,
+.immersive-mode [href="/rss.xml"],
+.immersive-mode .my-10,
+.immersive-mode .immersive-mode-hide {
+  display: none !important;
 }
 
-.reading-mode .app-prose {
-  line-height: var(--reading-line-height) !important;
+/* Homepage immersive mode — center hero content */
+.immersive-mode #hero {
+  border: none !important;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.immersive-mode #hero .relative.z-10 {
+  max-width: 65ch;
+  margin: 0 auto;
+}
+
+/* Content-first layout */
+.immersive-mode main {
   max-width: var(--reading-width) !important;
+  margin: 0 auto !important;
+  padding: 2rem 1rem !important;
 }
 
-.reading-mode body,
-.reading-mode {
+.immersive-mode .app-prose {
+  max-width: 100% !important;
+  line-height: var(--reading-line-height) !important;
+}
+
+/* Apply reading theme colors */
+.immersive-mode body,
+.immersive-mode {
   background-color: var(--reading-bg) !important;
 }
 
-.reading-mode .app-prose,
-.reading-mode .app-prose * {
+.immersive-mode .app-prose,
+.immersive-mode .app-prose * {
   color: var(--reading-fg) !important;
 }
 
-.reading-mode .app-prose .text-muted,
-.reading-mode .app-prose .text-foreground-soft {
+.immersive-mode .app-prose .text-muted,
+.immersive-mode .app-prose .text-foreground-soft {
   color: var(--reading-muted) !important;
 }
 
@@ -1010,62 +1040,18 @@ html[data-theme="dark"][data-reading-theme="oled"] {
   opacity: 1;
 }
 
-/* Reading Mode - Hide navigation for focused reading */
-.reading-mode header,
-.reading-mode nav:not(.inline-toc nav):not(.toc-nav),
-.reading-mode .site-nav,
-.reading-mode aside:not(.floating-toc-container),
-.reading-mode .sidebar,
-.reading-mode footer,
-.reading-mode .floating-actions,
-.reading-mode .floating-series-nav,
-.reading-mode #sticky-header {
+/* Hide post-bottom elements in immersive mode */
+.immersive-mode .app-prose + hr,
+.immersive-mode .app-prose ~ hr,
+.immersive-mode .related-posts,
+.immersive-mode .comments-section,
+.immersive-mode .copyright-box,
+.immersive-mode .series-nav {
   display: none !important;
 }
 
-/* Keep settings panel accessible */
-.reading-mode #settings-panel:not(.hidden) {
-  display: block !important;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Reading mode layout - center all content */
-.reading-mode main {
-  max-width: var(--reading-width) !important;
-  margin: 0 auto !important;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
-/* Keep prose at full width within the constrained main */
-.reading-mode .app-prose {
-  max-width: 100% !important;
-}
-
-/* Hide post-bottom elements in reading mode */
-.reading-mode .app-prose + hr,
-.reading-mode .app-prose ~ hr,
-.reading-mode .related-posts,
-.reading-mode .comments-section,
-.reading-mode .copyright-box,
-.reading-mode .series-nav {
-  display: none !important;
-}
-
-/* Ensure inline TOC works in reading mode */
-.reading-mode .inline-toc {
-  display: block !important;
-  pointer-events: auto;
-}
-
-.reading-mode .inline-toc-toggle,
-.reading-mode .inline-toc-link {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.reading-mode aside.floating-toc-container {
+/* Keep floating TOC accessible */
+.immersive-mode aside.floating-toc-container {
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -1076,4 +1062,77 @@ html[data-theme="dark"][data-reading-theme="oled"] {
   top: 8rem !important;
   transform: none !important;
   z-index: 20 !important;
+}
+
+/* Keep settings panel accessible */
+.immersive-mode #settings-panel:not(.hidden) {
+  display: block !important;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Keep inline TOC accessible */
+.immersive-mode .inline-toc {
+  display: block !important;
+  pointer-events: auto;
+}
+
+.immersive-mode .inline-toc-toggle,
+.immersive-mode .inline-toc-link {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Immersive exit button - fixed, subtle, bottom-right */
+.immersive-exit-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(30, 35, 30, 0.1);
+  background: var(--reading-surface, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(8px);
+  color: var(--reading-muted);
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.immersive-exit-btn:hover {
+  opacity: 1;
+  color: var(--reading-fg);
+  background: var(--reading-surface);
+}
+
+html[data-theme="dark"] .immersive-exit-btn {
+  border-color: rgba(226, 227, 225, 0.1);
+}
+
+/* Show exit button only in immersive mode */
+.immersive-mode .immersive-exit-btn {
+  display: flex !important;
+}
+
+/* Immersive back link - terminal style */
+.immersive-back-link {
+  margin-top: 2rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.immersive-back-link a {
+  color: var(--reading-muted, var(--foreground-soft));
+  text-decoration: none;
+  opacity: 0.5;
+  transition: opacity 0.3s ease, color 0.15s ease;
+}
+
+.immersive-back-link a:hover {
+  opacity: 1;
+  color: var(--reading-fg, var(--foreground));
 }

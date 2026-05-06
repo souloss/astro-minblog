@@ -60,8 +60,8 @@ const labels = {
   readingThemeParchment: t("settings.readingThemeParchment", lang),
   readingThemeNight: t("settings.readingThemeNight", lang),
   readingThemeOled: t("settings.readingThemeOled", lang),
-  readingMode: t("settings.readingMode", lang),
-  readingModeDesc: t("settings.readingModeDesc", lang),
+  immersiveMode: t("settings.immersiveMode", lang),
+  immersiveModeDesc: t("settings.immersiveModeDesc", lang),
   // 布局模式标签
   layoutCard: "卡片",
   layoutGrid: "网格",
@@ -69,6 +69,8 @@ const labels = {
   layoutCardDesc: "标题优先，适合阅读",
   layoutGridDesc: "三列网格，快速浏览",
   layoutListDesc: "紧凑列表，适合归档",
+  hue: t("settings.hue", lang),
+  hueDesc: lang === 'zh' ? '调整主题色相' : 'Adjust theme hue',
 };
 
 const layoutModes = [
@@ -106,6 +108,20 @@ const layoutModes = [
         <div>
           <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.colorScheme}</p>
           <div class="grid grid-cols-8 gap-1.5" id="color-scheme-options"></div>
+        </div>
+        <div>
+          <p class="mb-1 text-xs font-medium text-foreground-soft">{labels.hue}</p>
+          <p class="mb-3 text-xs text-muted">{labels.hueDesc}</p>
+          <div class="flex items-center gap-3">
+            <input type="range" id="hue-slider" min="0" max="360" step="1" value="165"
+              class="flex-1 h-2 rounded-full appearance-none cursor-pointer"
+              style="background: linear-gradient(to right, oklch(0.7 0.14 0), oklch(0.7 0.14 60), oklch(0.7 0.14 120), oklch(0.7 0.14 180), oklch(0.7 0.14 240), oklch(0.7 0.14 300), oklch(0.7 0.14 360))" />
+          </div>
+          <div class="mt-2 flex justify-between">
+            <span class="text-xs text-muted">0°</span>
+            <span id="hue-value" class="text-xs font-medium text-accent">165°</span>
+            <span class="text-xs text-muted">360°</span>
+          </div>
         </div>
         <div>
           <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.borderRadius}</p>
@@ -151,10 +167,10 @@ const layoutModes = [
         <!-- Reading Mode Master Toggle -->
         <div class="flex items-center justify-between py-1 border-b border-border/30 pb-3 mb-2">
           <div>
-            <p class="text-sm font-medium text-foreground">{labels.readingMode}</p>
-            <p class="text-xs text-muted">{labels.readingModeDesc}</p>
+             <p class="text-sm font-medium text-foreground">{labels.immersiveMode}</p>
+             <p class="text-xs text-muted">{labels.immersiveModeDesc}</p>
           </div>
-          <button id="reading-mode-toggle" role="switch" aria-checked="false" class="toggle-btn relative h-5 w-9 rounded-full transition-colors duration-200" style="background-color: var(--muted)">
+          <button id="immersive-mode-toggle" role="switch" aria-checked="false" class="toggle-btn relative h-5 w-9 rounded-full transition-colors duration-200" style="background-color: var(--muted)">
             <span class="toggle-knob absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200" style="transform: translateX(0)"></span>
           </button>
         </div>
@@ -237,15 +253,7 @@ const layoutModes = [
                 <span class="toggle-knob absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200" style="transform: translateX(16px)"></span>
               </button>
             </div>
-            <div class="flex items-center justify-between py-1">
-              <div>
-                <p class="text-sm text-foreground-soft">{labels.showStickyBackToTop}</p>
-                <p class="text-xs text-muted">{labels.showStickyBackToTopDesc}</p>
-              </div>
-              <button id="widget-sticky-backtotop-toggle" role="switch" aria-checked="true" class="toggle-btn relative h-5 w-9 rounded-full transition-colors duration-200" style="background-color: var(--accent)">
-                <span class="toggle-knob absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200" style="transform: translateX(16px)"></span>
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
@@ -333,6 +341,40 @@ const layoutModes = [
     root.setAttribute('data-color-scheme', schemeId);
   }
 
+  const SCHEME_HUE_MAP = {
+    teal: 165,
+    ocean: 210,
+    rose: 350,
+    forest: 155,
+    midnight: 270,
+    sunset: 40,
+    mono: 0,
+    github: 210,
+  };
+
+  function applyHue(hue) {
+    const root = document.documentElement;
+    root.style.setProperty('--hue', String(hue));
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      root.style.setProperty('--accent', `oklch(0.75 0.14 ${hue})`);
+      root.style.setProperty('--accent-soft', `oklch(0.75 0.14 ${hue} / 0.15)`);
+    } else {
+      root.style.setProperty('--accent', `oklch(0.55 0.14 ${hue})`);
+      root.style.setProperty('--accent-soft', `oklch(0.55 0.14 ${hue} / 0.12)`);
+    }
+    root.style.setProperty('--accent-gradient-from', `oklch(${isDark ? 0.75 : 0.55} 0.14 ${hue})`);
+    root.style.setProperty('--accent-gradient-to', `oklch(${isDark ? 0.65 : 0.45} 0.12 ${hue})`);
+    root.style.setProperty('--brand-secondary', `oklch(${isDark ? 0.80 : 0.70} 0.10 ${hue})`);
+  }
+
+  function updateHueUI(hue) {
+    const slider = document.getElementById('hue-slider');
+    const valueEl = document.getElementById('hue-value');
+    if (slider) slider.value = hue;
+    if (valueEl) valueEl.textContent = `${hue}°`;
+  }
+
   function applyLayoutMode(mode) {
     const root = document.documentElement;
     root.setAttribute('data-layout', mode);
@@ -403,8 +445,6 @@ const layoutModes = [
     if (themeToggleBtn) themeToggleBtn.style.display = settings.widgets.themeToggle ? '' : 'none';
     if (backToTopBtn) backToTopBtn.style.display = settings.widgets.backToTop ? '' : 'none';
     readingTimeEls.forEach(el => el.style.display = settings.widgets.readingTime ? '' : 'none');
-    
-    document.documentElement.setAttribute('data-sticky-backtotop', String(settings.widgets.stickyBackToTop));
   }
 
   function applyReadingSettings(reading) {
@@ -431,8 +471,9 @@ const layoutModes = [
     root.classList.toggle('focus-mode', reading.focusMode);
   }
 
-  function applyReadingMode(active) {
-    document.documentElement.classList.toggle('reading-mode', active);
+  function applyImmersiveMode(active) {
+    document.documentElement.classList.toggle('immersive-mode', active);
+    document.documentElement.classList.remove('reading-mode'); // Clean up old class
   }
 
   function applyReadingTheme(themeId) {
@@ -694,7 +735,6 @@ const layoutModes = [
     const themeToggle = document.getElementById('widget-theme-toggle');
     const backToTopToggle = document.getElementById('widget-backtotop-toggle');
     const readingTimeToggle = document.getElementById('widget-readingtime-toggle');
-    const stickyBackToTopToggle = document.getElementById('widget-sticky-backtotop-toggle');
 
     const preferencesClient = getPreferencesClient();
     if (!preferencesClient) {
@@ -719,6 +759,7 @@ const layoutModes = [
       applyWidgets(settings);
       applyReadingSettings(settings.reading);
       applyReadingTheme(settings.reading.theme);
+      applyHue(settings.theme.hue ?? 165);
 
     // Update UI
       updateColorSchemeUI(settings.theme.colorScheme);
@@ -726,23 +767,23 @@ const layoutModes = [
       updateRadiusUI(settings.theme.radius);
       updateFontSizeUI(settings.appearance.fontSize);
       updateReadingThemeUI(settings.reading.theme);
+      updateHueUI(settings.theme.hue ?? 165);
       if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
       if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
       if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
     if (themeToggle) updateSwitch(themeToggle, settings.widgets.themeToggle);
     if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
     if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
-    if (stickyBackToTopToggle) updateSwitch(stickyBackToTopToggle, settings.widgets.stickyBackToTop);
-    
+
     // Reading settings UI
     const focusModeToggle = document.getElementById('focus-mode-toggle');
       if (focusModeToggle) updateSwitch(focusModeToggle, settings.reading.focusMode);
     
-    const readingModeToggle = document.getElementById('reading-mode-toggle');
-    if (readingModeToggle) {
+    const immersiveModeToggle = document.getElementById('immersive-mode-toggle');
+    if (immersiveModeToggle) {
       updateSwitch(
-        readingModeToggle,
-        document.documentElement.classList.contains('reading-mode')
+        immersiveModeToggle,
+        document.documentElement.classList.contains('immersive-mode')
       );
     }
     
@@ -783,9 +824,13 @@ const layoutModes = [
       if (!preset) return;
       
       settings.theme.colorScheme = schemeId;
+      const schemeHue = SCHEME_HUE_MAP[schemeId] ?? 165;
+      settings.theme.hue = schemeHue;
       saveSettings(settings);
       applyColorScheme(schemeId);
       updateColorSchemeUI(schemeId);
+      applyHue(schemeHue);
+      updateHueUI(schemeHue);
     });
 
     // Layout mode handlers
@@ -833,6 +878,16 @@ const layoutModes = [
       updateFontSizeUI(size);
     });
 
+    // Hue slider handler
+    const hueSlider = document.getElementById('hue-slider');
+    hueSlider?.addEventListener('input', (e) => {
+      const hue = parseInt(e.target.value);
+      settings.theme.hue = hue;
+      saveSettings(settings);
+      applyHue(hue);
+      updateHueUI(hue);
+    });
+
     // Toggle handlers
     animationToggle?.addEventListener('click', () => {
       settings.animations.enabled = !settings.animations.enabled;
@@ -876,13 +931,6 @@ const layoutModes = [
       updateSwitch(readingTimeToggle, settings.widgets.readingTime);
     });
 
-    stickyBackToTopToggle?.addEventListener('click', () => {
-      settings.widgets.stickyBackToTop = !settings.widgets.stickyBackToTop;
-      saveSettings(settings);
-      applyWidgets(settings);
-      updateSwitch(stickyBackToTopToggle, settings.widgets.stickyBackToTop);
-    });
-
     // Reset handler
     resetBtn?.addEventListener('click', () => {
       const resetState = preferencesClient.resetSettings();
@@ -899,19 +947,20 @@ const layoutModes = [
       applyWidgets(settings);
       applyReadingSettings(settings.reading);
       applyReadingTheme(settings.reading.theme);
+      applyHue(settings.theme.hue ?? 165);
 
       updateColorSchemeUI(settings.theme.colorScheme);
       updateLayoutModeUI(settings.layout.postsLayout);
       updateRadiusUI(settings.theme.radius);
       updateFontSizeUI(settings.appearance.fontSize);
       updateReadingThemeUI(settings.reading.theme);
+      updateHueUI(settings.theme.hue ?? 165);
       if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
       if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
       if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
       if (themeToggle) updateSwitch(themeToggle, settings.widgets.themeToggle);
       if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
       if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
-      if (stickyBackToTopToggle) updateSwitch(stickyBackToTopToggle, settings.widgets.stickyBackToTop);
       if (focusModeToggle) updateSwitch(focusModeToggle, settings.reading.focusMode);
       
       // Update reading buttons
@@ -944,10 +993,10 @@ const layoutModes = [
       updateSwitch(focusModeToggle, settings.reading.focusMode);
     });
 
-    readingModeToggle?.addEventListener('click', () => {
-      const active = !document.documentElement.classList.contains('reading-mode');
-      applyReadingMode(active);
-      updateSwitch(readingModeToggle, active);
+    immersiveModeToggle?.addEventListener('click', () => {
+      const active = !document.documentElement.classList.contains('immersive-mode');
+      applyImmersiveMode(active);
+      updateSwitch(immersiveModeToggle, active);
     });
 
     // Share button handler
@@ -964,6 +1013,7 @@ const layoutModes = [
     // Listen for theme mode changes (light/dark) and re-apply color scheme
     window.addEventListener('themechange', () => {
       updateColorSchemeUI(settings.theme.colorScheme);
+      applyHue(settings.theme.hue ?? 165);
     });
   }
 
@@ -983,16 +1033,17 @@ const layoutModes = [
     applyLayoutMode: applyLayoutMode,
     applyReadingSettings: applyReadingSettings,
     applyReadingTheme: applyReadingTheme,
-    toggleReadingMode: () => {
+    toggleImmersiveMode: () => {
       const settings = loadSettings();
-      const active = !document.documentElement.classList.contains('reading-mode');
-      applyReadingMode(active);
+      const active = !document.documentElement.classList.contains('immersive-mode');
+      applyImmersiveMode(active);
       applyReadingSettings(settings.reading);
       
       // Update UI toggle if exists
-      const readingModeToggle = document.getElementById('reading-mode-toggle');
-      if (readingModeToggle) updateSwitch(readingModeToggle, active);
+      const immersiveModeToggle = document.getElementById('immersive-mode-toggle');
+      if (immersiveModeToggle) updateSwitch(immersiveModeToggle, active);
     },
+    toggleReadingMode: function() { this.toggleImmersiveMode(); },
   };
 
   init();

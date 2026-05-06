@@ -134,14 +134,14 @@ The current chat pipeline registers 7 tools (names consistent with the codebase)
 | `toggleTheme` | Switch the theme between light / dark / system |
 | `navigateToArticle` | Navigate to an article page by slug (and optional language, section) |
 | `scrollToSection` | Scroll to a specified section on the current page and optionally highlight it |
-| `toggleReadingMode` | Enable or disable reading mode, with adjustable font size and more |
+| `toggleImmersiveMode` | Enable or disable immersive mode, with adjustable font size and more |
 | `highlightText` | Highlight content in the article by text or selector |
 | `setPreference` | Write user preferences (aligned with the site's preference system key-value model) |
 | `searchArticles` | Search articles and projects by keyword, returning titles, links, summaries, etc. |
 
 ### How It Works
 
-- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, and `setPreference` declare their schemas on the server, and the model generates tool calls; the **actual execution happens in the browser** (via the **ActionExecutor** in the `@astro-minimax/core` theme package, which maps calls to DOM / routing / preference updates).
+- **Client-side tools**: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleImmersiveMode`, `highlightText`, and `setPreference` declare their schemas on the server, and the model generates tool calls; the **actual execution happens in the browser** (via the **ActionExecutor** in the `@astro-minimax/core` theme package, which maps calls to DOM / routing / preference updates).
 - **Server-side tools**: `searchArticles` includes an `execute` implementation and runs **on the server during the RAG request handling process**. It directly calls the same `searchArticles` / `searchProjects` logic used by the main retrieval flow, returning structured results to the model for “search first, then answer” or navigation assistance.
 
 ### Action System and Cross-Page Chaining
@@ -372,7 +372,7 @@ The AI assistant has 7 built-in page interaction tools, cont can control the cur
 | `toggleTheme` | Toggle light/dark theme |
 | `navigateToArticle` | Navigate to a specific article |
 | `scrollToSection` | Scroll to a page section |
-| `toggleReadingMode` | Toggle reading mode |
+| `toggleImmersiveMode` | Toggle immersive mode |
 | `highlightText` | Highlight text on page |
 | `setPreference` | Set user preference |
 | `searchArticles` | Search articles (server-side) |

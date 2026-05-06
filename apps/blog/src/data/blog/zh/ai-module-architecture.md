@@ -150,7 +150,7 @@ flowchart TB
 ## 工具调用层
 - 6 个客户端工具
   - toggleTheme / navigateToArticle
-  - scrollToSection / toggleReadingMode
+  - scrollToSection / toggleImmersiveMode
   - highlightText / setPreference
 - 1 个服务端工具
   - searchArticles
@@ -1169,7 +1169,7 @@ interface ProviderHealth {
 | `toggleTheme` | 客户端工具 | 浏览器 | 切换 light / dark / system |
 | `navigateToArticle` | 客户端工具 | 浏览器 | 按 slug 跳转文章 |
 | `scrollToSection` | 客户端工具 | 浏览器 | 滚动到指定章节 |
-| `toggleReadingMode` | 客户端工具 | 浏览器 | 切换阅读模式 |
+| `toggleImmersiveMode` | 客户端工具 | 浏览器 | 切换沉浸模式 |
 | `highlightText` | 客户端工具 | 浏览器 | 高亮文章中的文本 |
 | `setPreference` | 客户端工具 | 浏览器 | 设置用户偏好 |
 | `searchArticles` | 服务端工具 | AI server | 搜索文章 + 项目 |
@@ -1231,8 +1231,8 @@ const TOOL_ACTION_MAP: Record<
       behavior: i.behavior ?? 'smooth',
     },
   }),
-  toggleReadingMode: (i) => ({
-    type: 'toggle-reading-mode',
+  toggleImmersiveMode: (i) => ({
+    type: 'toggle-immersive-mode',
     payload: {
       enabled: i.enabled,
       settings: {
@@ -1263,7 +1263,7 @@ const TOOL_ACTION_MAP: Record<
 
 **`highlightText` 的生命周期**：`duration` 默认 3000ms（3 秒后自动消失），设 `0` 则永久保持。`style` 支持 `accent` / `warning` / `info` / `success` 四种视觉风格，让不同类型的高亮有视觉区分。`scrollIntoView` 则控制是否在元素不在视口内时自动滚动过去。
 
-**`toggleReadingMode` 的字体定制**：这个工具允许模型在开启阅读模式的同时设置 `fontSize`（sm/md/lg/xl）和 `fontFamily`，说明它不只是个开关，而是把阅读体验的一部分控制权交给了 AI。
+**`toggleImmersiveMode` 的字体定制**：这个工具允许模型在开启沉浸模式的同时设置 `fontSize`（sm/md/lg/xl）和 `fontFamily`，说明它不只是个开关，而是把阅读体验的一部分控制权交给了 AI。
 
 ### 自动续跑决策
 

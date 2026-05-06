@@ -58,21 +58,21 @@ export const scrollToSectionTool = tool({
   }),
 });
 
-export const toggleReadingModeTool = tool({
+export const toggleImmersiveModeTool = tool({
   description:
-    "Toggle reading mode on or off. Reading mode provides a distraction-free reading experience with larger text and optimized layout.",
+    "Toggle immersive mode on or off. Immersive mode provides a distraction-free reading experience with larger text and optimized layout.",
   inputSchema: z.object({
     enabled: z
       .boolean()
       .optional()
       .describe(
-        "Whether to enable (true) or disable (false) reading mode. If not specified, toggles the current state."
+        "Whether to enable (true) or disable (false) immersive mode. If not specified, toggles the current state."
       ),
     fontSize: z
       .enum(["sm", "md", "lg", "xl"])
       .optional()
-      .describe("Font size for reading mode"),
-    fontFamily: z.string().optional().describe("Font family for reading mode"),
+      .describe("Font size for immersive mode"),
+    fontFamily: z.string().optional().describe("Font family for immersive mode"),
   }),
 });
 
@@ -177,7 +177,7 @@ const builtinTools: Record<string, AnyTool> = {
   toggleTheme: toggleThemeTool,
   navigateToArticle: navigateToArticleTool,
   scrollToSection: scrollToSectionTool,
-  toggleReadingMode: toggleReadingModeTool,
+  toggleImmersiveMode: toggleImmersiveModeTool,
   highlightText: highlightTextTool,
   setPreference: setPreferenceTool,
   searchArticles: searchArticlesTool,
@@ -204,7 +204,7 @@ const BUILTIN_CLIENT_TOOLS = [
   "toggleTheme",
   "navigateToArticle",
   "scrollToSection",
-  "toggleReadingMode",
+  "toggleImmersiveMode",
   "highlightText",
   "setPreference",
 ];

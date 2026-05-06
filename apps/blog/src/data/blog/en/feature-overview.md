@@ -312,14 +312,14 @@ The `@astro-minimax/ai` package provides intelligent conversation capabilities.
 - **Reading companion** — Article pages auto-inject context for contextual Q&A
 - **Global/session cache** — Public questions cached across users for faster responses
 - **Mock mode** — No real API needed during development
-- **AI tool calling** — The assistant can control page UI directly: theme switching, article navigation, section scrolling, reading mode, text highlighting
+- **AI tool calling** — The assistant can control page UI directly: theme switching, article navigation, section scrolling, immersive mode, text highlighting
 - **Action executor system** — Client-side action execution with cross-page action chaining and URL-based action persistence
 - **ChatPanel** — Resizable panel with S/M/L presets
 - **CodeBlock** — Enhanced visualization toolbar: zoom, fullscreen, copy
 
 ### AI Tool Calling
 
-The AI assistant has 7 built-in page interaction tools: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleReadingMode`, `highlightText`, `setPreference`, `searchArticles`. Users can switch themes, jump to articles, scroll to sections, and more without leaving the chat panel.
+The AI assistant has 7 built-in page interaction tools: `toggleTheme`, `navigateToArticle`, `scrollToSection`, `toggleImmersiveMode`, `highlightText`, `setPreference`, `searchArticles`. Users can switch themes, jump to articles, scroll to sections, and more without leaving the chat panel.
 
 See the [AI Tool Calling Guide](/en/posts/ai-tool-calling) for details.
 

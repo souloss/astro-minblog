@@ -104,8 +104,6 @@ export type TranslationKey =
   | "settings.showBackToTop"
   | "settings.showThemeToggle"
   | "settings.showReadingTime"
-  | "settings.showStickyBackToTop"
-  | "settings.showStickyBackToTopDesc"
   | "settings.animations"
   | "settings.animationsDesc"
   | "settings.cardHover"
@@ -171,7 +169,11 @@ export type TranslationKey =
   | "settings.readingThemeNight"
   | "settings.readingThemeOled"
   | "settings.readingMode"
-  | "settings.readingModeDesc";
+  | "settings.readingModeDesc"
+  | "settings.immersiveMode"
+  | "settings.immersiveModeDesc"
+  | "settings.hue"
+  | "nav.immersiveMode";
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -279,8 +281,6 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "settings.showBackToTop": "Back to Top Button",
     "settings.showThemeToggle": "Theme Toggle Button",
     "settings.showReadingTime": "Reading Time Display",
-    "settings.showStickyBackToTop": "Article Back to Top",
-    "settings.showStickyBackToTopDesc": "Back to top button in sticky header while reading",
     "settings.animations": "Animations",
     "settings.animationsDesc": "Page transitions and interactions",
     "settings.cardHover": "Card Hover Effect",
@@ -347,6 +347,10 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "settings.readingThemeOled": "OLED",
     "settings.readingMode": "Reading Mode",
     "settings.readingModeDesc": "Hide navigation and apply reading settings",
+    "settings.immersiveMode": "Immersive Mode",
+    "settings.immersiveModeDesc": "Hide all navigation for distraction-free reading",
+    "settings.hue": "Hue",
+    "nav.immersiveMode": "Immersive Mode",
   },
   zh: {
     "nav.home": "首页",
@@ -453,8 +457,6 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "settings.showBackToTop": "返回顶部按钮",
     "settings.showThemeToggle": "主题切换按钮",
     "settings.showReadingTime": "阅读时间显示",
-    "settings.showStickyBackToTop": "文章页返回顶部",
-    "settings.showStickyBackToTopDesc": "文章阅读时顶部导航栏的返回顶部按钮",
     "settings.animations": "动画效果",
     "settings.animationsDesc": "页面过渡和交互动画",
     "settings.cardHover": "卡片悬停效果",
@@ -521,6 +523,10 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "settings.readingThemeOled": "纯黑",
     "settings.readingMode": "阅读模式",
     "settings.readingModeDesc": "隐藏导航并应用阅读设置",
+    "settings.immersiveMode": "沉浸模式",
+    "settings.immersiveModeDesc": "隐藏所有导航，专注阅读",
+    "settings.hue": "色相",
+    "nav.immersiveMode": "沉浸模式",
   },
 };
 
