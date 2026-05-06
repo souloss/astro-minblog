@@ -57,5 +57,11 @@
     "node": ">=22.12.0",
     "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@9.15.0"
+  "packageManager": "pnpm@9.15.0",
+  "dependencies": {
+    "@iconify-json/bx": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.105",
+    "@iconify-json/solar": "^1.2.5",
+    "remark-directive": "^4.0.0"
+  }
 }

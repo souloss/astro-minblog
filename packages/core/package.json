@@ -96,8 +96,12 @@
   },
   "packageManager": "pnpm@9.15.0",
   "dependencies": {
+    "@iconify-json/bx": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.34",
+    "@iconify-json/solar": "^1.2.2",
     "markmap-lib": "^0.18.11",
     "qrcode": "^1.5.4",
+    "remark-directive": "^4.0.0",
     "unist-util-visit": "^5.0.0"
   }
 }
