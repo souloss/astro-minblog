@@ -8,6 +8,9 @@ import type { DeepPartial, Preferences } from "./preferences/types";
 import { remarkMermaidCodeblock } from "./plugins/viz/remark-mermaid-codeblock";
 import { remarkMarkmapCodeblock } from "./plugins/viz/remark-markmap-codeblock";
 import { rehypeMermaidProcessed } from "./plugins/viz/rehype-mermaid-processed";
+import { remarkContentDirectives } from "./plugins/remark-content-directives";
+import { remarkImageDirectives } from "./plugins/remark-image-directives";
+import { remarkPhotoDirectives } from "./plugins/remark-photo-directives";
 
 const VIRTUAL_MODULE_IDS = new Set([
   "virtual:astro-minimax/config",
@@ -27,6 +30,19 @@ export interface VizConfig {
   markmap?: boolean;
 }
 
+export interface DirectivesConfig {
+  enabled?: boolean;
+  links?: Record<string, Array<{
+    url: string;
+    title: string;
+    description?: string;
+    cover?: string;
+    icon?: string;
+    labels?: Array<{ name: string; color?: string }>;
+  }>>;
+  screenshotService?: "thumio" | "mshots";
+}
+
 export interface MinimaxUserConfig {
   site: SiteConfig | Record<string, unknown>;
   socials?: readonly SocialLink[] | SocialLink[];
@@ -34,6 +50,7 @@ export interface MinimaxUserConfig {
   friends?: readonly FriendLink[] | FriendLink[];
   blogPath?: string;
   viz?: VizConfig;
+  directives?: DirectivesConfig;
   /** Default preferences for new users */
   preferences?: DeepPartial<Preferences>;
 }
@@ -67,6 +84,7 @@ export default function minimax(
         }
 
         const vizConfig = userConfig.viz ?? { mermaid: true, markmap: true };
+        const directivesConfig = userConfig.directives ?? {};
         const remarkPlugins: (
           | string
           | RemarkPlugin
@@ -85,6 +103,15 @@ export default function minimax(
         }
         if (vizConfig.markmap !== false) {
           remarkPlugins.push(remarkMarkmapCodeblock);
+        }
+        if (directivesConfig.enabled !== false) {
+          remarkPlugins.push("remark-directive");
+          remarkPlugins.push(remarkImageDirectives);
+          remarkPlugins.push(remarkPhotoDirectives);
+          remarkPlugins.push([remarkContentDirectives, {
+            links: directivesConfig.links,
+            screenshotService: directivesConfig.screenshotService,
+          }]);
         }
 
         const cssLines: string[] = [
