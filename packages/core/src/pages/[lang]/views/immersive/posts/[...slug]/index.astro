@@ -1,0 +1,122 @@
+---
+/**
+ * Immersive Article Detail — Distraction-free article reading
+ * Referenced from vergil-astro-theme's minimal/blog/[id].astro
+ *
+ * Features:
+ * - Minimal layout with no header/footer
+ * - Back link to immersive index
+ * - Breadcrumb navigation
+ * - Reading progress bar
+ * - Back to top button
+ */
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import ImmersiveLayout from "../../../../../../layouts/ImmersiveLayout.astro";
+import { SITE } from "virtual:astro-minimax/config";
+import { getPostsByLang, getPostLang } from "../../../../../../utils/getPostsByLang";
+import getSortedPosts from "../../../../../../utils/getSortedPosts";
+import { getPostSlug } from "../../../../../../utils/getPath";
+import { slugifyStr } from "../../../../../../utils/slugify";
+import MarkmapInit from "virtual:astro-minimax/viz-markmap-init";
+import MermaidInit from "virtual:astro-minimax/viz-mermaid-init";
+
+type Props = {
+  post: CollectionEntry<"blog">;
+};
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map(post => ({
+    params: { lang: getPostLang(post), slug: getPostSlug(post.id) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { lang } = Astro.params as { lang: string };
+
+const {
+  title,
+  pubDatetime,
+  modDatetime,
+  category,
+  tags = [],
+} = post.data;
+
+const { Content } = await render(post);
+
+const isZh = lang === "zh";
+const backLabel = isZh ? "返回列表" : "Back to list";
+const backHref = `/${lang}/views/immersive/`;
+
+// Build breadcrumb
+const crumbs: { text: string; href?: string }[] = [
+  { text: isZh ? "沉浸阅读" : "Immersive", href: backHref },
+];
+
+if (category) {
+  const catSlug = slugifyStr(category);
+  crumbs.push({ text: category, href: `${backHref}?cat=${catSlug}` });
+}
+
+crumbs.push({ text: title });
+
+// Check for viz components
+const postBody = post.body ?? "";
+const hasMarkmap = postBody.includes("```markmap");
+const hasMermaid = postBody.includes("```mermaid");
+
+const dateStr = pubDatetime.toLocaleDateString(
+  isZh ? "zh-CN" : "en-US",
+  { year: "numeric", month: "long", day: "numeric" }
+);
+---
+
+<ImmersiveLayout
+  title={title}
+  description={post.data.description || post.data.excerpt || ""}
+  lang={lang}
+  pageType="article"
+  showBackLink={backLabel}
+  backHref={backHref}
+>
+  <!-- Breadcrumb -->
+  <div class="immersive-breadcrumb">
+    {crumbs.map((crumb, i) => (
+      <>
+        {crumb.href ? (
+          <a href={crumb.href}>{crumb.text}</a>
+        ) : (
+          <span>{crumb.text}</span>
+        )}
+        {i < crumbs.length - 1 && (
+          <span class="immersive-breadcrumb-sep">/</span>
+        )}
+      </>
+    ))}
+  </div>
+
+  <article class="immersive-article">
+    <header>
+      <h1>{title}</h1>
+      <div class="article-meta">
+        <time datetime={pubDatetime.toISOString()}>
+          {dateStr}
+        </time>
+        {modDatetime && (
+          <span>
+            {isZh ? "更新于" : "Updated"} <time datetime={modDatetime.toISOString()}>
+              {modDatetime.toLocaleDateString(isZh ? "zh-CN" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+            </time>
+          </span>
+        )}
+      </div>
+    </header>
+    <div class="app-prose max-w-none">
+      <Content />
+    </div>
+  </article>
+
+  {hasMarkmap && <MarkmapInit />}
+  {hasMermaid && <MermaidInit />}
+</ImmersiveLayout>

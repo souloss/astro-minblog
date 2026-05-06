@@ -1,0 +1,167 @@
+---
+/**
+ * Immersive View Index — Distraction-free article listing
+ * Referenced from vergil-astro-theme's MinimalClientView pattern
+ *
+ * Features:
+ * - Category filter tabs
+ * - Post list with dates
+ * - Client-side filtering via URL search params
+ * - Back to main site link
+ */
+import { getCollection } from "astro:content";
+import ImmersiveLayout from "../../../../layouts/ImmersiveLayout.astro";
+import { SITE } from "virtual:astro-minimax/config";
+import { getPostsByLang, getPostLang } from "../../../../utils/getPostsByLang";
+import getSortedPosts from "../../../../utils/getSortedPosts";
+import { slugifyStr } from "../../../../utils/slugify";
+import getUniqueCategories, { type CategoryEntry } from "../../../../utils/getUniqueCategories";
+
+export async function getStaticPaths() {
+  const langs = ["zh", "en"];
+  return langs.map(lang => ({ params: { lang }, props: { lang } }));
+}
+
+const { lang } = Astro.props;
+
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+const langPosts = getPostsByLang(allPosts, lang);
+const sortedPosts = getSortedPosts(langPosts);
+
+// Get categories for this language
+const categories = getUniqueCategories(langPosts);
+
+// Serialize blog data for client-side filtering
+const blogItems = sortedPosts.map(p => ({
+  id: p.id,
+  title: p.data.title,
+  date: p.data.pubDatetime.toISOString(),
+  href: `/${lang}/views/immersive/posts/${p.id.replace(/^(zh|en)\//, '')}`,
+  category: p.data.category || null,
+  categorySlug: p.data.category ? slugifyStr(p.data.category) : null,
+}));
+
+const serializedCategories = categories.map(c => ({
+  name: c.category,
+  slug: slugifyStr(c.category),
+  count: c.count,
+}));
+
+const isZh = lang === "zh";
+const title = isZh ? "沉浸阅读" : "Immersive Reading";
+const description = isZh ? "极简沉浸式阅读体验" : "Minimal distraction-free reading experience";
+const allLabel = isZh ? "全部" : "All";
+const emptyLabel = isZh ? "暂无内容" : "No content yet";
+const backToSite = isZh ? "返回主页" : "Back to site";
+---
+
+<ImmersiveLayout title={title} description={description} lang={lang} pageType="website" showBackLink={backToSite} backHref={`/${lang}/`}>
+  <h1 class="text-2xl font-medium text-foreground mb-6">{title}</h1>
+
+  <immersive-index
+    data-blog={JSON.stringify(blogItems)}
+    data-categories={JSON.stringify(serializedCategories)}
+    data-lang={lang}
+    data-all-label={allLabel}
+    data-empty-label={emptyLabel}
+  >
+    <div id="ii-tabs"></div>
+    <div id="ii-list" class="mt-4"></div>
+  </immersive-index>
+</ImmersiveLayout>
+
+<script is:inline>
+  (function() {
+    if (customElements.get('immersive-index')) return;
+
+    class ImmersiveIndex extends HTMLElement {
+      connectedCallback() {
+        this.blog = JSON.parse(this.dataset.blog || '[]');
+        this.categories = JSON.parse(this.dataset.categories || '[]');
+        this.lang = this.dataset.lang || 'zh';
+        this.allLabel = this.dataset.allLabel || 'All';
+        this.emptyLabel = this.dataset.emptyLabel || 'No content yet';
+
+        this.tabsEl = this.querySelector('#ii-tabs');
+        this.listEl = this.querySelector('#ii-list');
+
+        this._onClick = this._handleClick.bind(this);
+        this.tabsEl.addEventListener('click', this._onClick);
+
+        this._onPopState = this.render.bind(this);
+        window.addEventListener('popstate', this._onPopState);
+
+        this.render();
+      }
+
+      disconnectedCallback() {
+        if (this.tabsEl) {
+          this.tabsEl.removeEventListener('click', this._onClick);
+        }
+        window.removeEventListener('popstate', this._onPopState);
+      }
+
+      _handleClick(e) {
+        var catBtn = e.target.closest('button[data-cat]');
+        if (!catBtn) return;
+        this.setParams(catBtn.getAttribute('data-cat'));
+      }
+
+      getParams() {
+        var p = new URLSearchParams(location.search);
+        return { cat: p.get('cat') || 'all' };
+      }
+
+      setParams(cat) {
+        var p = new URLSearchParams();
+        if (cat !== 'all') p.set('cat', cat);
+        var url = location.pathname + (p.toString() ? '?' + p.toString() : '');
+        history.pushState(null, '', url);
+        this.render();
+      }
+
+      render() {
+        var params = this.getParams();
+        var cat = params.cat;
+
+        if (this.tabsEl) {
+          this.tabsEl.innerHTML = this.renderTabs(cat);
+        }
+        if (this.listEl) {
+          this.listEl.innerHTML = this.renderList(cat);
+        }
+      }
+
+      renderTabs(cat) {
+        var html = '<div class="immersive-tabs">';
+        html += '<button data-cat="all" class="immersive-tab ' + (cat === 'all' ? 'immersive-tab--active' : '') + '">' + this.allLabel + '</button>';
+        for (var i = 0; i < this.categories.length; i++) {
+          var c = this.categories[i];
+          html += '<button data-cat="' + c.slug + '" class="immersive-tab ' + (cat === c.slug ? 'immersive-tab--active' : '') + '">' + c.name + '</button>';
+        }
+        html += '</div>';
+        return html;
+      }
+
+      renderList(cat) {
+        var items = cat === 'all' ? this.blog : this.blog.filter(function(p) { return p.categorySlug === cat; });
+        if (items.length === 0) {
+          return '<div class="immersive-empty">' + this.emptyLabel + '</div>';
+        }
+        var html = '<div class="immersive-post-list">';
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var dateStr = item.date ? new Date(item.date).toLocaleDateString(this.lang === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+          html += '<a href="' + item.href + '" class="immersive-post-item">' +
+            '<span class="immersive-post-title">' + item.title + '</span>' +
+            (dateStr ? '<span class="immersive-post-date">' + dateStr + '</span>' : '') +
+            '</a>';
+        }
+        html += '</div>';
+        return html;
+      }
+    }
+
+    customElements.define('immersive-index', ImmersiveIndex);
+  })();
+</script>

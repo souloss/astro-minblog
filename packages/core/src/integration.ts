@@ -296,6 +296,17 @@ export default function minimax(
             entrypoint: "@astro-minimax/core/pages/[lang]/projects.astro",
           });
         }
+
+        injectRoute({
+          pattern: "/[lang]/views/immersive",
+          entrypoint:
+            "@astro-minimax/core/pages/[lang]/views/immersive/index.astro",
+        });
+        injectRoute({
+          pattern: "/[lang]/views/immersive/posts/[...slug]",
+          entrypoint:
+            "@astro-minimax/core/pages/[lang]/views/immersive/posts/[...slug]/index.astro",
+        });
       },
 
       "astro:config:done": ({ injectTypes }) => {
