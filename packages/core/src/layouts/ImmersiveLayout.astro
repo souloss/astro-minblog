@@ -151,11 +151,22 @@ const isArticle = pageType === "article";
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        background: var(--reading-bg, var(--background));
+        color: var(--reading-fg, var(--foreground));
+        font-family: var(--reading-font-family, inherit);
+      }
+      /* Override theme color vars so app-prose (text-foreground etc.) follows reading theme */
+      .immersive-page {
+        --background: var(--reading-bg, var(--background));
+        --foreground: var(--reading-fg, var(--foreground));
+        --foreground-soft: var(--reading-muted, var(--foreground-soft));
+        --surface: var(--reading-surface, var(--surface));
+        --muted: var(--reading-muted, var(--muted));
       }
       .immersive-content {
         flex: 1;
         width: 100%;
-        max-width: 48rem;
+        max-width: var(--reading-width, 72ch);
         margin: 0 auto;
         padding: 3rem 1.5rem 5rem;
       }
@@ -253,9 +264,10 @@ const isArticle = pageType === "article";
         font-size: 0.875rem;
         color: var(--foreground-soft);
       }
-      .immersive-article .prose {
+      .immersive-article .prose,
+      .immersive-article .app-prose {
         max-width: none;
-        line-height: 1.8;
+        line-height: var(--reading-line-height, 1.8);
       }
       /* Post list in immersive index */
       .immersive-post-list {
@@ -400,6 +412,110 @@ const isArticle = pageType === "article";
       .immersive-back-to-top.visible {
         display: flex;
       }
+      /* Top bar actions container */
+      .immersive-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+      }
+      /* Reading settings dropdown panel */
+      .immersive-reading-panel {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        width: 280px;
+        z-index: 100;
+        animation: immersive-panel-in 0.15s ease-out;
+      }
+      @keyframes immersive-panel-in {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .immersive-reading-panel.hidden {
+        display: none;
+      }
+      .immersive-reading-panel-inner {
+        background: var(--surface, rgba(255,255,255,0.95));
+        border: 1px solid var(--border, rgba(0,0,0,0.08));
+        border-radius: 0.75rem;
+        padding: 1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        backdrop-filter: blur(12px);
+      }
+      .immersive-reading-section {
+        margin-bottom: 0.875rem;
+      }
+      .immersive-reading-section:last-child {
+        margin-bottom: 0;
+      }
+      .immersive-reading-section--toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .immersive-reading-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--foreground-soft, #6c6c6c);
+        margin-bottom: 0.375rem;
+      }
+      .immersive-reading-section--toggle .immersive-reading-label {
+        margin-bottom: 0;
+      }
+      .immersive-reading-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+      .immersive-reading-opt {
+        padding: 0.25rem 0.625rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        color: var(--foreground-soft, #6c6c6c);
+        background: transparent;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .immersive-reading-opt:hover {
+        color: var(--accent, #0f766e);
+        background: var(--accent-soft, rgba(15,118,110,0.12));
+      }
+      .immersive-reading-opt--active {
+        background: var(--accent-soft, rgba(15,118,110,0.12));
+        color: var(--accent, #0f766e);
+        border-color: var(--accent, #0f766e);
+        font-weight: 500;
+      }
+      /* Focus mode toggle switch */
+      .immersive-toggle {
+        width: 36px;
+        height: 20px;
+        border-radius: 10px;
+        background: var(--muted, #d1d5db);
+        border: none;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s ease;
+        flex-shrink: 0;
+      }
+      .immersive-toggle[aria-checked="true"] {
+        background: var(--accent, #0f766e);
+      }
+      .immersive-toggle-knob {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        transition: transform 0.2s ease;
+      }
+      .immersive-toggle[aria-checked="true"] .immersive-toggle-knob {
+        transform: translateX(16px);
+      }
       /* Dark mode overrides for immersive-specific elements */
       html[data-theme="dark"] .immersive-back-link {
         color: var(--foreground-soft);
@@ -471,6 +587,32 @@ const isArticle = pageType === "article";
       html[data-theme="dark"] .immersive-article .article-meta {
         color: var(--foreground-soft);
       }
+      html[data-theme="dark"] .immersive-reading-panel-inner {
+        background: var(--surface);
+        border-color: var(--border);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      }
+      html[data-theme="dark"] .immersive-reading-label {
+        color: var(--foreground-soft);
+      }
+      html[data-theme="dark"] .immersive-reading-opt {
+        color: var(--foreground-soft);
+      }
+      html[data-theme="dark"] .immersive-reading-opt:hover {
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+      html[data-theme="dark"] .immersive-reading-opt--active {
+        color: var(--accent);
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+      html[data-theme="dark"] .immersive-toggle {
+        background: var(--muted);
+      }
+      html[data-theme="dark"] .immersive-toggle[aria-checked="true"] {
+        background: var(--accent);
+      }
     </style>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -484,7 +626,7 @@ const isArticle = pageType === "article";
 
     <main class="immersive-page">
       <div class="immersive-content">
-        <!-- Top bar: back link + theme toggle -->
+        <!-- Top bar: back link + reading settings + theme toggle -->
         <div class="immersive-topbar">
           {showBackLink ? (
             <a href={backHref || '/'} class="immersive-back-link">
@@ -493,27 +635,85 @@ const isArticle = pageType === "article";
           ) : (
             <div></div>
           )}
-          <button
-            id="immersive-theme-toggle"
-            class="immersive-theme-toggle"
-            aria-label={lang === 'zh' ? '切换主题' : 'Toggle theme'}
-            title={lang === 'zh' ? '切换主题' : 'Toggle theme'}
-          >
-            <svg class="icon-moon size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <svg class="icon-sun size-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
+          <div class="immersive-topbar-actions">
+            <!-- Reading settings gear button -->
+            <button
+              id="immersive-reading-settings-btn"
+              class="immersive-theme-toggle"
+              aria-label={lang === 'zh' ? '阅读设置' : 'Reading settings'}
+              title={lang === 'zh' ? '阅读设置' : 'Reading settings'}
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
+
+            <!-- Reading settings dropdown panel -->
+            <div id="immersive-reading-panel" class="immersive-reading-panel hidden">
+              <div class="immersive-reading-panel-inner">
+                <!-- Reading Theme -->
+                <div class="immersive-reading-section">
+                  <div class="immersive-reading-label">{lang === 'zh' ? '阅读主题' : 'Reading Theme'}</div>
+                  <div class="immersive-reading-options" data-setting="readingTheme">
+                    <button class="immersive-reading-opt" data-value="default">{lang === 'zh' ? '默认' : 'Default'}</button>
+                    <button class="immersive-reading-opt" data-value="eyecare">{lang === 'zh' ? '护眼' : 'Eyecare'}</button>
+                    <button class="immersive-reading-opt" data-value="parchment">{lang === 'zh' ? '羊皮纸' : 'Parchment'}</button>
+                    <button class="immersive-reading-opt" data-value="night">{lang === 'zh' ? '夜间' : 'Night'}</button>
+                    <button class="immersive-reading-opt" data-value="oled">{lang === 'zh' ? '纯黑' : 'OLED'}</button>
+                  </div>
+                </div>
+                <!-- Line Height -->
+                <div class="immersive-reading-section">
+                  <div class="immersive-reading-label">{lang === 'zh' ? '行间距' : 'Line Height'}</div>
+                  <div class="immersive-reading-options" data-setting="lineHeight">
+                    <button class="immersive-reading-opt" data-value="compact">{lang === 'zh' ? '紧凑' : 'Compact'}</button>
+                    <button class="immersive-reading-opt" data-value="comfortable">{lang === 'zh' ? '舒适' : 'Comfortable'}</button>
+                    <button class="immersive-reading-opt" data-value="relaxed">{lang === 'zh' ? '宽松' : 'Relaxed'}</button>
+                  </div>
+                </div>
+                <!-- Content Width -->
+                <div class="immersive-reading-section">
+                  <div class="immersive-reading-label">{lang === 'zh' ? '页面宽度' : 'Content Width'}</div>
+                  <div class="immersive-reading-options" data-setting="contentWidth">
+                    <button class="immersive-reading-opt" data-value="narrow">{lang === 'zh' ? '窄' : 'Narrow'}</button>
+                    <button class="immersive-reading-opt" data-value="medium">{lang === 'zh' ? '中' : 'Medium'}</button>
+                    <button class="immersive-reading-opt" data-value="wide">{lang === 'zh' ? '宽' : 'Wide'}</button>
+                  </div>
+                </div>
+                <!-- Focus Mode -->
+                <div class="immersive-reading-section immersive-reading-section--toggle">
+                  <div class="immersive-reading-label">{lang === 'zh' ? '专注模式' : 'Focus Mode'}</div>
+                  <button id="immersive-focus-toggle" class="immersive-toggle" role="switch" aria-checked="false">
+                    <span class="immersive-toggle-knob"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Theme toggle -->
+            <button
+              id="immersive-theme-toggle"
+              class="immersive-theme-toggle"
+              aria-label={lang === 'zh' ? '切换主题' : 'Toggle theme'}
+              title={lang === 'zh' ? '切换主题' : 'Toggle theme'}
+            >
+              <svg class="icon-moon size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg class="icon-sun size-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <slot />
@@ -540,9 +740,167 @@ const isArticle = pageType === "article";
 
     <script>
       import { getGlobalEventManager } from "../utils/performance";
+      import { loadPreferences, updatePreferences } from "../preferences/storage";
+
+      function applyReadingSettings(reading: { lineHeight: string; contentWidth: string; fontFamily: string; focusMode: boolean }) {
+        const root = document.documentElement;
+        const lineHeights: Record<string, string> = { compact: '1.6', comfortable: '1.8', relaxed: '2' };
+        const widths: Record<string, string> = { narrow: '65ch', medium: '72ch', wide: '80ch' };
+        const fonts: Record<string, string> = {
+          serif: '"Noto Serif SC", "Source Han Serif SC", Georgia, serif',
+          sans: '"Noto Sans SC", "Source Han Sans SC", -apple-system, sans-serif',
+          mono: '"JetBrains Mono", "Fira Code", "IBM Plex Mono", monospace',
+          system: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          code: '"JetBrains Mono", "Fira Code", "Cascadia Code", "Source Code Pro", monospace',
+          lxgw: '"LXGW WenKai", "LXGW WenKai Mono", "Noto Serif SC", serif',
+          zcool: '"ZCOOL KuaiLe", "ZCOOL XiaoWei", "Ma Shan Zheng", cursive',
+          readable: '"Literata", "Source Serif Pro", "Noto Serif SC", Georgia, serif',
+          classic: '"Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif',
+        };
+        root.style.setProperty('--reading-line-height', lineHeights[reading.lineHeight] || '1.8');
+        root.style.setProperty('--reading-width', widths[reading.contentWidth] || '72ch');
+        root.style.setProperty('--reading-font-family', fonts[reading.fontFamily] || fonts.system);
+        root.classList.toggle('focus-mode', reading.focusMode);
+      }
+
+      function applyReadingTheme(themeId: string) {
+        const root = document.documentElement;
+        const DARK_READING_THEMES = ['night', 'oled'];
+        root.style.removeProperty('--reading-bg');
+        root.style.removeProperty('--reading-surface');
+        root.style.removeProperty('--reading-fg');
+        root.style.removeProperty('--reading-muted');
+        root.setAttribute('data-reading-theme', themeId);
+        const currentTheme = root.getAttribute('data-theme');
+        const isDarkReadingTheme = DARK_READING_THEMES.includes(themeId);
+        const wasDarkReadingTheme = DARK_READING_THEMES.includes(root.dataset.previousReadingTheme || '');
+        const applyTheme = (value: string) => {
+          if ((window as any).theme?.setTheme) {
+            (window as any).theme.setTheme(value);
+            (window as any).theme.setPreference?.();
+            (window as any).theme.reflectPreference?.();
+          }
+        };
+        if (isDarkReadingTheme && currentTheme !== 'dark') {
+          root.dataset.themeBeforeDarkReading = currentTheme || 'light';
+          applyTheme('dark');
+        } else if (!isDarkReadingTheme && wasDarkReadingTheme) {
+          const previousTheme = root.dataset.themeBeforeDarkReading || 'light';
+          if (currentTheme !== previousTheme) {
+            applyTheme(previousTheme);
+          }
+          delete root.dataset.themeBeforeDarkReading;
+        }
+        root.dataset.previousReadingTheme = themeId;
+      }
+
+      function updateReadingOptUI(container: HTMLElement, setting: string, value: string) {
+        const optGroup = container.querySelector(`[data-setting="${setting}"]`);
+        if (!optGroup) return;
+        optGroup.querySelectorAll('.immersive-reading-opt').forEach(btn => {
+          const isActive = (btn as HTMLElement).dataset.value === value;
+          btn.classList.toggle('immersive-reading-opt--active', isActive);
+        });
+      }
 
       function initImmersiveUI() {
         const manager = getGlobalEventManager();
+
+        // Load and apply reading preferences
+        const prefs = loadPreferences();
+        applyReadingSettings(prefs.reading);
+        applyReadingTheme(prefs.reading.theme);
+
+        // Reading settings panel toggle
+        const settingsBtn = document.getElementById("immersive-reading-settings-btn");
+        const settingsPanel = document.getElementById("immersive-reading-panel");
+        if (settingsBtn && settingsPanel) {
+          // Initialize active states
+          updateReadingOptUI(settingsPanel, 'readingTheme', prefs.reading.theme);
+          updateReadingOptUI(settingsPanel, 'lineHeight', prefs.reading.lineHeight);
+          updateReadingOptUI(settingsPanel, 'contentWidth', prefs.reading.contentWidth);
+
+          // Focus mode toggle
+          const focusToggle = document.getElementById("immersive-focus-toggle") as HTMLElement | null;
+          if (focusToggle) {
+            focusToggle.setAttribute('aria-checked', String(prefs.reading.focusMode));
+          }
+
+          manager.add(settingsBtn, "click", (e: Event) => {
+            e.stopPropagation();
+            settingsPanel.classList.toggle("hidden");
+          });
+
+          // Prevent panel clicks from closing it
+          manager.add(settingsPanel, "click", (e: Event) => {
+            e.stopPropagation();
+          });
+
+          // Close panel on outside click
+          const closePanel = (e: Event) => {
+            if (!settingsPanel.contains(e.target as Node) && e.target !== settingsBtn) {
+              settingsPanel.classList.add("hidden");
+            }
+          };
+          manager.add(document, "click", closePanel);
+
+          // Reading theme options
+          const themeGroup = settingsPanel.querySelector('[data-setting="readingTheme"]');
+          if (themeGroup) {
+            themeGroup.querySelectorAll('.immersive-reading-opt').forEach(btn => {
+              manager.add(btn as HTMLElement, "click", (e: Event) => {
+                e.stopPropagation();
+                const value = (btn as HTMLElement).dataset.value!;
+                updatePreferences({ reading: { theme: value as any } });
+                applyReadingTheme(value);
+                updateReadingOptUI(settingsPanel, 'readingTheme', value);
+              });
+            });
+          }
+
+          // Line height options
+          const lineHeightGroup = settingsPanel.querySelector('[data-setting="lineHeight"]');
+          if (lineHeightGroup) {
+            lineHeightGroup.querySelectorAll('.immersive-reading-opt').forEach(btn => {
+              manager.add(btn as HTMLElement, "click", (e: Event) => {
+                e.stopPropagation();
+                const value = (btn as HTMLElement).dataset.value!;
+                const current = loadPreferences();
+                updatePreferences({ reading: { lineHeight: value as any } });
+                applyReadingSettings({ ...current.reading, lineHeight: value });
+                updateReadingOptUI(settingsPanel, 'lineHeight', value);
+              });
+            });
+          }
+
+          // Content width options
+          const widthGroup = settingsPanel.querySelector('[data-setting="contentWidth"]');
+          if (widthGroup) {
+            widthGroup.querySelectorAll('.immersive-reading-opt').forEach(btn => {
+              manager.add(btn as HTMLElement, "click", (e: Event) => {
+                e.stopPropagation();
+                const value = (btn as HTMLElement).dataset.value!;
+                const current = loadPreferences();
+                updatePreferences({ reading: { contentWidth: value as any } });
+                applyReadingSettings({ ...current.reading, contentWidth: value });
+                updateReadingOptUI(settingsPanel, 'contentWidth', value);
+              });
+            });
+          }
+
+          // Focus mode toggle
+          if (focusToggle) {
+            manager.add(focusToggle, "click", (e: Event) => {
+              e.stopPropagation();
+              const current = focusToggle.getAttribute('aria-checked') === 'true';
+              const next = !current;
+              focusToggle.setAttribute('aria-checked', String(next));
+              const prefsNow = loadPreferences();
+              updatePreferences({ reading: { focusMode: next } });
+              applyReadingSettings({ ...prefsNow.reading, focusMode: next });
+            });
+          }
+        }
 
         // Bottom back button
         const bottomBtn = document.getElementById("immersive-bottom-back");
