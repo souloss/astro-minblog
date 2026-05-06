@@ -173,7 +173,14 @@ export type TranslationKey =
   | "settings.immersiveMode"
   | "settings.immersiveModeDesc"
   | "settings.hue"
-  | "nav.immersiveMode";
+  | "nav.immersiveMode"
+  | "immersive.title"
+  | "immersive.description"
+  | "immersive.backToSite"
+  | "immersive.backToList"
+  | "immersive.all"
+  | "immersive.empty"
+  | "immersive.updated";
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -351,6 +358,13 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "settings.immersiveModeDesc": "Hide all navigation for distraction-free reading",
     "settings.hue": "Hue",
     "nav.immersiveMode": "Immersive Mode",
+    "immersive.title": "Immersive Reading",
+    "immersive.description": "Minimal distraction-free reading experience",
+    "immersive.backToSite": "Back to site",
+    "immersive.backToList": "Back to list",
+    "immersive.all": "All",
+    "immersive.empty": "No content yet",
+    "immersive.updated": "Updated",
   },
   zh: {
     "nav.home": "首页",
@@ -527,6 +541,13 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "settings.immersiveModeDesc": "隐藏所有导航，专注阅读",
     "settings.hue": "色相",
     "nav.immersiveMode": "沉浸模式",
+    "immersive.title": "沉浸阅读",
+    "immersive.description": "极简沉浸式阅读体验",
+    "immersive.backToSite": "返回主页",
+    "immersive.backToList": "返回列表",
+    "immersive.all": "全部",
+    "immersive.empty": "暂无内容",
+    "immersive.updated": "更新于",
   },
 };
 
