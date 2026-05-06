@@ -11,9 +11,7 @@ category: Examples
 draft: false
 ---
 
-import AsciinemaPlayer from '@/components/media/AsciinemaPlayer.astro';
-
-[asciinema](https://asciinema.org/) 是一个终端会话录制和回放工具。通过 `AsciinemaPlayer` 组件，你可以在博客文章中嵌入录制好的终端回放。
+[asciinema](https://asciinema.org/) 是一个终端会话录制和回放工具。通过 `:::asciinema` 指令，你可以在博客文章中嵌入录制好的终端回放。
 
 ---
 
@@ -21,16 +19,15 @@ import AsciinemaPlayer from '@/components/media/AsciinemaPlayer.astro';
 
 下面是一段简单的终端操作演示：
 
-<AsciinemaPlayer src="/casts/demo.cast" rows={18} />
+:::asciinema{src="/casts/demo.cast" rows="18"}
+:::
 
 ## 使用方式
 
-在 MDX 文件中导入并使用组件：
+在 Markdown 文件中使用 `:::asciinema` 指令：
 
-```mdx
-import AsciinemaPlayer from '@/components/media/AsciinemaPlayer.astro';
-
-<AsciinemaPlayer src="/casts/demo.cast" />
+```markdown
+:::asciinema{src="/casts/demo.cast"}
 ```
 
 ## 录制 .cast 文件
@@ -58,19 +55,20 @@ asciinema rec -i 2 demo.cast
 
 设置 `autoPlay` 可自动开始播放：
 
-<AsciinemaPlayer src="/casts/demo.cast" autoPlay={true} speed={2} rows={18} />
+:::asciinema{src="/casts/demo.cast" autoPlay="true" speed="2" rows="18"}
+:::
 
-## 组件属性
+## 指令属性
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | `src` | `string` | 必填 | `.cast` 文件路径 |
-| `cols` | `number` | `80` | 终端列数 |
-| `rows` | `number` | `24` | 终端行数 |
-| `speed` | `number` | `1` | 播放速度倍率 |
-| `idleTimeLimit` | `number` | `2` | 空闲时间压缩阈值（秒） |
+| `cols` | `string` | `80` | 终端列数 |
+| `rows` | `string` | `24` | 终端行数 |
+| `speed` | `string` | `1` | 播放速度倍率 |
+| `idleTimeLimit` | `string` | `2` | 空闲时间压缩阈值（秒） |
 | `fit` | `string` | `"width"` | 自适应模式 |
-| `autoPlay` | `boolean` | `false` | 是否自动播放 |
-| `loop` | `boolean` | `false` | 是否循环播放 |
+| `autoPlay` | `string` | `false` | 是否自动播放 |
+| `loop` | `string` | `false` | 是否循环播放 |
 
 播放器会自动跟随博客的亮色/暗色主题切换。

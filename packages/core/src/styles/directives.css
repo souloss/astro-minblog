@@ -31,3 +31,9 @@
 @import './directives/audio.css';
 @import './directives/video.css';
 @import './directives/blockquote.css';
+@import './directives/excalidraw.css';
+@import './directives/asciinema.css';
+@import './directives/rough.css';
+@import './directives/coderunner.css';
+@import './directives/htmlembed.css';
+@import './directives/colors.css';

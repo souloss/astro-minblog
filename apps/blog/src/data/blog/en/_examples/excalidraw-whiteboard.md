@@ -34,27 +34,19 @@ It's widely used in technical blogs, documentation, and architecture design.
 
 There are two ways to embed Excalidraw in this blog:
 
-### Method 1: ExcalidrawEmbed Component (MDX files)
+### Method 1: Markdown Directive (Recommended)
 
-If your post is an `.mdx` file, you can use the custom `<ExcalidrawEmbed>` component:
+Use the `:::excalidraw` directive directly in any Markdown file:
 
-```astro
----
-import ExcalidrawEmbed from '@/components/media/ExcalidrawEmbed.astro';
----
-
-<ExcalidrawEmbed
-  url="https://excalidraw.com/#json=..."
-  title="Architecture Diagram"
-  height="500px"
-/>
+```markdown
+:::excalidraw{src="https://excalidraw.com/#json=..." height="500px"}
 ```
 
-This component handles responsive sizing, dark mode, and loading states automatically.
+This directive handles responsive sizing, dark mode, and loading states automatically. No imports needed — works in both `.md` and `.mdx` files.
 
-### Method 2: iframe Embed (Markdown files)
+### Method 2: iframe Embed (Fallback)
 
-For standard `.md` files, use an HTML iframe directly:
+For cases where the directive is unavailable, use an HTML iframe directly:
 
 ```html
 <iframe
@@ -68,27 +60,20 @@ For standard `.md` files, use an HTML iframe directly:
 
 ---
 
-## Using the ExcalidrawEmbed Component (MDX)
+## Using the Excalidraw Directive
 
-The `ExcalidrawEmbed` component provides the richest integration. Here's the full API:
+The `:::excalidraw` directive provides the richest integration. Here's the full API:
 
-```astro
-<ExcalidrawEmbed
-  url="https://excalidraw.com/#json=..."
-  title="My Diagram"
-  height="500px"
-  darkMode={true}
-/>
+```markdown
+:::excalidraw{src="https://excalidraw.com/#json=..." height="500px"}
 ```
 
-### Component Props
+### Directive Attributes
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `url` | `string` | required | Excalidraw scene URL |
-| `title` | `string` | `"Excalidraw"` | Accessible title for the iframe |
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `src` | `string` | required | Excalidraw scene URL |
 | `height` | `string` | `"400px"` | Height of the embed container |
-| `darkMode` | `boolean` | `auto` | Force light/dark mode |
 
 ### How to Get a Scene URL
 
@@ -106,30 +91,15 @@ https://excalidraw.com/#json=eyJlbGVtZW50cyI6W...
 
 ---
 
-## Embedding via iframe (Markdown)
+## Live Demo
 
-Since this is a `.md` file, here's how to embed Excalidraw directly using HTML:
+Here's an embedded Excalidraw whiteboard using the directive:
 
-<div style="border: 2px dashed #666; border-radius: 12px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: #f9fafb;">
-  <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong>Excalidraw Embed Placeholder</strong></p>
-  <p style="color: #666;">To see a live Excalidraw whiteboard here, create a scene at <a href="https://excalidraw.com" target="_blank">excalidraw.com</a> and replace this with an iframe using the shareable link.</p>
-</div>
-
-Here's the embed code pattern:
-
-```html
-<iframe
-  src="https://excalidraw.com/"
-  width="100%"
-  height="500"
-  style="border: 1px solid #e5e7eb; border-radius: 8px;"
-  title="Excalidraw Whiteboard"
-  loading="lazy"
-></iframe>
-```
+:::excalidraw{src="https://excalidraw.com/" height="500px"}
+:::
 
 > [!TIP]
-> Add `loading="lazy"` to defer loading the iframe until it enters the viewport. This improves page load performance, especially when you have multiple embeds.
+> The directive automatically handles lazy loading and responsive sizing. No need to manually add `loading="lazy"` or `width` attributes.
 
 ---
 
@@ -141,7 +111,7 @@ Here's the embed code pattern:
 2. **Draw your diagram** — Use the toolbar to add shapes, arrows, text
 3. **Export as link** — Click the share icon and choose "Shareable link"
 4. **Copy the URL** — The scene data is encoded in the URL hash
-5. **Paste into your post** — Use either the component or iframe method
+5. **Paste into your post** — Use the `:::excalidraw` directive with the scene URL
 
 ### Scene Data Format
 

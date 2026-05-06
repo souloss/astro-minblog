@@ -9,6 +9,11 @@
  * - Video PiP (`.md-directive-video`)
  * - Tabs (`.md-directive-tabs`)
  * - GHCard (`.md-directive-ghcard`)
+ * - Excalidraw (`.excalidraw-wrapper`) — iframe theme sync
+ * - Asciinema (`.asciinema-wrapper`) — lazy-load player from CDN
+ * - Rough.js (`.rough-wrapper`) — lazy-load, SVG rendering, theme re-render
+ * - CodeRunner (`.code-run-btn`) — sandboxed eval via iframe
+ * - HtmlEmbed (`.expand-btn`) — fullscreen iframe
  */
 
 import { getGlobalEventManager } from "../utils/performance";
@@ -775,6 +780,399 @@ function initGhCards(): void {
   });
 }
 
+// ── Excalidraw ─────────────────────────────────────────────────────────────────
+
+function getIsDark(): boolean {
+  return document.documentElement.getAttribute("data-theme") === "dark";
+}
+
+function applyThemeToUrl(baseUrl: string, isDark: boolean): string {
+  if (!baseUrl) return "";
+  try {
+    const url = new URL(baseUrl);
+    url.searchParams.set("theme", isDark ? "dark" : "light");
+    return url.toString();
+  } catch {
+    const sep = baseUrl.includes("?") ? "&" : "?";
+    return `${baseUrl}${sep}theme=${isDark ? "dark" : "light"}`;
+  }
+}
+
+function initExcalidraw(): void {
+  const isDark = getIsDark();
+
+  document.querySelectorAll<HTMLElement>(".excalidraw-wrapper").forEach(wrapper => {
+    const iframe = wrapper.querySelector<HTMLIFrameElement>(".excalidraw-iframe");
+    const baseSrc = wrapper.dataset.excalidrawSrc;
+    if (!iframe || !baseSrc) return;
+
+    if (!iframe.src || iframe.src === "about:blank") {
+      iframe.src = applyThemeToUrl(baseSrc, isDark);
+    }
+  });
+}
+
+function updateExcalidrawThemes(): void {
+  const isDark = getIsDark();
+
+  document.querySelectorAll<HTMLElement>(".excalidraw-wrapper").forEach(wrapper => {
+    const iframe = wrapper.querySelector<HTMLIFrameElement>(".excalidraw-iframe");
+    const baseSrc = wrapper.dataset.excalidrawSrc;
+    if (!iframe || !baseSrc) return;
+
+    iframe.src = applyThemeToUrl(baseSrc, isDark);
+  });
+}
+
+// ── Asciinema ──────────────────────────────────────────────────────────────────
+
+const ASCIINEMA_CDN = "https://cdn.jsdelivr.net/npm/asciinema-player@3.8.2/dist/bundle";
+let asciinemaCssLoaded = false;
+let asciinemaJsLoaded = false;
+
+function loadAsciinemaCSS(): Promise<void> {
+  if (asciinemaCssLoaded) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `${ASCIINEMA_CDN}/asciinema-player.css`;
+    link.onload = () => {
+      asciinemaCssLoaded = true;
+      resolve();
+    };
+    link.onerror = reject;
+    document.head.appendChild(link);
+  });
+}
+
+function loadAsciinemaJS(): Promise<void> {
+  if (asciinemaJsLoaded) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = `${ASCIINEMA_CDN}/asciinema-player.min.js`;
+    script.onload = () => {
+      asciinemaJsLoaded = true;
+      resolve();
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+interface AsciinemaPlayerAPI {
+  create: (
+    src: string,
+    container: HTMLElement,
+    opts: Record<string, unknown>
+  ) => { dispose: () => void };
+}
+
+let asciinemaObserver: IntersectionObserver | null = null;
+
+function ensureAsciinemaObserver(): IntersectionObserver {
+  if (asciinemaObserver) return asciinemaObserver;
+
+  asciinemaObserver = new IntersectionObserver(
+    (entries, obs) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+
+        const el = entry.target as HTMLElement;
+        if (el.dataset.asciinemaInit) continue;
+
+        el.dataset.asciinemaInit = "true";
+        obs.unobserve(el);
+
+        renderAsciinemaPlayer(el);
+      }
+    },
+    { rootMargin: "200px" }
+  );
+
+  return asciinemaObserver;
+}
+
+async function renderAsciinemaPlayer(wrapper: HTMLElement): Promise<void> {
+  await Promise.all([loadAsciinemaCSS(), loadAsciinemaJS()]);
+
+  const AsciinemaPlayer = (window as any).AsciinemaPlayer as AsciinemaPlayerAPI | undefined;
+  if (!AsciinemaPlayer) return;
+
+  const placeholder = wrapper.querySelector(".asciinema-placeholder");
+  if (placeholder) placeholder.remove();
+
+  AsciinemaPlayer.create(wrapper.dataset.src || "", wrapper, {
+    cols: Number(wrapper.dataset.cols) || 80,
+    rows: Number(wrapper.dataset.rows) || 24,
+    speed: Number(wrapper.dataset.speed) || 1,
+    idleTimeLimit: Number(wrapper.dataset.idleTimeLimit) || 2,
+    theme: "minimax",
+    fit: wrapper.dataset.fit || "width",
+    autoPlay: wrapper.dataset.autoPlay === "true",
+    loop: wrapper.dataset.loop === "true",
+    preload: wrapper.dataset.preload !== "false",
+    poster: wrapper.dataset.poster || undefined,
+  });
+}
+
+function initAsciinemaPlayers(): void {
+  const obs = ensureAsciinemaObserver();
+
+  document
+    .querySelectorAll<HTMLElement>(".asciinema-wrapper:not([data-asciinema-init])")
+    .forEach(wrapper => {
+      obs.observe(wrapper);
+    });
+}
+
+// ── Rough.js ───────────────────────────────────────────────────────────────────
+
+function getRoughColor(varName: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
+function resolveRoughColor(value: string | undefined): string {
+  if (!value) return getRoughColor("--foreground");
+  if (value.startsWith("var(") && value.endsWith(")")) {
+    const varName = value.slice(4, -1).trim();
+    return getRoughColor(varName);
+  }
+  return value;
+}
+
+interface RoughStatic {
+  svg(el: SVGSVGElement): {
+    rectangle(x: number, y: number, w: number, h: number, opts?: Record<string, unknown>): SVGGElement;
+    circle(x: number, y: number, d: number, opts?: Record<string, unknown>): SVGGElement;
+    ellipse(x: number, y: number, w: number, h: number, opts?: Record<string, unknown>): SVGGElement;
+    line(x1: number, y1: number, x2: number, y2: number, opts?: Record<string, unknown>): SVGGElement;
+  };
+}
+
+async function loadRough(): Promise<RoughStatic> {
+  const cachedModule = (window as any).__roughModule;
+  if (cachedModule) return cachedModule as RoughStatic;
+
+  const roughCdnUrl = "https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.esm.js";
+  const mod: { default: RoughStatic } = await import(
+    /* @vite-ignore */ roughCdnUrl
+  );
+  (window as any).__roughModule = mod.default;
+  return mod.default;
+}
+
+async function renderDrawing(wrapper: HTMLElement): Promise<void> {
+  const id = wrapper.getAttribute("data-rough-id");
+  const configScript = wrapper.querySelector("script.rough-config");
+  const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
+  if (!output || !configScript) return;
+
+  const configStr = JSON.parse(configScript.textContent || '""');
+  if (!configStr) return;
+
+  let parsed: {
+    width?: number;
+    height?: number;
+    shapes?: Array<Record<string, unknown>>;
+  };
+  try {
+    parsed = JSON.parse(configStr);
+  } catch {
+    output.innerHTML = `<p class="rough-error">Invalid config JSON</p>`;
+    return;
+  }
+
+  const width = parsed.width ?? 400;
+  const height = parsed.height ?? 200;
+  const shapes = parsed.shapes ?? [];
+
+  const rough = await loadRough();
+
+  output.innerHTML = "";
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.style.maxWidth = "100%";
+  svg.style.height = "auto";
+  output.appendChild(svg);
+
+  const rc = rough.svg(svg);
+  const fg = getRoughColor("--foreground");
+
+  for (const shape of shapes) {
+    const opts = { ...((shape.options as Record<string, unknown>) || {}) };
+    if (opts.fill) opts.fill = resolveRoughColor(opts.fill as string);
+    if (opts.stroke) {
+      opts.stroke = resolveRoughColor(opts.stroke as string);
+    } else {
+      opts.stroke = fg;
+    }
+
+    let node: SVGGElement | null = null;
+    switch (shape.type) {
+      case "rectangle":
+        node = rc.rectangle(
+          (shape.x as number) ?? 0,
+          (shape.y as number) ?? 0,
+          (shape.width as number) ?? 100,
+          (shape.height as number) ?? 50,
+          opts
+        );
+        break;
+      case "circle":
+        node = rc.circle(
+          (shape.x as number) ?? 50,
+          (shape.y as number) ?? 50,
+          ((shape.r as number) ?? 25) * 2,
+          opts
+        );
+        break;
+      case "ellipse":
+        node = rc.ellipse(
+          (shape.x as number) ?? 50,
+          (shape.y as number) ?? 50,
+          (shape.width as number) ?? 80,
+          (shape.height as number) ?? 40,
+          opts
+        );
+        break;
+      case "line":
+        node = rc.line(
+          (shape.x1 as number) ?? 0,
+          (shape.y1 as number) ?? 0,
+          (shape.x2 as number) ?? 100,
+          (shape.y2 as number) ?? 100,
+          opts
+        );
+        break;
+    }
+    if (node) svg.appendChild(node);
+  }
+}
+
+let roughObserver: IntersectionObserver | null = null;
+
+function initRoughDrawings(): void {
+  if (roughObserver) {
+    roughObserver.disconnect();
+  }
+
+  roughObserver = new IntersectionObserver(
+    (entries, obs) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        obs.unobserve(el);
+        renderDrawing(el);
+      }
+    },
+    { rootMargin: "200px" }
+  );
+
+  document.querySelectorAll<HTMLElement>(".rough-wrapper").forEach(wrapper => {
+    const output = wrapper.querySelector(".rough-output");
+    const hasContent = output && output.querySelector("svg:not(.size-8)");
+    if (!hasContent) roughObserver!.observe(wrapper);
+  });
+}
+
+async function reRenderAllRough(): Promise<void> {
+  const wrappers = Array.from(document.querySelectorAll<HTMLElement>(".rough-wrapper"));
+  for (const wrapper of wrappers) {
+    await renderDrawing(wrapper);
+  }
+}
+
+// ── CodeRunner ─────────────────────────────────────────────────────────────────
+
+function initCodeRunners(): void {
+  document
+    .querySelectorAll<HTMLButtonElement>(".code-run-btn")
+    .forEach(btn => {
+      if (btn.dataset.initialized) return;
+      btn.dataset.initialized = "true";
+
+      btn.addEventListener("click", () => {
+        const code = btn.dataset.code || "";
+        const runner = btn.closest(".code-runner");
+        const output = runner?.querySelector("[data-output]") as HTMLElement;
+        if (!output) return;
+
+        output.classList.remove("hidden");
+        output.textContent = "";
+
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.sandbox.add("allow-scripts");
+        document.body.appendChild(iframe);
+
+        const logs: string[] = [];
+        const win = iframe.contentWindow;
+        if (!win) return;
+
+        const script = `
+          const _logs = [];
+          const _origLog = console.log;
+          console.log = (...args) => {
+            _logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
+            parent.postMessage({ type: 'code-output', logs: _logs }, '*');
+          };
+          console.error = console.log;
+          try {
+            const result = eval(${JSON.stringify(code)});
+            if (result !== undefined) console.log('→', result);
+          } catch(e) {
+            console.log('Error:', e.message);
+          }
+          parent.postMessage({ type: 'code-done', logs: _logs }, '*');
+        `;
+
+        const handler = (e: MessageEvent) => {
+          if (e.source !== win) return;
+          if (
+            e.data?.type === "code-output" ||
+            e.data?.type === "code-done"
+          ) {
+            logs.length = 0;
+            logs.push(...(e.data.logs || []));
+            output.textContent = logs.join("\n") || "(no output)";
+          }
+          if (e.data?.type === "code-done") {
+            window.removeEventListener("message", handler);
+            setTimeout(() => iframe.remove(), 100);
+          }
+        };
+
+        window.addEventListener("message", handler);
+        iframe.srcdoc = `<script>${script}<\/script>`;
+      });
+    });
+}
+
+// ── HtmlEmbed ──────────────────────────────────────────────────────────────────
+
+function initFullHtmlEmbed(): void {
+  document.querySelectorAll<HTMLButtonElement>('.expand-btn').forEach(btn => {
+    if (btn.dataset.initialized) return;
+    btn.dataset.initialized = "true";
+
+    btn.addEventListener('click', () => {
+      const wrapper = btn.closest('.full-html-embed-wrapper');
+      const iframe = wrapper?.querySelector('iframe');
+      if (!iframe) return;
+
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if ('webkitRequestFullscreen' in iframe) {
+        (iframe as HTMLElement & { webkitRequestFullscreen: () => void }).webkitRequestFullscreen();
+      } else if ('msRequestFullscreen' in iframe) {
+        (iframe as HTMLElement & { msRequestFullscreen: () => void }).msRequestFullscreen();
+      }
+    });
+  });
+}
+
 // ── Main Init ─────────────────────────────────────────────────────────────────
 
 function initDirectiveInteractions(): void {
@@ -784,6 +1182,22 @@ function initDirectiveInteractions(): void {
   initVideoDirective();
   initTabs();
   initGhCards();
+  initExcalidraw();
+  initAsciinemaPlayers();
+  initRoughDrawings();
+  initCodeRunners();
+  initFullHtmlEmbed();
 }
 
 document.addEventListener("astro:page-load", initDirectiveInteractions);
+
+// Themechange listeners for directives that need to update on theme switch
+window.addEventListener("themechange", updateExcalidrawThemes);
+
+window.addEventListener("themechange", () => {
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => reRenderAllRough(), { timeout: 300 });
+  } else {
+    setTimeout(() => reRenderAllRough(), 100);
+  }
+});

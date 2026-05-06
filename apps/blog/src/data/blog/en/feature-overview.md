@@ -252,47 +252,44 @@ Supports zoom, pan, and expand/collapse interactions.
 
 ### Rough.js Hand-drawn Graphics
 
-Use hand-drawn style SVG shapes in MDX:
+Use hand-drawn style SVG shapes with the `:::rough` directive:
 
-```mdx
-import RoughDrawing from '@astro-minimax/core/components/viz/RoughDrawing.astro';
-
-<RoughDrawing shapes={[
-  { type: "rectangle", x: 10, y: 10, width: 200, height: 100 }
-]} />
+```markdown
+:::rough{config='{"width":400,"height":200,"shapes":[{"type":"rectangle","x":10,"y":10,"width":200,"height":100}]}'}
 ```
 
 ### Excalidraw Whiteboard
 
-Embed Excalidraw whiteboard-style diagrams:
+Embed Excalidraw whiteboard-style diagrams with the `:::excalidraw` directive:
 
-```mdx
-import ExcalidrawEmbed from '@astro-minimax/core/components/viz/ExcalidrawEmbed.astro';
-
-<ExcalidrawEmbed src="/drawings/architecture.excalidraw" />
+```markdown
+:::excalidraw{src="https://excalidraw.com/#json=..." height="500px"}
 ```
 
 Automatically adapts to light/dark themes.
 
 ### Asciinema Terminal Replay
 
-Embed terminal recording playback:
+Embed terminal recording playback with the `:::asciinema` directive:
 
-```mdx
-import AsciinemaPlayer from '@astro-minimax/core/components/viz/AsciinemaPlayer.astro';
-
-<AsciinemaPlayer src="/casts/demo.cast" cols={120} rows={30} />
+```markdown
+:::asciinema{src="/casts/demo.cast" cols="120" rows="30"}
 ```
 
-### More Components
+### Markdown Directives
 
-| Component       | Description                                     |
-| --------------- | ----------------------------------------------- |
-| `Bilibili`      | Bilibili video embed                            |
-| `MusicPlayer`   | Music player (NetEase, QQ Music, Kugou, etc.)   |
-| `CodeRunner`    | Interactive JavaScript code runner              |
-| `FullHtmlEmbed` | Full HTML page embed                            |
-| `VizContainer`  | Visualization container (zoom, pan, fullscreen) |
+All visualization and media components are available as Markdown directives — no imports needed, works in both `.md` and `.mdx` files:
+
+| Directive | Description |
+|-----------|-------------|
+| `:::excalidraw{src="..." height="500px"}` | Excalidraw whiteboard embed |
+| `:::asciinema{src="..." rows="24" speed="1"}` | Terminal session replay |
+| `:::rough{config='...'}` | Rough.js hand-drawn graphics |
+| `:::video{bilibili="..."}` | Bilibili video embed |
+| `:::audio{netease="..."}` | Music player (NetEase, QQ Music, etc.) |
+| `:::coderunner{lang="javascript" title="..."}` | Interactive JavaScript code runner |
+| `:::htmlembed{src="..." height="1600px"}` | Full HTML page embed |
+| `:::colors` | Color palette display |
 
 ---
 

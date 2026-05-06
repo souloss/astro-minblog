@@ -1,0 +1,45 @@
+/* ── Rough Drawing Directive ── */
+
+.md-directive-rough {
+    margin: 1rem 0;
+}
+
+/* ========== Rough Container ========== */
+.rough-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem;
+}
+
+.rough-output {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.rough-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    width: 100%;
+    color: var(--text-secondary);
+}
+
+.rough-placeholder svg {
+    opacity: 0.4;
+}
+
+.rough-error {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* ========== Dark Mode ========== */
+html[data-theme="dark"] .rough-error,
+.dark .rough-error {
+    color: #f87171;
+}

@@ -1,0 +1,86 @@
+/* ── Code Runner Directive ── */
+
+.md-directive-coderunner {
+    margin: 1rem 0;
+}
+
+/* ========== Code Runner Container ========== */
+.code-runner {
+    margin: 1.5rem 0;
+    overflow: hidden;
+    border-radius: var(--md-radius-sm, 8px);
+    border: var(--md-border, 1px solid var(--border));
+}
+
+/* Header bar */
+.code-runner .code-runner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: var(--md-border, 1px solid var(--border));
+    background: var(--bg-muted, var(--surface));
+    padding: 0.5rem 1rem;
+}
+
+.code-runner-title {
+    font-size: var(--md-text-xs, 0.75rem);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* Run button */
+.code-run-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border: none;
+    border-radius: var(--md-radius-sm, 8px);
+    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.1);
+    color: var(--accent-color, var(--accent));
+    font-size: var(--md-text-xs, 0.75rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.code-run-btn:hover {
+    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.2);
+}
+
+/* Code block inside runner */
+.code-runner pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+/* Output area */
+.code-output {
+    display: none;
+    max-height: 12rem;
+    overflow: auto;
+    border-top: var(--md-border, 1px solid var(--border));
+    background: var(--bg-muted, var(--surface));
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: var(--md-text-sm, 0.875rem);
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.code-output.is-visible {
+    display: block;
+}
+
+/* ========== Dark Mode ========== */
+html[data-theme="dark"] .code-run-btn,
+.dark .code-run-btn {
+    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.15);
+}
+
+html[data-theme="dark"] .code-run-btn:hover,
+.dark .code-run-btn:hover {
+    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.25);
+}

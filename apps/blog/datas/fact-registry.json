@@ -1,6 +1,6 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-05-06T13:44:41.678Z",
+  "generatedAt": "2026-05-06T16:29:29.199Z",
   "version": 1,
   "facts": [
     {
@@ -52,7 +52,7 @@
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 79 篇文章（中文 40 篇，英文 39 篇）",
+      "statement": "博客共有 83 篇文章（中文 42 篇，英文 41 篇）",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -72,7 +72,7 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 79 posts (40 in Chinese, 39 in English)",
+      "statement": "The blog has 83 posts (42 in Chinese, 41 in English)",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -88,7 +88,7 @@
     {
       "id": "blog-categories",
       "category": "blog",
-      "statement": "博客的主要分类包括：教程/博客、Examples、教程/配置、Tutorial/Configuration、Release",
+      "statement": "博客的主要分类包括：Examples、教程/博客、教程/配置、Tutorial/Configuration、Release",
       "evidence": "author-context.json → stableFacts.focusAreas",
       "source": "derived",
       "confidence": 0.95,
@@ -100,8 +100,8 @@
         "category",
         "area",
         "focus",
-        "教程/博客",
         "examples",
+        "教程/博客",
         "教程/配置",
         "tutorial/configuration",
         "release"
@@ -111,7 +111,7 @@
     {
       "id": "blog-top-tags",
       "category": "blog",
-      "statement": "博客最常用的标签有：docs、release、configuration、tutorial、ai、examples、Rust、changelog、deployment、tools",
+      "statement": "博客最常用的标签有：docs、tutorial、release、configuration、examples、ai、Rust、changelog、deployment、tools",
       "evidence": "author-context.json → stableFacts.topTags",
       "source": "derived",
       "confidence": 0.9,
@@ -121,11 +121,11 @@
         "topic",
         "主题",
         "docs",
+        "tutorial",
         "release",
         "configuration",
-        "tutorial",
-        "ai",
         "examples",
+        "ai",
         "rust",
         "changelog",
         "deployment",
@@ -178,7 +178,7 @@
     {
       "id": "blog-lang-dist",
       "category": "blog",
-      "statement": "博客文章的语言分布：中文 40 篇，英文 39 篇",
+      "statement": "博客文章的语言分布：中文 42 篇，英文 41 篇",
       "evidence": "author-context.json → posts[].lang aggregation",
       "source": "derived",
       "confidence": 1,
@@ -195,7 +195,7 @@
     {
       "id": "content-category-dist",
       "category": "content",
-      "statement": "按分类统计：教程/博客(8篇)、Examples(8篇)、教程/配置(7篇)、Tutorial/Configuration(6篇)、Release(6篇)、Release Notes(4篇)、发布说明(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/AI(2篇)、教程/AI(2篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Tools(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
+      "statement": "按分类统计：Examples(12篇)、教程/博客(8篇)、教程/配置(7篇)、Tutorial/Configuration(6篇)、Release(6篇)、Release Notes(4篇)、发布说明(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/AI(2篇)、教程/AI(2篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Tools(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
       "evidence": "author-context.json → posts[].category aggregation",
       "source": "derived",
       "confidence": 1,

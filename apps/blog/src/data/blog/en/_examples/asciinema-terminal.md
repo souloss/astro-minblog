@@ -11,9 +11,7 @@ category: Examples
 draft: false
 ---
 
-import AsciinemaPlayer from '@/components/media/AsciinemaPlayer.astro';
-
-[asciinema](https://asciinema.org/) is a terminal session recording and playback tool. With the `AsciinemaPlayer` component, you can embed recorded terminal sessions directly in your blog posts.
+[asciinema](https://asciinema.org/) is a terminal session recording and playback tool. With the `:::asciinema` directive, you can embed recorded terminal sessions directly in your blog posts.
 
 ---
 
@@ -21,16 +19,15 @@ import AsciinemaPlayer from '@/components/media/AsciinemaPlayer.astro';
 
 Here's a simple terminal session demo:
 
-<AsciinemaPlayer src="/casts/demo.cast" rows={18} />
+:::asciinema{src="/casts/demo.cast" rows="18"}
+:::
 
 ## Usage
 
-Import and use the component in MDX files:
+Use the `:::asciinema` directive in Markdown files:
 
-```mdx
-import AsciinemaPlayer from '@/components/media/AsciinemaPlayer.astro';
-
-<AsciinemaPlayer src="/casts/demo.cast" />
+```markdown
+:::asciinema{src="/casts/demo.cast"}
 ```
 
 ## Recording .cast Files
@@ -58,19 +55,20 @@ Press `Ctrl+D` or type `exit` to stop recording. Place the generated `.cast` fil
 
 Set `autoPlay` to start playback automatically:
 
-<AsciinemaPlayer src="/casts/demo.cast" autoPlay={true} speed={2} rows={18} />
+:::asciinema{src="/casts/demo.cast" autoPlay="true" speed="2" rows="18"}
+:::
 
-## Component Props
+## Directive Attributes
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
 | `src` | `string` | required | Path to `.cast` file |
-| `cols` | `number` | `80` | Terminal columns |
-| `rows` | `number` | `24` | Terminal rows |
-| `speed` | `number` | `1` | Playback speed multiplier |
-| `idleTimeLimit` | `number` | `2` | Idle time compression threshold (seconds) |
+| `cols` | `string` | `80` | Terminal columns |
+| `rows` | `string` | `24` | Terminal rows |
+| `speed` | `string` | `1` | Playback speed multiplier |
+| `idleTimeLimit` | `string` | `2` | Idle time compression threshold (seconds) |
 | `fit` | `string` | `"width"` | Fit mode |
-| `autoPlay` | `boolean` | `false` | Auto-start playback |
-| `loop` | `boolean` | `false` | Loop playback |
+| `autoPlay` | `string` | `false` | Auto-start playback |
+| `loop` | `string` | `false` | Loop playback |
 
 The player automatically follows the blog's light/dark theme.

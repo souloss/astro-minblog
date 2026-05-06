@@ -280,47 +280,44 @@ graph TD
 
 ### Rough.js 手绘图形
 
-在 MDX 中使用手绘风格的 SVG 图形：
+使用 `:::rough` 指令在 Markdown 中插入手绘风格的 SVG 图形：
 
-```mdx
-import RoughDrawing from '@astro-minimax/core/components/viz/RoughDrawing.astro';
-
-<RoughDrawing shapes={[
-  { type: "rectangle", x: 10, y: 10, width: 200, height: 100 }
-]} />
+```markdown
+:::rough{config='{"width":400,"height":200,"shapes":[{"type":"rectangle","x":10,"y":10,"width":200,"height":100}]}'}
 ```
 
 ### Excalidraw 白板
 
-嵌入 Excalidraw 白板式图表：
+使用 `:::excalidraw` 指令嵌入 Excalidraw 白板式图表：
 
-```mdx
-import ExcalidrawEmbed from '@astro-minimax/core/components/viz/ExcalidrawEmbed.astro';
-
-<ExcalidrawEmbed src="/drawings/architecture.excalidraw" />
+```markdown
+:::excalidraw{src="https://excalidraw.com/#json=..." height="500px"}
 ```
 
 自动适配明暗主题。
 
 ### Asciinema 终端回放
 
-嵌入终端录制回放：
+使用 `:::asciinema` 指令嵌入终端录制回放：
 
-```mdx
-import AsciinemaPlayer from '@astro-minimax/core/components/viz/AsciinemaPlayer.astro';
-
-<AsciinemaPlayer src="/casts/demo.cast" cols={120} rows={30} />
+```markdown
+:::asciinema{src="/casts/demo.cast" cols="120" rows="30"}
 ```
 
-### 更多组件
+### Markdown 指令
 
-| 组件            | 说明                                |
-| --------------- | ----------------------------------- |
-| `Bilibili`      | B 站视频嵌入                        |
-| `MusicPlayer`   | 音乐播放器（支持网易云、QQ 音乐等） |
-| `CodeRunner`    | 交互式 JavaScript 代码运行器        |
-| `FullHtmlEmbed` | 完整 HTML 页面嵌入                  |
-| `VizContainer`  | 可视化容器（缩放、平移、全屏）      |
+所有可视化和媒体组件均可通过 Markdown 指令使用——无需导入，在 `.md` 和 `.mdx` 文件中均可使用：
+
+| 指令 | 说明 |
+|------|------|
+| `:::excalidraw{src="..." height="500px"}` | Excalidraw 白板嵌入 |
+| `:::asciinema{src="..." rows="24" speed="1"}` | 终端会话回放 |
+| `:::rough{config='...'}` | Rough.js 手绘图形 |
+| `:::video{bilibili="..."}` | B 站视频嵌入 |
+| `:::audio{netease="..."}` | 音乐播放器（支持网易云、QQ 音乐等） |
+| `:::coderunner{lang="javascript" title="..."}` | 交互式 JavaScript 代码运行器 |
+| `:::htmlembed{src="..." height="1600px"}` | 完整 HTML 页面嵌入 |
+| `:::colors` | 色彩展示 |
 
 ---
 

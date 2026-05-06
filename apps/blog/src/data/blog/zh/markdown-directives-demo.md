@@ -1422,6 +1422,171 @@ tab: 示例代码
 
 ---
 
+### Excalidraw 白板
+
+:::excalidraw{src="https://excalidraw.com/" height="500px"}
+:::
+
+````
+:::excalidraw{src="https://excalidraw.com/" height="500px"}
+````
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `src` | `string` | 必填 | Excalidraw 场景 URL |
+| `height` | `string` | `"500px"` | 嵌入容器高度 |
+
+- 自动适配明暗主题（iframe URL 自动附加 `?theme=light/dark`）
+- 提供占位符加载动画和"Open in Excalidraw"链接
+
+---
+
+### Asciinema 终端回放
+
+:::asciinema{src="/casts/demo.cast" rows="18"}
+:::
+
+````
+:::asciinema{src="/casts/demo.cast" rows="18"}
+````
+
+````
+:::asciinema{src="/casts/demo.cast" autoPlay="true" speed="2" rows="18"}
+````
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `src` | `string` | 必填 | `.cast` 文件路径 |
+| `cols` | `number` | `80` | 终端列数 |
+| `rows` | `number` | `24` | 终端行数 |
+| `speed` | `number` | `1` | 播放速度倍率 |
+| `idleTimeLimit` | `number` | `2` | 空闲时间压缩阈值（秒） |
+| `fit` | `string` | `"width"` | 自适应模式 |
+| `autoPlay` | `boolean` | `false` | 是否自动播放 |
+| `loop` | `boolean` | `false` | 是否循环播放 |
+
+- 播放器自动跟随博客的亮色/暗色主题切换
+- 使用 IntersectionObserver 懒加载 asciinema-player CDN 资源
+
+---
+
+### Rough.js 手绘图形
+
+:::rough{config='{"width":500,"height":250,"shapes":[{"type":"rectangle","x":30,"y":30,"width":120,"height":80,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"circle","x":250,"y":100,"r":55,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":2}},{"type":"ellipse","x":410,"y":100,"width":120,"height":70,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"zigzag","roughness":1.8}},{"type":"line","x1":30,"y1":200,"x2":480,"y2":200,"options":{"stroke":"var(--foreground)","roughness":1.5,"strokeWidth":2}}]}'}
+:::
+````
+:::rough{config='{"width":500,"height":250,"shapes":[{"type":"rectangle","x":30,"y":30,"width":120,"height":80,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"hachure","roughness":1.5}},{"type":"circle","x":250,"y":100,"r":55,"options":{"stroke":"var(--foreground)","fill":"var(--accent)","fillStyle":"cross-hatch","roughness":2}}]}'}
+````
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `config` | `string` | 必填 | JSON 配置字符串 |
+
+- `config` 包含 `width`、`height`、`shapes` 数组
+- 支持的图形类型：`rectangle`、`circle`、`ellipse`、`line`
+- 使用 `var(--foreground)` 和 `var(--accent)` 实现主题适配
+- 主题切换时自动重新渲染（stroke 颜色跟随主题）
+- 使用 IntersectionObserver 懒加载 roughjs CDN 资源
+
+---
+
+### 交互式代码运行器
+
+:::coderunner{lang="javascript" title="JavaScript 交互示例"}
+const greeting = "Hello, astro-minimax!";
+console.log(greeting);
+console.log("1 + 2 =", 1 + 2);
+:::
+
+````
+:::coderunner{lang="javascript" title="JavaScript 交互示例"}
+const greeting = "Hello, astro-minimax!";
+console.log(greeting);
+console.log("1 + 2 =", 1 + 2);
+:::
+````
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `lang` | `string` | `"javascript"` | 编程语言标签 |
+| `title` | `string` | `"Interactive Code"` | 代码块标题 |
+
+- 点击 ▶ Run 按钮在沙箱 iframe 中执行代码
+- 自动捕获 `console.log` 输出并显示在输出区域
+- 代码块支持语法高亮
+
+---
+
+### HTML 页面嵌入
+
+:::htmlembed{height="200px" title="HTML 嵌入示例"}
+<style>
+  body { font-family: system-ui; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+  h1 { font-size: 1.5rem; }
+</style>
+<h1>✨ 嵌入的 HTML 内容</h1>
+:::
+
+````
+:::htmlembed{height="200px" title="HTML 嵌入示例"}
+<style>
+  body { ... }
+</style>
+<h1>✨ 嵌入的 HTML 内容</h1>
+:::
+````
+
+````
+:::htmlembed{src="https://example.com" height="1600px" title="外部页面"}
+````
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `src` | `string` | 可选 | 外部页面 URL（与 body 互斥） |
+| `height` | `string` | `"1600px"` | 嵌入容器高度 |
+| `title` | `string` | `"Embedded HTML Content"` | iframe 标题 |
+
+- 有 `src` 属性时嵌入外部页面，无 `src` 时使用指令体作为 srcdoc
+- 提供全屏查看按钮
+- iframe 使用 sandbox 安全属性
+
+---
+
+### 颜色预览
+
+:::colors
+#FF6B6B
+#4ECDC4
+#45B7D1
+#96CEB4
+#FFEAA7
+#DDA0DD
+#98D8C8
+#F7DC6F
+:::
+
+````
+:::colors
+#FF6B6B
+#4ECDC4
+#45B7D1
+#96CEB4
+#FFEAA7
+:::
+````
+
+行内颜色：:color[#FF6B6B] 和 :color[#4ECDC4] 和 :color[#45B7D1]
+
+````
+行内颜色：:color[#FF6B6B] 和 :color[#4ECDC4] 和 :color[#45B7D1]
+````
+
+- 块级用法：`:::colors` 指令体中每行一个颜色值（十六进制或命名颜色）
+- 行内用法：`:color[#FF6B6B]` 在文本中插入单个色块
+- 自动显示色块和十六进制代码
+
+---
+
 ## 行内指令
 
 ### 文字装饰

@@ -34,27 +34,19 @@ Excalidraw 是一个虚拟白板工具，可以生成手绘风格的图表。它
 
 在本博客中有两种方式嵌入 Excalidraw：
 
-### 方式一：ExcalidrawEmbed 组件（MDX 文件）
+### 方式一：Markdown 指令（推荐）
 
-如果你的文章是 `.mdx` 格式，可以使用自定义的 `<ExcalidrawEmbed>` 组件：
+使用 `:::excalidraw` 指令直接在任何 Markdown 文件中嵌入：
 
-```astro
----
-import ExcalidrawEmbed from '@/components/media/ExcalidrawEmbed.astro';
----
-
-<ExcalidrawEmbed
-  url="https://excalidraw.com/#json=..."
-  title="架构图"
-  height="500px"
-/>
+```markdown
+:::excalidraw{src="https://excalidraw.com/#json=..." height="500px"}
 ```
 
-此组件会自动处理响应式尺寸、深色模式和加载状态。
+此指令会自动处理响应式尺寸、深色模式和加载状态。无需导入——在 `.md` 和 `.mdx` 文件中均可使用。
 
-### 方式二：iframe 嵌入（Markdown 文件）
+### 方式二：iframe 嵌入（备选）
 
-对于标准 `.md` 文件，直接使用 HTML iframe：
+当指令不可用时，直接使用 HTML iframe：
 
 ```html
 <iframe
@@ -68,27 +60,20 @@ import ExcalidrawEmbed from '@/components/media/ExcalidrawEmbed.astro';
 
 ---
 
-## 使用 ExcalidrawEmbed 组件（MDX）
+## 使用 Excalidraw 指令
 
-`ExcalidrawEmbed` 组件提供最丰富的集成体验。完整 API 如下：
+`:::excalidraw` 指令提供最丰富的集成体验。完整 API 如下：
 
-```astro
-<ExcalidrawEmbed
-  url="https://excalidraw.com/#json=..."
-  title="我的图表"
-  height="500px"
-  darkMode={true}
-/>
+```markdown
+:::excalidraw{src="https://excalidraw.com/#json=..." height="500px"}
 ```
 
-### 组件属性
+### 指令属性
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `url` | `string` | 必填 | Excalidraw 场景 URL |
-| `title` | `string` | `"Excalidraw"` | iframe 的无障碍标题 |
+| `src` | `string` | 必填 | Excalidraw 场景 URL |
 | `height` | `string` | `"400px"` | 嵌入容器的高度 |
-| `darkMode` | `boolean` | `auto` | 强制明/暗模式 |
 
 ### 如何获取场景 URL
 
@@ -106,30 +91,15 @@ https://excalidraw.com/#json=eyJlbGVtZW50cyI6W...
 
 ---
 
-## 通过 iframe 嵌入（Markdown）
+## 实时演示
 
-由于本文是 `.md` 文件，以下是直接使用 HTML 嵌入 Excalidraw 的方法：
+以下是使用指令嵌入的 Excalidraw 白板：
 
-<div style="border: 2px dashed #666; border-radius: 12px; padding: 2rem; text-align: center; margin: 1.5rem 0; background: #f9fafb;">
-  <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong>Excalidraw 嵌入占位符</strong></p>
-  <p style="color: #666;">如需在此处查看实时 Excalidraw 白板，请在 <a href="https://excalidraw.com" target="_blank">excalidraw.com</a> 创建场景，然后使用可分享链接替换此内容为 iframe。</p>
-</div>
-
-嵌入代码模板：
-
-```html
-<iframe
-  src="https://excalidraw.com/"
-  width="100%"
-  height="500"
-  style="border: 1px solid #e5e7eb; border-radius: 8px;"
-  title="Excalidraw 白板"
-  loading="lazy"
-></iframe>
-```
+:::excalidraw{src="https://excalidraw.com/" height="500px"}
+:::
 
 > [!TIP]
-> 添加 `loading="lazy"` 可以延迟 iframe 的加载，直到它进入可视区域。这可以改善页面加载性能，特别是当页面中有多个嵌入时。
+> 指令会自动处理懒加载和响应式尺寸，无需手动添加 `loading="lazy"` 或 `width` 属性。
 
 ---
 
@@ -141,7 +111,7 @@ https://excalidraw.com/#json=eyJlbGVtZW50cyI6W...
 2. **绘制图表** — 使用工具栏添加形状、箭头、文字
 3. **导出为链接** — 点击分享图标，选择"可分享链接"
 4. **复制 URL** — 场景数据编码在 URL 哈希中
-5. **粘贴到文章中** — 使用组件方式或 iframe 方式
+5. **粘贴到文章中** — 使用 `:::excalidraw` 指令并传入场景 URL
 
 ### 场景数据格式
 

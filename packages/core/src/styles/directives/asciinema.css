@@ -1,0 +1,74 @@
+/* ── Asciinema Directive ── */
+
+.md-directive-asciinema {
+    margin: 1rem 0;
+}
+
+/* ========== Asciinema Container ========== */
+.asciinema-wrapper {
+    width: 100%;
+    min-height: 200px;
+}
+
+.asciinema-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    width: 100%;
+    color: var(--text-secondary);
+}
+
+.asciinema-placeholder svg {
+    opacity: 0.4;
+}
+
+.asciinema-wrapper .ap-wrapper {
+    border-radius: var(--md-radius-sm, 8px);
+    overflow: hidden;
+}
+
+/* ========== Custom Asciinema Theme ========== */
+.asciinema-player-theme-minimax {
+    --term-color-foreground: #374151;
+    --term-color-background: #f9fafb;
+    --term-color-0: #1f2937;
+    --term-color-1: #dc2626;
+    --term-color-2: #16a34a;
+    --term-color-3: #ca8a04;
+    --term-color-4: #2563eb;
+    --term-color-5: #9333ea;
+    --term-color-6: #0891b2;
+    --term-color-7: #e5e7eb;
+    --term-color-8: #6b7280;
+    --term-color-9: #ef4444;
+    --term-color-10: #22c55e;
+    --term-color-11: #eab308;
+    --term-color-12: #3b82f6;
+    --term-color-13: #a855f7;
+    --term-color-14: #06b6d4;
+    --term-color-15: #f9fafb;
+    transition: --term-color-foreground 0.2s, --term-color-background 0.2s;
+}
+
+html[data-theme="dark"] .asciinema-player-theme-minimax,
+.dark .asciinema-player-theme-minimax {
+    --term-color-foreground: #e5e7eb;
+    --term-color-background: #1e293b;
+    --term-color-0: #334155;
+    --term-color-1: #f87171;
+    --term-color-2: #4ade80;
+    --term-color-3: #facc15;
+    --term-color-4: #60a5fa;
+    --term-color-5: #c084fc;
+    --term-color-6: #22d3ee;
+    --term-color-7: #f1f5f9;
+    --term-color-8: #94a3b8;
+    --term-color-9: #fca5a5;
+    --term-color-10: #86efac;
+    --term-color-11: #fde047;
+    --term-color-12: #93c5fd;
+    --term-color-13: #d8b4fe;
+    --term-color-14: #67e8f9;
+    --term-color-15: #f8fafc;
+}

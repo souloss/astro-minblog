@@ -62,6 +62,7 @@ const HASHTAG_COLORS: string[] = [
   'purple',
 ];
 let hashtagIndex = 0;
+let roughCounter = 0;
 
 const NAMED_COLORS: Record<string, string> = {
   red: '#ef4444',
@@ -470,6 +471,99 @@ export function remarkContentDirectives(
             },
           ];
         }
+      } else if (name === 'color') {
+        const color = text || attrs.src || '';
+        if (color) {
+          node.data = {
+            hName: 'span',
+            hProperties: { class: 'md-directive md-directive-color-inline color-preview' },
+          };
+          node.children = [
+            {
+              type: 'html',
+              value: `<span class="flex items-center gap-2"><span class="color-swatch h-6 w-6 rounded-md border" style="background-color:${color}" title="${escapeHtml(color)}"></span><code class="text-sm">${escapeHtml(color)}</code></span>`,
+            },
+          ];
+        }
+      }
+    });
+
+    // ── Leaf Directives (self-closing, no body) ──────────────────────────
+    // Handles ::name{attrs} syntax (two colons) for self-closing directives
+    // Also serves as fallback when :::name{attrs} is used without closing :::
+
+    visit(tree, 'leafDirective', (node: any) => {
+      const name = node.name;
+      const attrs = node.attributes || {};
+
+      if (name === 'excalidraw') {
+        const src = attrs.src || '';
+        const height = attrs.height || '500px';
+        if (!src) {
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-excalidraw' } };
+          node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 src 属性，如 :::excalidraw{src="https://excalidraw.com/..."}</p>' }];
+        } else {
+          const html = `<div class="md-directive md-directive-excalidraw"><div class="excalidraw-wrapper" data-excalidraw-src="${escapeHtml(src)}" style="height:${height};"><iframe class="excalidraw-iframe" title="Excalidraw whiteboard" loading="lazy" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups"></iframe><div class="excalidraw-placeholder"></div></div><div class="mt-2 flex justify-end px-1"><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer" class="excalidraw-link">Open in Excalidraw</a></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'asciinema') {
+        const src = attrs.src || '';
+        const cols = attrs.cols || '80';
+        const rows = attrs.rows || '24';
+        const speed = attrs.speed || '1';
+        const idleTimeLimit = attrs.idleTimeLimit || '2';
+        const fit = attrs.fit || 'width';
+        const autoPlay = attrs.autoPlay || 'false';
+        const loop = attrs.loop || 'false';
+        const preload = attrs.preload || 'true';
+        const poster = attrs.poster || '';
+        if (!src) {
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-asciinema' } };
+          node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 src 属性，如 :::asciinema{src="https://asciinema.org/a/xxx.cast"}</p>' }];
+        } else {
+          const dataAttrs = `data-src="${escapeHtml(src)}" data-cols="${cols}" data-rows="${rows}" data-speed="${speed}" data-idle-time-limit="${idleTimeLimit}" data-fit="${fit}" data-auto-play="${autoPlay}" data-loop="${loop}" data-preload="${preload}"${poster ? ` data-poster="${escapeHtml(poster)}"` : ''}`;
+          const html = `<div class="md-directive md-directive-asciinema"><div class="asciinema-wrapper" ${dataAttrs}><div class="asciinema-placeholder"></div></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'rough') {
+        const config = attrs.config || '';
+        const uniqueId = `rough-${roughCounter}`;
+        roughCounter += 1;
+        if (!config) {
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-rough' } };
+          node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 config 属性，如 :::rough{config=\'{"width":400,"height":200,"shapes":[...]}\'} </p>' }];
+        } else {
+          const html = `<div class="md-directive md-directive-rough"><div class="rough-wrapper" data-rough-id="${uniqueId}" data-viz-type="rough"><div class="rough-output" id="${uniqueId}-output"><div class="rough-placeholder"></div></div><script is:inline type="application/json" class="rough-config">${config}</script></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'coderunner') {
+        // Leaf version: no body content, show empty code runner
+        const lang = attrs.lang || 'javascript';
+        const title = attrs.title || 'Interactive Code';
+        const html = `<div class="md-directive md-directive-coderunner"><div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="">▶ Run</button></div><pre><code class="language-${lang}"></code></pre><div class="code-output hidden" data-output></div></div></div>`;
+        node.data = { hName: 'div', hProperties: {} };
+        node.children = [{ type: 'html', value: html }];
+      } else if (name === 'htmlembed') {
+        const src = attrs.src || '';
+        const height = attrs.height || '1600px';
+        const title = attrs.title || 'Embedded HTML Content';
+        const allowFullscreen = attrs.allowFullscreen !== 'false' && attrs.allowfullscreen !== 'false';
+        if (src) {
+          const html = `<div class="md-directive md-directive-htmlembed"><div class="full-html-embed-wrapper"><div style="height:${height};"><div class="html-placeholder" data-placeholder></div><iframe src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy" onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        } else {
+          // Leaf htmlembed without src and without body — show placeholder
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
+          node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">htmlembed 指令需要 src 属性或指令体内容</p>' }];
+        }
+      } else if (name === 'colors') {
+        // Leaf version: no body, show empty color preview
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-colors' } };
+        node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">colors 指令需要指令体中提供颜色值</p>' }];
       }
     });
 
@@ -1760,6 +1854,140 @@ export function remarkContentDirectives(
             },
           ];
         }
+      } else if (name === 'excalidraw') {
+        const src = attrs.src || '';
+        const height = attrs.height || '500px';
+
+        if (!src) {
+          node.data = {
+            hName: 'div',
+            hProperties: { class: 'md-directive md-directive-excalidraw' },
+          };
+          node.children = [
+            {
+              type: 'html',
+              value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 src 属性，如 :::excalidraw{src="https://excalidraw.com/..."}</p>',
+            },
+          ];
+        } else {
+          const html = `<div class="md-directive md-directive-excalidraw"><div class="excalidraw-wrapper" data-excalidraw-src="${escapeHtml(src)}" style="height:${height};"><iframe class="excalidraw-iframe" title="Excalidraw whiteboard" loading="lazy" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups"></iframe><div class="excalidraw-placeholder"></div></div><div class="mt-2 flex justify-end px-1"><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer" class="excalidraw-link">Open in Excalidraw</a></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'asciinema') {
+        const src = attrs.src || '';
+        const cols = attrs.cols || '80';
+        const rows = attrs.rows || '24';
+        const speed = attrs.speed || '1';
+        const idleTimeLimit = attrs.idleTimeLimit || '2';
+        const fit = attrs.fit || 'width';
+        const autoPlay = attrs.autoPlay || 'false';
+        const loop = attrs.loop || 'false';
+        const preload = attrs.preload || 'true';
+        const poster = attrs.poster || '';
+
+        if (!src) {
+          node.data = {
+            hName: 'div',
+            hProperties: { class: 'md-directive md-directive-asciinema' },
+          };
+          node.children = [
+            {
+              type: 'html',
+              value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 src 属性，如 :::asciinema{src="https://asciinema.org/a/xxx.cast"}</p>',
+            },
+          ];
+        } else {
+          const dataAttrs = `data-src="${escapeHtml(src)}" data-cols="${cols}" data-rows="${rows}" data-speed="${speed}" data-idle-time-limit="${idleTimeLimit}" data-fit="${fit}" data-auto-play="${autoPlay}" data-loop="${loop}" data-preload="${preload}"${poster ? ` data-poster="${escapeHtml(poster)}"` : ''}`;
+          const html = `<div class="md-directive md-directive-asciinema"><div class="asciinema-wrapper" ${dataAttrs}><div class="asciinema-placeholder"></div></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'rough') {
+        const config = attrs.config || '';
+        const uniqueId = `rough-${roughCounter}`;
+        roughCounter += 1;
+
+        if (!config) {
+          node.data = {
+            hName: 'div',
+            hProperties: { class: 'md-directive md-directive-rough' },
+          };
+          node.children = [
+            {
+              type: 'html',
+              value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 config 属性，如 :::rough{config=\'{"width":400,"height":200,"shapes":[...]}\'} </p>',
+            },
+          ];
+        } else {
+          const html = `<div class="md-directive md-directive-rough"><div class="rough-wrapper" data-rough-id="${uniqueId}" data-viz-type="rough"><div class="rough-output" id="${uniqueId}-output"><div class="rough-placeholder"></div></div><script is:inline type="application/json" class="rough-config">${config}</script></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'coderunner') {
+        const lang = attrs.lang || 'javascript';
+        const title = attrs.title || 'Interactive Code';
+
+        let code = '';
+        visit({ type: 'root', children: node.children }, 'text', (t: any) => {
+          code += t.value;
+        });
+        visit(
+          { type: 'root', children: node.children },
+          'inlineCode',
+          (t: any) => {
+            code += t.value;
+          }
+        );
+        code = code.trim();
+
+        const safeCode = escapeHtml(code);
+        const html = `<div class="md-directive md-directive-coderunner"><div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="${safeCode}">▶ Run</button></div><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-output hidden" data-output></div></div></div>`;
+        node.data = { hName: 'div', hProperties: {} };
+        node.children = [{ type: 'html', value: html }];
+      } else if (name === 'htmlembed') {
+        const src = attrs.src || '';
+        const height = attrs.height || '1600px';
+        const title = attrs.title || 'Embedded HTML Content';
+        const allowFullscreen =
+          attrs.allowFullscreen !== 'false' &&
+          attrs.allowfullscreen !== 'false';
+
+        if (src) {
+          const html = `<div class="md-directive md-directive-htmlembed"><div class="full-html-embed-wrapper"><div style="height:${height};"><div class="html-placeholder" data-placeholder></div><iframe src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy" onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        } else {
+          const bodyHtml = serializeToHtml(node.children);
+          const escapedSrcdoc = bodyHtml
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+          const html = `<div class="md-directive md-directive-htmlembed"><div class="full-html-embed-wrapper"><div style="height:${height};"><div class="html-placeholder" data-placeholder></div><iframe srcdoc="${escapedSrcdoc}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy" onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div></div>`;
+          node.data = { hName: 'div', hProperties: {} };
+          node.children = [{ type: 'html', value: html }];
+        }
+      } else if (name === 'colors') {
+        const colorLines: string[] = [];
+        visit({ type: 'root', children: node.children }, 'text', (t: any) => {
+          const lines = t.value.split('\n');
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed) colorLines.push(trimmed);
+          }
+        });
+
+        const swatchesHtml = colorLines
+          .map(
+            (color) =>
+              `<div class="flex items-center gap-2"><span class="color-swatch h-6 w-6 rounded-md border" style="background-color:${color}" title="${escapeHtml(color)}"></span><code class="text-sm">${escapeHtml(color)}</code></div>`
+          )
+          .join('');
+
+        const html = `<div class="md-directive md-directive-colors"><div class="color-preview flex flex-wrap gap-3">${swatchesHtml}</div></div>`;
+        node.data = { hName: 'div', hProperties: {} };
+        node.children = [{ type: 'html', value: html }];
       }
     });
   };

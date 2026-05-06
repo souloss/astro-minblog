@@ -1,0 +1,41 @@
+/* ── Color Preview Directive ── */
+
+.md-directive-colors {
+    margin: 1rem 0;
+}
+
+/* ========== Color Preview Container ========== */
+.color-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.color-preview-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.color-swatch {
+    height: 1.5rem;
+    width: 1.5rem;
+    border-radius: var(--md-radius, 12px);
+    border: 1px solid var(--border-light, var(--border));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.color-preview code {
+    font-size: var(--md-text-sm, 0.875rem);
+    color: var(--text-secondary);
+    font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+/* ========== Dark Mode ========== */
+html[data-theme="dark"] .color-swatch,
+.dark .color-swatch {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
