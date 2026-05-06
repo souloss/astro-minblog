@@ -1,6 +1,6 @@
 {
   "$schema": "fact-registry-v1",
-  "generatedAt": "2026-05-06T09:15:44.999Z",
+  "generatedAt": "2026-05-06T13:44:41.678Z",
   "version": 1,
   "facts": [
     {
@@ -52,7 +52,7 @@
     {
       "id": "blog-total-posts",
       "category": "blog",
-      "statement": "博客共有 78 篇文章（中文 39 篇，英文 39 篇）",
+      "statement": "博客共有 79 篇文章（中文 40 篇，英文 39 篇）",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -72,7 +72,7 @@
     {
       "id": "blog-total-posts-en",
       "category": "blog",
-      "statement": "The blog has 78 posts (39 in Chinese, 39 in English)",
+      "statement": "The blog has 79 posts (40 in Chinese, 39 in English)",
       "evidence": "author-context.json → stableFacts.contentFootprint",
       "source": "derived",
       "confidence": 1,
@@ -88,7 +88,7 @@
     {
       "id": "blog-categories",
       "category": "blog",
-      "statement": "博客的主要分类包括：Examples、教程/配置、教程/博客、Tutorial/Configuration、Release",
+      "statement": "博客的主要分类包括：教程/博客、Examples、教程/配置、Tutorial/Configuration、Release",
       "evidence": "author-context.json → stableFacts.focusAreas",
       "source": "derived",
       "confidence": 0.95,
@@ -100,9 +100,9 @@
         "category",
         "area",
         "focus",
+        "教程/博客",
         "examples",
         "教程/配置",
-        "教程/博客",
         "tutorial/configuration",
         "release"
       ],
@@ -160,8 +160,8 @@
     {
       "id": "blog-date-range",
       "category": "blog",
-      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-03-30",
-      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: 安全加固指南 (2026-03-30)",
+      "statement": "博客的文章时间跨度从 2022-09-23 到 2026-05-06",
+      "evidence": "earliest: How to configure astro-minimax theme (2022-09-23), latest: \"Markdown 内容指令示例\" (2026-05-06)",
       "source": "derived",
       "confidence": 1,
       "tags": [
@@ -178,7 +178,7 @@
     {
       "id": "blog-lang-dist",
       "category": "blog",
-      "statement": "博客文章的语言分布：英文 39 篇，中文 39 篇",
+      "statement": "博客文章的语言分布：中文 40 篇，英文 39 篇",
       "evidence": "author-context.json → posts[].lang aggregation",
       "source": "derived",
       "confidence": 1,
@@ -195,7 +195,7 @@
     {
       "id": "content-category-dist",
       "category": "content",
-      "statement": "按分类统计：Examples(8篇)、教程/配置(7篇)、教程/博客(7篇)、Tutorial/Configuration(6篇)、Release(6篇)、Release Notes(4篇)、发布说明(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/AI(2篇)、教程/AI(2篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Tools(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
+      "statement": "按分类统计：教程/博客(8篇)、Examples(8篇)、教程/配置(7篇)、Tutorial/Configuration(6篇)、Release(6篇)、Release Notes(4篇)、发布说明(4篇)、Blog/Tutorial(4篇)、Tutorial/Rust(4篇)、教程/Rust(4篇)、Tutorial/AI(2篇)、教程/AI(2篇)、Tutorial/Engineering(2篇)、教程/工程化(2篇)、教程/部署(2篇)、Tutorial/Blog(2篇)、教程/前端(2篇)、Technical/AI(1篇)、技术/AI(1篇)、Tutorial/Deployment(1篇)、Tutorial/Getting Started(1篇)、教程/入门(1篇)、Tutorial/Tools(1篇)、教程/工具(1篇)、Blog/Deployment(1篇)、博客/教程(1篇)、Blog/Configuration(1篇)",
       "evidence": "author-context.json → posts[].category aggregation",
       "source": "derived",
       "confidence": 1,
@@ -210,7 +210,7 @@
     {
       "id": "content-flagship",
       "category": "content",
-      "statement": "最新的代表性文章：《\"AI Tool Calling and Action System\"》(2026-03-30)、《Search Configuration Guide》(2026-03-30)、《Security Hardening Guide》(2026-03-30)、《\"AI Tool Calling 与 Action 系统\"》(2026-03-30)、《搜索功能配置指南》(2026-03-30)",
+      "statement": "最新的代表性文章：《\"Markdown 内容指令示例\"》(2026-05-06)、《\"AI Tool Calling and Action System\"》(2026-03-30)、《Search Configuration Guide》(2026-03-30)、《Security Hardening Guide》(2026-03-30)、《\"AI Tool Calling 与 Action 系统\"》(2026-03-30)",
       "evidence": "author-context.json → stableFacts.flagshipPosts",
       "source": "derived",
       "confidence": 0.95,
@@ -305,8 +305,8 @@
     {
       "id": "content-tech-mentions",
       "category": "content",
-      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(42次)、configuration(14次)、ai(6次)、deployment(6次)、architecture(4次)、tools(4次)、vercel(4次)、neon(4次)",
-      "evidence": "46 markdown files → frontmatter.tags aggregation",
+      "statement": "文章中高频提及的技术/话题（按标签统计）：docs(43次)、configuration(14次)、ai(6次)、deployment(6次)、architecture(4次)、tools(4次)、vercel(4次)、neon(4次)、tutorial(3次)",
+      "evidence": "47 markdown files → frontmatter.tags aggregation",
       "source": "aggregated",
       "confidence": 0.9,
       "tags": [
@@ -322,7 +322,8 @@
         "architecture",
         "tools",
         "vercel",
-        "neon"
+        "neon",
+        "tutorial"
       ],
       "lang": "zh"
     }
