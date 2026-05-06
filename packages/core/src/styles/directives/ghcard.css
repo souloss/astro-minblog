@@ -1,0 +1,250 @@
+.md-directive-ghcard {
+    --ghcard-bg: var(--bg-card, #fff);
+    --ghcard-border: var(--border-light, #e5e7eb);
+    --ghcard-text: var(--text-main, #1f2937);
+    --ghcard-text-secondary: var(--text-secondary, #6b7280);
+    --ghcard-accent: var(--accent-color, #4a7c59);
+    --ghcard-radius: var(--md-radius-sm, 8px);
+    --ghcard-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --ghcard-hover-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
+}
+
+.dark .md-directive-ghcard {
+    --ghcard-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    --ghcard-hover-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* ========== Repo Card ========== */
+.md-ghcard-repo {
+    background: var(--ghcard-bg);
+    border: 1px solid var(--ghcard-border);
+    border-radius: var(--ghcard-radius);
+    box-shadow: var(--ghcard-shadow);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    max-width: 200px;
+    font-size: 0.65rem;
+}
+
+.md-ghcard-repo:hover {
+    box-shadow: var(--ghcard-hover-shadow);
+    transform: translateY(-1px);
+}
+
+.md-ghcard-link {
+    display: block;
+    padding: 7px 9px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.md-ghcard-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--ghcard-text);
+    word-break: break-all;
+}
+
+.md-ghcard-header .md-ghcard-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ghcard-accent);
+    flex-shrink: 0;
+}
+
+.md-ghcard-desc {
+    font-size: 0.6rem;
+    color: var(--ghcard-text-secondary);
+    line-height: 1.25;
+    margin-bottom: 5px;
+    min-height: 1.1em;
+}
+
+.md-ghcard-desc .md-ghcard-text:empty::before {
+    content: '\00a0';
+}
+
+.md-ghcard-stats {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.md-ghcard-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.58rem;
+    color: var(--ghcard-text-secondary);
+    font-weight: 500;
+}
+
+.md-ghcard-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+}
+
+/* ========== User Card ========== */
+.md-ghcard-user {
+    background: var(--ghcard-bg);
+    border: 1px solid var(--ghcard-border);
+    border-radius: var(--ghcard-radius);
+    box-shadow: var(--ghcard-shadow);
+    overflow: hidden;
+    max-width: 200px;
+    font-size: 0.55rem;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.md-ghcard-user:hover {
+    box-shadow: var(--ghcard-hover-shadow);
+    transform: translateY(-1px);
+}
+
+.md-ghcard-user-body {
+    padding: 10px 8px 8px;
+    text-align: center;
+}
+
+.md-ghcard-avatar {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 5px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1.5px solid var(--ghcard-border);
+    background: var(--bg-muted, #f3f4f6);
+}
+
+.md-ghcard-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.md-ghcard-username {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ghcard-text);
+    margin: 0 0 1px;
+    line-height: 1.15;
+}
+
+.md-ghcard-bio {
+    font-size: 0.55rem;
+    color: var(--ghcard-text-secondary);
+    margin: 0 0 6px;
+    line-height: 1.2;
+    min-height: 1.1em;
+}
+
+.md-ghcard-user-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 6px;
+}
+
+.md-ghcard-user-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 2px 1px;
+    border-radius: 3px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+}
+
+.md-ghcard-user-stat:hover {
+    background: var(--bg-muted, #f3f4f6);
+}
+
+.md-ghcard-user-stat .md-ghcard-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--ghcard-text);
+}
+
+.md-ghcard-stat-label {
+    font-size: 0.48rem;
+    color: var(--ghcard-text-secondary);
+    text-transform: lowercase;
+}
+
+.md-ghcard-follow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+    padding: 3px 5px;
+    border-radius: 999px;
+    background: #0969da;
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.md-ghcard-follow:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+.md-ghcard-follow svg {
+    opacity: 0.95;
+}
+
+/* ========== Skeleton Loading ========== */
+.md-directive-ghcard[data-loading="true"] .md-ghcard-header .md-ghcard-name,
+.md-directive-ghcard[data-loading="true"] .md-ghcard-desc .md-ghcard-text,
+.md-directive-ghcard[data-loading="true"] .md-ghcard-stats .md-ghcard-text,
+.md-directive-ghcard[data-loading="true"] .md-ghcard-username,
+.md-directive-ghcard[data-loading="true"] .md-ghcard-bio,
+.md-directive-ghcard[data-loading="true"] .md-ghcard-user-stat .md-ghcard-text,
+.md-directive-ghcard[data-loading="true"] .md-ghcard-avatar img {
+    background: linear-gradient(90deg, var(--bg-muted, #f3f4f6) 25%, var(--bg-card, #e5e7eb) 50%, var(--bg-muted, #f3f4f6) 75%);
+    background-size: 200% 100%;
+    animation: ghcard-skeleton-shimmer 1.5s infinite;
+    color: transparent !important;
+    border-radius: 4px;
+    display: inline-block;
+    min-width: 3em;
+}
+
+.md-directive-ghcard[data-loading="true"] .md-ghcard-desc .md-ghcard-text {
+    min-width: 80%;
+    min-height: 1em;
+}
+
+.md-directive-ghcard[data-loading="true"] .md-ghcard-avatar img {
+    min-width: 100%;
+    min-height: 100%;
+    border-radius: 50%;
+}
+
+.md-directive-ghcard[data-loading="true"] .md-ghcard-stats .md-ghcard-text {
+    min-width: 1.5em;
+}
+
+.md-directive-ghcard[data-loading="true"] .md-ghcard-user-stat .md-ghcard-text {
+    min-width: 2em;
+}
+
+@keyframes ghcard-skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

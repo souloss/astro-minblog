@@ -1,0 +1,122 @@
+.md-terminal {
+    margin: 1.25rem 0;
+    border-radius: var(--md-radius-sm);
+    overflow: hidden;
+    background: #0b0d12;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.md-terminal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+}
+
+.md-terminal-title {
+    font-weight: 500;
+}
+
+.md-terminal-copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.md-terminal-copy:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.md-terminal-copy.md-copy-success {
+    color: #22c55e;
+}
+
+.md-terminal-body {
+    position: relative;
+    padding: 0 10px 10px;
+    background: transparent;
+}
+
+.md-terminal-body pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    background: #14161d !important;
+    color: #e2e8f0;
+    padding: 10px 0 !important;
+    white-space: pre !important;
+    word-wrap: normal !important;
+    overflow-x: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+.md-terminal-body pre::-webkit-scrollbar {
+    height: 6px;
+}
+
+.md-terminal-body pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.md-terminal-body pre::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
+}
+
+.md-terminal-body pre code {
+    background: transparent !important;
+    font-size: 0.8rem !important;
+    line-height: 1.6 !important;
+}
+
+.md-terminal-body pre .line {
+    display: block;
+    padding: 0 15px;
+    border-radius: 0;
+    margin: 0;
+    min-height: 1.6em;
+    position: relative;
+}
+
+.md-terminal-body pre .line-highlight {
+    background: rgba(56, 189, 248, 0.1);
+    box-shadow: inset 3px 0 0 0 rgba(51, 164, 239, 0.85);
+}
+
+.md-terminal-body pre .line::before {
+    display: none;
+}
+
+.md-terminal[data-line-numbers="true"] .md-terminal-body pre .line {
+    padding-left: calc(3.0em);
+}
+
+.md-terminal[data-line-numbers="true"] .md-terminal-body pre .line::before {
+    display: block;
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 2.0em;
+    text-align: right;
+    color: #64748b;
+    font-size: 0.75em;
+    content: attr(data-line);
+}
+
+.md-terminal .line span[style*="--shiki-dark"] {
+    color: var(--shiki-dark) !important;
+}

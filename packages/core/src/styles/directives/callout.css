@@ -1,0 +1,42 @@
+.md-directive-callout {
+    margin: 1.25rem 0;
+}
+
+.md-directive-callout > div {
+    border-radius: var(--md-radius);
+    overflow: hidden;
+    border: var(--md-border);
+    background: var(--callout-bg);
+}
+
+.md-callout-inner {
+    display: flex;
+    padding: var(--md-padding-md);
+    gap: var(--md-gap);
+    align-items: flex-start;
+}
+
+.md-callout-inner::before {
+    content: '';
+    width: 3px;
+    flex-shrink: 0;
+    background: var(--callout-bar);
+    border-radius: 3px;
+    align-self: stretch;
+}
+
+.md-callout-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--md-text-sm);
+    font-weight: 600;
+    color: var(--callout-bar);
+    margin-bottom: 6px;
+}
+
+.md-callout-body {
+    font-size: var(--md-text-sm);
+    line-height: 1.65;
+    color: var(--text-main);
+}

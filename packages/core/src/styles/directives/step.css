@@ -1,0 +1,41 @@
+.md-step-brackets {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0.25rem 0;
+}
+
+.md-step-brackets .md-step-badge {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--text-main);
+    font-size: var(--md-text-xs);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+}
+
+.md-step-brackets .md-step-badge::before {
+    content: '[';
+    margin-right: 3px;
+    color: var(--text-muted);
+    font-weight: 300;
+}
+
+.md-step-brackets .md-step-badge::after {
+    content: ']';
+    margin-left: 3px;
+    color: var(--text-muted);
+    font-weight: 300;
+}
+
+.md-step-brackets .md-step-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.4;
+}

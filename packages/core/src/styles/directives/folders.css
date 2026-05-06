@@ -1,0 +1,26 @@
+.md-directive-folders {
+    margin: 1rem 0;
+    border-radius: var(--details-radius, 12px);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    background: var(--bg-card);
+}
+
+.md-folder {
+    border-top: 1px solid var(--border-light);
+}
+
+.md-folder:first-child {
+    border-top: none;
+}
+
+.md-folder summary {
+    background: var(--bg-muted);
+}
+
+.md-folder-body {
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    background: var(--bg-card);
+}

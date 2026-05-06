@@ -1,0 +1,41 @@
+.md-directive-folding,
+.md-folder {
+    --details-radius: 12px;
+    --details-padding: 12px 16px;
+    --details-font-size: 0.875rem;
+    --details-arrow-size: 12px;
+}
+
+.md-directive-folding summary,
+.md-folder summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--details-padding);
+    cursor: pointer;
+    user-select: none;
+    font-size: var(--details-font-size);
+    font-weight: 500;
+    color: var(--text-main);
+    list-style: none;
+}
+
+.md-directive-folding summary::-webkit-details-marker,
+.md-folder summary::-webkit-details-marker {
+    display: none;
+}
+
+.md-folding-arrow,
+.md-folder-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+}
+
+.md-directive-folding[open] .md-folding-arrow,
+.md-folder[open] .md-folder-arrow {
+    transform: rotate(180deg);
+    color: var(--text-secondary);
+}

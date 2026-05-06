@@ -1,0 +1,185 @@
+.md-tag-checkbox {
+    display: flex;
+    align-items: center;
+    font-size: var(--md-text-sm);
+    line-height: 1.2;
+    --checkbox-color: var(--accent-color, #2196f3);
+    cursor: default;
+}
+
+.md-tag-checkbox.md-checkbox-inline {
+    display: inline-flex;
+}
+
+.md-tag-checkbox .md-checkbox-box {
+    position: relative;
+    height: 16px;
+    width: 16px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    border: 2px solid var(--checkbox-color);
+    background: transparent;
+    pointer-events: none;
+}
+
+/* Checkbox box */
+.md-tag-checkbox:not(.md-tag-radio) .md-checkbox-box {
+    border-radius: 2px;
+}
+
+.md-tag-checkbox:not(.md-tag-radio) .md-checkbox-box::before,
+.md-tag-checkbox:not(.md-tag-radio) .md-checkbox-box::after {
+    position: absolute;
+    content: "";
+    background: var(--bg-card);
+}
+
+/* Default checkmark */
+.md-tag-checkbox:not(.md-tag-radio) .md-checkbox-box::before {
+    left: 1px;
+    top: 5px;
+    width: 0px;
+    height: 2px;
+    transform: rotate(45deg);
+}
+
+.md-tag-checkbox:not(.md-tag-radio) .md-checkbox-box::after {
+    right: 7px;
+    bottom: 3px;
+    width: 2px;
+    height: 0px;
+    transform: rotate(40deg);
+}
+
+.md-tag-checkbox:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box {
+    background: var(--checkbox-color);
+}
+
+.md-tag-checkbox:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::before {
+    left: 0px;
+    top: 7px;
+    width: 6px;
+    height: 2px;
+}
+
+.md-tag-checkbox:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::after {
+    right: 3px;
+    bottom: 1px;
+    width: 2px;
+    height: 10px;
+}
+
+/* Symbol: minus */
+.md-tag-checkbox.md-checkbox-symbol-minus:not(.md-tag-radio) .md-checkbox-box::before {
+    transform: rotate(0);
+    left: 1px;
+    top: 5px;
+    width: 0px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-minus:not(.md-tag-radio) .md-checkbox-box::after {
+    transform: rotate(0);
+    left: 1px;
+    top: 5px;
+    width: 0px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-minus:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::before {
+    left: 1px;
+    top: 5px;
+    width: 10px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-minus:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::after {
+    left: 1px;
+    top: 5px;
+    width: 10px;
+    height: 2px;
+}
+
+/* Symbol: plus */
+.md-tag-checkbox.md-checkbox-symbol-plus:not(.md-tag-radio) .md-checkbox-box::before {
+    transform: rotate(0);
+    left: 1px;
+    top: 5px;
+    width: 0px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-plus:not(.md-tag-radio) .md-checkbox-box::after {
+    transform: rotate(0);
+    left: 5px;
+    top: 1px;
+    width: 2px;
+    height: 0px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-plus:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::before {
+    left: 1px;
+    top: 5px;
+    width: 10px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-plus:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::after {
+    left: 5px;
+    top: 1px;
+    width: 2px;
+    height: 10px;
+}
+
+/* Symbol: times */
+.md-tag-checkbox.md-checkbox-symbol-times:not(.md-tag-radio) .md-checkbox-box::before {
+    transform: rotate(45deg);
+    left: 3px;
+    top: 1px;
+    width: 0px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-times:not(.md-tag-radio) .md-checkbox-box::after {
+    transform: rotate(135deg);
+    right: 3px;
+    top: 1px;
+    width: 0px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-times:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::before {
+    left: 1px;
+    top: 5px;
+    width: 10px;
+    height: 2px;
+}
+
+.md-tag-checkbox.md-checkbox-symbol-times:not(.md-tag-radio)[data-checked="true"] .md-checkbox-box::after {
+    right: 1px;
+    top: 5px;
+    width: 10px;
+    height: 2px;
+}
+
+/* Radio */
+.md-tag-radio .md-checkbox-box {
+    border-radius: 50%;
+    transform: translateY(-1px);
+}
+
+.md-tag-radio .md-checkbox-box::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 2px;
+    background: var(--checkbox-color);
+    transform: scale(0);
+}
+
+.md-tag-radio[data-checked="true"] .md-checkbox-box::before {
+    transform: scale(1);
+}

@@ -1,0 +1,522 @@
+/* ── Image directive ── */
+img {
+    margin: 0;
+}
+
+.md-directive-image {
+    margin: 1rem 0rem;
+    box-sizing: border-box;
+    width: min(75%, 600px);
+}
+
+.md-directive-image .md-image-bg {
+    text-align: center;
+    border-radius: var(--md-radius-sm, 8px);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    font-size: 0;
+    line-height: 0;
+}
+
+.md-directive-image .md-image-bg:hover .md-image-download {
+    opacity: 1;
+}
+
+/* ── Image loading & error states ── */
+.md-image-img-wrap {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.md-image-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: var(--bg-muted);
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.md-image-loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(128, 128, 128, 0.06) 45%,
+        rgba(128, 128, 128, 0.1) 50%,
+        rgba(128, 128, 128, 0.06) 55%,
+        transparent 60%
+    );
+    background-size: 200% 100%;
+    animation: md-image-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes md-image-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Hide loading when image is loaded */
+.md-image-img-wrap.is-loaded .md-image-loading {
+    opacity: 0;
+    animation: none;
+}
+
+.md-directive-image .md-image-bg img {
+    display: block;
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.md-directive-image .md-image-bg img.md-image-loaded {
+    opacity: 1;
+}
+
+/* Error state */
+.md-image-img-wrap.has-error .md-image-loading {
+    opacity: 0;
+    animation: none;
+}
+
+.md-directive-image .md-image-bg img.md-image-error {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.md-directive-image .md-image-bg[style*="aspect-ratio"] img {
+    height: 100%;
+}
+
+.md-directive-image .md-image-download {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 1rem;
+    padding: 8px;
+    line-height: 0;
+    border-radius: 50%;
+    color: white;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.25s ease, background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.md-directive-image .md-image-download:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: scale(1.1);
+}
+
+.md-directive-image .md-image-download:active {
+    transform: scale(0.95);
+}
+
+.md-directive-image .md-image-meta {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.md-directive-image .md-image-caption {
+    display: inline-block;
+    font-size: var(--md-text-xs, 0.75rem);
+    color: var(--text-muted);
+    line-height: 1.5;
+    text-align: justify;
+}
+
+.md-directive-image .md-image-caption:empty {
+    display: none;
+}
+
+/* ── Gallery directive ── */
+.md-directive-gallery {
+    margin: 1rem 0;
+}
+
+.md-directive-gallery .md-gallery-cell {
+    display: block;
+    overflow: hidden;
+    z-index: 0;
+    position: relative;
+    background: var(--bg-muted);
+    border-radius: var(--md-radius-sm, 8px);
+}
+
+/* ── Gallery loading placeholder ── */
+.md-directive-gallery .md-gallery-cell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(128, 128, 128, 0.06) 45%,
+        rgba(128, 128, 128, 0.1) 50%,
+        rgba(128, 128, 128, 0.06) 55%,
+        transparent 60%
+    );
+    background-size: 200% 100%;
+    pointer-events: none;
+    animation: md-gallery-shimmer 1.6s ease-in-out infinite;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+@keyframes md-gallery-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Hide shimmer once image is loaded */
+.md-directive-gallery .md-gallery-cell:has(img.img-loaded)::before,
+.md-directive-gallery .md-gallery-cell:has(img:not([loading="lazy"]))::before {
+    opacity: 0;
+    animation: none;
+}
+
+.md-directive-gallery .md-gallery-cell img {
+    object-fit: cover;
+    max-height: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+/* Hide shimmer once image has loaded (using :has with :complete pseudo) */
+.md-directive-gallery .md-gallery-cell:has(img:not([loading]))::before {
+    opacity: 0;
+    animation: none;
+}
+
+.md-directive-gallery .md-gallery-cell:hover img {
+    transform: scale(1.1);
+}
+
+.md-directive-gallery .md-gallery-meta {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: transparent;
+    transition: background 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.md-directive-gallery .md-gallery-cell:hover .md-gallery-meta {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.md-directive-gallery .md-gallery-caption {
+    display: block;
+    font-size: var(--md-text-xs, 0.75rem);
+    color: transparent;
+    pointer-events: none;
+    line-height: 1.2;
+    margin: 0.5rem;
+    transition: color 0.3s ease;
+    text-align: left;
+}
+
+.md-directive-gallery .md-gallery-cell:hover .md-gallery-caption {
+    color: white;
+}
+
+.md-directive-gallery .md-gallery-caption:empty {
+    display: none;
+}
+
+/* Grid layout */
+.md-directive-gallery.md-gallery-grid {
+    display: grid;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="xs"] {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 2px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="xs"] .md-gallery-cell,
+.md-directive-gallery.md-gallery-grid[data-gallery-size="xs"] .md-gallery-cell img {
+    border-radius: 2px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="s"] {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 2px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="s"] .md-gallery-cell,
+.md-directive-gallery.md-gallery-grid[data-gallery-size="s"] .md-gallery-cell img {
+    border-radius: 2px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="m"] {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 4px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="m"] .md-gallery-cell,
+.md-directive-gallery.md-gallery-grid[data-gallery-size="m"] .md-gallery-cell img {
+    border-radius: 4px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="l"] {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="l"] .md-gallery-cell,
+.md-directive-gallery.md-gallery-grid[data-gallery-size="l"] .md-gallery-cell img {
+    border-radius: 8px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="xl"] {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="xl"] .md-gallery-cell,
+.md-directive-gallery.md-gallery-grid[data-gallery-size="xl"] .md-gallery-cell img {
+    border-radius: 16px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="mix"] {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 4px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="mix"] .md-gallery-cell,
+.md-directive-gallery.md-gallery-grid[data-gallery-size="mix"] .md-gallery-cell img {
+    border-radius: 4px;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-size="mix"] .md-gallery-cell:nth-child(3n + 1) {
+    grid-column: auto / span 2;
+    grid-row: auto / span 2;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-ratio="square"] .md-gallery-cell {
+    aspect-ratio: 1;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-ratio="portrait"] .md-gallery-cell {
+    aspect-ratio: 2 / 3;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-ratio="origin"] .md-gallery-cell {
+    aspect-ratio: auto;
+}
+
+.md-directive-gallery.md-gallery-grid[data-gallery-ratio="origin"] .md-gallery-cell img {
+    height: auto;
+    object-fit: contain;
+}
+
+/* Flow (masonry) layout */
+.md-directive-gallery.md-gallery-flow {
+    column-count: 3;
+    column-gap: 8px;
+}
+
+.md-directive-gallery.md-gallery-flow .md-gallery-cell {
+    border-radius: 8px;
+    padding-bottom: 8px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.md-directive-gallery.md-gallery-flow .md-gallery-cell img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.md-directive-gallery.md-gallery-flow .md-gallery-meta {
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+@media screen and (max-width: 768px) {
+    .md-directive-gallery.md-gallery-flow {
+        column-count: 2;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .md-directive-gallery.md-gallery-flow {
+        column-count: 1;
+    }
+}
+
+/* ── Banner directive ── */
+.md-directive-banner {
+    border-radius: var(--md-radius-sm, 8px);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    height: 220px;
+    margin: 1rem 0;
+    transition: transform 2s ease;
+}
+
+.md-directive-banner:hover .md-banner-bg {
+    transform: scale(1.01);
+}
+
+.md-directive-banner .md-banner-bg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    margin: 0;
+    border-radius: 0;
+    transition: transform 2s ease;
+    user-select: none;
+}
+
+.md-directive-banner .md-banner-content {
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.md-directive-banner .md-banner-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1;
+    margin: 1rem;
+}
+
+.md-directive-banner .md-banner-back {
+    background: none;
+    padding: 0;
+    line-height: 0;
+    border: none;
+    cursor: pointer;
+    visibility: hidden;
+}
+
+@media screen and (max-width: 768px) {
+    .md-directive-banner .md-banner-back {
+        visibility: visible;
+    }
+
+    .md-directive-banner {
+        height: 180px;
+    }
+}
+
+.md-directive-banner .md-banner-back svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+.md-directive-banner .md-banner-bottom {
+    display: flex;
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.md-directive-banner .md-banner-avatar {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.md-directive-banner .md-banner-avatar + .md-banner-text {
+    margin-left: 0.75rem;
+}
+
+.md-directive-banner .md-banner-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.md-directive-banner .md-banner-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.md-directive-banner .md-banner-avatar + .md-banner-text .md-banner-title {
+    font-size: 1.2rem;
+}
+
+.md-directive-banner .md-banner-subtitle {
+    font-size: var(--md-text-xs, 0.75rem);
+    line-height: 1.2;
+}
+
+.md-directive-banner .md-banner-content:only-child {
+    color: var(--text-main);
+}
+
+.md-directive-banner .md-banner-bg + .md-banner-content {
+    color: white;
+}
+
+.md-directive-banner .md-banner-bg + .md-banner-content .md-banner-avatar {
+    border: 2px solid white;
+    margin: 0;
+}
+
+.md-directive-banner .md-banner-bg + .md-banner-content .md-banner-bottom {
+    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.md-directive-banner .md-banner-link {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    z-index: 2;
+}
+
+/* Zoom cursor for images */
+img[data-zoomable="1"] {
+    cursor: zoom-in;
+}

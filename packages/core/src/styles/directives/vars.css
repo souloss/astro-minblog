@@ -1,0 +1,27 @@
+:root {
+    /* Directive-specific tokens */
+    --md-radius: 12px;
+    --md-radius-sm: 8px;
+    --md-radius-lg: 10px;
+    --md-padding-sm: 12px 16px;
+    --md-padding-md: 14px 18px;
+    --md-text-sm: 0.875rem;
+    --md-text-xs: 0.75rem;
+    --md-gap: 14px;
+    --md-border: 1px solid var(--border);
+
+    /* Vergil → astro-minimax variable aliases
+       These map Vergil theme variables to astro-minimax equivalents
+       so the directive CSS works without modifying class names or rules. */
+    --accent-color: var(--accent);
+    --border-light: var(--border);
+    --bg-muted: var(--surface);
+    --bg-card: var(--card);
+    --bg-main: var(--background);
+    --text-main: var(--foreground);
+    --text-secondary: var(--foreground-soft);
+    --text-muted: var(--muted);
+    --font-body: var(--reading-font-family, ui-sans-serif, system-ui, sans-serif);
+    --font-display: var(--reading-font-family, ui-sans-serif, system-ui, sans-serif);
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}

@@ -1,0 +1,13 @@
+.md-tag-emoji {
+    display: inline-block;
+    margin: -4px 2px 0;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.md-tag-emoji img {
+    display: block;
+    object-fit: contain;
+    height: var(--emoji-height, 1.75em);
+    border-radius: 0;
+}

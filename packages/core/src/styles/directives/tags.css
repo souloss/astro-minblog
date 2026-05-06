@@ -1,0 +1,75 @@
+.md-tag-mark {
+    background: var(--tag-mark-bg);
+    color: var(--tag-mark-color);
+    padding: 0 4px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.md-tag-kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    font-size: 0.8em;
+    font-family: var(--font-mono);
+    border: var(--md-border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    background: var(--bg-card);
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.md-tag-blur {
+    filter: blur(4px);
+    transition: filter 0.3s ease;
+    cursor: pointer;
+}
+
+.md-tag-blur:hover,
+.md-tag-blur.md-tag-blur--revealed {
+    filter: blur(0);
+}
+
+.md-tag-psw {
+    background: var(--text-muted);
+    color: transparent;
+    border-radius: 3px;
+    padding: 0 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.md-tag-psw:hover,
+.md-tag-psw.md-tag-psw--revealed {
+    color: var(--text-main);
+    background: transparent;
+}
+
+.md-tag-u {
+    text-decoration: underline 2px solid var(--tag-u-color);
+    text-underline-offset: 3px;
+}
+
+.md-tag-emp {
+    text-decoration: underline dotted 3px var(--tag-emp-color);
+    text-underline-offset: 3px;
+}
+
+.md-tag-wavy {
+    text-decoration: underline wavy var(--tag-wavy-color);
+    text-underline-offset: 3px;
+}
+
+.md-tag-del {
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.md-tag-sup,
+.md-tag-sub {
+    color: var(--tag-sup-color, var(--accent-color));
+    font-size: var(--md-text-xs);
+    font-family: var(--font-mono);
+    font-weight: 600;
+}

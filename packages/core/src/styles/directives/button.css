@@ -1,0 +1,50 @@
+.md-tag-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em 1.2em;
+    margin: 0.5em 0;
+    font-size: 0.95em;
+    font-weight: 500;
+    line-height: 1.5;
+    background: var(--tag-btn-bg);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.md-tag-button .md-btn-icon {
+    height: 1.2em;
+    width: auto;
+    margin: 0 0.4em 0 0;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.md-tag-button span,
+.md-tag-button {
+    text-indent: 0;
+}
+
+.md-tag-button.md-btn-xs {
+    margin: 0;
+    border-radius: 4px;
+    padding: 0 4px;
+    font-size: 0.8em;
+}
+
+.md-tag-button.md-btn-xs .md-btn-icon {
+    margin: 0 2px;
+}
+
+.md-tag-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--tag-btn-bg) 30%, transparent);
+}
+
+.md-tag-button:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}

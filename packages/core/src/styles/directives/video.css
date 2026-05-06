@@ -1,0 +1,579 @@
+/* ── Video Directive ── */
+
+/* ========== Video Container ========== */
+.md-directive-video {
+    --video-ratio-pct: 56.25%;
+    --video-width: 100%;
+    --video-align: left;
+    margin: 2.5rem 0;
+    position: relative;
+}
+
+.md-video-wrap {
+    position: relative;
+    width: 100%;
+    max-width: var(--video-width);
+    border-radius: 8px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, color-mix(in srgb, var(--accent-color, #4a7c59) 12%, transparent) 0%, transparent 70%),
+        linear-gradient(135deg, #0c0c0c 0%, #141414 50%, #0c0c0c 100%);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.35),
+        0 8px 24px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: box-shadow 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    font-size: 0;
+    line-height: 0;
+}
+
+/* 电影遮幅 - 上下黑边 */
+.md-video-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow:
+        inset 0 32px 48px -16px rgba(0, 0, 0, 0.5),
+        inset 0 -32px 48px -16px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.5s ease;
+}
+
+/* 暗角效果 */
+.md-video-wrap .md-video-element,
+.md-video-wrap .md-video-poster-img {
+    filter: contrast(1.05) saturate(1.1);
+}
+
+/* 胶片颗粒纹理 */
+.md-video-wrap .md-video-element::after,
+.md-video-wrap .md-video-poster-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+}
+
+/* 用 padding-top 维持宽高比 */
+.md-video-wrap::before {
+    content: '';
+    display: block;
+    padding-top: var(--video-ratio-pct);
+}
+
+.md-video-wrap:hover {
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.4),
+        0 12px 36px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px) scale(1.001);
+}
+
+.md-video-wrap:hover::after {
+    box-shadow:
+        inset 0 40px 60px -20px rgba(0, 0, 0, 0.6),
+        inset 0 -40px 60px -20px rgba(0, 0, 0, 0.6);
+}
+
+/* center */
+.md-directive-video[style*="--video-align:center"] .md-video-wrap,
+.md-directive-video[style*="--video-align: center"] .md-video-wrap {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* right */
+.md-directive-video[style*="--video-align:right"] .md-video-wrap,
+.md-directive-video[style*="--video-align: right"] .md-video-wrap {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* ========== Local Video ========== */
+.md-video-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Poster image */
+.md-video-poster-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 1;
+}
+
+/* 默认占位背景：poster 加载中或加载失败时显示 */
+.md-video-has-poster .md-video-wrap {
+    background:
+        radial-gradient(circle at center, color-mix(in srgb, var(--accent-color, #4a7c59) 12%, transparent) 0%, transparent 70%),
+        linear-gradient(135deg, #0c0c0c 0%, #141414 50%, #0c0c0c 100%);
+}
+
+/* poster 加载失败隐藏后，overlay 按钮仍然可见 */
+.md-video-poster-img[src=""] {
+    display: none;
+}
+
+/* 有 poster 时 video 初始隐藏，点击后显示 */
+.md-video-has-poster .md-video-element {
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.md-video-has-poster .md-video-element.is-ready {
+    opacity: 1;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+/* Play button overlay */
+.md-video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.md-video-overlay.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Play button - 电影感设计 */
+.md-video-play-btn {
+    position: relative;
+    z-index: 6;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.4s ease,
+                box-shadow 0.4s ease;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 0 40px rgba(255, 255, 255, 0.1),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+}
+
+/* 外圈光环 */
+.md-video-play-btn::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.5s ease,
+                border-color 0.5s ease;
+}
+
+/* 内圈 */
+.md-video-play-btn::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.4s ease;
+}
+
+.md-video-play-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.3),
+        0 0 60px rgba(255, 255, 255, 0.2),
+        0 0 100px rgba(255, 255, 255, 0.08),
+        inset 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.md-video-play-btn:hover::before {
+    transform: scale(1.2);
+    opacity: 0.5;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.md-video-play-btn:hover::after {
+    transform: scale(1.1);
+    opacity: 0.7;
+}
+
+.md-video-play-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.15s ease;
+}
+
+.md-video-play-btn svg {
+    width: 28px;
+    height: 28px;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+.md-video-play-btn:hover svg {
+    transform: scale(1.08);
+}
+
+/* Manual PiP button */
+.md-video-pip-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 6;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease,
+                background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    backdrop-filter: blur(12px);
+}
+
+.md-video-wrap:hover .md-video-pip-btn,
+.md-video-pip-btn.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.md-video-pip-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.md-video-pip-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========== iframe (Bilibili / YouTube) ========== */
+.md-video-iframe .md-video-wrap {
+    background: #050505;
+}
+
+.md-video-iframe .md-video-wrap iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    display: block;
+}
+
+/* ========== PiP Floating Player ========== */
+.md-video-pip {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 320px;
+    background: #0c0c0c;
+    border-radius: 10px;
+    box-shadow:
+        0 20px 64px rgba(0, 0, 0, 0.6),
+        0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 9998;
+    overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    user-select: none;
+    animation: md-pip-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes md-pip-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.85) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.md-video-pip.is-hiding {
+    opacity: 0;
+    transform: scale(0.9) translateY(12px);
+    pointer-events: none;
+}
+
+.md-pip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #0c0c0c;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    cursor: grab;
+}
+
+.md-pip-header:active {
+    cursor: grabbing;
+}
+
+.md-pip-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.md-pip-back,
+.md-pip-close {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.md-pip-back:hover,
+.md-pip-close:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e8e8e8;
+}
+
+.md-pip-close {
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.md-pip-video-wrap {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #0a0a0a;
+    overflow: hidden;
+}
+
+.md-pip-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.md-pip-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: #0c0c0c;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.md-pip-play-btn {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    cursor: pointer;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.md-pip-play-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.md-pip-play-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.md-pip-progress {
+    position: relative;
+    flex: 1;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 2px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.md-pip-progress-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: var(--accent-color, #4a7c59);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
+.md-pip-progress::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: var(--pip-progress-pct, 0%);
+    width: 10px;
+    height: 10px;
+    background: var(--accent-color, #4a7c59);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.15s ease;
+    box-shadow: 0 0 0 2px #0c0c0c;
+}
+
+.md-pip-progress:hover::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.md-pip-time {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 78px;
+    text-align: right;
+    letter-spacing: 0.02em;
+}
+
+/* ========== Dark Mode ========== */
+[data-theme="dark"] .md-video-wrap,
+.dark .md-video-wrap {
+    background: #050505;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.45),
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .md-video-wrap:hover,
+.dark .md-video-wrap:hover {
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.5),
+        0 12px 36px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .md-video-pip,
+.dark .md-video-pip {
+    background: #0c0c0c;
+    box-shadow:
+        0 20px 64px rgba(0, 0, 0, 0.65),
+        0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .md-pip-back:hover,
+.dark .md-pip-back:hover,
+[data-theme="dark"] .md-pip-close:hover,
+.dark .md-pip-close:hover,
+[data-theme="dark"] .md-pip-play-btn:hover,
+.dark .md-pip-play-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .md-pip-progress,
+.dark .md-pip-progress {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .md-video-pip-btn,
+.dark .md-video-pip-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .md-video-pip-btn:hover,
+.dark .md-video-pip-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 480px) {
+    .md-video-pip {
+        width: 260px;
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .md-video-play-btn {
+        width: 64px;
+        height: 64px;
+    }
+
+    .md-video-play-btn svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .md-video-play-btn::before {
+        inset: -8px;
+    }
+
+    .md-video-play-btn::after {
+        inset: -3px;
+    }
+}

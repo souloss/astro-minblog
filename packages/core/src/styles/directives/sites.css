@@ -1,0 +1,161 @@
+/* ── Sites Directive ── */
+.md-directive-sites {
+    --sites-radius: 10px;
+    --sites-gap: 1rem;
+    --sites-cover-ratio: 1.5;
+    margin: 1rem 0;
+}
+
+.md-sites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--sites-gap);
+}
+
+/* 卡片容器 */
+.md-sites-cell {
+    position: relative;
+}
+
+.md-sites-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    /* 无背景、无边框、无阴影 — 文字融入页面 */
+}
+
+/* 封面图 — 卡片本体，带圆角和阴影 */
+.md-sites-cover {
+    position: relative;
+    aspect-ratio: var(--sites-cover-ratio);
+    overflow: hidden;
+    border-radius: var(--sites-radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: var(--bg-muted, #f3f4f6);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.md-sites-link:hover .md-sites-cover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+}
+
+/* 显式禁止悬停时文字区域背景/颜色变化 */
+.md-sites-link:hover,
+.md-sites-link:hover .md-sites-info {
+    background: transparent;
+    color: inherit;
+}
+
+.dark .md-sites-cover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.dark .md-sites-link:hover .md-sites-cover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.md-sites-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.md-sites-link:hover .md-sites-cover img {
+    transform: scale(1.05);
+}
+
+/* 封面图加载失败 */
+.md-sites-cover.md-sites-cover-fallback {
+    background: linear-gradient(135deg, var(--bg-muted) 0%, var(--border-light) 100%);
+}
+
+/* 信息区 — 融入页面背景 */
+.md-sites-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "icon title"
+        "icon desc";
+    gap: 0 0.5rem;
+    padding: 0.5rem 0.25rem 0;
+    align-items: start;
+}
+
+.md-sites-icon {
+    grid-area: icon;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    align-self: center;
+    flex-shrink: 0;
+    background: var(--bg-muted);
+}
+
+.md-sites-title {
+    grid-area: title;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.md-sites-desc {
+    grid-area: desc;
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 标签 — 定位在封面图右上角 */
+.md-sites-labels {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 3px;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 2;
+}
+
+.md-sites-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 999px;
+    line-height: 1;
+    backdrop-filter: blur(4px);
+}
+
+.md-sites-link:hover .md-sites-labels {
+    opacity: 0;
+    transform: translateY(-3px);
+}
+
+/* 响应式 */
+@media (min-width: 640px) {
+    .md-sites-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .md-sites-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+}

@@ -1,0 +1,115 @@
+.md-directive-reel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: var(--md-gap);
+    padding-bottom: var(--md-gap);
+}
+
+.md-directive-reel .md-reel-content {
+    display: flex;
+    flex-direction: column;
+    writing-mode: vertical-rl;
+    border-top: 1px dashed var(--text-muted);
+    border-bottom: 1px dashed var(--text-muted);
+    max-width: calc(100% - 80px);
+    padding: 1rem;
+    position: relative;
+    background: var(--bg-card);
+}
+
+.md-directive-reel .md-reel-content::before,
+.md-directive-reel .md-reel-content::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    top: -16px;
+    bottom: -16px;
+    border-radius: 4px;
+    background: var(--bg-muted);
+}
+
+.md-directive-reel .md-reel-content::before {
+    left: -4px;
+}
+
+.md-directive-reel .md-reel-content::after {
+    left: calc(100%);
+}
+
+.md-directive-reel .md-reel-title {
+    font-weight: 500;
+    font-size: 1rem;
+    position: relative;
+}
+
+.md-directive-reel .md-reel-title::before,
+.md-directive-reel .md-reel-title::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    right: calc(-1rem - 4px);
+    border-radius: 4px;
+    background: var(--accent-color);
+    z-index: 1;
+}
+
+.md-directive-reel .md-reel-title::before {
+    top: calc(-1rem - 6px);
+    bottom: calc(100% + 1rem - 6px);
+}
+
+.md-directive-reel .md-reel-title::after {
+    top: calc(100% + 1rem - 6px);
+    bottom: calc(-1rem - 6px);
+}
+
+.md-directive-reel .md-reel-meta {
+    color: var(--text-muted);
+    font-size: var(--md-text-xs);
+    font-weight: 500;
+}
+
+.md-directive-reel .md-reel-body {
+    overflow: auto;
+    margin: calc(var(--md-gap) - 4px) var(--md-gap);
+}
+
+.md-directive-reel .md-reel-main p {
+    margin: 0;
+    font-size: var(--md-text-sm);
+}
+
+.md-directive-reel .md-reel-date {
+    color: var(--text-muted);
+    font-size: var(--md-text-xs);
+    font-weight: 500;
+    text-align: right;
+}
+
+.md-directive-reel .md-reel-footer {
+    color: var(--text-muted);
+    font-size: var(--md-text-xs);
+    text-align: right;
+    position: relative;
+}
+
+.md-directive-reel .md-reel-footer::before,
+.md-directive-reel .md-reel-footer::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    left: calc(-1rem - 4px);
+    border-radius: 4px;
+    background: var(--accent-color);
+}
+
+.md-directive-reel .md-reel-footer::before {
+    top: calc(-1rem - 6px);
+    bottom: calc(100% + 1rem - 6px);
+}
+
+.md-directive-reel .md-reel-footer::after {
+    top: calc(100% + 1rem - 6px);
+    bottom: calc(-1rem - 6px);
+}

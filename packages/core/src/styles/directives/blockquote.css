@@ -1,0 +1,43 @@
+.md-directive-blockquote {
+    font-family: var(--font-display, var(--font-serif));
+    font-style: normal;
+    font-weight: 500;
+    border: none;
+    padding: 3rem 1.5rem 1rem 1.5rem;
+    font-size: 1.05em;
+    line-height: 1.7;
+    margin: 1.5rem 0;
+    background: rgba(240, 255, 250, 0.5);
+    border-radius: 0.75rem;
+    position: relative;
+    quotes: none;
+}
+
+.md-blockquote-icon {
+    position: absolute;
+    color: rgba(89, 180, 237, 0.2);
+    line-height: 1;
+}
+
+.md-blockquote-icon svg {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.md-blockquote-icon-left {
+    top: 0.75rem;
+    left: 0.75rem;
+}
+
+.md-blockquote-icon-right {
+    top: 0.75rem;
+    right: 0.75rem;
+}
+
+.md-directive-blockquote > p:first-child {
+    margin-top: 0;
+}
+
+.md-directive-blockquote > p:last-child {
+    margin-bottom: 0;
+}

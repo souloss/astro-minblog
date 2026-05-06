@@ -1,0 +1,64 @@
+.md-directive-copy {
+    display: flex;
+    align-items: stretch;
+    border: var(--md-border);
+    border-radius: var(--md-radius-sm);
+    overflow: hidden;
+    background: var(--bg-card);
+    margin: 0.5rem 0;
+    width: 100%;
+    min-width: 200px;
+    max-width: 100%;
+}
+
+.md-copy-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    margin: 4px 0 4px 4px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    color: var(--accent-color);
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+}
+
+.md-copy-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0 10px;
+    font-size: var(--md-text-sm);
+    color: var(--text-secondary);
+    line-height: 2.5;
+    min-width: 0;
+    flex: 1;
+    font-family: var(--font-mono);
+}
+
+.md-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3px 3px 3px 0;
+    padding: 0 10px;
+    border: none;
+    border-radius: 6px;
+    background: var(--bg-muted);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.md-copy-btn:hover {
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+}
+
+.md-copy-btn.md-copy-success {
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+}

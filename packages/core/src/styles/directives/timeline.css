@@ -1,0 +1,113 @@
+.prose .md-directive-timeline,
+.md-directive-timeline {
+    margin: 1.5rem 0 !important;
+    padding: 0 !important;
+    padding-inline-start: 0 !important;
+    list-style: none !important;
+    position: relative;
+}
+
+.md-directive-timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border-light);
+    border-radius: 2px;
+}
+
+.prose .md-directive-timeline > .md-timeline-node,
+.md-timeline-node {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--md-gap);
+    position: relative;
+    padding-bottom: 1.25rem;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+.md-timeline-node:last-child {
+    padding-bottom: 0;
+}
+
+.md-timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 0;
+    box-shadow: 0 0 0 3px var(--bg-main);
+    z-index: 1;
+    transition: all 0.2s ease;
+}
+
+.md-timeline-dot-first {
+    background: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.md-timeline-content {
+    min-width: 0;
+    padding-top: 0;
+}
+
+.md-timeline-content time {
+    font-size: var(--md-text-xs);
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 12px;
+    display: flex;
+    align-items: center;
+    height: 12px;
+}
+
+.md-timeline-content h3 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 2px 0 0;
+    color: var(--text-main);
+}
+
+.md-timeline-content p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+    line-height: 1.5;
+}
+
+.md-timeline-node {
+    cursor: default;
+}
+
+.md-timeline-node:hover {
+    z-index: 1;
+}
+
+/* 当 timeline 中有任意节点被 hover 时，将默认红点降级为灰点 */
+:where(.md-directive-timeline:has(.md-timeline-node:hover)) .md-timeline-dot-first {
+    background: var(--text-muted);
+    box-shadow: 0 0 0 3px var(--bg-main);
+}
+
+/* 被 hover 的节点变为红点（保持圆形，不形变） */
+.md-directive-timeline .md-timeline-node:hover .md-timeline-dot {
+    background: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.md-timeline-node:hover .md-timeline-content h3 {
+    color: var(--accent-color);
+}
+
+.md-timeline-node:hover .md-timeline-content time {
+    color: var(--text-main);
+}
+
+.md-timeline-content h3,
+.md-timeline-content time {
+    transition: color 0.2s ease;
+}
