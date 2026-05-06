@@ -17,36 +17,27 @@ const lang = SITE.lang;
 </button>
 
 <script>
-  type SettingsPanelController = {
-    toggleImmersiveMode?: () => void;
-    toggleReadingMode?: () => void;
-  };
-
-  type NavWindow = Window & {
-    __settingsPanel?: SettingsPanelController;
-  };
-
   function initImmersiveExit() {
     const btn = document.getElementById('immersive-exit-btn');
     if (!btn) return;
 
-    const appWindow = window as NavWindow;
-
     btn.addEventListener('click', () => {
-      if (typeof appWindow.__settingsPanel?.toggleImmersiveMode === 'function') {
-        appWindow.__settingsPanel.toggleImmersiveMode();
-      } else if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
-        appWindow.__settingsPanel.toggleReadingMode();
+      if (history.length > 1) {
+        history.back();
+      } else {
+        const currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
+        window.location.href = "/" + currentLang + "/";
       }
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && document.documentElement.classList.contains('immersive-mode')) {
+      if (e.key === 'Escape') {
         e.preventDefault();
-        if (typeof appWindow.__settingsPanel?.toggleImmersiveMode === 'function') {
-          appWindow.__settingsPanel.toggleImmersiveMode();
-        } else if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
-          appWindow.__settingsPanel.toggleReadingMode();
+        if (history.length > 1) {
+          history.back();
+        } else {
+          const currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
+          window.location.href = "/" + currentLang + "/";
         }
       }
     });

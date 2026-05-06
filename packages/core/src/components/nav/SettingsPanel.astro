@@ -472,8 +472,10 @@ const layoutModes = [
   }
 
   function applyImmersiveMode(active) {
-    document.documentElement.classList.toggle('immersive-mode', active);
-    document.documentElement.classList.remove('reading-mode'); // Clean up old class
+    if (active) {
+      var currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
+      window.location.href = "/" + currentLang + "/views/immersive/";
+    }
   }
 
   function applyReadingTheme(themeId) {
@@ -994,9 +996,8 @@ const layoutModes = [
     });
 
     immersiveModeToggle?.addEventListener('click', () => {
-      const active = !document.documentElement.classList.contains('immersive-mode');
-      applyImmersiveMode(active);
-      updateSwitch(immersiveModeToggle, active);
+      var currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
+      window.location.href = "/" + currentLang + "/views/immersive/";
     });
 
     // Share button handler
@@ -1034,14 +1035,8 @@ const layoutModes = [
     applyReadingSettings: applyReadingSettings,
     applyReadingTheme: applyReadingTheme,
     toggleImmersiveMode: () => {
-      const settings = loadSettings();
-      const active = !document.documentElement.classList.contains('immersive-mode');
-      applyImmersiveMode(active);
-      applyReadingSettings(settings.reading);
-      
-      // Update UI toggle if exists
-      const immersiveModeToggle = document.getElementById('immersive-mode-toggle');
-      if (immersiveModeToggle) updateSwitch(immersiveModeToggle, active);
+      var currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
+      window.location.href = "/" + currentLang + "/views/immersive/";
     },
     toggleReadingMode: function() { this.toggleImmersiveMode(); },
   };

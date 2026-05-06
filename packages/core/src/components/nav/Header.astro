@@ -145,16 +145,15 @@ const darkMode = SITE.darkMode ?? true;
           )
         }
 
-        {/* Immersive Mode */}
-        <button
+        {/* Immersive Mode — navigates to immersive view */}
+        <a
+          href={`/${lang}/views/immersive/`}
           id="immersive-mode-btn-nav"
           class="nav-widget-btn nav-immersive-btn flex"
           aria-label={lang === 'zh' ? '沉浸模式' : 'Immersive Mode'}
-          aria-pressed="false"
           title={lang === 'zh' ? '沉浸模式' : 'Immersive Mode'}
         >
           <svg
-            id="immersive-icon-off-nav"
             class="size-4"
             viewBox="0 0 24 24"
             fill="none"
@@ -167,21 +166,7 @@ const darkMode = SITE.darkMode ?? true;
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
           </svg>
-          <svg
-            id="immersive-icon-on-nav"
-            class="hidden size-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M18 6 6 18"></path>
-            <path d="m6 6 12 12"></path>
-          </svg>
-        </button>
+        </a>
 
         {/* Theme Toggle */}
         {
@@ -387,48 +372,11 @@ const darkMode = SITE.darkMode ?? true;
       });
     }
 
-    // === Immersive mode toggle (nav) ===
-    const immersiveModeNavBtn = document.getElementById("immersive-mode-btn-nav");
-    if (immersiveModeNavBtn) {
-      const syncImmersiveModeUI = (active: boolean) => {
-        immersiveModeNavBtn.setAttribute("aria-pressed", String(active));
-        const iconOff = document.getElementById("immersive-icon-off-nav");
-        const iconOn = document.getElementById("immersive-icon-on-nav");
-        if (active) {
-          immersiveModeNavBtn.classList.add("nav-immersive-btn--active");
-          iconOff?.classList.add("hidden");
-          iconOn?.classList.remove("hidden");
-        } else {
-          immersiveModeNavBtn.classList.remove("nav-immersive-btn--active");
-          iconOff?.classList.remove("hidden");
-          iconOn?.classList.add("hidden");
-        }
-      };
-
-      const initialActive = document.documentElement.classList.contains("immersive-mode");
-      syncImmersiveModeUI(initialActive);
-
-      manager.add(immersiveModeNavBtn, "click", () => {
-        if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
-          appWindow.__settingsPanel.toggleReadingMode();
-        }
-      });
-
-      const observer = new MutationObserver(() => {
-        const active = document.documentElement.classList.contains("immersive-mode");
-        syncImmersiveModeUI(active);
-      });
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-      manager.trackObserver(observer, 'mutation');
-    }
-
-    // === Immersive mode toggle (mobile menu) ===
     const immersiveModeMobileBtn = document.getElementById("immersive-mode-btn-mobile-menu");
     if (immersiveModeMobileBtn) {
       manager.add(immersiveModeMobileBtn, "click", () => {
-        if (typeof appWindow.__settingsPanel?.toggleReadingMode === 'function') {
-          appWindow.__settingsPanel.toggleReadingMode();
-        }
+        const currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
+        window.location.href = "/" + currentLang + "/views/immersive/";
       });
     }
 
