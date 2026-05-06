@@ -35,8 +35,7 @@ const labels = {
   cardHoverDesc: t("settings.cardHoverDesc", lang),
   smoothScroll: t("settings.smoothScroll", lang),
   reset: t("settings.reset", lang),
-  share: t("settings.share", lang),
-  shareCopied: t("settings.shareCopied", lang),
+
   small: t("settings.small", lang),
   medium: t("settings.medium", lang),
   large: t("settings.large", lang),
@@ -96,7 +95,6 @@ const layoutModes = [
     <!-- Tabs -->
     <div class="flex border-b border-border/30 bg-muted/10 shrink-0 overflow-x-auto" role="tablist" aria-label={labels.title}>
       <button id="settings-tab-appearance" type="button" role="tab" aria-selected="true" aria-controls="tab-appearance" data-tab="appearance" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-accent border-b-2 border-accent transition-colors whitespace-nowrap">{labels.tabAppearance}</button>
-      <button id="settings-tab-reading" type="button" role="tab" aria-selected="false" aria-controls="tab-reading" data-tab="reading" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabReading}</button>
       <button id="settings-tab-layout" type="button" role="tab" aria-selected="false" aria-controls="tab-layout" data-tab="layout" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabLayout}</button>
       <button id="settings-tab-general" type="button" role="tab" aria-selected="false" aria-controls="tab-general" data-tab="general" class="settings-tab flex-1 px-3 py-2.5 text-xs font-medium text-muted border-b-2 border-transparent hover:text-foreground-soft transition-colors whitespace-nowrap">{labels.tabGeneral}</button>
     </div>
@@ -162,70 +160,6 @@ const layoutModes = [
         </div>
       </div>
 
-      <!-- Reading Tab -->
-      <div id="tab-reading" class="tab-content hidden p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-reading" tabindex="0">
-        <!-- Reading Mode Master Toggle -->
-        <div class="flex items-center justify-between py-1 border-b border-border/30 pb-3 mb-2">
-          <div>
-             <p class="text-sm font-medium text-foreground">{labels.immersiveMode}</p>
-             <p class="text-xs text-muted">{labels.immersiveModeDesc}</p>
-          </div>
-          <button id="immersive-mode-toggle" role="switch" aria-checked="false" class="toggle-btn relative h-5 w-9 rounded-full transition-colors duration-200" style="background-color: var(--muted)">
-            <span class="toggle-knob absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200" style="transform: translateX(0)"></span>
-          </button>
-        </div>
-        <div>
-          <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.readingTheme}</p>
-          <div class="grid grid-cols-5 gap-2" id="reading-theme-options">
-            <button data-reading-theme="default" class="reading-theme-btn flex flex-col items-center gap-1.5 rounded-lg border border-border/50 p-2 transition-all hover:border-accent/50">
-              <div class="h-5 w-5 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border border-border/30"></div>
-              <span class="text-xs font-medium">{labels.readingThemeDefault}</span>
-            </button>
-            <button data-reading-theme="eyecare" class="reading-theme-btn flex flex-col items-center gap-1.5 rounded-lg border border-border/50 p-2 transition-all hover:border-accent/50">
-              <div class="h-5 w-5 rounded-full bg-gradient-to-br from-amber-50 to-orange-100 border border-amber-200/50"></div>
-              <span class="text-xs font-medium">{labels.readingThemeEyecare}</span>
-            </button>
-            <button data-reading-theme="parchment" class="reading-theme-btn flex flex-col items-center gap-1.5 rounded-lg border border-border/50 p-2 transition-all hover:border-accent/50">
-              <div class="h-5 w-5 rounded-full bg-gradient-to-br from-yellow-50 to-amber-100 border border-yellow-200/50"></div>
-              <span class="text-xs font-medium">{labels.readingThemeParchment}</span>
-            </button>
-            <button data-reading-theme="night" class="reading-theme-btn flex flex-col items-center gap-1.5 rounded-lg border border-border/50 p-2 transition-all hover:border-accent/50">
-              <div class="h-5 w-5 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600/50"></div>
-              <span class="text-xs font-medium">{labels.readingThemeNight}</span>
-            </button>
-            <button data-reading-theme="oled" class="reading-theme-btn flex flex-col items-center gap-1.5 rounded-lg border border-border/50 p-2 transition-all hover:border-accent/50">
-              <div class="h-5 w-5 rounded-full bg-black border border-slate-700"></div>
-              <span class="text-xs font-medium">{labels.readingThemeOled}</span>
-            </button>
-          </div>
-        </div>
-        <div>
-          <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.readingLineHeight}</p>
-          <div class="flex gap-2">
-            <button data-line-height="compact" class="line-height-btn flex flex-1 items-center justify-center rounded-lg border border-border/50 px-3 py-2 text-xs font-medium transition-all hover:border-accent/50">{labels.compact}</button>
-            <button data-line-height="comfortable" class="line-height-btn flex flex-1 items-center justify-center rounded-lg border border-border/50 px-3 py-2 text-xs font-medium transition-all hover:border-accent/50">{labels.comfortable}</button>
-            <button data-line-height="relaxed" class="line-height-btn flex flex-1 items-center justify-center rounded-lg border border-border/50 px-3 py-2 text-xs font-medium transition-all hover:border-accent/50">{labels.relaxed}</button>
-          </div>
-        </div>
-        <div>
-          <p class="mb-2 text-xs font-medium text-foreground-soft">{labels.readingWidth}</p>
-          <div class="flex gap-2">
-            <button data-reading-width="narrow" class="reading-width-btn flex flex-1 items-center justify-center rounded-lg border border-border/50 px-3 py-2 text-xs font-medium transition-all hover:border-accent/50">{labels.narrow}</button>
-            <button data-reading-width="medium" class="reading-width-btn flex flex-1 items-center justify-center rounded-lg border border-border/50 px-3 py-2 text-xs font-medium transition-all hover:border-accent/50">{labels.medium}</button>
-            <button data-reading-width="wide" class="reading-width-btn flex flex-1 items-center justify-center rounded-lg border border-border/50 px-3 py-2 text-xs font-medium transition-all hover:border-accent/50">{labels.wide}</button>
-          </div>
-        </div>
-        <div class="flex items-center justify-between py-1">
-          <div>
-            <p class="text-sm text-foreground-soft">{labels.focusMode}</p>
-            <p class="text-xs text-muted">{labels.focusModeDesc}</p>
-          </div>
-          <button id="focus-mode-toggle" role="switch" aria-checked="false" class="toggle-btn relative h-5 w-9 rounded-full transition-colors duration-200" style="background-color: var(--muted)">
-            <span class="toggle-knob absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200" style="transform: translateX(0)"></span>
-          </button>
-        </div>
-      </div>
-
       <!-- Layout Tab -->
       <div id="tab-layout" class="tab-content hidden p-4 space-y-4" role="tabpanel" aria-labelledby="settings-tab-layout" tabindex="0">
         <div>
@@ -288,15 +222,7 @@ const layoutModes = [
     </div>
 
     <!-- Footer -->
-    <div class="border-t border-border/30 p-3 shrink-0 space-y-2">
-      <button id="settings-share-btn" class="w-full rounded-xl bg-accent/10 px-3 py-2 text-xs font-medium text-accent transition-all hover:bg-accent/20 flex items-center justify-center gap-2">
-        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-          <polyline points="16 6 12 2 8 6"></polyline>
-          <line x1="12" y1="2" x2="12" y2="15"></line>
-        </svg>
-        {labels.share}
-      </button>
+    <div class="border-t border-border/30 p-3 shrink-0">
       <button id="settings-reset-btn" class="w-full rounded-xl bg-muted/30 px-3 py-2 text-xs font-medium text-foreground-soft transition-all hover:bg-muted/50 hover:text-foreground">
         {labels.reset}
       </button>
@@ -307,7 +233,6 @@ const layoutModes = [
 <!-- Toast notification -->
 <div id="settings-toast" class="fixed bottom-32 right-5 z-[60] hidden" role="status" aria-live="polite" aria-atomic="true">
   <div id="settings-panel-status" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-lg">
-    {labels.shareCopied}
   </div>
 </div>
 
@@ -471,13 +396,6 @@ const layoutModes = [
     root.classList.toggle('focus-mode', reading.focusMode);
   }
 
-  function applyImmersiveMode(active) {
-    if (active) {
-      var currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
-      window.location.href = "/" + currentLang + "/views/immersive/";
-    }
-  }
-
   function applyReadingTheme(themeId) {
     const root = document.documentElement;
     const DARK_READING_THEMES = ['night', 'oled'];
@@ -531,13 +449,6 @@ const layoutModes = [
     }
   }
 
-  async function copyShareURL(settings) {
-    const preferencesClient = getPreferencesClient();
-    if (!preferencesClient) return;
-    const copied = await preferencesClient.copyShareURL(settings);
-    if (copied) showToast(labels.shareCopied);
-  }
-
   function updateSwitch(btn, checked) {
     btn.setAttribute('aria-checked', String(checked));
     const knob = btn.querySelector('.toggle-knob');
@@ -570,16 +481,6 @@ const layoutModes = [
   function updateRadiusUI(radius) {
     document.querySelectorAll('[data-radius]').forEach(btn => {
       const isActive = btn.dataset.radius === radius;
-      btn.classList.toggle('border-accent', isActive);
-      btn.classList.toggle('bg-accent/10', isActive);
-      btn.classList.toggle('text-accent', isActive);
-      btn.classList.toggle('border-border/50', !isActive);
-    });
-  }
-
-  function updateReadingThemeUI(themeId) {
-    document.querySelectorAll('[data-reading-theme]').forEach(btn => {
-      const isActive = btn.dataset.readingTheme === themeId;
       btn.classList.toggle('border-accent', isActive);
       btn.classList.toggle('bg-accent/10', isActive);
       btn.classList.toggle('text-accent', isActive);
@@ -682,8 +583,7 @@ const layoutModes = [
     const closeBtn = document.getElementById('settings-close-btn');
     const resetBtn = document.getElementById('settings-reset-btn');
     const fontSizeSlider = document.getElementById('font-size-slider');
-    const shareBtn = document.getElementById('settings-share-btn');
-
+  
     if (!panel) return;
 
     panel.setAttribute('aria-hidden', panel.classList.contains('hidden') ? 'true' : 'false');
@@ -768,7 +668,6 @@ const layoutModes = [
       updateLayoutModeUI(settings.layout.postsLayout);
       updateRadiusUI(settings.theme.radius);
       updateFontSizeUI(settings.appearance.fontSize);
-      updateReadingThemeUI(settings.reading.theme);
       updateHueUI(settings.theme.hue ?? 165);
       if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
       if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
@@ -777,33 +676,8 @@ const layoutModes = [
     if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
     if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
 
-    // Reading settings UI
-    const focusModeToggle = document.getElementById('focus-mode-toggle');
-      if (focusModeToggle) updateSwitch(focusModeToggle, settings.reading.focusMode);
+    // Reading settings UI (removed — now in immersive view)
     
-    const immersiveModeToggle = document.getElementById('immersive-mode-toggle');
-    if (immersiveModeToggle) {
-      updateSwitch(
-        immersiveModeToggle,
-        document.documentElement.classList.contains('immersive-mode')
-      );
-    }
-    
-    // Update reading settings button states
-    const updateReadingBtnUI = (selector, dataKey, value) => {
-      document.querySelectorAll(selector).forEach(btn => {
-        const btnValue = btn.dataset[dataKey];
-        const isActive = btnValue === value;
-        btn.classList.toggle('border-accent', isActive);
-        btn.classList.toggle('bg-accent/10', isActive);
-        btn.classList.toggle('text-accent', isActive);
-        btn.classList.toggle('border-border/50', !isActive);
-      });
-    };
-      updateReadingBtnUI('.line-height-btn', 'lineHeight', settings.reading.lineHeight);
-      updateReadingBtnUI('.reading-width-btn', 'readingWidth', settings.reading.contentWidth);
-      updateReadingBtnUI('.font-family-btn', 'fontFamily', settings.reading.fontFamily);
-
     // Tab switching
     document.querySelectorAll('.settings-tab').forEach(tab => {
       if (tab.dataset.settingsTabBound === 'true') return;
@@ -859,17 +733,7 @@ const layoutModes = [
       updateRadiusUI(r);
     });
 
-    // Reading theme handlers
-    document.getElementById('reading-theme-options')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-reading-theme]');
-      if (!btn) return;
-      const themeId = btn.dataset.readingTheme;
-      
-      settings.reading.theme = themeId;
-      saveSettings(settings);
-      applyReadingTheme(themeId);
-      updateReadingThemeUI(themeId);
-    });
+    // Reading theme handlers (removed — now in immersive view settings)
 
     // Font size handler
     fontSizeSlider?.addEventListener('input', (e) => {
@@ -955,56 +819,14 @@ const layoutModes = [
       updateLayoutModeUI(settings.layout.postsLayout);
       updateRadiusUI(settings.theme.radius);
       updateFontSizeUI(settings.appearance.fontSize);
-      updateReadingThemeUI(settings.reading.theme);
       updateHueUI(settings.theme.hue ?? 165);
       if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
       if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
       if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
-      if (themeToggle) updateSwitch(themeToggle, settings.widgets.themeToggle);
-      if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
-      if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
-      if (focusModeToggle) updateSwitch(focusModeToggle, settings.reading.focusMode);
-      
-      // Update reading buttons
-      updateReadingBtnUI('.line-height-btn', 'lineHeight', settings.reading.lineHeight);
-      updateReadingBtnUI('.reading-width-btn', 'readingWidth', settings.reading.contentWidth);
-      updateReadingBtnUI('.font-family-btn', 'fontFamily', settings.reading.fontFamily);
+    if (themeToggle) updateSwitch(themeToggle, settings.widgets.themeToggle);
+    if (backToTopToggle) updateSwitch(backToTopToggle, settings.widgets.backToTop);
+    if (readingTimeToggle) updateSwitch(readingTimeToggle, settings.widgets.readingTime);
     });
-
-    // Reading settings handlers
-    const handleReadingBtn = (selector, settingKey, dataKey, updateFn) => {
-      document.querySelectorAll(selector).forEach(btn => {
-        btn.addEventListener('click', () => {
-          const value = btn.dataset[dataKey];
-          settings.reading[settingKey] = value;
-          saveSettings(settings);
-          applyReadingSettings(settings.reading);
-          updateFn(selector, dataKey, value);
-        });
-      });
-    };
-
-    handleReadingBtn('.line-height-btn', 'lineHeight', 'lineHeight', updateReadingBtnUI);
-    handleReadingBtn('.reading-width-btn', 'contentWidth', 'readingWidth', updateReadingBtnUI);
-    handleReadingBtn('.font-family-btn', 'fontFamily', 'fontFamily', updateReadingBtnUI);
-
-    focusModeToggle?.addEventListener('click', () => {
-      settings.reading.focusMode = !settings.reading.focusMode;
-      saveSettings(settings);
-      applyReadingSettings(settings.reading);
-      updateSwitch(focusModeToggle, settings.reading.focusMode);
-    });
-
-    immersiveModeToggle?.addEventListener('click', () => {
-      var currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
-      window.location.href = "/" + currentLang + "/views/immersive/";
-    });
-
-    // Share button handler
-    if (shareBtn && shareBtn.dataset.settingsShareBound !== 'true') {
-      shareBtn.addEventListener('click', () => copyShareURL(settings));
-      shareBtn.dataset.settingsShareBound = 'true';
-    }
 
     if (closeBtn && closeBtn.dataset.settingsCloseBound !== 'true') {
       closeBtn.addEventListener('click', closeSettingsPanel);
@@ -1034,11 +856,6 @@ const layoutModes = [
     applyLayoutMode: applyLayoutMode,
     applyReadingSettings: applyReadingSettings,
     applyReadingTheme: applyReadingTheme,
-    toggleImmersiveMode: () => {
-      var currentLang = window.location.pathname.startsWith("/zh") ? "zh" : "en";
-      window.location.href = "/" + currentLang + "/views/immersive/";
-    },
-    toggleReadingMode: function() { this.toggleImmersiveMode(); },
   };
 
   init();

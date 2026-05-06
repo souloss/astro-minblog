@@ -55,14 +55,4 @@ export {
   getEffectiveDefaults,
 } from "./storage";
 
-// Share
-export {
-  exportShareURL,
-  importFromURL,
-  hasSharedPreferences,
-  clearShareURL,
-  copyShareURL,
-  mergeSharedPreferences,
-} from "./share";
-
 export { settingsPanelClient } from "./client";

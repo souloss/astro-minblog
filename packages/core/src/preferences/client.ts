@@ -3,8 +3,6 @@ import {
   loadPreferences,
   savePreferences,
   resetPreferences,
-  exportShareURL,
-  copyShareURL,
 } from "./index";
 import type { Preferences } from "./types";
 import { themePresetMeta } from "./presets";
@@ -25,11 +23,5 @@ export const settingsPanelClient = {
   },
   resetSettings(): Preferences {
     return resetPreferences();
-  },
-  exportShareURL(settings: Preferences): string {
-    return exportShareURL(settings);
-  },
-  copyShareURL(settings: Preferences): Promise<boolean> {
-    return copyShareURL(settings);
   },
 };
