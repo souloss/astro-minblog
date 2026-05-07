@@ -367,7 +367,7 @@ export function CopyButton({ code }: { code: string }) {
     >
       {copied ? (
         <svg
-          class="size-3.5 text-[var(--color-success,#22c55e)]"
+          class="size-3.5 text-success"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

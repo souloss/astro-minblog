@@ -259,14 +259,14 @@ export function ChatPanel({
             <div class="flex items-start gap-2.5" role="alert">
               <BotAvatar />
               <div class="flex flex-col gap-1 pt-0.5">
-                <p class="text-[13px] text-amber-600 dark:text-amber-400">
+                <p class="text-[13px] text-warning">
                   {parseErrorMessage(error, lang)}
                 </p>
                 {isRetryable(error) && (
                   <button
                     type="button"
                     onClick={() => regenerate()}
-                    class="self-start rounded-md border border-amber-500/30 px-2 py-0.5 text-[11px] text-amber-600 transition-colors hover:bg-amber-500/10 dark:text-amber-400"
+                    class="self-start rounded-md border border-warning/30 px-2 py-0.5 text-[11px] text-warning transition-colors hover:bg-warning/10"
                   >
                     {t("ai.retry", lang)}
                   </button>

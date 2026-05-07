@@ -484,25 +484,16 @@ const darkMode = SITE.darkMode ?? true;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(251, 249, 244, 0.72);
+    background: var(--glass-bg);
     backdrop-filter: saturate(180%) blur(16px);
     -webkit-backdrop-filter: saturate(180%) blur(16px);
-    border-bottom: 1px solid rgba(30, 35, 30, 0.06);
+    border-bottom: 1px solid var(--border);
     transition: transform 0.25s ease;
     will-change: transform;
   }
 
   .header-wrapper.nav-scroll-hidden {
     transform: translateY(-100%);
-  }
-
-  html[data-theme="dark"] .header-wrapper {
-    background: rgba(20, 22, 24, 0.72);
-    border-bottom-color: rgba(226, 227, 225, 0.06);
-  }
-
-  html:lang(en) .header-wrapper {
-    background: rgba(249, 249, 247, 0.72);
   }
 
   /* === Nav Container — 3-zone flex layout === */
@@ -627,22 +618,14 @@ const darkMode = SITE.darkMode ?? true;
   }
 
   .nav-link:hover {
-    background: rgba(30, 35, 30, 0.05);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
     color: var(--foreground);
-  }
-
-  html[data-theme="dark"] .nav-link:hover {
-    background: rgba(226, 227, 225, 0.06);
   }
 
   .nav-link--active {
     color: var(--foreground);
     font-weight: 500;
-    background: rgba(30, 35, 30, 0.04);
-  }
-
-  html[data-theme="dark"] .nav-link--active {
-    background: rgba(226, 227, 225, 0.05);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
   }
 
   .nav-link-text {
@@ -678,8 +661,8 @@ const darkMode = SITE.darkMode ?? true;
     height: 30px;
     padding: 0 9px;
     border-radius: var(--radius-md, 6px);
-    border: 1px solid rgba(30, 35, 30, 0.1);
-    background: rgba(30, 35, 30, 0.02);
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--foreground) 2%, transparent);
     color: var(--foreground-soft);
     font-size: 12.5px;
     cursor: pointer;
@@ -688,19 +671,9 @@ const darkMode = SITE.darkMode ?? true;
   }
 
   .nav-search-trigger:hover {
-    background: rgba(30, 35, 30, 0.05);
-    border-color: rgba(30, 35, 30, 0.15);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
+    border-color: var(--border-strong);
     color: var(--foreground);
-  }
-
-  html[data-theme="dark"] .nav-search-trigger {
-    border-color: rgba(226, 227, 225, 0.1);
-    background: rgba(226, 227, 225, 0.03);
-  }
-
-  html[data-theme="dark"] .nav-search-trigger:hover {
-    background: rgba(226, 227, 225, 0.07);
-    border-color: rgba(226, 227, 225, 0.18);
   }
 
   .nav-search-trigger__label {
@@ -720,17 +693,12 @@ const darkMode = SITE.darkMode ?? true;
     padding: 1px 5px;
     font-size: 10px;
     border-radius: 3px;
-    border: 1px solid rgba(30, 35, 30, 0.08);
-    background: rgba(30, 35, 30, 0.05);
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
     color: var(--foreground-soft);
     font-family: var(--font-mono, ui-monospace, monospace);
     text-align: center;
     line-height: 1.4;
-  }
-
-  html[data-theme="dark"] .nav-search-trigger kbd {
-    background: rgba(226, 227, 225, 0.06);
-    border-color: rgba(226, 227, 225, 0.1);
   }
 
   /* === Widget Buttons (theme, lang, AI, immersive, settings) === */
@@ -754,12 +722,8 @@ const darkMode = SITE.darkMode ?? true;
   }
 
   .nav-widget-btn:hover {
-    background: rgba(30, 35, 30, 0.05);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
     color: var(--foreground);
-  }
-
-  html[data-theme="dark"] .nav-widget-btn:hover {
-    background: rgba(226, 227, 225, 0.06);
   }
 
   /* Language button wider */

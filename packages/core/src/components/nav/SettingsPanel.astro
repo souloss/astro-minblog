@@ -281,16 +281,13 @@ const layoutModes = [
     const root = document.documentElement;
     root.style.setProperty('--hue', String(hue));
     const isDark = root.getAttribute('data-theme') === 'dark';
+    // Only set --accent; derived tokens (--accent-soft, --accent-gradient-*, --brand-secondary)
+    // auto-adapt via color-mix() in themes.css
     if (isDark) {
       root.style.setProperty('--accent', `oklch(0.75 0.14 ${hue})`);
-      root.style.setProperty('--accent-soft', `oklch(0.75 0.14 ${hue} / 0.15)`);
     } else {
       root.style.setProperty('--accent', `oklch(0.55 0.14 ${hue})`);
-      root.style.setProperty('--accent-soft', `oklch(0.55 0.14 ${hue} / 0.12)`);
     }
-    root.style.setProperty('--accent-gradient-from', `oklch(${isDark ? 0.75 : 0.55} 0.14 ${hue})`);
-    root.style.setProperty('--accent-gradient-to', `oklch(${isDark ? 0.65 : 0.45} 0.12 ${hue})`);
-    root.style.setProperty('--brand-secondary', `oklch(${isDark ? 0.80 : 0.70} 0.10 ${hue})`);
   }
 
   function updateHueUI(hue) {

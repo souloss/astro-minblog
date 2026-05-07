@@ -99,11 +99,6 @@ const isArticle = pageType === "article";
           }
         } catch(e) {}
 
-        // Dark mode class for Tailwind
-        if (themeValue === "dark") {
-          root.classList.add("dark");
-        }
-
         // Export theme API
         window.theme = {
           themeMode: themeMode,
@@ -117,11 +112,6 @@ const isArticle = pageType === "article";
           reflectPreference: function() {
             var resolved = window.theme.themeValue;
             document.documentElement.setAttribute("data-theme", resolved);
-            if (resolved === "dark") {
-              document.documentElement.classList.add("dark");
-            } else {
-              document.documentElement.classList.remove("dark");
-            }
           },
           applyMode: function(mode) {
             window.theme.setTheme(mode);

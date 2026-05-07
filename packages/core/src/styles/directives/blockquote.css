@@ -7,7 +7,7 @@
     font-size: 1.05em;
     line-height: 1.7;
     margin: 1.5rem 0;
-    background: rgba(240, 255, 250, 0.5);
+    background: color-mix(in srgb, var(--accent-color) 5%, var(--bg-card));
     border-radius: 0.75rem;
     position: relative;
     quotes: none;
@@ -15,7 +15,7 @@
 
 .md-blockquote-icon {
     position: absolute;
-    color: rgba(89, 180, 237, 0.2);
+    color: color-mix(in srgb, var(--accent-color) 20%, transparent);
     line-height: 1;
 }
 

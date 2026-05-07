@@ -1,8 +1,8 @@
 /* ── Panel Directive ── */
 .md-directive-panel {
-    --panel-bg: #faf6f3;
-    --panel-border: #e8e0d8;
-    --panel-divider: #e8e0d8;
+    --panel-bg: var(--bg-card);
+    --panel-border: var(--border-light);
+    --panel-divider: var(--border-light);
     --panel-radius: 12px;
     position: relative;
     margin: 1.5rem 0;
@@ -36,10 +36,10 @@
     display: inline-block;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: #8a7e72;
+    color: var(--text-muted);
     line-height: 1.4;
     padding: 2px 10px;
-    background: rgba(0, 0, 0, 0.04);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
     border-radius: 6px;
     user-select: none;
     transition: all 0.2s ease;
@@ -47,8 +47,8 @@
 }
 
 .md-segment-label-left:hover {
-    background: rgba(0, 0, 0, 0.08);
-    color: #5a4e46;
+    background: color-mix(in srgb, var(--foreground) 8%, transparent);
+    color: var(--text-secondary);
 }
 
 /* Right meta area */
@@ -63,7 +63,7 @@
 .md-segment-right {
     font-size: 0.8125rem;
     font-weight: 500;
-    color: #b0a89e;
+    color: var(--text-muted);
     line-height: 1.4;
     user-select: none;
     transition: color 0.2s ease;
@@ -77,9 +77,9 @@
     padding: 3px 10px;
     font-size: 0.75rem;
     font-weight: 500;
-    color: #9a8e84;
+    color: var(--text-muted);
     background: transparent;
-    border: 1px solid #ddd5cc;
+    border: 1px solid var(--border-light);
     border-radius: 6px;
     cursor: pointer;
     opacity: 0;
@@ -98,18 +98,18 @@
 }
 
 .md-panel-segment:hover .md-segment-right {
-    color: #d0c8be;
+    color: var(--text-secondary);
 }
 
 .md-segment-copy:hover {
-    color: #5a4e46;
-    background: rgba(0, 0, 0, 0.04);
-    border-color: #b8ada4;
+    color: var(--text-secondary);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
+    border-color: var(--text-muted);
 }
 
 .md-segment-copy.md-copy-success {
-    color: #22c55e;
-    border-color: #22c55e;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
     opacity: 1;
 }
 
@@ -167,47 +167,4 @@
 /* Last segment: extra bottom padding */
 .md-panel-body > .md-panel-segment:last-child > pre {
     padding-bottom: 16px !important;
-}
-
-/* Dark mode */
-[data-theme="dark"] .md-directive-panel,
-.dark .md-directive-panel {
-    --panel-bg: rgba(255, 255, 255, 0.02);
-    --panel-border: rgba(255, 255, 255, 0.08);
-    --panel-divider: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .md-segment-label-left,
-.dark .md-segment-label-left {
-    background: rgba(255, 255, 255, 0.06);
-    color: #a8a0a0;
-}
-
-[data-theme="dark"] .md-segment-label-left:hover,
-.dark .md-segment-label-left:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #c8c0bc;
-}
-
-[data-theme="dark"] .md-segment-right,
-.dark .md-segment-right {
-    color: #887e7a;
-}
-
-[data-theme="dark"] .md-panel-segment:hover .md-segment-right,
-.dark .md-panel-segment:hover .md-segment-right {
-    color: #5a524e;
-}
-
-[data-theme="dark"] .md-segment-copy,
-.dark .md-segment-copy {
-    color: #887e7a;
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
-[data-theme="dark"] .md-segment-copy:hover,
-.dark .md-segment-copy:hover {
-    color: #c8c0bc;
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.2);
 }

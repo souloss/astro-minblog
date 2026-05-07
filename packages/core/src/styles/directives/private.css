@@ -1,14 +1,14 @@
 /* ── Private Directive ── */
 .md-directive-private {
-    --private-bg: #faf6f3;
-    --private-border: #e8e0d8;
-    --private-divider: #e8e0d8;
+    --private-bg: var(--bg-card);
+    --private-border: var(--border-light);
+    --private-divider: var(--border-light);
     --private-radius: 12px;
-    --private-icon-color: #b0a89e;
-    --private-title-color: #5a4e46;
-    --private-desc-color: #8a7e72;
-    --private-input-bg: #fff;
-    --private-input-border: #ddd5cc;
+    --private-icon-color: var(--text-muted);
+    --private-title-color: var(--text-secondary);
+    --private-desc-color: var(--text-muted);
+    --private-input-bg: var(--bg-card);
+    --private-input-border: var(--border-light);
     --private-btn-bg: var(--accent-color, #4a7c59);
     --private-btn-color: #fff;
     --private-error: #ef4444;
@@ -55,7 +55,7 @@
 .md-private-hint {
     font-size: 0.75rem;
     color: var(--private-desc-color);
-    background: rgba(0, 0, 0, 0.04);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
     padding: 3px 10px;
     border-radius: 4px;
     margin-bottom: 1rem;
@@ -105,7 +105,7 @@
     padding: 4px;
     background: transparent;
     border: none;
-    color: #b0a89e;
+    color: var(--text-muted);
     cursor: pointer;
     transition: color 0.2s ease;
 }
@@ -211,7 +211,7 @@
 
 .md-private-lock-btn:hover {
     color: var(--private-title-color);
-    background: rgba(0, 0, 0, 0.04);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
 }
 
 .md-private-lock-btn svg {
@@ -278,26 +278,4 @@
 .md-private-content img {
     max-width: 100%;
     border-radius: 8px;
-}
-
-/* Dark mode */
-[data-theme="dark"] .md-directive-private,
-.dark .md-directive-private {
-    --private-bg: rgba(255, 255, 255, 0.02);
-    --private-border: rgba(255, 255, 255, 0.08);
-    --private-icon-color: #887e7a;
-    --private-title-color: #c8c0bc;
-    --private-desc-color: #a8a0a0;
-    --private-input-bg: rgba(255, 255, 255, 0.04);
-    --private-input-border: rgba(255, 255, 255, 0.12);
-}
-
-[data-theme="dark"] .md-private-input,
-.dark .md-private-input {
-    color: var(--text-main);
-}
-
-[data-theme="dark"] .md-private-hint,
-.dark .md-private-hint {
-    background: rgba(255, 255, 255, 0.06);
 }

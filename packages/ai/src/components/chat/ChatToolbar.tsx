@@ -57,8 +57,8 @@ export function ChatToolbar({
         <span
           class={`rounded-full px-1.5 py-px text-[10px] font-medium ${
             isMockMode
-              ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-              : "bg-green-500/15 text-green-600 dark:text-green-400"
+              ? "bg-warning/15 text-warning"
+              : "bg-success/15 text-success"
           }`}
         >
           {isMockMode ? t("ai.header.mode", lang) : t("ai.status.live", lang)}

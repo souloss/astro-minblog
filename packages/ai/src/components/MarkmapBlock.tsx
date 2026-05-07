@@ -241,7 +241,7 @@ export function MarkmapBlock({
       {error && !showSkeleton && (
         <>
           <pre class="bg-muted/60 overflow-x-auto rounded-md px-3 py-2 font-mono text-[12px] leading-relaxed">
-            <code class="text-amber-600 dark:text-amber-400">{code}</code>
+            <code class="text-warning">{code}</code>
           </pre>
           <div class="text-foreground-soft mt-1 px-1 text-[10px]">
             Markmap: {error}

@@ -179,18 +179,18 @@
   }
 
   .astro-code .line.diff.add {
-    @apply relative inline-block w-full bg-green-500/15;
+    @apply relative inline-block w-full bg-success/15;
   }
   .astro-code .line.diff.add::after {
     content: "+";
-    @apply absolute left-3 text-green-500 font-bold;
+    @apply absolute left-3 text-success font-bold;
   }
   .astro-code .line.diff.remove {
-    @apply relative inline-block w-full bg-red-500/15;
+    @apply relative inline-block w-full bg-error/15;
   }
   .astro-code .line.diff.remove::after {
     content: "-";
-    @apply absolute left-3 text-red-500 font-bold;
+    @apply absolute left-3 text-error font-bold;
   }
   .astro-code .line.highlighted {
     @apply inline-block w-full bg-accent/10;

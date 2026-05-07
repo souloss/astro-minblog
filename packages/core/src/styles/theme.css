@@ -8,64 +8,10 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* ============================================
-   DESIGN TOKENS - Modern Glassmorphism System
-   Default theme (teal) - fallback when no data-color-scheme is set
+   DESIGN TOKENS - Animation & Easing
    ============================================ */
 
 :root {
-  /* === Core Colors (PaperMod warm cream) === */
-  --background: #fbf9f4;
-  --surface: rgba(255, 255, 255, 0.85);
-  --surface-strong: rgba(255, 255, 255, 0.95);
-  --card: rgba(255, 255, 255, 0.92);
-  --card-hover: rgba(255, 255, 255, 0.98);
-  
-  /* === Text Colors (WCAG AA compliant) === */
-  --foreground: #1e1e1e;
-  --foreground-soft: #6c6c6c;
-  --muted: #6c6c6c;
-  
-  /* === Brand Colors === */
-  --accent: #0f766e;
-  --accent-soft: rgba(15, 118, 110, 0.12);
-  --accent-gradient-from: #0f766e;
-  --accent-gradient-to: #134e4a;
-  --brand-secondary: #5eead4;
-  
-  /* === Border & Shadow === */
-  --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.15);
-  --shadow-elevated: rgba(0, 0, 0, 0.08);
-  --shadow-card: 
-    0 1px 2px rgba(20, 40, 50, 0.04),
-    0 2px 8px rgba(20, 40, 50, 0.03);
-  --shadow-card-hover:
-    0 4px 16px rgba(20, 40, 50, 0.06),
-    0 1px 4px rgba(20, 40, 50, 0.04);
-  
-  /* === Glass Effect === */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-blur: 12px;
-  
-  /* === Hero Section === */
-  --hero-orb-a: rgba(15, 118, 110, 0.18);
-  --hero-orb-b: rgba(94, 234, 212, 0.14);
-  --hero-gradient: linear-gradient(135deg, #0f766e 0%, #134e4a 100%);
-  
-  /* === Series Cards === */
-  --series-glow: rgba(15, 118, 110, 0.1);
-  --series-border: rgba(15, 118, 110, 0.25);
-  --series-bg-from: rgba(255, 255, 255, 0.8);
-  --series-bg-to: rgba(251, 249, 244, 0.6);
-  --series-pulse: rgba(15, 118, 110, 0.7);
-  
-  /* === Visualization Containers === */
-  --viz-bg: rgba(251, 249, 244, 0.85);
-  --viz-border: rgba(0, 0, 0, 0.08);
-  --viz-btn-bg: rgba(255, 255, 255, 0.95);
-  --viz-btn-hover: rgba(15, 118, 110, 0.12);
-  
   /* === Animation Tokens === */
   --transition-fast: 150ms;
   --transition-base: 200ms;
@@ -74,54 +20,6 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Dark mode default (PaperMod) */
-html[data-theme="dark"] {
-  --background: #1d1e20;
-  --surface: rgba(46, 46, 51, 0.85);
-  --surface-strong: rgba(65, 66, 68, 0.92);
-  --card: rgba(46, 46, 51, 0.88);
-  --card-hover: rgba(55, 56, 62, 0.95);
-  
-  --foreground: #dadadb;
-  --foreground-soft: #9b9c9d;
-  --muted: #9b9c9d;
-  
-  --accent: #4fd1c5;
-  --accent-soft: rgba(79, 209, 197, 0.15);
-  --accent-gradient-from: #4fd1c5;
-  --accent-gradient-to: #38b2ac;
-  --brand-secondary: #81e6d9;
-  
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --shadow-elevated: rgba(0, 0, 0, 0.5);
-  --shadow-card:
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-card-hover:
-    0 8px 16px rgba(0, 0, 0, 0.35),
-    0 16px 48px rgba(0, 0, 0, 0.5);
-  
-  --glass-bg: rgba(46, 46, 51, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 16px;
-  
-  --hero-orb-a: rgba(79, 209, 197, 0.15);
-  --hero-orb-b: rgba(129, 230, 217, 0.1);
-  --hero-gradient: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%);
-  
-  --series-glow: rgba(79, 209, 197, 0.12);
-  --series-border: rgba(79, 209, 197, 0.28);
-  --series-bg-from: rgba(29, 30, 32, 0.9);
-  --series-bg-to: rgba(46, 46, 51, 0.65);
-  --series-pulse: rgba(79, 209, 197, 0.85);
-  
-  --viz-bg: rgba(46, 46, 51, 0.55);
-  --viz-border: rgba(255, 255, 255, 0.08);
-  --viz-btn-bg: rgba(55, 56, 62, 0.9);
-  --viz-btn-hover: rgba(79, 209, 197, 0.18);
 }
 
 /* ============================================
@@ -150,6 +48,16 @@ html[data-theme="dark"] {
   --color-border: var(--border);
   --color-shadow-elevated: var(--shadow-elevated);
   --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* === Alert Colors (from themes.css) === */
+  --color-alert-note: var(--alert-note);
+  --color-alert-tip: var(--alert-tip);
+  --color-alert-important: var(--alert-important);
+  --color-alert-warning: var(--alert-warning);
+  --color-alert-caution: var(--alert-caution);
   
   /* === Special Colors === */
   --color-series-glow: var(--series-glow);

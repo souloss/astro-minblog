@@ -1,17 +1,17 @@
 .md-directive-ghcard {
-    --ghcard-bg: var(--bg-card, #fff);
-    --ghcard-border: var(--border-light, #e5e7eb);
-    --ghcard-text: var(--text-main, #1f2937);
-    --ghcard-text-secondary: var(--text-secondary, #6b7280);
-    --ghcard-accent: var(--accent-color, #4a7c59);
+    --ghcard-bg: var(--bg-card);
+    --ghcard-border: var(--border-light);
+    --ghcard-text: var(--text-main);
+    --ghcard-text-secondary: var(--text-secondary);
+    --ghcard-accent: var(--accent-color);
     --ghcard-radius: var(--md-radius-sm, 8px);
-    --ghcard-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --ghcard-hover-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
+    --ghcard-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent);
+    --ghcard-hover-shadow: 0 3px 8px color-mix(in srgb, var(--foreground) 7%, transparent);
 }
 
 .dark .md-directive-ghcard {
-    --ghcard-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-    --ghcard-hover-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    --ghcard-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 18%, transparent);
+    --ghcard-hover-shadow: 0 3px 8px color-mix(in srgb, var(--foreground) 25%, transparent);
 }
 
 /* ========== Repo Card ========== */
@@ -121,7 +121,7 @@
     border-radius: 50%;
     overflow: hidden;
     border: 1.5px solid var(--ghcard-border);
-    background: var(--bg-muted, #f3f4f6);
+    background: var(--bg-muted);
 }
 
 .md-ghcard-avatar img {
@@ -168,7 +168,7 @@
 }
 
 .md-ghcard-user-stat:hover {
-    background: var(--bg-muted, #f3f4f6);
+    background: var(--bg-muted);
 }
 
 .md-ghcard-user-stat .md-ghcard-text {
