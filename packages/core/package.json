@@ -44,7 +44,12 @@
     "src/"
   ],
   "sideEffects": [
-    "./src/preferences/client-init.ts"
+    "./src/preferences/client-init.ts",
+    "./src/scripts/directive-client-init.ts",
+    "./src/scripts/lightbox.ts",
+    "./src/scripts/reading-position.ts",
+    "./src/scripts/web-vitals.ts",
+    "./src/scripts/theme.ts"
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",

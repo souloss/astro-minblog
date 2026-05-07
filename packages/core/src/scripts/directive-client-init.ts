@@ -1171,6 +1171,22 @@ function initFullHtmlEmbed(): void {
       }
     });
   });
+
+  document.querySelectorAll<HTMLElement>('.html-placeholder[data-placeholder]').forEach(placeholder => {
+    const iframe = placeholder.nextElementSibling as HTMLIFrameElement | null;
+    if (!iframe || iframe.tagName !== 'IFRAME') return;
+
+    const hide = () => {
+      placeholder.style.opacity = '0';
+      placeholder.style.pointerEvents = 'none';
+    };
+
+    if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+      hide();
+    } else {
+      iframe.addEventListener('load', hide, { once: true });
+    }
+  });
 }
 
 // ── Main Init ─────────────────────────────────────────────────────────────────

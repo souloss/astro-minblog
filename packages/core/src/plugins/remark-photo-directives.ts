@@ -127,7 +127,7 @@ function extractGalleryImages(
 
 // ── Photo directive renderer ─────────────────────────────────────
 
-function renderPhotoDirective(attrs: PhotoAttrs): string {
+function renderPhotoDirective(attrs: PhotoAttrs): { html: string; className: string } {
   const src = attrs.src || "";
   const alt = attrs.alt || "";
   const type = attrs.type || "blur";
@@ -153,7 +153,8 @@ function renderPhotoDirective(attrs: PhotoAttrs): string {
 
   if (type === "blur") {
     // Blur: blurred background + clear centered image + bottom info bar
-    let html = `<div class="md-directive md-directive-photo md-photo-blur">`;
+    const className = "md-directive md-directive-photo md-photo-blur";
+    let html = "";
     html += `<div class="md-photo-bg" style="background-image:url('${escapeHtml(src)}');"></div>`;
     html += `<div class="md-photo-img-wrap">`;
     html += `<img class="md-photo-img" src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"${zoomAttr} loading="lazy" decoding="async" />`;
@@ -168,12 +169,12 @@ function renderPhotoDirective(attrs: PhotoAttrs): string {
       html += `<div class="md-photo-exif">${exifStr}</div>`;
     }
     html += `</div>`;
-    html += `</div>`;
-    return html;
+    return { html, className };
   }
 
   // Watermark: simple image + info bar (三栏：左品牌型号 / 中Logo / 右EXIF时间)
-  let html = `<div class="md-directive md-directive-photo md-photo-watermark">`;
+  const className = "md-directive md-directive-photo md-photo-watermark";
+  let html = "";
   html += `<div class="md-photo-img-wrap">`;
   html += `<img class="md-photo-img" src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"${zoomAttr} loading="lazy" decoding="async" />`;
   html += `</div>`;
@@ -200,8 +201,7 @@ function renderPhotoDirective(attrs: PhotoAttrs): string {
   }
   html += `</div>`;
   html += `</div>`;
-  html += `</div>`;
-  return html;
+  return { html, className };
 }
 
 // ── Plugin ───────────────────────────────────────────────────────
@@ -212,8 +212,8 @@ export const remarkPhotoDirectives: Plugin<[], Root> = () => {
     visit(tree, "leafDirective", (node: LeafDirective) => {
       if (node.name !== "photo") return;
       const attrs: PhotoAttrs = node.attributes || {};
-      const html = renderPhotoDirective(attrs);
-      node.data = { hName: "div", hProperties: {} };
+      const { html, className } = renderPhotoDirective(attrs);
+      node.data = { hName: "div", hProperties: { class: className } };
       node.children = [{ type: "html", value: html }];
     });
 
@@ -229,8 +229,8 @@ export const remarkPhotoDirectives: Plugin<[], Root> = () => {
           attrs.src = first.src;
         }
       }
-      const html = renderPhotoDirective(attrs);
-      node.data = { hName: "div", hProperties: {} };
+      const { html, className } = renderPhotoDirective(attrs);
+      node.data = { hName: "div", hProperties: { class: className } };
       node.children = [{ type: "html", value: html }];
     });
   };

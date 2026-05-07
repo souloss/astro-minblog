@@ -12,8 +12,10 @@
     margin: 1.5rem 0;
 }
 
-/* Loading placeholder with shimmer */
+/* Loading placeholder with shimmer — hidden once iframe loads via CSS :has() */
 .html-placeholder {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -28,6 +30,15 @@
     background-size: 200% 100%;
     animation: html-shimmer 1.5s infinite;
     color: var(--text-secondary);
+    z-index: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Hide placeholder once iframe has loaded (has content) */
+.html-placeholder:has(+ iframe:not([src=""]):not([src="about:blank"])) {
+    opacity: 0;
+    pointer-events: none;
 }
 
 @keyframes html-shimmer {

@@ -503,8 +503,8 @@ export function remarkContentDirectives(
           node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-excalidraw' } };
           node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 src 属性，如 :::excalidraw{src="https://excalidraw.com/..."}</p>' }];
         } else {
-          const html = `<div class="md-directive md-directive-excalidraw"><div class="excalidraw-wrapper" data-excalidraw-src="${escapeHtml(src)}" style="height:${height};"><iframe class="excalidraw-iframe" title="Excalidraw whiteboard" loading="lazy" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups"></iframe><div class="excalidraw-placeholder"></div></div><div class="mt-2 flex justify-end px-1"><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer" class="excalidraw-link">Open in Excalidraw</a></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="excalidraw-wrapper" data-excalidraw-src="${escapeHtml(src)}" style="height:${height};"><iframe class="excalidraw-iframe" title="Excalidraw whiteboard" loading="lazy" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups"></iframe><div class="excalidraw-placeholder"></div></div><div class="mt-2 flex justify-end px-1"><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer" class="excalidraw-link">Open in Excalidraw</a></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-excalidraw' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'asciinema') {
@@ -523,8 +523,8 @@ export function remarkContentDirectives(
           node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 src 属性，如 :::asciinema{src="https://asciinema.org/a/xxx.cast"}</p>' }];
         } else {
           const dataAttrs = `data-src="${escapeHtml(src)}" data-cols="${cols}" data-rows="${rows}" data-speed="${speed}" data-idle-time-limit="${idleTimeLimit}" data-fit="${fit}" data-auto-play="${autoPlay}" data-loop="${loop}" data-preload="${preload}"${poster ? ` data-poster="${escapeHtml(poster)}"` : ''}`;
-          const html = `<div class="md-directive md-directive-asciinema"><div class="asciinema-wrapper" ${dataAttrs}><div class="asciinema-placeholder"></div></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="asciinema-wrapper" ${dataAttrs}><div class="asciinema-placeholder"></div></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-asciinema' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'rough') {
@@ -535,16 +535,16 @@ export function remarkContentDirectives(
           node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-rough' } };
           node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 config 属性，如 :::rough{config=\'{"width":400,"height":200,"shapes":[...]}\'} </p>' }];
         } else {
-          const html = `<div class="md-directive md-directive-rough"><div class="rough-wrapper" data-rough-id="${uniqueId}" data-viz-type="rough"><div class="rough-output" id="${uniqueId}-output"><div class="rough-placeholder"></div></div><script is:inline type="application/json" class="rough-config">${config}</script></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="rough-wrapper" data-rough-id="${uniqueId}" data-viz-type="rough"><div class="rough-output" id="${uniqueId}-output"><div class="rough-placeholder"></div></div><script is:inline type="application/json" class="rough-config">${config}</script></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-rough' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'coderunner') {
         // Leaf version: no body content, show empty code runner
         const lang = attrs.lang || 'javascript';
         const title = attrs.title || 'Interactive Code';
-        const html = `<div class="md-directive md-directive-coderunner"><div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="">▶ Run</button></div><pre><code class="language-${lang}"></code></pre><div class="code-output hidden" data-output></div></div></div>`;
-        node.data = { hName: 'div', hProperties: {} };
+        const html = `<div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="">▶ Run</button></div><pre><code class="language-${lang}"></code></pre><div class="code-output hidden" data-output></div></div>`;
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-coderunner' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'htmlembed') {
         const src = attrs.src || '';
@@ -552,8 +552,8 @@ export function remarkContentDirectives(
         const title = attrs.title || 'Embedded HTML Content';
         const allowFullscreen = attrs.allowFullscreen !== 'false' && attrs.allowfullscreen !== 'false';
         if (src) {
-          const html = `<div class="md-directive md-directive-htmlembed"><div class="full-html-embed-wrapper"><div style="height:${height};"><div class="html-placeholder" data-placeholder></div><iframe src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy" onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: html }];
         } else {
           // Leaf htmlembed without src and without body — show placeholder
@@ -720,8 +720,8 @@ export function remarkContentDirectives(
               });
           }
         );
-        const html = `<ol class="md-directive md-directive-timeline">${items.map((item, i) => `<li class="md-timeline-node"><div class="md-timeline-dot${i === 0 ? ' md-timeline-dot-first' : ''}"></div><div class="md-timeline-content"><time>${item.date}</time><h3>${item.title}</h3>${item.desc ? `<p>${item.desc}</p>` : ''}</div></li>`).join('')}</ol>`;
-        node.data = { hName: 'div', hProperties: {} };
+        const html = `<ol>${items.map((item, i) => `<li class="md-timeline-node"><div class="md-timeline-dot${i === 0 ? ' md-timeline-dot-first' : ''}"></div><div class="md-timeline-content"><time>${item.date}</time><h3>${item.title}</h3>${item.desc ? `<p>${item.desc}</p>` : ''}</div></li>`).join('')}</ol>`;
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-timeline' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'tabs') {
         const align = attrs.align || '';
@@ -817,16 +817,16 @@ export function remarkContentDirectives(
         const author = attrs.author || '';
         const date = attrs.date || '';
         const footer = attrs.footer || '';
-        node.data = { hName: 'div', hProperties: {} };
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-poetry' } };
         node.children = [
           {
             type: 'html',
-            value: `<div class="md-directive md-directive-poetry"><div class="md-poetry-content">${title ? `<div class="md-poetry-title">${title}</div>` : ''}${author || date ? `<div class="md-poetry-meta">${[author, date].filter(Boolean).join(' · ')}</div>` : ''}<div class="md-poetry-body">`,
+            value: `<div class="md-poetry-content">${title ? `<div class="md-poetry-title">${title}</div>` : ''}${author || date ? `<div class="md-poetry-meta">${[author, date].filter(Boolean).join(' · ')}</div>` : ''}<div class="md-poetry-body">`,
           },
           ...node.children,
           {
             type: 'html',
-            value: `</div>${footer ? `<div class="md-poetry-footer">${footer}</div>` : ''}</div></div>`,
+            value: `</div>${footer ? `<div class="md-poetry-footer">${footer}</div>` : ''}</div>`,
           },
         ];
       } else if (name === 'copy') {
@@ -842,8 +842,8 @@ export function remarkContentDirectives(
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;');
         const copyIcon = getIconSvg('lucide:copy', '14');
-        const html = `<div class="md-directive md-directive-copy" data-md-copy="1">${label ? `<span class="md-copy-label">${label}</span>` : ''}<input id="${uid}" readonly value="${safeText}" class="md-copy-input" style="width:${Math.max(text.length * 8, 120)}px"><button class="md-copy-btn" data-copy-target="${uid}">${copyIcon}</button></div>`;
-        node.data = { hName: 'div', hProperties: {} };
+        const html = `${label ? `<span class="md-copy-label">${label}</span>` : ''}<input id="${uid}" readonly value="${safeText}" class="md-copy-input" style="width:${Math.max(text.length * 8, 120)}px"><button class="md-copy-btn" data-copy-target="${uid}">${copyIcon}</button>`;
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-copy', 'data-md-copy': '1' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'grid') {
         const cols = attrs.cols || '';
@@ -910,8 +910,8 @@ export function remarkContentDirectives(
         });
         text = text.trim();
         const defaultIcon = getIconSvg('bxs:quote-left', '28');
-        const html = `<div class="md-directive md-directive-quot">${icon ? `<span class="md-quot-icon">${icon}</span>` : `<span class="md-quot-icon-default">${defaultIcon}</span>`}<p class="md-quot-text">${text}</p></div>`;
-        node.data = { hName: 'div', hProperties: {} };
+        const html = `${icon ? `<span class="md-quot-icon">${icon}</span>` : `<span class="md-quot-icon-default">${defaultIcon}</span>`}<p class="md-quot-text">${text}</p>`;
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-quot' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'title') {
         const el = attrs.el || '';
@@ -1217,7 +1217,7 @@ export function remarkContentDirectives(
         if (type === 'repo' && repo) {
           const apiUrl = `https://api.github.com/repos/${repo}`;
           const tagsApi = `https://api.github.com/repos/${repo}/tags`;
-          const html = `<div class="md-directive md-directive-ghcard md-ghcard-repo" data-api="${apiUrl}" data-tags-api="${tagsApi}">
+          const html = `
   <a class="md-ghcard-link" href="https://github.com/${repo}" target="_blank" rel="external nofollow noopener noreferrer">
     <div class="md-ghcard-header">
       <span class="md-ghcard-icon">${getIconSvg('lucide:git-fork', '16')}</span>
@@ -1238,9 +1238,8 @@ export function remarkContentDirectives(
         <span class="md-ghcard-text" data-key="latest-tag-name">-</span>
       </div>
     </div>
-  </a>
-</div>`;
-          node.data = { hName: 'div', hProperties: {} };
+  </a>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-ghcard md-ghcard-repo', 'data-api': apiUrl, 'data-tags-api': tagsApi } };
           node.children = [{ type: 'html', value: html }];
         } else if (type === 'user' && user) {
           const apiUrl = `https://api.github.com/users/${user}`;
@@ -1252,7 +1251,7 @@ export function remarkContentDirectives(
           const avatarHtml = showAvatar
             ? `<div class="md-ghcard-avatar"><img data-key="avatar_url" src="https://github.com/identicons/${user}.png" alt="${user}" loading="lazy" /></div>`
             : '';
-          const html = `<div class="md-directive md-directive-ghcard md-ghcard-user" data-api="${apiUrl}">
+          const html = `
   <div class="md-ghcard-user-body">
     ${avatarHtml}
     <p class="md-ghcard-username" data-key="name">${user}</p>
@@ -1275,9 +1274,8 @@ export function remarkContentDirectives(
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .999c-6.074 0-11 5.05-11 11.278c0 4.983 3.152 9.21 7.523 10.702c.55.104.727-.246.727-.543v-2.1c-3.06.683-3.697-1.33-3.697-1.33c-.5-1.304-1.222-1.65-1.222-1.65c-.998-.7.076-.686.076-.686c1.105.08 1.686 1.163 1.686 1.163c.98 1.724 2.573 1.226 3.201.937c.098-.728.383-1.226.698-1.508c-2.442-.286-5.01-1.253-5.01-5.574c0-1.232.429-2.237 1.132-3.027c-.114-.285-.49-1.432.107-2.985c0 0 .924-.303 3.026 1.156c.877-.25 1.818-.375 2.753-.38c.935.005 1.876.13 2.755.38c2.1-1.459 3.023-1.156 3.023-1.156c.598 1.554.222 2.701.108 2.985c.706.79 1.132 1.796 1.132 3.027c0 4.332-2.573 5.286-5.022 5.565c.394.35.754 1.036.754 2.088v3.095c0 .3.176.652.734.542C19.852 21.484 23 17.258 23 12.277C23 6.048 18.075.999 12 .999"/></svg>
       Follow
     </a>
-  </div>
-</div>`;
-          node.data = { hName: 'div', hProperties: {} };
+  </div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-ghcard md-ghcard-user', 'data-api': apiUrl } };
           node.children = [{ type: 'html', value: html }];
         } else {
           node.data = {
@@ -1356,8 +1354,8 @@ export function remarkContentDirectives(
             })
             .join('');
 
-          const html = `<div class="md-directive md-directive-sites"><div class="md-sites-grid">${cells}</div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="md-sites-grid">${cells}</div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-sites' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'posters') {
@@ -1414,8 +1412,8 @@ export function remarkContentDirectives(
             })
             .join('');
 
-          const html = `<div class="md-directive md-directive-posters" data-ratio="${ratio}"${cols ? ` data-cols="${cols}"` : ''}><div class="md-posters-grid">${cells}</div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="md-posters-grid">${cells}</div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-posters', 'data-ratio': ratio, ...(cols ? { 'data-cols': cols } : {}) } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'panel') {
@@ -1870,8 +1868,8 @@ export function remarkContentDirectives(
             },
           ];
         } else {
-          const html = `<div class="md-directive md-directive-excalidraw"><div class="excalidraw-wrapper" data-excalidraw-src="${escapeHtml(src)}" style="height:${height};"><iframe class="excalidraw-iframe" title="Excalidraw whiteboard" loading="lazy" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups"></iframe><div class="excalidraw-placeholder"></div></div><div class="mt-2 flex justify-end px-1"><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer" class="excalidraw-link">Open in Excalidraw</a></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="excalidraw-wrapper" data-excalidraw-src="${escapeHtml(src)}" style="height:${height};"><iframe class="excalidraw-iframe" title="Excalidraw whiteboard" loading="lazy" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-popups"></iframe><div class="excalidraw-placeholder"></div></div><div class="mt-2 flex justify-end px-1"><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer" class="excalidraw-link">Open in Excalidraw</a></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-excalidraw' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'asciinema') {
@@ -1899,8 +1897,8 @@ export function remarkContentDirectives(
           ];
         } else {
           const dataAttrs = `data-src="${escapeHtml(src)}" data-cols="${cols}" data-rows="${rows}" data-speed="${speed}" data-idle-time-limit="${idleTimeLimit}" data-fit="${fit}" data-auto-play="${autoPlay}" data-loop="${loop}" data-preload="${preload}"${poster ? ` data-poster="${escapeHtml(poster)}"` : ''}`;
-          const html = `<div class="md-directive md-directive-asciinema"><div class="asciinema-wrapper" ${dataAttrs}><div class="asciinema-placeholder"></div></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="asciinema-wrapper" ${dataAttrs}><div class="asciinema-placeholder"></div></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-asciinema' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'rough') {
@@ -1920,8 +1918,8 @@ export function remarkContentDirectives(
             },
           ];
         } else {
-          const html = `<div class="md-directive md-directive-rough"><div class="rough-wrapper" data-rough-id="${uniqueId}" data-viz-type="rough"><div class="rough-output" id="${uniqueId}-output"><div class="rough-placeholder"></div></div><script is:inline type="application/json" class="rough-config">${config}</script></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="rough-wrapper" data-rough-id="${uniqueId}" data-viz-type="rough"><div class="rough-output" id="${uniqueId}-output"><div class="rough-placeholder"></div></div><script is:inline type="application/json" class="rough-config">${config}</script></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-rough' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'coderunner') {
@@ -1942,8 +1940,8 @@ export function remarkContentDirectives(
         code = code.trim();
 
         const safeCode = escapeHtml(code);
-        const html = `<div class="md-directive md-directive-coderunner"><div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="${safeCode}">▶ Run</button></div><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-output hidden" data-output></div></div></div>`;
-        node.data = { hName: 'div', hProperties: {} };
+        const html = `<div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="${safeCode}">▶ Run</button></div><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-output hidden" data-output></div></div>`;
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-coderunner' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'htmlembed') {
         const src = attrs.src || '';
@@ -1954,8 +1952,8 @@ export function remarkContentDirectives(
           attrs.allowfullscreen !== 'false';
 
         if (src) {
-          const html = `<div class="md-directive md-directive-htmlembed"><div class="full-html-embed-wrapper"><div style="height:${height};"><div class="html-placeholder" data-placeholder></div><iframe src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy" onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: html }];
         } else {
           const bodyHtml = serializeToHtml(node.children);
@@ -1964,8 +1962,8 @@ export function remarkContentDirectives(
             .replace(/"/g, '&quot;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
-          const html = `<div class="md-directive md-directive-htmlembed"><div class="full-html-embed-wrapper"><div style="height:${height};"><div class="html-placeholder" data-placeholder></div><iframe srcdoc="${escapedSrcdoc}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy" onload="this.previousElementSibling.classList.add('opacity-0','pointer-events-none')"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div></div>`;
-          node.data = { hName: 'div', hProperties: {} };
+          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" srcdoc="${escapedSrcdoc}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'colors') {
@@ -1985,8 +1983,8 @@ export function remarkContentDirectives(
           )
           .join('');
 
-        const html = `<div class="md-directive md-directive-colors"><div class="color-preview flex flex-wrap gap-3">${swatchesHtml}</div></div>`;
-        node.data = { hName: 'div', hProperties: {} };
+        const html = `<div class="color-preview flex flex-wrap gap-3">${swatchesHtml}</div>`;
+        node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-colors' } };
         node.children = [{ type: 'html', value: html }];
       }
     });

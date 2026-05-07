@@ -11,13 +11,9 @@ import preact from "@astrojs/preact";
 import remarkMath from "remark-math";
 import remarkGithubAlerts from "remark-github-alerts";
 import remarkEmoji from "remark-emoji";
-import remarkDirective from "remark-directive";
 import rehypeKatex from "rehype-katex";
 import { remarkReadingTime } from "@astro-minimax/core/plugins/remark-reading-time";
 import { remarkAddZoomable } from "@astro-minimax/core/plugins/remark-add-zoomable";
-import { remarkContentDirectives } from "@astro-minimax/core/plugins/remark-content-directives";
-import { remarkImageDirectives } from "@astro-minimax/core/plugins/remark-image-directives";
-import { remarkPhotoDirectives } from "@astro-minimax/core/plugins/remark-photo-directives";
 import { rehypeExternalLinks } from "@astro-minimax/core/plugins/rehype-external-links";
 import { rehypeTableScroll } from "@astro-minimax/core/plugins/rehype-table-scroll";
 import { rehypeAutolinkHeadings } from "@astro-minimax/core/plugins/rehype-autolink-headings";
@@ -143,10 +139,6 @@ export default defineConfig({
       remarkEmoji,
       remarkReadingTime,
       zoomableRemarkPlugin,
-      remarkDirective,
-      remarkImageDirectives,
-      remarkPhotoDirectives,
-      [remarkContentDirectives, {}],
     ],
     rehypePlugins: [
       rehypeKatex,

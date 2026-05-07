@@ -167,7 +167,7 @@ function renderImageDirective(attrs: Record<string, string>): string {
     bgStyle += "width:100%;";
   }
 
-  let wrap = '<div class="md-directive md-directive-image">';
+  let wrap = '';
   wrap += `<div class="md-image-bg"${bgStyle ? ` style="${bgStyle}"` : ""}>`;
   wrap += inner;
   wrap += "</div>";
@@ -175,7 +175,6 @@ function renderImageDirective(attrs: Record<string, string>): string {
   if (alt) {
     wrap += `<div class="md-image-meta"><span class="md-image-caption">${escapeHtml(alt)}</span></div>`;
   }
-  wrap += "</div>";
 
   return wrap;
 }
@@ -192,7 +191,7 @@ export function remarkImageDirectives(): (tree: any) => void {
       const html = renderImageDirective(attrs);
       // Replace the entire container with just the rendered image,
       // discarding any accidentally-swallowed children
-      node.data = { hName: "div", hProperties: {} };
+      node.data = { hName: "div", hProperties: { class: "md-directive md-directive-image" } };
       node.children = [{ type: "html", value: html }];
     });
 
@@ -201,7 +200,7 @@ export function remarkImageDirectives(): (tree: any) => void {
       if (node.name !== "image") return;
       const attrs = node.attributes || {};
       const html = renderImageDirective(attrs);
-      node.data = { hName: "div", hProperties: {} };
+      node.data = { hName: "div", hProperties: { class: "md-directive md-directive-image" } };
       node.children = [{ type: "html", value: html }];
     });
 
@@ -215,7 +214,8 @@ export function remarkImageDirectives(): (tree: any) => void {
 
     for (const { node, parent } of imageTextDirectives) {
       const attrs = node.attributes || {};
-      const html = renderImageDirective(attrs);
+      const htmlInner = renderImageDirective(attrs);
+      const html = `<div class="md-directive md-directive-image">${htmlInner}</div>`;
 
       if (parent && parent.type === "paragraph") {
         // Replace the entire paragraph with raw html block
@@ -248,7 +248,7 @@ export function remarkImageDirectives(): (tree: any) => void {
 
         const images = extractGalleryImages(node.children);
 
-        let html = `<div class="md-directive md-directive-gallery md-gallery-${layout}"`;
+        let html = `<div class="md-gallery-${layout}"`;
         const dataAttrs: string[] = [];
         if (size) dataAttrs.push(`data-gallery-size="${escapeHtml(size)}"`);
         if (ratio) dataAttrs.push(`data-gallery-ratio="${escapeHtml(ratio)}"`);
@@ -266,7 +266,7 @@ export function remarkImageDirectives(): (tree: any) => void {
 
         html += "</div>";
 
-        node.data = { hName: "div", hProperties: {} };
+        node.data = { hName: "div", hProperties: { class: "md-directive md-directive-gallery", ...(size ? { "data-gallery-size": size } : {}), ...(ratio ? { "data-gallery-ratio": ratio } : {}) } };
         node.children = [{ type: "html", value: html }];
       } else if (name === "banner") {
         const title = attrs.title || "";
@@ -275,7 +275,7 @@ export function remarkImageDirectives(): (tree: any) => void {
         const avatar = attrs.avatar || "";
         const link = attrs.link || "";
 
-        let html = '<div class="md-directive md-directive-banner">';
+        let html = '';
         if (bg) {
           html += `<img class="md-banner-bg" src="${escapeHtml(bg)}" alt="" loading="lazy" />`;
         }
@@ -304,9 +304,8 @@ export function remarkImageDirectives(): (tree: any) => void {
         if (link) {
           html += `<a class="md-banner-link" href="${escapeHtml(link)}" target="_blank"></a>`;
         }
-        html += "</div>";
 
-        node.data = { hName: "div", hProperties: {} };
+        node.data = { hName: "div", hProperties: { class: "md-directive md-directive-banner" } };
         node.children = [{ type: "html", value: html }];
       }
     });
