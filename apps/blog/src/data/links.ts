@@ -50,52 +50,64 @@ export const LINKS: Record<string, LinkItem[]> = {
     {
       url: "https://www.imdb.com/title/tt0111161/",
       title: "The Shawshank Redemption",
+      cover: "https://image.tmdb.org/t/p/w300/9cjIGRjChCU7uSXkNbuZfbWMCnC.jpg",
     },
     {
       url: "https://www.imdb.com/title/tt0068646/",
       title: "The Godfather",
+      cover: "https://image.tmdb.org/t/p/w300/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
     },
     {
       url: "https://www.imdb.com/title/tt0468569/",
       title: "The Dark Knight",
+      cover: "https://image.tmdb.org/t/p/w300/qJ2tW6WMUDux911BTUgMe1nEWkv.jpg",
     },
     {
       url: "https://www.imdb.com/title/tt0167260/",
       title: "The Lord of the Rings",
+      cover: "https://image.tmdb.org/t/p/w300/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
     },
     {
       url: "https://www.imdb.com/title/tt0110912/",
       title: "Pulp Fiction",
+      cover: "https://image.tmdb.org/t/p/w300/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
     },
     {
       url: "https://www.imdb.com/title/tt0137523/",
       title: "Fight Club",
+      cover: "https://image.tmdb.org/t/p/w300/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
     },
   ],
   albums: [
     {
       url: "https://music.163.com/album?id=34822062",
       title: "范特西",
+      cover: "https://p1.music.126.net/K1emj3WHIhSD8Xcl6fzXfw==/109951163226224629.jpg",
     },
     {
       url: "https://music.163.com/album?id=355360",
       title: "七里香",
+      cover: "https://p1.music.126.net/LK3rgvP6x2fUCPQ9WQITDg==/109951163226225519.jpg",
     },
     {
       url: "https://music.163.com/album?id=356360",
       title: "十一月的萧邦",
+      cover: "https://p1.music.126.net/ccW3h6mI6LCpLpJ6M7mJyQ==/109951163226226025.jpg",
     },
     {
       url: "https://music.163.com/album?id=357310",
       title: "依然范特西",
+      cover: "https://p1.music.126.net/Hy7lRYcFdnxlv1gZ7mGRZw==/109951163226226775.jpg",
     },
     {
       url: "https://music.163.com/album?id=358080",
       title: "我很忙",
+      cover: "https://p1.music.126.net/I4YJe9NL8bGq9N_4d3G8Rg==/109951163226227513.jpg",
     },
     {
       url: "https://music.163.com/album?id=359680",
       title: "魔杰座",
+      cover: "https://p1.music.126.net/gO_w1pXW0d29TLJSg3Y7Gw==/109951163226228017.jpg",
     },
   ],
 };
