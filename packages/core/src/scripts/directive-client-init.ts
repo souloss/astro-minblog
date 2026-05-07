@@ -1097,24 +1097,21 @@ function initCodeRunners(): void {
         const output = runner?.querySelector("[data-output]") as HTMLElement;
         if (!output) return;
 
-        output.classList.remove("hidden");
-        output.textContent = "";
+        output.classList.add("is-visible");
+        output.textContent = "Running...";
 
+        const runId = `coderunner-${Date.now()}-${Math.random().toString(36).slice(2)}`;
         const iframe = document.createElement("iframe");
         iframe.style.display = "none";
         iframe.sandbox.add("allow-scripts");
         document.body.appendChild(iframe);
-
-        const logs: string[] = [];
-        const win = iframe.contentWindow;
-        if (!win) return;
 
         const script = `
           const _logs = [];
           const _origLog = console.log;
           console.log = (...args) => {
             _logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
-            parent.postMessage({ type: 'code-output', logs: _logs }, '*');
+            parent.postMessage({ type: 'code-output', runId: ${JSON.stringify(runId)}, logs: _logs }, '*');
           };
           console.error = console.log;
           try {
@@ -1123,17 +1120,16 @@ function initCodeRunners(): void {
           } catch(e) {
             console.log('Error:', e.message);
           }
-          parent.postMessage({ type: 'code-done', logs: _logs }, '*');
+          parent.postMessage({ type: 'code-done', runId: ${JSON.stringify(runId)}, logs: _logs }, '*');
         `;
 
         const handler = (e: MessageEvent) => {
-          if (e.source !== win) return;
+          if (e.data?.runId !== runId) return;
           if (
             e.data?.type === "code-output" ||
             e.data?.type === "code-done"
           ) {
-            logs.length = 0;
-            logs.push(...(e.data.logs || []));
+            const logs = e.data.logs || [];
             output.textContent = logs.join("\n") || "(no output)";
           }
           if (e.data?.type === "code-done") {

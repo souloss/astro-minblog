@@ -1775,7 +1775,7 @@ export function remarkContentDirectives(
           node.children = [
             {
               type: 'html',
-              value: `<div class="md-audio-netease-wrap${isCard ? ' md-audio-netease-wrap-card' : ''}"><iframe src="//music.163.com/outchain/player?type=2&id=${netease}&auto=0&height=${playerHeight}" frameborder="no" border="0" marginwidth="0" marginheight="0" width="${iframeWidth}" height="${iframeHeight}" title="${escapeHtml(title || '网易云音乐')}"></iframe></div>`,
+              value: `<div class="md-audio-netease-wrap${isCard ? ' md-audio-netease-wrap-card' : ''}"><iframe src="//music.163.com/outchain/player?type=2&id=${netease}&auto=0&height=${playerHeight}" sandbox="allow-scripts allow-same-origin allow-popups" frameborder="no" border="0" marginwidth="0" marginheight="0" width="${iframeWidth}" height="${iframeHeight}" title="${escapeHtml(title || '网易云音乐')}"></iframe></div>`,
             },
           ];
         } else if (voice) {
