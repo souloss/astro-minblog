@@ -540,7 +540,7 @@ export function remarkContentDirectives(
           node.children = [{ type: 'html', value: html }];
         }
       } else if (name === 'coderunner') {
-        // Leaf version: no body content, show empty code runner
+                // Leaf version: no body content, show empty code runner
         const lang = attrs.lang || 'javascript';
         const title = attrs.title || 'Interactive Code';
         const html = `<div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="">▶ Run</button></div><pre><code class="language-${lang}"></code></pre><div class="code-output hidden" data-output></div></div>`;
@@ -552,11 +552,11 @@ export function remarkContentDirectives(
         const title = attrs.title || 'Embedded HTML Content';
         const allowFullscreen = attrs.allowFullscreen !== 'false' && attrs.allowfullscreen !== 'false';
         if (src) {
-          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
+          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin"${allowFullscreen ? ' allow="fullscreen"' : ''} title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
           node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: html }];
         } else {
-          // Leaf htmlembed without src and without body — show placeholder
+          // Leaf htmlembed without src and without body
           node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: '<p style="color:var(--text-secondary);font-size:0.875rem;">htmlembed 指令需要 src 属性或指令体内容</p>' }];
         }
@@ -570,7 +570,7 @@ export function remarkContentDirectives(
     // ── Container Directives ─────────────────────────────────────────────
 
     visit(tree, 'containerDirective', (node: any) => {
-      const name = node.name;
+            const name = node.name;
       const attrs = node.attributes || {};
 
       if (name === 'callout') {
@@ -1927,20 +1927,17 @@ export function remarkContentDirectives(
         const title = attrs.title || 'Interactive Code';
 
         let code = '';
-        visit({ type: 'root', children: node.children }, 'text', (t: any) => {
-          code += t.value;
+        visit({ type: 'root', children: node.children }, (n: any) => {
+          if (n.type === 'text') code += n.value;
+          if (n.type === 'inlineCode') code += n.value;
         });
-        visit(
-          { type: 'root', children: node.children },
-          'inlineCode',
-          (t: any) => {
-            code += t.value;
-          }
-        );
         code = code.trim();
+        // Revert smart quotes to straight quotes for code content
+        code = code.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
 
         const safeCode = escapeHtml(code);
-        const html = `<div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="${safeCode}">▶ Run</button></div><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-output hidden" data-output></div></div>`;
+        const b64Code = typeof Buffer !== 'undefined' ? Buffer.from(code).toString('base64') : btoa(unescape(encodeURIComponent(code)));
+        const html = `<div class="code-runner" data-lang="${lang}"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code-b64="${b64Code}">▶ Run</button></div><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-output hidden" data-output></div><script is:inline type="application/json" class="coderunner-code">${b64Code}</script></div>`;
         node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-coderunner' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'htmlembed') {
@@ -1952,7 +1949,7 @@ export function remarkContentDirectives(
           attrs.allowfullscreen !== 'false';
 
         if (src) {
-          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
+          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" src="${escapeHtml(src)}" sandbox="allow-scripts allow-same-origin"${allowFullscreen ? ' allow="fullscreen"' : ''} title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
           node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: html }];
         } else {
@@ -1962,7 +1959,7 @@ export function remarkContentDirectives(
             .replace(/"/g, '&quot;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
-          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" srcdoc="${escapedSrcdoc}" sandbox="allow-scripts allow-same-origin${allowFullscreen ? ' allow-fullscreen' : ''}" title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
+          const html = `<div class="full-html-embed-wrapper"><div style="height:${height};position:relative;"><div class="html-placeholder" data-placeholder></div><iframe style="position:absolute;inset:0;width:100%;height:100%;border:none;" srcdoc="${escapedSrcdoc}" sandbox="allow-scripts allow-same-origin"${allowFullscreen ? ' allow="fullscreen"' : ''} title="${escapeHtml(title)}" loading="lazy"></iframe></div><div class="mt-2 flex justify-end"><button class="expand-btn" data-expand-title="${escapeHtml(title)}">全屏查看</button></div></div>`;
           node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-htmlembed' } };
           node.children = [{ type: 'html', value: html }];
         }

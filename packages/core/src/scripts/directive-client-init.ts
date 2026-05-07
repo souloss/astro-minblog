@@ -967,16 +967,13 @@ async function renderDrawing(wrapper: HTMLElement): Promise<void> {
   const output = wrapper.querySelector<HTMLElement>(`#${id}-output`);
   if (!output || !configScript) return;
 
-  const configStr = JSON.parse(configScript.textContent || '""');
-  if (!configStr) return;
-
   let parsed: {
     width?: number;
     height?: number;
     shapes?: Array<Record<string, unknown>>;
   };
   try {
-    parsed = JSON.parse(configStr);
+    parsed = JSON.parse(configScript.textContent || "{}");
   } catch {
     output.innerHTML = `<p class="rough-error">Invalid config JSON</p>`;
     return;
@@ -1094,7 +1091,8 @@ function initCodeRunners(): void {
       btn.dataset.initialized = "true";
 
       btn.addEventListener("click", () => {
-        const code = btn.dataset.code || "";
+        const codeB64 = btn.dataset.codeB64 || "";
+        const code = codeB64 ? decodeURIComponent(escape(atob(codeB64))) : (btn.dataset.code || "");
         const runner = btn.closest(".code-runner");
         const output = runner?.querySelector("[data-output]") as HTMLElement;
         if (!output) return;

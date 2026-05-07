@@ -34,6 +34,7 @@ import {
 import { SITE } from "./src/config";
 import { SOCIALS, SHARE_LINKS } from "./src/constants";
 import { FRIENDS } from "./src/data/friends";
+import { LINKS } from "./src/data/links";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -76,6 +77,10 @@ export default defineConfig({
       friends: FRIENDS,
       blogPath: "src/data/blog",
       viz: { mermaid: true, markmap: true },
+      directives: {
+        links: LINKS,
+        screenshotService: "mshots",
+      },
       preferences: {
         theme: {
           colorScheme: "teal",

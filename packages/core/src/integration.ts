@@ -8,6 +8,7 @@ import type { DeepPartial, Preferences } from "./preferences/types";
 import { remarkMermaidCodeblock } from "./plugins/viz/remark-mermaid-codeblock";
 import { remarkMarkmapCodeblock } from "./plugins/viz/remark-markmap-codeblock";
 import { rehypeMermaidProcessed } from "./plugins/viz/rehype-mermaid-processed";
+import remarkDirective from "remark-directive";
 import { remarkContentDirectives } from "./plugins/remark-content-directives";
 import { remarkImageDirectives } from "./plugins/remark-image-directives";
 import { remarkPhotoDirectives } from "./plugins/remark-photo-directives";
@@ -105,7 +106,7 @@ export default function minimax(
           remarkPlugins.push(remarkMarkmapCodeblock);
         }
         if (directivesConfig.enabled !== false) {
-          remarkPlugins.push("remark-directive");
+          remarkPlugins.push(remarkDirective);
           remarkPlugins.push(remarkImageDirectives);
           remarkPlugins.push(remarkPhotoDirectives);
           remarkPlugins.push([remarkContentDirectives, {
