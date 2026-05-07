@@ -15,8 +15,8 @@
        so the directive CSS works without modifying class names or rules. */
     --accent-color: var(--accent);
     --border-light: var(--border);
-    --bg-muted: var(--surface);
-    --bg-card: var(--card);
+    --bg-muted: color-mix(in srgb, var(--surface) 70%, var(--background));
+    --bg-card: color-mix(in srgb, var(--card) 80%, var(--background));
     --bg-main: var(--background);
     --text-main: var(--foreground);
     --text-secondary: var(--foreground-soft);
