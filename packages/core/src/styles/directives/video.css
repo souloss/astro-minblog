@@ -5,6 +5,9 @@
     --video-ratio-pct: 56.25%;
     --video-width: 100%;
     --video-align: left;
+    --video-chrome-bg: #0c0c0c;
+    --video-chrome-text: var(--foreground-soft, #e2e8f0);
+    --video-chrome-text-secondary: color-mix(in srgb, var(--foreground-soft, #e2e8f0) 70%, transparent);
     margin: 2.5rem 0;
     position: relative;
 }
@@ -176,7 +179,7 @@
     justify-content: center;
     padding: 0;
     background: rgba(255, 255, 255, 0.08);
-    color: #fff;
+    color: var(--foreground, #fff);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -286,7 +289,7 @@
 .md-video-pip-btn:hover {
     background: rgba(0, 0, 0, 0.7);
     border-color: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    color: var(--foreground, #fff);
 }
 
 .md-video-pip-btn svg {
@@ -364,7 +367,7 @@
     min-width: 0;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: var(--text-main);
+    color: var(--video-chrome-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -380,7 +383,7 @@
     padding: 0;
     border: none;
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--video-chrome-text-secondary);
     cursor: pointer;
     border-radius: 6px;
     transition: background 0.15s ease, color 0.15s ease;
@@ -391,7 +394,7 @@
 .md-pip-back:hover,
 .md-pip-close:hover {
     background: rgba(255, 255, 255, 0.06);
-    color: #e8e8e8;
+    color: var(--foreground-soft, #e8e8e8);
 }
 
 .md-pip-close {
@@ -431,7 +434,7 @@
     padding: 0;
     border: none;
     background: transparent;
-    color: var(--text-main);
+    color: var(--video-chrome-text);
     cursor: pointer;
     border-radius: 50%;
     flex-shrink: 0;
@@ -439,7 +442,7 @@
 }
 
 .md-pip-play-btn:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .md-pip-play-btn svg {
@@ -451,7 +454,7 @@
     position: relative;
     flex: 1;
     height: 4px;
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
     cursor: pointer;
     overflow: hidden;
@@ -488,7 +491,7 @@
 
 .md-pip-time {
     font-size: 0.6875rem;
-    color: var(--text-secondary);
+    color: var(--video-chrome-text-secondary);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     flex-shrink: 0;
@@ -515,40 +518,6 @@
         0 12px 36px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .md-video-pip,
-.dark .md-video-pip {
-    background: #0c0c0c;
-    box-shadow:
-        0 20px 64px rgba(0, 0, 0, 0.65),
-        0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .md-pip-back:hover,
-.dark .md-pip-back:hover,
-[data-theme="dark"] .md-pip-close:hover,
-.dark .md-pip-close:hover,
-[data-theme="dark"] .md-pip-play-btn:hover,
-.dark .md-pip-play-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .md-pip-progress,
-.dark .md-pip-progress {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .md-video-pip-btn,
-.dark .md-video-pip-btn {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .md-video-pip-btn:hover,
-.dark .md-video-pip-btn:hover {
-    background: rgba(0, 0, 0, 0.7);
-    border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* ========== Responsive ========== */

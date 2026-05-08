@@ -1,9 +1,18 @@
 .md-terminal {
+    --terminal-bg: #0b0d12;
+    --terminal-border: rgba(255, 255, 255, 0.06);
+    --terminal-text: #94a3b8;
+    --terminal-text-bright: #e2e8f0;
+    --terminal-code-bg: #14161d;
+    --terminal-line-num: #64748b;
+    --terminal-highlight: rgba(56, 189, 248, 0.1);
+    --terminal-success: #22c55e;
+
     margin: 1.25rem 0;
     border-radius: var(--md-radius-sm);
     overflow: hidden;
-    background: #0b0d12;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
@@ -13,7 +22,7 @@
     justify-content: space-between;
     padding: 5px 10px;
     background: transparent;
-    color: #94a3b8;
+    color: var(--terminal-text);
     font-size: 0.7rem;
     font-family: var(--font-mono);
 }
@@ -30,18 +39,18 @@
     border: none;
     border-radius: 5px;
     background: transparent;
-    color: #94a3b8;
+    color: var(--terminal-text);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .md-terminal-copy:hover {
-    color: #e2e8f0;
+    color: var(--terminal-text-bright);
     background: rgba(255, 255, 255, 0.08);
 }
 
 .md-terminal-copy.md-copy-success {
-    color: #22c55e;
+    color: var(--terminal-success);
 }
 
 .md-terminal-body {
@@ -54,8 +63,8 @@
     margin: 0 !important;
     border: none !important;
     border-radius: 6px !important;
-    background: #14161d !important;
-    color: #e2e8f0;
+    background: var(--terminal-code-bg) !important;
+    color: var(--terminal-text-bright);
     padding: 10px 0 !important;
     white-space: pre !important;
     word-wrap: normal !important;
@@ -93,7 +102,7 @@
 }
 
 .md-terminal-body pre .line-highlight {
-    background: rgba(56, 189, 248, 0.1);
+    background: var(--terminal-highlight);
     box-shadow: inset 3px 0 0 0 rgba(51, 164, 239, 0.85);
 }
 
@@ -112,11 +121,33 @@
     top: 1px;
     width: 2.0em;
     text-align: right;
-    color: #64748b;
+    color: var(--terminal-line-num);
     font-size: 0.75em;
     content: attr(data-line);
 }
 
 .md-terminal .line span[style*="--shiki-dark"] {
     color: var(--shiki-dark) !important;
+}
+
+html[data-theme="light"] .md-terminal {
+    --terminal-bg: #f8f9fa;
+    --terminal-border: rgba(0, 0, 0, 0.08);
+    --terminal-text: #475569;
+    --terminal-text-bright: #1e293b;
+    --terminal-code-bg: #f1f5f9;
+    --terminal-line-num: #94a3b8;
+    --terminal-highlight: rgba(56, 189, 248, 0.08);
+}
+
+html[data-theme="light"] .md-terminal-copy:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .md-terminal-body pre {
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+html[data-theme="light"] .md-terminal-body pre::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
 }

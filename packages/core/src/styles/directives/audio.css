@@ -2,7 +2,7 @@
 
 /* ========== Standard Player ========== */
 .md-directive-audio {
-    --audio-bg: rgba(0, 0, 0, 0.04);
+    --audio-bg: color-mix(in srgb, var(--foreground) 4%, transparent);
     --audio-radius: 40px;
     --audio-accent: var(--accent-color, #4a7c59);
     position: relative;
@@ -47,7 +47,7 @@
     height: 36px;
     border-radius: 50%;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.06);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -61,7 +61,7 @@
 }
 
 .md-audio-cover-default {
-    color: #999;
+    color: var(--text-muted);
 }
 
 .md-audio-cover-default svg {
@@ -114,7 +114,7 @@
 }
 
 .md-audio-btn:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
 }
 
 .md-audio-btn svg {
@@ -157,7 +157,7 @@
     position: relative;
     flex: 1;
     height: 3px;
-    background: rgba(0, 0, 0, 0.1);
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
     border-radius: 2px;
     cursor: pointer;
     overflow: hidden;
@@ -258,14 +258,14 @@
     gap: 10px;
     padding: 8px 14px;
     border-radius: 20px;
-    background: rgba(0, 0, 0, 0.04);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
     cursor: pointer;
     transition: background 0.2s ease;
     user-select: none;
 }
 
 .md-audio-voice-player:hover {
-    background: rgba(0, 0, 0, 0.07);
+    background: color-mix(in srgb, var(--foreground) 7%, transparent);
 }
 
 .md-voice-play {
@@ -277,7 +277,7 @@
     justify-content: center;
     padding: 0;
     background: var(--audio-accent);
-    color: #fff;
+    color: var(--foreground, #fff);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -307,45 +307,10 @@
 }
 
 /* Dark mode */
-[data-theme="dark"] .md-directive-audio,
-.dark .md-directive-audio {
-    --audio-bg: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .md-audio-cover,
-.dark .md-audio-cover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .md-audio-cover-default,
-.dark .md-audio-cover-default {
-    color: #aaa;
-}
-
-[data-theme="dark"] .md-audio-btn:hover,
-.dark .md-audio-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .md-audio-progress-bar,
-.dark .md-audio-progress-bar {
-    background: rgba(255, 255, 255, 0.12);
-}
-
 [data-theme="dark"] .md-audio-netease-wrap,
 .dark .md-audio-netease-wrap {
     background: rgba(255, 255, 255, 0.05);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="dark"] .md-audio-voice-player,
-.dark .md-audio-voice-player {
-    background: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .md-audio-voice-player:hover,
-.dark .md-audio-voice-player:hover {
-    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive */
@@ -404,10 +369,10 @@
     height: 44px;
     border-radius: 50%;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.06);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.12),
-        0 0 0 1px rgba(0, 0, 0, 0.04);
+        0 0 0 1px color-mix(in srgb, var(--foreground) 4%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -422,7 +387,7 @@
     transform: scale(1.08);
     box-shadow:
         0 6px 24px rgba(0, 0, 0, 0.18),
-        0 0 0 1px rgba(0, 0, 0, 0.06);
+        0 0 0 1px color-mix(in srgb, var(--foreground) 6%, transparent);
 }
 
 /* vinyl inner groove ring */
@@ -431,7 +396,7 @@
     position: absolute;
     inset: 6px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
     pointer-events: none;
 }
 
@@ -443,7 +408,7 @@
     height: 8px;
     border-radius: 50%;
     background: var(--bg-main, #fff);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent);
     z-index: 2;
     pointer-events: none;
 }
@@ -523,7 +488,7 @@
     box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.18),
         0 8px 20px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(0, 0, 0, 0.05);
+        0 0 0 1px color-mix(in srgb, var(--foreground) 5%, transparent);
     overflow: hidden;
     backdrop-filter: blur(20px) saturate(1.2);
     -webkit-backdrop-filter: blur(20px) saturate(1.2);
@@ -535,7 +500,7 @@
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .md-fa-cover-lg {
@@ -544,7 +509,7 @@
     height: 44px;
     border-radius: 10px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.06);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -615,7 +580,7 @@
 }
 
 .md-fa-header-actions button:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
     color: var(--text-main);
 }
 
@@ -626,12 +591,12 @@
 
 .md-fa-btn-pin.is-pinned {
     color: var(--accent-color, #4a7c59);
-    background: rgba(74, 124, 89, 0.1) !important;
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent) !important;
 }
 
 .md-fa-btn-pin.is-pinned:hover {
     color: var(--accent-color, #4a7c59);
-    background: rgba(74, 124, 89, 0.15) !important;
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent) !important;
 }
 
 /* Body */
@@ -668,7 +633,7 @@
     position: relative;
     flex: 1;
     height: 4px;
-    background: rgba(0, 0, 0, 0.08);
+    background: color-mix(in srgb, var(--foreground) 8%, transparent);
     border-radius: 2px;
     cursor: pointer;
     overflow: hidden;
@@ -748,7 +713,7 @@
     width: 40px;
     height: 40px;
     background: var(--accent-color, #4a7c59) !important;
-    color: #fff !important;
+    color: var(--foreground, #fff) !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -771,7 +736,7 @@
 
 .md-fa-playlist.is-open {
     max-height: 240px;
-    border-top-color: rgba(0, 0, 0, 0.05);
+    border-top-color: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .md-fa-playlist-header {
@@ -794,7 +759,7 @@
 }
 
 .md-fa-playlist-items::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
+    background: color-mix(in srgb, var(--foreground) 15%, transparent);
     border-radius: 2px;
 }
 
@@ -809,11 +774,11 @@
 }
 
 .md-fa-pl-item:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: color-mix(in srgb, var(--foreground) 4%, transparent);
 }
 
 .md-fa-pl-item.is-active {
-    background: rgba(0, 0, 0, 0.05);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .md-fa-pl-item.is-active .md-fa-pl-title {
@@ -827,7 +792,7 @@
     height: 32px;
     border-radius: 6px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.06);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -903,79 +868,27 @@
 
 [data-theme="dark"] .md-fa-card,
 .dark .md-fa-card {
-    background: rgba(30, 30, 30, 0.95);
+    background: var(--bg-card);
     box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.4),
         0 8px 20px rgba(0, 0, 0, 0.25),
         0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
-[data-theme="dark"] .md-fa-header,
-.dark .md-fa-header {
-    border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .md-fa-header-actions button:hover,
-.dark .md-fa-header-actions button:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .md-fa-btn-pin.is-pinned,
-.dark .md-fa-btn-pin.is-pinned {
-    background: rgba(74, 124, 89, 0.15) !important;
-}
-
-[data-theme="dark"] .md-fa-btn-pin.is-pinned:hover,
-.dark .md-fa-btn-pin.is-pinned:hover {
-    background: rgba(74, 124, 89, 0.22) !important;
-}
-
-[data-theme="dark"] .md-fa-cover-ring::after,
-.dark .md-fa-cover-ring::after {
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
 [data-theme="dark"] .md-fa-cover-ring::before,
 .dark .md-fa-cover-ring::before {
-    background: rgba(30, 30, 30, 0.95);
+    background: var(--bg-card);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .md-fa-progress-bar,
-.dark .md-fa-progress-bar {
-    background: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .md-fa-progress-bar::after,
 .dark .md-fa-progress-bar::after {
-    box-shadow: 0 0 0 2px rgba(30, 30, 30, 0.95);
-}
-
-[data-theme="dark"] .md-fa-pl-item:hover,
-.dark .md-fa-pl-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .md-fa-pl-item.is-active,
-.dark .md-fa-pl-item.is-active {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .md-fa-playlist.is-open,
-.dark .md-fa-playlist.is-open {
-    border-top-color: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .md-fa-cover-lg,
-.dark .md-fa-cover-lg,
-[data-theme="dark"] .md-fa-pl-cover,
-.dark .md-fa-pl-cover {
-    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 2px var(--bg-card);
 }
 
 [data-theme="dark"] .md-fa-playing-dot,
 .dark .md-fa-playing-dot {
-    border-color: rgba(30, 30, 30, 0.95);
+    border-color: var(--bg-card);
 }
 
 /* Mobile: hide floating player */
