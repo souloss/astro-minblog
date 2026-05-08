@@ -543,7 +543,7 @@ export function remarkContentDirectives(
                 // Leaf version: no body content, show empty code runner
         const lang = attrs.lang || 'javascript';
         const title = attrs.title || 'Interactive Code';
-        const html = `<div class="code-runner"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code="">▶ Run</button></div><pre><code class="language-${lang}"></code></pre><div class="code-output hidden" data-output></div></div>`;
+        const html = `<div class="code-runner"><div class="code-runner-header"><span class="code-runner-title">${escapeHtml(title)}</span><button class="code-run-btn" data-code="">▶ Run</button></div><pre><code class="language-${lang}"></code></pre><div class="code-output hidden" data-output></div></div>`;
         node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-coderunner' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'htmlembed') {
@@ -1932,14 +1932,32 @@ export function remarkContentDirectives(
           if (n.type === 'inlineCode') code += n.value;
         });
         code = code.trim();
-        // Revert smart quotes to straight quotes for code content
-        code = code.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
+        code = code.replace(/['']/g, "'").replace(/[""]/g, '"');
 
-        const safeCode = escapeHtml(code);
         const b64Code = typeof Buffer !== 'undefined' ? Buffer.from(code).toString('base64') : btoa(unescape(encodeURIComponent(code)));
-        const html = `<div class="code-runner" data-lang="${lang}"><div class="flex items-center justify-between border-b"><span class="text-xs font-medium">${escapeHtml(title)}</span><button class="code-run-btn" data-code-b64="${b64Code}">▶ Run</button></div><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-output hidden" data-output></div><script is:inline type="application/json" class="coderunner-code">${b64Code}</script></div>`;
+
+        const children: any[] = [];
+
+        children.push({
+          type: 'html',
+          value: `<div class="code-runner" data-lang="${lang}"><div class="code-runner-header"><span class="code-runner-title">${escapeHtml(title)}</span><button class="code-run-btn" data-code-b64="${b64Code}">▶ Run</button></div>`,
+        });
+
+        // Must stay as AST node — Shiki processes code nodes downstream for syntax highlighting
+        children.push({
+          type: 'code',
+          lang: lang,
+          meta: '',
+          value: code,
+        });
+
+        children.push({
+          type: 'html',
+          value: `<div class="code-output hidden" data-output></div><script is:inline type="application/json" class="coderunner-code">${b64Code}</script></div>`,
+        });
+
         node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-coderunner' } };
-        node.children = [{ type: 'html', value: html }];
+        node.children = children;
       } else if (name === 'htmlembed') {
         const src = attrs.src || '';
         const height = attrs.height || '1600px';

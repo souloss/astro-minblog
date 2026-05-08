@@ -1,10 +1,7 @@
-/* ── Code Runner Directive ── */
-
 .md-directive-coderunner {
     margin: 1rem 0;
 }
 
-/* ========== Code Runner Container ========== */
 .code-runner {
     margin: 1.5rem 0;
     overflow: hidden;
@@ -12,13 +9,12 @@
     border: var(--md-border, 1px solid var(--border));
 }
 
-/* Header bar */
 .code-runner .code-runner-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: var(--md-border, 1px solid var(--border));
-    background: var(--bg-muted, var(--surface));
+    background: color-mix(in srgb, var(--foreground) 4%, var(--bg-card));
     padding: 0.5rem 1rem;
 }
 
@@ -28,7 +24,6 @@
     color: var(--text-secondary);
 }
 
-/* Run button */
 .code-run-btn {
     display: inline-flex;
     align-items: center;
@@ -36,7 +31,7 @@
     padding: 0.25rem 0.75rem;
     border: none;
     border-radius: var(--md-radius-sm, 8px);
-    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.1);
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
     color: var(--accent-color, var(--accent));
     font-size: var(--md-text-xs, 0.75rem);
     font-weight: 500;
@@ -45,23 +40,53 @@
 }
 
 .code-run-btn:hover {
-    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.2);
+    background: color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
-/* Code block inside runner */
-.code-runner pre {
+.code-runner > .astro-code {
     margin: 0 !important;
     border: none !important;
     border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
-/* Output area */
+.code-runner > .astro-code pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+.code-runner > .astro-code .code-title {
+    border-radius: 0 !important;
+}
+
+.code-runner > pre {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    background: var(--bg-card);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.code-runner > pre code {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    font-size: 1em !important;
+    color: var(--text-main);
+}
+
 .code-output {
     display: none;
     max-height: 12rem;
     overflow: auto;
     border-top: var(--md-border, 1px solid var(--border));
-    background: var(--bg-muted, var(--surface));
+    background: color-mix(in srgb, var(--foreground) 3%, var(--bg-card));
     padding: 0.75rem 1rem;
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: var(--md-text-sm, 0.875rem);
@@ -72,15 +97,4 @@
 
 .code-output.is-visible {
     display: block;
-}
-
-/* ========== Dark Mode ========== */
-html[data-theme="dark"] .code-run-btn,
-.dark .code-run-btn {
-    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.15);
-}
-
-html[data-theme="dark"] .code-run-btn:hover,
-.dark .code-run-btn:hover {
-    background: rgba(var(--accent-color-rgb, 74, 124, 89), 0.25);
 }
