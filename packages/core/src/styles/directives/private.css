@@ -10,8 +10,8 @@
     --private-input-bg: var(--bg-card);
     --private-input-border: var(--border-light);
     --private-btn-bg: var(--accent-color, #4a7c59);
-    --private-btn-color: #fff;
-    --private-error: #ef4444;
+    --private-btn-color: var(--foreground, #fff);
+    --private-error: var(--color-error, #ef4444);
     position: relative;
     margin: 1.5rem 0;
     border-radius: var(--private-radius);

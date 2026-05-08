@@ -3,7 +3,7 @@
 }
 
 .md-directive-note > div {
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.25rem;
     border-radius: var(--md-radius-sm);
     background: color-mix(in srgb, var(--note-color) 8%, transparent);
     border: 1px solid color-mix(in srgb, var(--note-color) 18%, transparent);
@@ -11,7 +11,7 @@
 }
 
 .md-note-title {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     margin: 0 0 6px;
     color: var(--note-color);

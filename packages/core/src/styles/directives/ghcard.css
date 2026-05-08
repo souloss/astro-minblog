@@ -216,7 +216,7 @@
 .md-directive-ghcard[data-loading="true"] .md-ghcard-bio,
 .md-directive-ghcard[data-loading="true"] .md-ghcard-user-stat .md-ghcard-text,
 .md-directive-ghcard[data-loading="true"] .md-ghcard-avatar img {
-    background: linear-gradient(90deg, var(--bg-muted, #f3f4f6) 25%, var(--bg-card, #e5e7eb) 50%, var(--bg-muted, #f3f4f6) 75%);
+    background: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-card) 50%, var(--bg-muted) 75%);
     background-size: 200% 100%;
     animation: ghcard-skeleton-shimmer 1.5s infinite;
     color: transparent !important;

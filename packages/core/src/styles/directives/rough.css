@@ -33,13 +33,7 @@
 }
 
 .rough-error {
-    color: #ef4444;
+    color: var(--color-error, #ef4444);
     text-align: center;
     padding: 1rem;
-}
-
-/* ========== Dark Mode ========== */
-html[data-theme="dark"] .rough-error,
-.dark .rough-error {
-    color: #f87171;
 }

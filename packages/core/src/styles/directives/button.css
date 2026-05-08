@@ -8,7 +8,7 @@
     font-weight: 500;
     line-height: 1.5;
     background: var(--tag-btn-bg);
-    color: #fff;
+    color: var(--tag-btn-color, #fff);
     text-decoration: none;
     border-radius: 12px;
     transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
