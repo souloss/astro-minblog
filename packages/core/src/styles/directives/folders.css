@@ -24,3 +24,13 @@
     line-height: 1.65;
     background: var(--bg-card);
 }
+
+.md-folder-body ol {
+    padding-left: 1.75rem;
+    margin: 0.25rem 0;
+}
+
+.md-folder-body ul {
+    padding-left: 1.5rem;
+    margin: 0.25rem 0;
+}

@@ -143,6 +143,14 @@
     color: var(--text-main);
 }
 
+.md-panel-segment > ol {
+    padding-left: 2.25rem;
+}
+
+.md-panel-segment > ul {
+    padding-left: 2rem;
+}
+
 .md-panel-segment > p:first-child {
     padding-top: 10px;
 }
