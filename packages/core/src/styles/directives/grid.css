@@ -48,3 +48,37 @@
 .md-grid-cell > .md-terminal {
     margin: 0;
 }
+
+.md-grid-cell > .astro-code {
+    margin: 0 !important;
+    border-radius: var(--md-radius-sm) !important;
+}
+
+.md-grid-cell > .astro-code pre {
+    background: transparent !important;
+}
+
+.md-grid-cell > .astro-code .code-title {
+    border-radius: var(--md-radius-sm) var(--md-radius-sm) 0 0 !important;
+}
+
+.md-grid-cell > p,
+.md-grid-cell > ul,
+.md-grid-cell > ol {
+    margin: 0.25rem 0;
+    padding: 0 0.25rem;
+}
+
+.md-grid-cell > ol {
+    padding-left: 1.75rem;
+}
+
+.md-grid-cell > ul {
+    padding-left: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .md-directive-grid.md-grid-cols {
+        grid-template-columns: 1fr;
+    }
+}
