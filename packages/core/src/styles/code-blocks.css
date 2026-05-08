@@ -52,7 +52,7 @@
   color: var(--foreground-soft);
   padding: 0.25rem 0.75rem;
   border-bottom: 1px solid var(--border);
-  background: var(--muted);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--surface));
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
