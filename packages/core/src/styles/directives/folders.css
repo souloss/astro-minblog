@@ -7,6 +7,7 @@
 }
 
 .md-folder {
+    display: block !important;
     border-top: 1px solid var(--border-light);
 }
 
@@ -23,6 +24,10 @@
     font-size: 0.875rem;
     line-height: 1.65;
     background: var(--bg-card);
+}
+
+.md-folder .md-folder-body p {
+    display: block !important;
 }
 
 .md-folder-body ol {
