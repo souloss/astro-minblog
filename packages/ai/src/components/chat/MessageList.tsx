@@ -148,7 +148,9 @@ export function shouldShowWaitingPlaceholder(
   // actual visible content (text, non-empty reasoning, sources, or
   // completed action tool output). A bare assistant message with only
   // tool-call parts or step-start should NOT suppress the placeholder.
-  return !messages.some(m => hasVisibleAssistantContent(m));
+  // Exclude the welcome message — it is a static UI element, not an
+  // actual assistant response, and should not suppress the loading indicator.
+  return !messages.some(m => m.id !== "welcome" && hasVisibleAssistantContent(m));
 }
 
 /**
@@ -158,15 +160,21 @@ export function shouldShowWaitingPlaceholder(
  * Returns true when the message contains any of:
  * - Non-whitespace-only text
  * - Non-empty reasoning content
- * - Source parts (source-url, source-document)
  * - Completed action tool output (toggleTheme, etc.)
  *
  * Returns false when the message has only:
  * - Whitespace-only or empty text
  * - Empty reasoning parts (reasoning with no text)
+ * - Source parts (source-url, source-document) without text/reasoning
  * - Tool-call parts for non-action tools (searchArticles, etc.)
  * - step-start parts
  * - No content at all
+ *
+ * Source-url/source-document parts are NOT considered "visible" on their
+ * own because they arrive before text/reasoning in the SSE stream.
+ * Rendering a BotAvatar with only source parts would show an empty
+ * message bubble. Sources are still rendered inside AssistantMessage
+ * when the message also has text or reasoning content.
  *
  * This is the single decision point — if false, the message is completely
  * skipped (no BotAvatar, no empty div). If true, it is fully rendered
@@ -189,12 +197,6 @@ export function hasVisibleAssistantContent(msg: UIMessage): boolean {
     p.type === "reasoning" &&
     typeof (p as { text?: unknown }).text === "string" &&
     ((p as { text: string }).text).trim().length > 0
-  )) return true;
-
-  // Sources → visible
-  if (parts.some(
-    (p: { type: string }) =>
-      p.type === "source-url" || p.type === "source-document"
   )) return true;
 
   // Completed action tool output → visible
@@ -247,7 +249,13 @@ function LiveMessageList({
   return (
     <>
       {messages.map(msg => {
-        if (msg.id === "welcome" && showQuickPrompts) {
+        // The welcome message is only shown as a standalone greeting with
+        // quick prompts. Once the user has sent a message (showQuickPrompts
+        // is false), hide it entirely — it should NOT fall through to the
+        // normal assistant rendering path, which would create a duplicate
+        // BotAvatar alongside the actual assistant response.
+        if (msg.id === "welcome") {
+          if (!showQuickPrompts) return null;
           return (
             <div key={msg.id} class="space-y-3">
               <div class="flex items-start gap-2.5">

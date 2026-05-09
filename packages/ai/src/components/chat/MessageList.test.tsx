@@ -95,18 +95,21 @@ describe("hasVisibleAssistantContent", () => {
     expect(hasVisibleAssistantContent(msg)).toBe(true);
   });
 
-  it("returns true for assistant message with source-url part", () => {
+  it("returns false for assistant message with source-url part only", () => {
+    // Source parts arrive before text/reasoning in the SSE stream.
+    // They should NOT make the message "visible" on their own, otherwise
+    // a BotAvatar is rendered with empty content.
     const msg = makeMessage("a1", "assistant", [
       { type: "source-url", sourceId: "s1", url: "https://example.com", title: "Example" },
     ]);
-    expect(hasVisibleAssistantContent(msg)).toBe(true);
+    expect(hasVisibleAssistantContent(msg)).toBe(false);
   });
 
-  it("returns true for assistant message with source-document part", () => {
+  it("returns false for assistant message with source-document part only", () => {
     const msg = makeMessage("a1", "assistant", [
       { type: "source-document", sourceId: "s1", mediaType: "text", title: "Doc" },
     ]);
-    expect(hasVisibleAssistantContent(msg)).toBe(true);
+    expect(hasVisibleAssistantContent(msg)).toBe(false);
   });
 
   it("returns true for assistant message with completed action tool output", () => {
@@ -156,6 +159,24 @@ describe("hasVisibleAssistantContent", () => {
       { type: "reasoning", text: "Let me think about this..." },
     ]);
     expect(hasVisibleAssistantContent(msg)).toBe(true);
+  });
+
+  it("returns true for assistant message with source-url and text content", () => {
+    // Sources are rendered alongside text — the text makes it visible.
+    const msg = makeMessage("a1", "assistant", [
+      { type: "source-url", sourceId: "s1", url: "https://example.com", title: "Example" },
+      { type: "text", text: "Here is what I found:" },
+    ]);
+    expect(hasVisibleAssistantContent(msg)).toBe(true);
+  });
+
+  it("returns false for assistant message with source-url and empty text only", () => {
+    // Source-url with only whitespace text should not be visible.
+    const msg = makeMessage("a1", "assistant", [
+      { type: "source-url", sourceId: "s1", url: "https://example.com", title: "Example" },
+      { type: "text", text: "" },
+    ]);
+    expect(hasVisibleAssistantContent(msg)).toBe(false);
   });
 });
 
@@ -223,5 +244,38 @@ describe("shouldShowWaitingPlaceholder", () => {
       { id: "a1", role: "assistant", content: "", parts: [{ type: "text", text: "hello" }] } as UIMessage,
     ];
     expect(shouldShowWaitingPlaceholder(messages, true)).toBe(false);
+  });
+
+  it("returns true when only welcome message has visible content", () => {
+    // The welcome message is a static UI element, not an actual assistant
+    // response. It should NOT suppress the waiting placeholder.
+    const messages = [
+      { id: "welcome", role: "assistant", content: "", parts: [{ type: "text", text: "Hi, how can I help?" }] } as UIMessage,
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true)).toBe(true);
+  });
+
+  it("returns false when non-welcome assistant message has visible content alongside welcome", () => {
+    // When both welcome and actual assistant response exist, the actual
+    // response suppresses the placeholder (welcome is ignored).
+    const messages = [
+      { id: "welcome", role: "assistant", content: "", parts: [{ type: "text", text: "Hi!" }] } as UIMessage,
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+      { id: "a1", role: "assistant", content: "", parts: [{ type: "text", text: "Hello!" }] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true)).toBe(false);
+  });
+
+  it("returns true when assistant message has only source-url parts (no text yet)", () => {
+    // During streaming, source-url parts arrive before text/reasoning.
+    // The placeholder should continue showing until actual content arrives.
+    const messages = [
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+      { id: "a1", role: "assistant", content: "", parts: [
+        { type: "source-url", sourceId: "s1", url: "https://example.com", title: "Example" },
+      ] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true)).toBe(true);
   });
 });
