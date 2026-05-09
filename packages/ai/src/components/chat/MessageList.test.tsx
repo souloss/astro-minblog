@@ -58,6 +58,29 @@ describe("hasVisibleAssistantContent", () => {
     expect(hasVisibleAssistantContent(msg)).toBe(false);
   });
 
+  it("returns false for assistant message with empty reasoning part", () => {
+    const msg = makeMessage("a1", "assistant", [
+      { type: "reasoning", text: "" },
+    ]);
+    expect(hasVisibleAssistantContent(msg)).toBe(false);
+  });
+
+  it("returns false for assistant message with whitespace-only reasoning", () => {
+    const msg = makeMessage("a1", "assistant", [
+      { type: "reasoning", text: "   \n  " },
+    ]);
+    expect(hasVisibleAssistantContent(msg)).toBe(false);
+  });
+
+  it("returns false for assistant message with empty reasoning and tool-call", () => {
+    const msg = makeMessage("a1", "assistant", [
+      { type: "step-start" },
+      { type: "reasoning", text: "" },
+      { type: "tool-searchArticles", toolCallId: "tc1", state: "input-streaming" },
+    ] as unknown as UIMessage["parts"]);
+    expect(hasVisibleAssistantContent(msg)).toBe(false);
+  });
+
   it("returns true for assistant message with text content", () => {
     const msg = makeMessage("a1", "assistant", [
       { type: "text", text: "Hello" },
@@ -65,7 +88,7 @@ describe("hasVisibleAssistantContent", () => {
     expect(hasVisibleAssistantContent(msg)).toBe(true);
   });
 
-  it("returns true for assistant message with reasoning part", () => {
+  it("returns true for assistant message with non-empty reasoning part", () => {
     const msg = makeMessage("a1", "assistant", [
       { type: "reasoning", text: "thinking..." },
     ]);
@@ -126,6 +149,14 @@ describe("hasVisibleAssistantContent", () => {
     ] as unknown as UIMessage["parts"]);
     expect(hasVisibleAssistantContent(msg)).toBe(true);
   });
+
+  it("returns true for assistant message with non-empty reasoning despite empty text", () => {
+    const msg = makeMessage("a1", "assistant", [
+      { type: "text", text: "" },
+      { type: "reasoning", text: "Let me think about this..." },
+    ]);
+    expect(hasVisibleAssistantContent(msg)).toBe(true);
+  });
 });
 
 describe("shouldShowWaitingPlaceholder", () => {
@@ -143,15 +174,50 @@ describe("shouldShowWaitingPlaceholder", () => {
     expect(shouldShowWaitingPlaceholder(messages, false)).toBe(false);
   });
 
-  it("returns false when assistant message exists", () => {
+  it("returns false when assistant message with visible content exists", () => {
     const messages = [
       { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
-      { id: "a1", role: "assistant", content: "", parts: [] } as UIMessage,
+      { id: "a1", role: "assistant", content: "", parts: [{ type: "text", text: "hello" }] } as UIMessage,
     ];
     expect(shouldShowWaitingPlaceholder(messages, true)).toBe(false);
   });
 
-  it("returns false when last message is assistant", () => {
+  it("returns true when assistant message exists but has no visible content", () => {
+    // An assistant message with only tool-call parts should NOT suppress
+    // the waiting placeholder — the user should still see the loading indicator.
+    const messages = [
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+      { id: "a1", role: "assistant", content: "", parts: [
+        { type: "step-start" },
+        { type: "tool-searchArticles", toolCallId: "tc1", state: "input-streaming" },
+      ] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true)).toBe(true);
+  });
+
+  it("returns true when assistant message exists but has only empty reasoning", () => {
+    // An assistant message with only empty reasoning should NOT suppress
+    // the waiting placeholder.
+    const messages = [
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+      { id: "a1", role: "assistant", content: "", parts: [
+        { type: "reasoning", text: "" },
+      ] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true)).toBe(true);
+  });
+
+  it("returns false when last message is assistant with visible content", () => {
+    const messages = [
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+      { id: "a1", role: "assistant", content: "", parts: [{ type: "text", text: "hello" }] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true)).toBe(false);
+  });
+
+  it("returns false when last message is assistant (not user)", () => {
+    // If the last message is assistant with visible content,
+    // the placeholder should not show.
     const messages = [
       { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
       { id: "a1", role: "assistant", content: "", parts: [{ type: "text", text: "hello" }] } as UIMessage,

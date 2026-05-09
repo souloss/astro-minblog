@@ -132,19 +132,23 @@ function MockMessageList({
 
 /**
  * Determines whether to show the waiting placeholder (BotAvatar + ReasoningBlock).
- * Only shown when streaming and no assistant message exists yet — the AI SDK
- * hasn't created the first assistant message.
+ * Shown when streaming and no assistant message with visible content exists yet.
+ *
+ * Uses hasVisibleAssistantContent so that an assistant message that only has
+ * tool-call parts (no text, no non-empty reasoning, no sources) does NOT
+ * suppress the waiting placeholder — the user should still see the loading
+ * indicator until real content arrives.
  */
 export function shouldShowWaitingPlaceholder(
   messages: UIMessage[],
   isStreaming: boolean
 ): boolean {
-  const lastMessage = messages[messages.length - 1];
-  return (
-    isStreaming &&
-    lastMessage?.role === "user" &&
-    !messages.some(m => m.role === "assistant")
-  );
+  if (!isStreaming) return false;
+  // Only hide the placeholder when there is an assistant message with
+  // actual visible content (text, non-empty reasoning, sources, or
+  // completed action tool output). A bare assistant message with only
+  // tool-call parts or step-start should NOT suppress the placeholder.
+  return !messages.some(m => hasVisibleAssistantContent(m));
 }
 
 /**
@@ -153,12 +157,13 @@ export function shouldShowWaitingPlaceholder(
  *
  * Returns true when the message contains any of:
  * - Non-whitespace-only text
- * - Reasoning content
+ * - Non-empty reasoning content
  * - Source parts (source-url, source-document)
  * - Completed action tool output (toggleTheme, etc.)
  *
  * Returns false when the message has only:
  * - Whitespace-only or empty text
+ * - Empty reasoning parts (reasoning with no text)
  * - Tool-call parts for non-action tools (searchArticles, etc.)
  * - step-start parts
  * - No content at all
@@ -179,8 +184,12 @@ export function hasVisibleAssistantContent(msg: UIMessage): boolean {
     .join("");
   if (textContent.trim()) return true;
 
-  // Reasoning → visible
-  if (parts.some((p: { type: string }) => p.type === "reasoning")) return true;
+  // Non-empty reasoning → visible (empty reasoning parts are not visible)
+  if (parts.some((p): p is { type: "reasoning"; text: string } =>
+    p.type === "reasoning" &&
+    typeof (p as { text?: unknown }).text === "string" &&
+    ((p as { text: string }).text).trim().length > 0
+  )) return true;
 
   // Sources → visible
   if (parts.some(
