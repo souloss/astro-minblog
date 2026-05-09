@@ -146,9 +146,10 @@ export function getActionToolConfirmations(
 export function shouldSuppressAssistantFallbackText(
   text: string,
   confirmations: string[],
-  lang: string
+  lang: string,
+  hasToolParts?: boolean
 ): boolean {
-  if (!text.trim() || confirmations.length === 0) return false;
+  if (!text.trim()) return false;
 
   const noOutputText =
     lang === "en"
@@ -159,7 +160,13 @@ export function shouldSuppressAssistantFallbackText(
       ? "Thanks for asking! I'm in Demo mode and can recommend blog articles and external resources."
       : "感谢提问！我目前在 Demo 模式下，可以推荐博客文章和外部资源。";
 
-  return text.includes(noOutputText) || text.includes(demoIntroText);
+  const isFallbackText = text.includes(noOutputText) || text.includes(demoIntroText);
+  if (!isFallbackText) return false;
+
+  // Suppress fallback text when there are action tool confirmations
+  // or when the message contains any tool parts (search, analysis, etc.)
+  // whose results will provide the actual response.
+  return confirmations.length > 0 || (hasToolParts ?? false);
 }
 
 // ── Typewriter Effect Hook ─────────────────────────────────────
@@ -232,12 +239,39 @@ export function useTypewriter(fullText: string, isStreaming: boolean): string {
   if (displayedLength >= fullText.length) return fullText;
 
   let end = displayedLength;
+
+  // Avoid cutting inside a code fence (```)
   const fence = fullText.indexOf("```", Math.max(0, end - 2));
   if (fence !== -1 && fence < end + 3) {
     const fenceEnd = fence + 3;
     const newline = fullText.indexOf("\n", fenceEnd);
     end = newline !== -1 ? newline + 1 : fenceEnd;
   }
+
+  // Avoid cutting inside a markdown link [label](url).
+  // If the displayed text ends inside an unclosed link, truncate before it
+  // so the raw syntax isn't shown as plain text.
+  const candidate = fullText.slice(0, end);
+  const lastOpenBracket = candidate.lastIndexOf("[");
+  if (lastOpenBracket !== -1) {
+    // Check if there's a matching ]( after it
+    const closeBracket = fullText.indexOf("]", lastOpenBracket);
+    if (closeBracket === -1 || closeBracket >= end) {
+      // The ] hasn't been fully displayed yet — cut before the [
+      end = lastOpenBracket;
+    } else {
+      // We have ], check for ( after it
+      const parenOpen = fullText.indexOf("(", closeBracket);
+      if (parenOpen === closeBracket + 1) {
+        const parenClose = fullText.indexOf(")", parenOpen);
+        if (parenClose === -1 || parenClose >= end) {
+          // The URL part hasn't been fully displayed — cut before the [
+          end = lastOpenBracket;
+        }
+      }
+    }
+  }
+
   return fullText.slice(0, end);
 }
 
@@ -323,21 +357,24 @@ export function AssistantMessage({
   showSourceSnippets?: boolean;
 }) {
   const fullText = getTextFromMessage(message);
+  const safeParts = message.parts ?? [];
+  const hasToolParts = safeParts.some(
+    (p: { type: string }) => p.type.startsWith("tool-")
+  );
   const actionConfirmations = useMemo(
     () => getActionToolConfirmations(message, lang),
     [message, lang]
   );
   const shouldSuppressFallbackText = useMemo(
     () =>
-      shouldSuppressAssistantFallbackText(fullText, actionConfirmations, lang),
-    [fullText, actionConfirmations, lang]
+      shouldSuppressAssistantFallbackText(fullText, actionConfirmations, lang, hasToolParts),
+    [fullText, actionConfirmations, lang, hasToolParts]
   );
   const effectiveText = shouldSuppressFallbackText
     ? actionConfirmations.join("\n")
     : fullText || actionConfirmations.join("\n");
   const displayedText = useTypewriter(effectiveText, isStreaming ?? false);
 
-  const safeParts = message.parts ?? [];
   const reasoningParts = safeParts.filter(
     (p): p is ReasoningPart => p.type === "reasoning"
   );

@@ -76,9 +76,12 @@ describe("shouldSkipEmptyAssistant", () => {
     expect(shouldSkipEmptyAssistant(msg, false, false)).toBe(true);
   });
 
-  it("does not skip empty assistant message when it is the last streaming one", () => {
+  it("skips empty assistant message even when it is the last streaming one", () => {
     const msg = makeMessage("a1", "assistant");
-    expect(shouldSkipEmptyAssistant(msg, true, true)).toBe(false);
+    // Even the currently-streaming last assistant message is skipped if it
+    // has no visible content — the isWaitingForAssistant placeholder or the
+    // next assistant message with actual text handles the display.
+    expect(shouldSkipEmptyAssistant(msg, true, true)).toBe(true);
   });
 
   it("does not skip assistant message with text content", () => {

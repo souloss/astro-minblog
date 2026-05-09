@@ -152,12 +152,15 @@ export function shouldShowWaitingPlaceholder(
  * skipped entirely (no BotAvatar, no empty content div).
  *
  * A message is skipped when:
- * - It's not the currently-streaming last assistant message
  * - It has no text content
  * - It has no reasoning content
  * - It has no source parts
  * - Its tool parts don't produce visible output (only action tools like
  *   toggleTheme produce confirmation text; search/analysis tools don't)
+ *
+ * Even the currently-streaming last assistant message is skipped if it only
+ * contains non-visible tool parts. The streaming placeholder or the next
+ * assistant message will handle the loading state.
  *
  * This prevents ghost BotAvatar when tool auto-continue creates a first
  * assistant with only tool-call parts, then a second with actual text.
@@ -168,7 +171,6 @@ export function shouldSkipEmptyAssistant(
   isLastAssistantStreaming: boolean
 ): boolean {
   if (msg.role !== "assistant") return false;
-  if (isLastAssistantStreaming) return false;
 
   const parts = msg.parts ?? [];
   const textContent = parts
@@ -214,6 +216,9 @@ export function shouldSkipEmptyAssistant(
 
   // All remaining cases: no text, no reasoning, no sources, no visible tool
   // output → skip this message to prevent ghost BotAvatar.
+  // This applies even to the currently-streaming last assistant message,
+  // because the isWaitingForAssistant placeholder or the next assistant
+  // message with actual text will handle the display.
   return true;
 }
 
