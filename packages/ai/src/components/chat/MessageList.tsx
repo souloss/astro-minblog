@@ -132,8 +132,8 @@ function MockMessageList({
 
 /**
  * Determines whether to show the waiting placeholder (BotAvatar + ReasoningBlock).
- * Returns true only when streaming and no assistant message exists yet in the array.
- * This prevents double BotAvatar when AI SDK has already created an empty assistant message.
+ * Only shown when streaming and no assistant message exists yet — the AI SDK
+ * hasn't created the first assistant message.
  */
 export function shouldShowWaitingPlaceholder(
   messages: UIMessage[],
@@ -148,55 +148,47 @@ export function shouldShowWaitingPlaceholder(
 }
 
 /**
- * Checks whether an assistant message has no visible content and should be
- * skipped entirely (no BotAvatar, no empty content div).
+ * Determines whether an assistant message has visible content that should
+ * be rendered with a BotAvatar.
  *
- * A message is skipped when:
- * - It has no text content
- * - It has no reasoning content
- * - It has no source parts
- * - Its tool parts don't produce visible output (only action tools like
- *   toggleTheme produce confirmation text; search/analysis tools don't)
+ * Returns true when the message contains any of:
+ * - Non-whitespace-only text
+ * - Reasoning content
+ * - Source parts (source-url, source-document)
+ * - Completed action tool output (toggleTheme, etc.)
  *
- * Even the currently-streaming last assistant message is skipped if it only
- * contains non-visible tool parts. The streaming placeholder or the next
- * assistant message will handle the loading state.
+ * Returns false when the message has only:
+ * - Whitespace-only or empty text
+ * - Tool-call parts for non-action tools (searchArticles, etc.)
+ * - step-start parts
+ * - No content at all
  *
- * This prevents ghost BotAvatar when tool auto-continue creates a first
- * assistant with only tool-call parts, then a second with actual text.
+ * This is the single decision point — if false, the message is completely
+ * skipped (no BotAvatar, no empty div). If true, it is fully rendered
+ * and AssistantMessage will always produce visible output.
  */
-export function shouldSkipEmptyAssistant(
-  msg: UIMessage,
-  isStreaming: boolean,
-  isLastAssistantStreaming: boolean
-): boolean {
+export function hasVisibleAssistantContent(msg: UIMessage): boolean {
   if (msg.role !== "assistant") return false;
 
   const parts = msg.parts ?? [];
+
+  // Non-whitespace text → visible
   const textContent = parts
     .filter((p): p is { type: "text"; text: string } => p.type === "text")
     .map(p => p.text)
     .join("");
+  if (textContent.trim()) return true;
 
-  // Use trimmed text to detect visible content — whitespace-only text
-  // (spaces, newlines) should not prevent skipping, as it renders as an
-  // empty div with a ghost BotAvatar.
-  if (textContent.trim()) return false;
+  // Reasoning → visible
+  if (parts.some((p: { type: string }) => p.type === "reasoning")) return true;
 
-  const hasReasoning = parts.some(
-    (p: { type: string }) => p.type === "reasoning"
-  );
-  if (hasReasoning) return false;
-
-  const hasSources = parts.some(
+  // Sources → visible
+  if (parts.some(
     (p: { type: string }) =>
       p.type === "source-url" || p.type === "source-document"
-  );
-  if (hasSources) return false;
+  )) return true;
 
-  // Check if any tool parts would produce visible output.
-  // Action tools (toggleTheme, navigateToArticle, etc.) produce confirmation
-  // text that the user should see. Other tool calls (search, analysis) don't.
+  // Completed action tool output → visible
   const ACTION_TOOL_NAMES = new Set([
     "toggleTheme",
     "navigateToArticle",
@@ -205,24 +197,19 @@ export function shouldSkipEmptyAssistant(
     "highlightText",
     "setPreference",
   ]);
-  const hasVisibleToolOutput = parts.some((p: { type: string }) => {
+  if (parts.some((p: { type: string }) => {
     if (!p.type.startsWith("tool-")) return false;
     const toolName = p.type.slice("tool-".length);
     if (!ACTION_TOOL_NAMES.has(toolName)) return false;
-    // Only count if the tool has completed with success output
     const part = p as { state?: string; output?: unknown };
     return part.state === "output-available" &&
       typeof part.output === "object" && part.output !== null &&
       "success" in part.output && part.output.success === true;
-  });
-  if (hasVisibleToolOutput) return false;
+  })) return true;
 
-  // All remaining cases: no text, no reasoning, no sources, no visible tool
-  // output → skip this message to prevent ghost BotAvatar.
-  // This applies even to the currently-streaming last assistant message,
-  // because the isWaitingForAssistant placeholder or the next assistant
-  // message with actual text will handle the display.
-  return true;
+  // Everything else: whitespace-only text, tool-call parts for
+  // search/analysis tools, step-start, empty → not visible.
+  return false;
 }
 
 function LiveMessageList({
@@ -276,68 +263,39 @@ function LiveMessageList({
           );
         }
 
-        const text = getTextFromMessage(msg);
-        const isAssistant = msg.role === "assistant";
-        const isLastAssistantStreaming =
-          isStreaming && msg.id === lastAssistantMsgId;
+        if (msg.role === "user") {
+          const text = getTextFromMessage(msg);
+          return (
+            <div key={msg.id} class="flex justify-end">
+              <div class="bg-accent text-background max-w-[82%] rounded-2xl rounded-br-sm px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm">
+                {text}
+              </div>
+            </div>
+          );
+        }
 
-        // Skip rendering assistant messages that have no visible content.
-        // This prevents ghost BotAvatar when:
-        // - A tool-call-only assistant exists before the text response
-        // - A provider fails and leaves an empty assistant message
-        if (shouldSkipEmptyAssistant(msg, isStreaming, isLastAssistantStreaming)) {
+        // Assistant message: single decision point.
+        // If no visible content → skip entirely (no BotAvatar, no empty div).
+        // If visible content → render with BotAvatar + AssistantMessage.
+        if (!hasVisibleAssistantContent(msg)) {
           return null;
         }
 
-        // For assistant messages, check if AssistantMessage would produce
-        // visible output. If not (e.g., streaming with no content yet),
-        // the isWaitingForAssistant placeholder handles the loading state.
-        if (isAssistant && !text.trim() && !isWaitingForAssistant) {
-          const parts = msg.parts ?? [];
-          const hasReasoning = parts.some(
-            (p: { type: string }) => p.type === "reasoning"
-          );
-          const hasSources = parts.some(
-            (p: { type: string }) =>
-              p.type === "source-url" || p.type === "source-document"
-          );
-          // If the assistant message has no text, no reasoning, no sources,
-          // and is NOT the currently streaming last message, skip it entirely.
-          // The streaming case is handled by isWaitingForAssistant placeholder.
-          if (!hasReasoning && !hasSources && !isLastAssistantStreaming) {
-            return null;
-          }
-        }
+        const isLastAssistantStreaming =
+          isStreaming && msg.id === lastAssistantMsgId;
 
         return (
-          <div
-            key={msg.id}
-            class={
-              msg.role === "user"
-                ? "flex justify-end"
-                : "flex items-start gap-2.5"
-            }
-          >
-            {isAssistant && <BotAvatar />}
-            <div
-              class={
-                msg.role === "user"
-                  ? "bg-accent text-background max-w-[82%] rounded-2xl rounded-br-sm px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm"
-                  : "text-foreground min-w-0 flex-1 pt-0.5 text-[13px] leading-relaxed"
-              }
-            >
-              {isAssistant ? (
-                <AssistantMessage
-                  message={msg}
-                  isStreaming={isLastAssistantStreaming}
-                  lang={lang}
-                  articleContext={articleContext}
-                  onFollowUp={onQuickPrompt}
-                  showSourceSnippets={showSourceSnippets}
-                />
-              ) : (
-                text
-              )}
+          <div key={msg.id} class="flex items-start gap-2.5">
+            <BotAvatar />
+            <div class="text-foreground min-w-0 flex-1 pt-0.5 text-[13px] leading-relaxed">
+              <AssistantMessage
+                message={msg}
+                isStreaming={isLastAssistantStreaming}
+                lang={lang}
+                articleContext={articleContext}
+                onFollowUp={onQuickPrompt}
+                showSourceSnippets={showSourceSnippets}
+              />
             </div>
           </div>
         );

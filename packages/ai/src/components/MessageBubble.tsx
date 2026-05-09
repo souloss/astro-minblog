@@ -433,7 +433,19 @@ export function AssistantMessage({
     );
   }
 
-  if (!effectiveText.trim() && !hasReasoning) return null;
+  // Defensive: if the caller (LiveMessageList) decided to render this
+  // message based on hasVisibleAssistantContent, we must always produce
+  // visible output. If effectiveText and reasoning are both empty at this
+  // point (e.g., during streaming before text arrives), show a loading
+  // placeholder instead of returning null, which would leave an empty div
+  // with a ghost BotAvatar.
+  if (!effectiveText.trim() && !hasReasoning) {
+    return (
+      <div class="space-y-1.5">
+        <ReasoningBlock text="" isStreaming={isStreaming ?? true} lang={lang} />
+      </div>
+    );
+  }
 
   return (
     <div class="space-y-1.5">
