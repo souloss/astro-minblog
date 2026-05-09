@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Use LLMs — A Practical Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Repost Banner -->
+<div style="position:relative;z-index:250;background:linear-gradient(90deg,#635BFF08,#635BFF04);border-bottom:1px solid #635BFF20;padding:8px 24px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;color:#3C4257;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#635BFF">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      Repost
+    </span>
+    <span style="color:#697386">Author: ynarwal · Based on Andrej Karpathy's lecture</span>
+    <a href="https://ynarwal.github.io/how-llms-work/" target="_blank" rel="noopener noreferrer" style="color:#635BFF;text-decoration:none;font-weight:500">View Original ↗</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <a href="/en/reposts" style="color:#635BFF;text-decoration:none;font-weight:500">← Back to Reposts</a>
+    <span style="font-size:11px;color:#697386">⚠️ Translated repost, all rights belong to the original author</span>
+  </div>
+</div>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="progress-bar" id="progress-bar" role="progressbar" aria-label="Reading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<nav class="top-nav" id="top-nav" aria-label="Chapter navigation">
+  <div class="top-nav-inner">
+    <a href="../part-1/index.html" class="top-nav-brand">← Part 1</a>
+    <a href="../part-3/index.html" style="font-family:var(--ds);font-size:12px;font-weight:600;color:var(--green);text-decoration:none;padding:5px 11px;border-radius:6px;border:1px solid rgba(0,135,90,0.3);background:rgba(0,135,90,0.05);white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;transition:.15s;margin-right:6px" onmouseover="this.style.background='rgba(0,135,90,0.1)'" onmouseout="this.style.background='rgba(0,135,90,0.05)'">Part 3 →</a>
+    <div class="top-nav-links" id="top-nav-links">
+      <button class="tnav-btn active" data-section="s-intro" aria-current="true">Intro</button>
+      <button class="tnav-btn" data-section="s-mental-model">ZIP File</button>
+      <button class="tnav-btn" data-section="s-models">Models</button>
+      <button class="tnav-btn" data-section="s-thinking">Thinking</button>
+      <button class="tnav-btn" data-section="s-search">Search</button>
+      <button class="tnav-btn" data-section="s-research">Research</button>
+      <button class="tnav-btn" data-section="s-docs">Docs</button>
+      <button class="tnav-btn" data-section="s-code">Code</button>
+      <button class="tnav-btn" data-section="s-agentic">Agents</button>
+      <button class="tnav-btn" data-section="s-voice">Voice</button>
+      <button class="tnav-btn" data-section="s-vision">Vision</button>
+      <button class="tnav-btn" data-section="s-memory">Memory</button>
+      <button class="tnav-btn" data-section="s-resources">Resources</button>
+      <button class="tnav-btn" data-section="s-summary">Summary</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ━━━━━━━━ HERO ━━━━━━━━ -->
+<section id="s-intro" class="section" aria-label="Introduction">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-content" id="main-content">
+    <div class="chapter-badge" aria-hidden="true">Part 2 · A Practical Guide</div>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <h1 class="hero-title">How to Use<br><span>LLMs</span></h1>
+        <p class="hero-sub">Beyond the internals — a practical walkthrough of how to actually use large language models in your daily work. Based on Andrej Karpathy's follow-up to his LLM deep dive.</p>
+        <dl class="hero-stats">
+          <div class="stat-item"><dt class="stat-lbl">Tools Covered</dt><dd class="stat-val">14+</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">Use Cases</dt><dd class="stat-val">12</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">Models</dt><dd class="stat-val">8+</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">Source</dt><dd class="stat-val">3h</dd></div>
+        </dl>
+        <p class="stats-caveat">Companion to <a href="../part-1/index.html" style="color:var(--accent)">Part 1: How LLMs Work</a>. All content and examples traced directly to Karpathy's 2025 video.</p>
+        <div class="scroll-hint" aria-hidden="true"><div class="scroll-arrow"></div>Scroll to explore</div>
+      </div>
+      <div class="hero-right">
+        <div class="typewriter-wrap" aria-label="Practical LLM tip">
+          <div class="tw-label" aria-hidden="true">Practical Tip</div>
+          <div class="tw-prompt">Q: What should I know before using this?</div>
+          <div class="tw-response" id="tw-response" aria-live="polite" aria-atomic="true"><span class="tw-cursor" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ ZIP FILE ━━━━━━━━ -->
+<section id="s-mental-model" class="section" aria-label="The ZIP File mental model">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 1 · Foundation</div>
+      <h2 class="section-title">You're Talking to<br><span>a ZIP File</span></h2>
+      <p class="body-text">Karpathy's mental model: ChatGPT is a <span class="highlight">"one-tab ZIP file"</span> — a highly compressed snapshot of the internet. It read virtually every web page, book, and document up to its training cutoff, roughly 6–12 months ago. What comes back is a probabilistic recollection of that data.</p>
+      <p class="body-text">The <span class="highlight">context window</span> is its working memory — a finite tape of tokens it can see right now. Anything in it is directly accessible. Anything outside it doesn't exist for this conversation. There's no persistent memory between sessions unless you enable it.</p>
+      <p class="body-text">There's no live connection to the web by default. The model produces the most statistically likely continuation of your prompt — not a lookup, not a search, not a guarantee.</p>
+      <div class="insight-box">
+        <strong>The Introduction</strong>
+        "Hi, I'm ChatGPT. I'm a one-tab ZIP file. My knowledge comes from reading the internet about 6 months ago. I only know what's in this conversation. Every word I generate is a probabilistic sample — treat it accordingly."
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="context-demo">
+        <div class="context-label">Context Window · live working memory</div>
+        <div class="context-tape" id="context-tape">
+          <div class="context-token ctx-system">system</div>
+          <div class="context-token ctx-content">You are a helpful assistant.</div>
+          <div class="context-token ctx-user">user</div>
+          <div class="context-token ctx-content">How much caffeine is in an Americano?</div>
+          <div class="context-token ctx-assistant">assistant</div>
+          <div class="context-token ctx-content">About 63mg per shot...</div>
+          <div class="context-token ctx-user">user</div>
+          <div class="context-token ctx-content">What about a double shot?</div>
+          <div class="context-token ctx-cursor blink">▌</div>
+        </div>
+        <div class="context-note">Everything above is visible to the model. The moment the window fills, old context falls off the edge and is gone.</div>
+      </div>
+      <div class="insight-box" style="margin-top:16px">
+        <strong>Stale knowledge caveat</strong>
+        For timeless facts like caffeine content, the model's weights are reliable. For last month's news — they're not. Know the difference before trusting the answer.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ MODELS & TIERS ━━━━━━━━ -->
+<section id="s-models" class="section" aria-label="Models and Tiers">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:8px">
+      <div class="chapter-badge">Chapter 2 · Ecosystem</div>
+      <h2 class="section-title">Models &<br><span>Tiers</span></h2>
+      <p class="body-text" style="max-width:640px">ChatGPT is the "Original Gangster" — most features, most popular, most polished. But the ecosystem has exploded since 2022. Pick the right tool for the task.</p>
+    </div>
+    <div class="app-grid fade-up" style="animation-delay:.1s" id="app-grid" aria-label="LLM app comparison">
+      <div class="app-card app-featured">
+        <div class="ac-name">ChatGPT</div>
+        <div class="ac-by">OpenAI</div>
+        <div class="ac-desc">The original. Most features: web search, deep research, code execution, advanced voice, image generation, memory. Karpathy's primary demo throughout.</div>
+        <div class="ac-tags"><span class="tag tag-c">Primary pick</span><span class="tag tag-g">Most features</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Claude</div>
+        <div class="ac-by">Anthropic</div>
+        <div class="ac-desc">Exceptional at coding and document analysis. Powers Cursor (3.7 Sonnet) under the hood. Often outperforms on nuanced reasoning tasks.</div>
+        <div class="ac-tags"><span class="tag tag-g">Coding</span><span class="tag tag-c">Docs</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Gemini</div>
+        <div class="ac-by">Google</div>
+        <div class="ac-desc">Google's entrant. Gemini 2.0 Pro experimental available. Deep integration with Google Workspace. Strong multimodal capabilities.</div>
+        <div class="ac-tags"><span class="tag tag-p">Multimodal</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Perplexity</div>
+        <div class="ac-by">Perplexity AI</div>
+        <div class="ac-desc">Search-first LLM. Always retrieves and cites sources. Karpathy demoed its Deep Research feature for the rapamycin research example.</div>
+        <div class="ac-tags"><span class="tag tag-c">Search-first</span><span class="tag tag-a">Citations</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Le Chat</div>
+        <div class="ac-by">Mistral</div>
+        <div class="ac-desc">French startup alternative. Mistral's consumer chat interface. Strong at European languages and code.</div>
+        <div class="ac-tags"><span class="tag tag-a">Alternative</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">DeepSeek</div>
+        <div class="ac-by">DeepSeek</div>
+        <div class="ac-desc">Chinese AI lab. Surprisingly strong at code and reasoning. Different training approach from US labs — worth benchmarking.</div>
+        <div class="ac-tags"><span class="tag tag-a">Alternative</span><span class="tag tag-g">Code</span></div>
+      </div>
+    </div>
+
+    <div class="fade-up" style="animation-delay:.2s;margin-top:36px">
+      <div class="chapter-badge" style="margin-bottom:14px">Model Families</div>
+      <div class="model-families-grid">
+        <div class="model-family-card">
+          <div class="mf-provider">OpenAI</div>
+          <div class="mf-models">
+            <div class="model-chip chip-default">GPT-4o <span>fast · smart · default</span></div>
+            <div class="model-chip chip-thinking">o1 / o3 / o3-mini <span>thinking models</span></div>
+            <div class="model-chip chip-premium">o1 Pro <span>$200/mo · deep reasoning</span></div>
+          </div>
+        </div>
+        <div class="model-family-card">
+          <div class="mf-provider">Anthropic</div>
+          <div class="mf-models">
+            <div class="model-chip chip-thinking">Claude 3.7 Sonnet <span>coding + reasoning</span></div>
+            <div class="model-chip chip-default">Claude 3.5 Sonnet <span>fast + capable</span></div>
+            <div class="model-chip chip-default">Claude Haiku <span>lightweight</span></div>
+          </div>
+        </div>
+        <div class="model-family-card">
+          <div class="mf-provider">Google</div>
+          <div class="mf-models">
+            <div class="model-chip chip-default">Gemini 2.0 Pro <span>multimodal</span></div>
+            <div class="model-chip chip-default">Gemini Flash <span>fast · often free</span></div>
+          </div>
+        </div>
+        <div class="model-family-card">
+          <div class="mf-provider">Others</div>
+          <div class="mf-models">
+            <div class="model-chip chip-alt">DeepSeek <span>Chinese · strong at code</span></div>
+            <div class="model-chip chip-alt">Mistral <span>French · Le Chat</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="insight-box fade-up" style="animation-delay:.3s;margin-top:20px">
+      <strong>Where to compare</strong>
+      <a href="https://lmarena.ai" target="_blank" rel="noopener" style="color:var(--accent)">LM Arena (lmarena.ai)</a> — formerly Chatbot Arena — maintains a live leaderboard ranked by human preference votes. It's the most reliable signal for "which model is actually better right now."
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ THINKING MODELS ━━━━━━━━ -->
+<section id="s-thinking" class="section" aria-label="Thinking Models">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 3 · Reasoning</div>
+      <h2 class="section-title">Thinking<br><span>Models</span></h2>
+      <p class="body-text">OpenAI's <span class="highlight">o1, o1 Pro, o3, and o3-mini</span> are a different breed — all model names starting with "o" are thinking models. Before returning an answer, they run an extended internal monologue: exploring approaches, backtracking, trying alternatives.</p>
+      <p class="body-text">This emerged from reinforcement learning: the model discovered that deliberation strategies lead to better outcomes on hard problems. It tries different ideas, backtracks, checks its reasoning — much like the inner monologue you have when problem-solving.</p>
+      <p class="body-text">Karpathy noted that Claude 3.7 Sonnet (non-thinking) solved a hard coding problem that o1 Pro could not. Model selection isn't always obvious — the right tool depends on the specific task.</p>
+      <div class="insight-box">
+        <strong>When to use thinking models</strong>
+        Hard math, complex multi-step code, formal reasoning, logic puzzles. Skip them for simple tasks — they're slower, more expensive, and deliberation helps less when there's nothing difficult to reason through.
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="thinking-demo" id="thinking-demo">
+        <div class="thinking-header">
+          <span class="thinking-badge">o1 Pro · Extended Thinking</span>
+          <span class="thinking-time" id="thinking-time">ready</span>
+        </div>
+        <div style="font-family:var(--dm);font-size:12px;color:var(--amber);margin-bottom:12px;padding:8px 10px;background:rgba(148,104,0,0.05);border-radius:var(--radius-sm);border:1px solid rgba(148,104,0,0.15)">"Prove that the sum of two odd numbers is always even."</div>
+        <div class="thinking-steps" id="thinking-steps">
+          <div style="font-family:var(--ds);font-size:11px;color:var(--txt2);text-align:center;padding:20px 0">Click Run to see extended thinking unfold</div>
+        </div>
+        <div class="thinking-answer" id="thinking-answer" style="display:none">
+          <div class="ta-label">Answer</div>
+          <div class="ta-content" id="ta-content"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="thinking-run-btn" style="margin-top:14px;width:100%">▶ Run demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ WEB SEARCH ━━━━━━━━ -->
+<section id="s-search" class="section" aria-label="When to use web search">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 4 · Information</div>
+      <h2 class="section-title">When to<br><span>Search</span></h2>
+      <p class="body-text">By default the model runs on its weights alone — no internet, no live data. Enabling web search means it retrieves pages first, then synthesizes an answer. This costs latency but unlocks real-time information.</p>
+      <p class="body-text">The key question: <em>is the model's stale recollection good enough?</em> For well-documented, timeless knowledge — yes. For anything time-sensitive, recent, or niche — enable search or use Perplexity.</p>
+      <ul class="use-case-list">
+        <li class="ucl-no-search"><span class="ucl-icon">✕</span><div><strong>Skip search:</strong> "How much caffeine in an Americano?" — well-documented, timeless, model knows it</div></li>
+        <li class="ucl-no-search"><span class="ucl-icon">✕</span><div><strong>Skip search:</strong> "Explain Rayleigh scattering" — textbook physics, no search needed</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>Use search:</strong> "When does White Lotus Season 3 air?" — time-sensitive, release dates change</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>Use search:</strong> "Is it safe to travel to Vietnam right now?" — current situation may differ from training</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>Use search:</strong> "What's the deal with recent USAID cuts?" — recent news, not in training data</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>Use search:</strong> "What toothpaste does [person] use?" — niche, possibly recent, esoteric</div></li>
+      </ul>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="decision-tree">
+        <div class="dt-title">Should you enable web search?</div>
+        <div class="dt-node">
+          <div class="dt-question">Is this information time-sensitive or potentially outdated?</div>
+          <div class="dt-branches">
+            <div class="dt-branch dt-no">
+              <div class="dt-label">No — timeless</div>
+              <div class="dt-node" style="margin-top:8px">
+                <div class="dt-question" style="font-size:12px">Is it niche or not well-documented on the web?</div>
+                <div class="dt-branches" style="margin-top:8px">
+                  <div class="dt-branch dt-no">
+                    <div class="dt-label">No</div>
+                    <div class="dt-result dt-result-no" style="margin-top:6px">Skip search — weights are enough</div>
+                  </div>
+                  <div class="dt-branch dt-yes">
+                    <div class="dt-label">Yes</div>
+                    <div class="dt-result dt-result-yes" style="margin-top:6px">Enable search</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dt-branch dt-yes">
+              <div class="dt-label">Yes — recent / changing</div>
+              <div class="dt-result dt-result-yes" style="margin-top:8px">Enable search</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="insight-box" style="margin-top:16px">
+        <strong>Perplexity vs ChatGPT search</strong>
+        Perplexity always searches — it's search-first by design. ChatGPT's search is opt-in per message. For research-heavy workflows, Perplexity's default-on approach often saves the decision overhead.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ DEEP RESEARCH ━━━━━━━━ -->
+<section id="s-research" class="section" aria-label="Deep Research">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 5 · Synthesis</div>
+      <h2 class="section-title">Deep<br><span>Research</span></h2>
+      <p class="body-text"><span class="highlight">Deep Research</span> = extended thinking + web search, run for 5–15 minutes. The model searches dozens of sources in parallel, reasons across them, and produces a structured report — work that would take a human researcher hours.</p>
+      <p class="body-text">Karpathy's demo: researching rapamycin and longevity. The model looked at 27+ sources, thought for 5 minutes, and produced a report covering mechanism of action (mTOR inhibition), worm/mouse/human trial data, safety concerns, and ongoing studies.</p>
+      <p class="body-text">Both <strong>ChatGPT Deep Research</strong> (requires $200/mo Pro) and <strong>Perplexity</strong>'s research mode offer this. For literature reviews, competitive analysis, and due diligence — it dramatically lowers the research bar.</p>
+      <div class="insight-box">
+        <strong>Best for</strong>
+        Scientific literature surveys, competitive landscape analysis, due diligence on decisions, medical/legal research (with verification). Not worth it for simple factual questions.
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="research-pipeline">
+        <div class="rp-header">
+          <span>Deep Research Pipeline</span>
+          <button class="btn btn-ghost btn-sm" id="rp-run-btn">▶ Simulate</button>
+        </div>
+        <div class="rp-steps">
+          <div class="rp-step" id="rp-s0">
+            <div class="rp-step-icon">1</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">Query Planning</div>
+              <div class="rp-step-desc">Break the question into subtopics and parallel search queries</div>
+            </div>
+          </div>
+          <div class="rp-connector"></div>
+          <div class="rp-step" id="rp-s1">
+            <div class="rp-step-icon">2</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">Parallel Web Search</div>
+              <div class="rp-step-desc">Fetches 20–30 sources simultaneously across subtopics</div>
+            </div>
+          </div>
+          <div class="rp-connector"></div>
+          <div class="rp-step" id="rp-s2">
+            <div class="rp-step-icon">3</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">Extended Thinking</div>
+              <div class="rp-step-desc">Reasons across sources, resolves conflicts, identifies gaps</div>
+            </div>
+          </div>
+          <div class="rp-connector"></div>
+          <div class="rp-step" id="rp-s3">
+            <div class="rp-step-icon">4</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">Report Generation</div>
+              <div class="rp-step-desc">Structured report with citations, mechanisms, caveats</div>
+            </div>
+          </div>
+        </div>
+        <div class="rp-result" id="rp-result" style="display:none">
+          <div class="rp-result-label">Example — Rapamycin &amp; Longevity Research</div>
+          <div class="rp-result-content">27 sources · 5 min 12 sec · Covered: mTOR inhibition mechanism, worm/mouse/human trial data, safety profile, dosing considerations, ongoing clinical trials, researcher consensus...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ DOCS & BOOKS ━━━━━━━━ -->
+<section id="s-docs" class="section" aria-label="Documents and Books">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 6 · Reading</div>
+      <h2 class="section-title">Docs &<br><span>Books</span></h2>
+      <p class="body-text">Attaching documents transforms the model into a reading assistant. Upload a PDF, paste a chapter, share a spreadsheet — then ask questions, request summaries, or generate conceptual diagrams from the content.</p>
+      <p class="body-text">Karpathy's example: reading <em>The Wealth of Nations</em> with Claude. "I'm attaching Chapter 3, Book 1 — please create a conceptual diagram of this chapter." Claude responds with <span class="highlight">Mermaid code</span>, a diagram markup language that renders as a graph connecting key concepts.</p>
+      <p class="body-text">For data, the model can write and run Python to generate charts. But treat it as a <em>very junior data analyst</em> — brilliant at writing the code, but it hallucinated a "1.7 trillion" figure in a chart Karpathy caught. Always scrutinize the numbers, not just the chart shape.</p>
+      <div class="insight-box">
+        <strong>Key workflow</strong>
+        Attach document → request summary → drill into sections with Q&amp;A → ask for concept map (Mermaid) → verify any specific figures against the source.
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="doc-demo">
+        <div class="doc-demo-header">
+          <span class="doc-chip">The Wealth of Nations · Book I, Ch. 3</span>
+          <span class="doc-chip doc-chip-model">Claude 3.7 Sonnet</span>
+        </div>
+        <div class="doc-chat">
+          <div class="doc-msg doc-msg-user">Please create a conceptual diagram of this chapter</div>
+          <div class="doc-msg doc-msg-ai">
+            <div class="doc-code-block">
+              <div class="dcb-label">mermaid</div>
+              <pre>graph TD
+  A[Division of Labor] -->|limited by| B[Extent of Market]
+  B --> C[Local Market]
+  B --> D[Trade Networks]
+  D --> E[Water Transport]
+  D --> F[Land Transport]
+  E -->|lower cost| G[Coastal Cities]
+  G -->|develop first| H[Specialization]</pre>
+            </div>
+            Rendered diagram showing how Smith argues market size constrains specialization — larger markets enable deeper division of labor.
+          </div>
+          <div class="doc-msg doc-msg-user">What implicit assumption is in node D?</div>
+          <div class="doc-msg doc-msg-ai">Node D assumes that trade networks are legally and politically accessible — Smith's implicit premise that functioning exchange infrastructure already exists. He notes this precondition without arguing for it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ CODE EXECUTION ━━━━━━━━ -->
+<section id="s-code" class="section" aria-label="Code Execution">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 7 · Data Analysis</div>
+      <h2 class="section-title">Code<br><span>Execution</span></h2>
+      <p class="body-text">ChatGPT's <span class="highlight">Advanced Data Analysis</span> wires the model to a live Python runtime. You describe a task in plain language — it writes code, runs it, and shows you the result. No copy-paste, no local setup.</p>
+      <p class="body-text">This is the integration of language with computation. Arithmetic, statistics, data cleaning, chart generation — anything Python can do. Upload a CSV and ask for a trend analysis; get a matplotlib chart in seconds.</p>
+      <p class="body-text">Karpathy's caution: he caught the model generating a chart with a hallucinated "1.7 trillion" instead of the correct value. The code ran fine; the number was wrong. Treat it like a very capable but unreliable junior — verify the figures, not just the output shape.</p>
+      <div class="insight-box">
+        <strong>The rule</strong>
+        Use code execution when you need computation, transformation, or visualization. Always check: does the generated code match what you asked? Does the output look plausible against your source data?
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="code-demo">
+        <div class="cd-header">
+          <span class="cd-badge">Advanced Data Analysis · Python Runtime</span>
+          <button class="btn btn-ghost btn-sm" id="code-run-btn">▶ Run</button>
+        </div>
+        <div class="cd-prompt">"Plot GDP growth for G7 countries from 1990–2023"</div>
+        <div class="cd-steps">
+          <div class="cd-step" id="cd-step-0" style="display:none">
+            <div class="cd-step-label">Writing code...</div>
+            <div class="cd-code"><span class="cd-kw">import</span> pandas <span class="cd-kw">as</span> pd
+<span class="cd-kw">import</span> matplotlib.pyplot <span class="cd-kw">as</span> plt
+
+df = pd.read_csv(<span class="cd-str">'g7_gdp.csv'</span>)
+fig, ax = plt.subplots(figsize=(<span class="cd-num">10</span>, <span class="cd-num">5</span>))
+<span class="cd-kw">for</span> country <span class="cd-kw">in</span> df.columns[<span class="cd-num">1</span>:]:
+    ax.plot(df[<span class="cd-str">'year'</span>], df[country], label=country)
+ax.legend()
+plt.show()</div>
+          </div>
+          <div class="cd-step" id="cd-step-1" style="display:none">
+            <div class="cd-step-label">Executing Python...</div>
+            <div class="cd-spinner"></div>
+          </div>
+          <div class="cd-step" id="cd-step-2" style="display:none">
+            <div class="cd-step-label">Output</div>
+            <canvas id="chart-canvas" width="340" height="160" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border)"></canvas>
+            <div class="cd-caution">⚠ Always verify: check the numbers match your actual source data before sharing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ AGENTIC CODING ━━━━━━━━ -->
+<section id="s-agentic" class="section" aria-label="Agentic Coding">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 8 · Development</div>
+      <h2 class="section-title">Agentic<br><span>Coding</span></h2>
+      <p class="body-text">Beyond chat, a new class of tools integrates LLMs directly into your code editor. <span class="highlight">Cursor</span> and <span class="highlight">Windsurf</span> run Claude or GPT under the hood, operating autonomously across your entire codebase — reading files, writing code, running commands, and iterating.</p>
+      <p class="body-text">Cursor's <em>Composer</em> (⌘I) is an autonomous agent loop: describe a task, and it plans, writes files, runs shell commands, reads errors, and loops — asking your confirmation before any destructive action. Karpathy built a React app from scratch in a few minutes.</p>
+      <p class="body-text">The model under the hood in Karpathy's setup: Claude 3.7 Sonnet. The key insight is that these tools are most powerful when you understand the model well enough to guide and correct it, not just prompt and hope.</p>
+      <div class="insight-box">
+        <strong>Cursor keyboard shortcuts</strong>
+        <code style="font-family:var(--dm);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘K</code> inline edit &nbsp;·&nbsp;
+        <code style="font-family:var(--dm);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘L</code> chat sidebar &nbsp;·&nbsp;
+        <code style="font-family:var(--dm);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘I</code> Composer (agentic)
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="agent-loop">
+        <div class="al-header">Composer Agent Loop</div>
+        <div class="al-steps" id="al-steps">
+          <div class="al-step" id="al-s0">
+            <div class="al-icon">1</div>
+            <div class="al-body">
+              <div class="al-title">Plan</div>
+              <div class="al-desc">Break the task into file changes and shell commands</div>
+            </div>
+          </div>
+          <div class="al-arrow">↓</div>
+          <div class="al-step" id="al-s1">
+            <div class="al-icon">2</div>
+            <div class="al-body">
+              <div class="al-title">Generate</div>
+              <div class="al-desc">Write or edit source files across the codebase</div>
+            </div>
+          </div>
+          <div class="al-arrow">↓</div>
+          <div class="al-step" id="al-s2">
+            <div class="al-icon">3</div>
+            <div class="al-body">
+              <div class="al-title">Execute</div>
+              <div class="al-desc">Run shell commands — asks your approval first</div>
+            </div>
+          </div>
+          <div class="al-arrow">↓</div>
+          <div class="al-step" id="al-s3">
+            <div class="al-icon">4</div>
+            <div class="al-body">
+              <div class="al-title">Observe</div>
+              <div class="al-desc">Read output, catch errors, update its plan</div>
+            </div>
+          </div>
+          <div class="al-arrow al-loop-arrow">↺ loops until done or stuck</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="al-run-btn" style="margin-top:14px;width:100%">▶ Animate loop</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ VOICE & AUDIO ━━━━━━━━ -->
+<section id="s-voice" class="section" aria-label="Voice and Audio">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 9 · Multimodal</div>
+      <h2 class="section-title">Voice &<br><span>Audio</span></h2>
+      <p class="body-text">Karpathy routes roughly <span class="highlight">half his queries through voice</span> using Super Whisper — his pick among Super Whisper, WhisperFlow, and MacWhisper. Press a hotkey, speak, press again — query transcribed and sent. No typing, no friction.</p>
+      <p class="body-text">ChatGPT's <span class="highlight">Advanced Voice Mode</span> goes further: audio tokens flow directly to and from the model, with no text transcription layer. The result feels genuinely conversational, not a text-to-speech wrapper.</p>
+      <p class="body-text"><span class="highlight">NotebookLM</span> (Google) generates audio podcasts from your documents. Upload papers, books, or notes — it produces a two-host discussion. Karpathy uses it on walks and long drives for passive learning on topics outside his expertise.</p>
+      <div class="insight-box">
+        <strong>Voice tip from Karpathy</strong>
+        For queries with product names, library names, or technical terms — switch to typing. Whisper often mistranscribes niche technical vocabulary. Voice is best for natural-language questions.
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="voice-tools">
+        <div class="voice-pipeline">
+          <div class="vp-step">
+            <div class="vp-icon">🎙</div>
+            <div class="vp-label">Speak</div>
+          </div>
+          <div class="vp-arrow">→</div>
+          <div class="vp-step">
+            <div class="vp-icon">⚡</div>
+            <div class="vp-label">Whisper<br>transcribes</div>
+          </div>
+          <div class="vp-arrow">→</div>
+          <div class="vp-step">
+            <div class="vp-icon">🧠</div>
+            <div class="vp-label">LLM<br>responds</div>
+          </div>
+          <div class="vp-arrow">→</div>
+          <div class="vp-step">
+            <div class="vp-icon">📝</div>
+            <div class="vp-label">Text<br>response</div>
+          </div>
+        </div>
+        <div class="voice-apps">
+          <div class="va-card">
+            <div class="va-name">Super Whisper</div>
+            <div class="va-tag">Karpathy's pick · Mac</div>
+            <div class="va-desc">Global hotkey to record → auto-transcribe → paste anywhere. Works system-wide.</div>
+          </div>
+          <div class="va-card">
+            <div class="va-name">NotebookLM</div>
+            <div class="va-tag">Google · Free</div>
+            <div class="va-desc">Upload docs → generate a two-host podcast discussion. Good for passive learning.</div>
+          </div>
+          <div class="va-card">
+            <div class="va-name">Advanced Voice</div>
+            <div class="va-tag">ChatGPT</div>
+            <div class="va-desc">Native audio tokens — low latency, no transcription layer, genuinely conversational.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ VISION ━━━━━━━━ -->
+<section id="s-vision" class="section" aria-label="Vision and Camera input">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 10 · Visual Input</div>
+      <h2 class="section-title">Vision &<br><span>Camera</span></h2>
+      <p class="body-text">Modern LLMs accept images as input — photos, screenshots, scans, diagrams. The model reasons about visual content as fluently as it reasons about text, drawing on training data that included billions of image-text pairs.</p>
+      <p class="body-text">Karpathy's examples: uploading a <span class="highlight">blood test scan</span> for interpretation, pointing a camera at an <span class="highlight">Aeronet 4 CO2 monitor</span> to identify the device and interpret the 713 PPM reading, and showing a <span class="highlight">Lord of the Rings map</span> which it correctly identified as Middle-Earth.</p>
+      <p class="body-text">Vision is most reliable for well-documented subjects — blood test reference ranges, common consumer devices, famous maps — where training data covers the domain thoroughly. For proprietary or rare objects, expect more hallucination.</p>
+      <div class="insight-box">
+        <strong>Strong vision use cases</strong>
+        Identifying unknown objects, interpreting standard lab results, explaining charts and diagrams, OCR on printed text, reading handwriting, and analyzing screenshots.
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="vision-examples">
+        <div class="ve-card">
+          <div class="ve-icon">🩸</div>
+          <div class="ve-content">
+            <div class="ve-title">Blood Test Panel</div>
+            <div class="ve-prompt">"Here are my lab results — explain the flagged values"</div>
+            <div class="ve-note ve-note-ok">Works well — ranges are extensively documented in training data. Karpathy verified the ingredient lists against the actual box. Always confirm with a doctor for medical decisions.</div>
+          </div>
+        </div>
+        <div class="ve-card">
+          <div class="ve-icon">📊</div>
+          <div class="ve-content">
+            <div class="ve-title">CO2 Monitor (Aeronet 4)</div>
+            <div class="ve-prompt">"What is this device, and is 713 PPM a good reading?"</div>
+            <div class="ve-note ve-note-ok">Correctly identified the device, explained that 713 PPM is acceptable indoors (target: below 800 PPM, ventilate above 1000 PPM).</div>
+          </div>
+        </div>
+        <div class="ve-card">
+          <div class="ve-icon">🗺</div>
+          <div class="ve-content">
+            <div class="ve-title">Fantasy Map Identification</div>
+            <div class="ve-prompt">"Do you know what this map is?"</div>
+            <div class="ve-note ve-note-ok">Immediately identified as the map of Middle-Earth from The Lord of the Rings — a famous, widely-reproduced image in training data.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ MEMORY & PERSONALIZATION ━━━━━━━━ -->
+<section id="s-memory" class="section" aria-label="Memory and Personalization">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">Chapter 11 · Personalization</div>
+      <h2 class="section-title">Memory &<br><span>Personalization</span></h2>
+      <p class="body-text">By default, every conversation is stateless — the model forgets everything when the tab closes. Two features change this: <span class="highlight">Memory</span> (ChatGPT auto-saves facts about you across sessions) and <span class="highlight">Custom Instructions</span> (a persistent system prompt shaping every response).</p>
+      <p class="body-text">Karpathy's custom instructions: request educational framing ("be educational whenever you can"), set Korean language formality register for language learning, and share context about his work and interests.</p>
+      <p class="body-text">Think of custom instructions as your personal system prompt — it loads before every conversation. Good instructions compress preferences you'd otherwise repeat on every query, making each session feel like it already knows you.</p>
+      <div class="insight-box">
+        <strong>Starter custom instructions</strong>
+        "Be concise. Prefer code over prose when both work. When I give you a document, start with a one-paragraph summary. Flag your assumptions explicitly. I work in [your field]."
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="memory-panel">
+        <div class="mp-header">Custom Instructions · ChatGPT</div>
+        <div class="mp-section">
+          <div class="mp-section-label">What should ChatGPT know about you?</div>
+          <div class="mp-content">I'm a software engineer interested in ML. I prefer concise, technical answers. I'm learning Korean — when providing Korean text, use polite-formal register (합쇼체) by default.</div>
+        </div>
+        <div class="mp-section">
+          <div class="mp-section-label">How should ChatGPT respond?</div>
+          <div class="mp-content">Be educational when explaining concepts. Lead with the most important information first. Use code snippets liberally. Flag any assumptions you make explicitly.</div>
+        </div>
+        <div class="mp-memory-header">Memory · auto-saved across sessions</div>
+        <div class="mp-memories">
+          <div class="mp-memory-item">User prefers bullet lists for multi-step summaries</div>
+          <div class="mp-memory-item">User monitors indoor CO2 levels at home</div>
+          <div class="mp-memory-item">User is learning Korean, wants 합쇼체 register</div>
+          <div class="mp-memory-add">+ saved memories accumulate over time</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ RESOURCES ━━━━━━━━ -->
+<section id="s-resources" class="section" aria-label="Resources">
+  <div class="section-inner">
+    <div class="fade-up" style="text-align:center;margin-bottom:48px">
+      <div class="chapter-badge" style="display:inline-flex">Chapter 12 · Reference</div>
+      <h2 class="section-title" style="margin-top:16px">Tools &<br><span>Resources</span></h2>
+      <p class="body-text" style="max-width:560px;margin:0 auto">Every tool, model, and resource mentioned in Karpathy's lecture — linked and categorized.</p>
+    </div>
+
+    <div class="resource-category fade-up">
+      <div class="rc-label">LLM Apps</div>
+      <div class="rc-grid">
+        <a href="https://chatgpt.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">ChatGPT</div>
+          <div class="rcard-by">OpenAI</div>
+          <div class="rcard-desc">The original. Most features: web search, deep research, code execution, voice, vision, memory. Karpathy's primary demo throughout.</div>
+          <div class="rcard-tags"><span class="tag tag-c">Primary</span><span class="tag tag-g">Most features</span></div>
+        </a>
+        <a href="https://claude.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Claude</div>
+          <div class="rcard-by">Anthropic · claude.ai</div>
+          <div class="rcard-desc">Exceptional at coding and document analysis. Powers Cursor (Claude 3.7 Sonnet). Strong nuanced reasoning.</div>
+          <div class="rcard-tags"><span class="tag tag-g">Coding</span><span class="tag tag-c">Docs</span></div>
+        </a>
+        <a href="https://gemini.google.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Gemini</div>
+          <div class="rcard-by">Google · gemini.google.com</div>
+          <div class="rcard-desc">Google's LLM app. Gemini 2.0 Pro experimental. Deep Google Workspace integration and strong multimodal.</div>
+          <div class="rcard-tags"><span class="tag tag-p">Multimodal</span></div>
+        </a>
+        <a href="https://perplexity.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Perplexity</div>
+          <div class="rcard-by">Perplexity AI · perplexity.ai</div>
+          <div class="rcard-desc">Search-first LLM — always retrieves and cites sources. Karpathy demoed its Deep Research feature. Great default for research.</div>
+          <div class="rcard-tags"><span class="tag tag-c">Search-first</span><span class="tag tag-a">Citations</span></div>
+        </a>
+        <a href="https://chat.mistral.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Le Chat</div>
+          <div class="rcard-by">Mistral · chat.mistral.ai</div>
+          <div class="rcard-desc">French startup alternative. Mistral's consumer chat interface. Strong at European languages and code.</div>
+          <div class="rcard-tags"><span class="tag tag-a">Alternative</span></div>
+        </a>
+        <a href="https://chat.deepseek.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">DeepSeek</div>
+          <div class="rcard-by">DeepSeek</div>
+          <div class="rcard-desc">Chinese AI lab with surprisingly strong code and reasoning. Different training methodology — worth benchmarking against US labs.</div>
+          <div class="rcard-tags"><span class="tag tag-a">Alternative</span><span class="tag tag-g">Code</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-category fade-up" style="animation-delay:.1s">
+      <div class="rc-label">Developer &amp; Power-User Tools</div>
+      <div class="rc-grid">
+        <a href="https://cursor.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Cursor</div>
+          <div class="rcard-by">Cursor · cursor.com</div>
+          <div class="rcard-desc">Karpathy's coding IDE of choice. Agentic Composer mode (⌘I) runs Claude 3.7 Sonnet across your entire codebase autonomously.</div>
+          <div class="rcard-tags"><span class="tag tag-c">Karpathy's pick</span><span class="tag tag-g">Agentic</span></div>
+        </a>
+        <a href="https://windsurf.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Windsurf</div>
+          <div class="rcard-by">Codeium · windsurf.com</div>
+          <div class="rcard-desc">VS Code-based agentic coding IDE. Cursor alternative — mentioned alongside Cursor and VS Code as the main options.</div>
+          <div class="rcard-tags"><span class="tag tag-g">Agentic</span></div>
+        </a>
+        <a href="https://superwhisper.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Super Whisper</div>
+          <div class="rcard-by">Super Whisper · Mac</div>
+          <div class="rcard-desc">Karpathy's voice input tool of choice. Global hotkey → record → auto-transcribe → paste. Handles ~half his queries.</div>
+          <div class="rcard-tags"><span class="tag tag-c">Karpathy's pick</span><span class="tag tag-a">Voice</span></div>
+        </a>
+        <a href="https://notebooklm.google.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">NotebookLM</div>
+          <div class="rcard-by">Google · notebooklm.google.com</div>
+          <div class="rcard-desc">Generate two-host audio podcast discussions from any documents. Karpathy uses for passive learning on walks and drives.</div>
+          <div class="rcard-tags"><span class="tag tag-p">Audio</span></div>
+        </a>
+        <a href="https://ideogram.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Ideogram</div>
+          <div class="rcard-by">Ideogram · ideogram.ai</div>
+          <div class="rcard-desc">Image generation tool. Used for several images in the lecture as an alternative to DALL-E.</div>
+          <div class="rcard-tags"><span class="tag tag-a">Image Gen</span></div>
+        </a>
+        <a href="https://mermaid.js.org" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Mermaid</div>
+          <div class="rcard-by">mermaid.js.org</div>
+          <div class="rcard-desc">Diagram-from-code library. When you ask Claude for a "conceptual diagram," it often produces Mermaid markup that renders as a graph.</div>
+          <div class="rcard-tags"><span class="tag tag-g">Diagrams</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-category fade-up" style="animation-delay:.2s">
+      <div class="rc-label">Reference &amp; Further Reading</div>
+      <div class="rc-grid">
+        <a href="https://lmarena.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">LM Arena</div>
+          <div class="rcard-by">LMSYS · lmarena.ai</div>
+          <div class="rcard-desc">Live model leaderboard ranked by human preference votes (Chatbot Arena). Best signal for "which model is actually better right now."</div>
+          <div class="rcard-tags"><span class="tag tag-c">Leaderboard</span></div>
+        </a>
+        <a href="https://gutenberg.org" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Project Gutenberg</div>
+          <div class="rcard-by">gutenberg.org</div>
+          <div class="rcard-desc">Free public-domain books in plain text. Karpathy used it to get The Wealth of Nations for LLM document analysis demos.</div>
+          <div class="rcard-tags"><span class="tag tag-a">Books</span></div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Part 1: How LLMs Work</div>
+          <div class="rcard-by">Andrej Karpathy · YouTube</div>
+          <div class="rcard-desc">The companion video covering LLM internals — training, tokenization, transformer architecture, post-training, and RLHF.</div>
+          <div class="rcard-tags"><span class="tag tag-p">Prerequisite</span></div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=EWvNQjAaOHw" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Part 2: How I Use LLMs</div>
+          <div class="rcard-by">Andrej Karpathy · YouTube</div>
+          <div class="rcard-desc">The source video for this guide. Practical walkthrough of Karpathy's full LLM workflow with live demos of every tool.</div>
+          <div class="rcard-tags"><span class="tag tag-c">Source</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SUMMARY ━━━━━━━━ -->
+<section id="s-summary" class="section" aria-label="Summary">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:48px" class="fade-up">
+      <div class="chapter-badge" style="display:inline-flex">Chapter 13 · Summary</div>
+      <h2 class="section-title" style="margin-top:16px">Key<br><span>Takeaways</span></h2>
+    </div>
+    <div class="takeaways-pipeline">
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">01</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">You're talking to a ZIP file</div>
+          <div class="ps-desc">The model compressed the internet into weights. Knowledge is ~6–12 months stale, output is probabilistic, and it has no working memory outside the context window. It cannot verify its own answers.</div>
+          <div class="ps-tags"><span class="tag tag-c">Foundation</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">02</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">Know your tier and model</div>
+          <div class="ps-desc">Free → limited. $20/mo → GPT-4o / Claude Sonnet. $200/mo → o1 Pro, Deep Research. Match the model to the task — thinking models for hard reasoning, fast models for simple queries.</div>
+          <div class="ps-tags"><span class="tag tag-p">Models</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">03</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">Search for time-sensitive info only</div>
+          <div class="ps-desc">For timeless, well-documented knowledge — the weights are enough, skip search. For recent events, changing situations, or niche topics — enable search or use Perplexity.</div>
+          <div class="ps-tags"><span class="tag tag-a">Search</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">04</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">Deep Research for multi-source synthesis</div>
+          <div class="ps-desc">5–15 minutes, 20–30 sources, structured report. Genuinely useful for literature reviews and due diligence. Currently behind the $200/mo paywall on ChatGPT; Perplexity is cheaper.</div>
+          <div class="ps-tags"><span class="tag tag-c">Research</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">05</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">Verify code and data output</div>
+          <div class="ps-desc">Advanced Data Analysis runs real Python — but the model can hallucinate values in the code it writes. Check the numbers against your source data, not just the chart's visual shape.</div>
+          <div class="ps-tags"><span class="tag tag-g">Code</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">06</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">Voice removes half the friction</div>
+          <div class="ps-desc">A Whisper-based dictation tool eliminates the typing barrier. Karpathy routes ~50% of queries through voice. Use text for technical product names and library names that Whisper mistranscribes.</div>
+          <div class="ps-tags"><span class="tag tag-a">Voice</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">07</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">ChatGPT is the default — for now</div>
+          <div class="ps-desc">Most features, largest ecosystem, most polished UX. Claude for coding. Perplexity for search-first. The landscape shifts quickly — check LM Arena for current rankings before committing.</div>
+          <div class="ps-tags"><span class="tag tag-p">Ecosystem</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-up" style="text-align:center;margin-top:64px">
+      <p class="body-text" style="max-width:560px;margin:0 auto;color:var(--txt2)">Built from Andrej Karpathy's <a href="https://www.youtube.com/watch?v=EWvNQjAaOHw" target="_blank" rel="noopener" style="color:var(--accent)">"How I use LLMs"</a> lecture. All content, examples, and framings traced directly to that source. Interactive visualizations built with AI assistance.</p>
+      <p style="margin-top:16px;font-family:var(--ds);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2)">
+        <a href="../part-1/index.html" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">← Part 1: How LLMs Work</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="transcript.txt" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">Full transcript</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="https://github.com/ynarwal/how-llms-work" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">GitHub</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="main.js"></script>
+</body>
+</html>

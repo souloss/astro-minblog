@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何使用 LLM — 实用指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Repost Banner -->
+<div style="position:relative;z-index:250;background:linear-gradient(90deg,#635BFF08,#635BFF04);border-bottom:1px solid #635BFF20;padding:8px 24px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;color:#3C4257;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#635BFF">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      转载
+    </span>
+    <span style="color:#697386">作者: ynarwal · 基于 Andrej Karpathy 的讲座</span>
+    <a href="https://ynarwal.github.io/how-llms-work/" target="_blank" rel="noopener noreferrer" style="color:#635BFF;text-decoration:none;font-weight:500">查看原文 ↗</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <a href="/zh/reposts" style="color:#635BFF;text-decoration:none;font-weight:500">← 返回转载列表</a>
+    <span style="font-size:11px;color:#697386">⚠️ 翻译转载，版权归原作者所有</span>
+  </div>
+</div>
+<a href="#main-content" class="skip-link">跳至主要内容</a>
+<div class="progress-bar" id="progress-bar" role="progressbar" aria-label="阅读进度" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<nav class="top-nav" id="top-nav" aria-label="章节导航">
+  <div class="top-nav-inner">
+    <a href="../part-1/index-zh.html" class="top-nav-brand">← 第一部分</a>
+    <a href="../part-3/index-zh.html" style="font-family:var(--ds);font-size:12px;font-weight:600;color:var(--green);text-decoration:none;padding:5px 11px;border-radius:6px;border:1px solid rgba(0,135,90,0.3);background:rgba(0,135,90,0.05);white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;transition:.15s;margin-right:6px" onmouseover="this.style.background='rgba(0,135,90,0.1)'" onmouseout="this.style.background='rgba(0,135,90,0.05)'">第三部分 →</a>
+    <div class="top-nav-links" id="top-nav-links">
+      <button class="tnav-btn active" data-section="s-intro" aria-current="true">简介</button>
+      <button class="tnav-btn" data-section="s-mental-model">ZIP 文件</button>
+      <button class="tnav-btn" data-section="s-models">模型</button>
+      <button class="tnav-btn" data-section="s-thinking">思维模型</button>
+      <button class="tnav-btn" data-section="s-search">搜索</button>
+      <button class="tnav-btn" data-section="s-research">深度研究</button>
+      <button class="tnav-btn" data-section="s-docs">文档</button>
+      <button class="tnav-btn" data-section="s-code">代码</button>
+      <button class="tnav-btn" data-section="s-agentic">智能体</button>
+      <button class="tnav-btn" data-section="s-voice">语音</button>
+      <button class="tnav-btn" data-section="s-vision">视觉</button>
+      <button class="tnav-btn" data-section="s-memory">记忆</button>
+      <button class="tnav-btn" data-section="s-resources">资源</button>
+      <button class="tnav-btn" data-section="s-summary">总结</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ━━━━━━━━ HERO ━━━━━━━━ -->
+<section id="s-intro" class="section" aria-label="简介">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-content" id="main-content">
+    <div class="chapter-badge" aria-hidden="true">第二部分 · 实用指南</div>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <h1 class="hero-title">如何使用<br><span>LLM</span></h1>
+        <p class="hero-sub">超越内部原理——一份关于如何在日常工作中实际使用大语言模型的实用指南。基于 Andrej Karpathy 的 LLM 深度解析后续内容。</p>
+        <dl class="hero-stats">
+          <div class="stat-item"><dt class="stat-lbl">涵盖工具</dt><dd class="stat-val">14+</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">使用场景</dt><dd class="stat-val">12</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">模型</dt><dd class="stat-val">8+</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">来源</dt><dd class="stat-val">3h</dd></div>
+        </dl>
+        <p class="stats-caveat">配合 <a href="../part-1/index-zh.html" style="color:var(--accent)">第一部分：LLM 如何工作</a> 阅读。所有内容和示例均可追溯至 Karpathy 2025 年的视频。</p>
+        <div class="scroll-hint" aria-hidden="true"><div class="scroll-arrow"></div>向下滚动探索</div>
+      </div>
+      <div class="hero-right">
+        <div class="typewriter-wrap" aria-label="实用 LLM 提示">
+          <div class="tw-label" aria-hidden="true">实用提示</div>
+          <div class="tw-prompt">问：使用前我应该了解什么？</div>
+          <div class="tw-response" id="tw-response" aria-live="polite" aria-atomic="true"><span class="tw-cursor" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ ZIP FILE ━━━━━━━━ -->
+<section id="s-mental-model" class="section" aria-label="ZIP 文件心智模型">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 1 章 · 基础</div>
+      <h2 class="section-title">你在与一个<br><span>ZIP 文件对话</span></h2>
+      <p class="body-text">Karpathy 的心智模型：ChatGPT 是一个<span class="highlight">"单标签页 ZIP 文件"</span>——互联网的高度压缩快照。它阅读了截止训练数据之前几乎所有的网页、书籍和文档，大约是 6-12 个月前的内容。返回的是该数据的概率性回忆。</p>
+      <p class="body-text"><span class="highlight">上下文窗口</span>是它的工作记忆——它当前能看到的一块有限的 Token 磁带。其中的内容可以直接访问。窗口之外的内容在本次对话中不存在。除非你启用记忆功能，否则会话之间没有持久记忆。</p>
+      <p class="body-text">默认情况下，模型没有实时网络连接。模型产生的是你提示词的最统计可能的延续——不是查找，不是搜索，不是保证。</p>
+      <div class="insight-box">
+        <strong>自我介绍</strong>
+        "你好，我是 ChatGPT。我是一个单标签页 ZIP 文件。我的知识来自大约 6 个月前阅读互联网。我只知道本次对话中的内容。我生成的每一个词都是概率性采样——请据此对待。"
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="context-demo">
+        <div class="context-label">上下文窗口 · 实时工作记忆</div>
+        <div class="context-tape" id="context-tape">
+          <div class="context-token ctx-system">系统</div>
+          <div class="context-token ctx-content">你是一个有帮助的助手。</div>
+          <div class="context-token ctx-user">用户</div>
+          <div class="context-token ctx-content">一杯美式咖啡含多少咖啡因？</div>
+          <div class="context-token ctx-assistant">助手</div>
+          <div class="context-token ctx-content">每份浓缩约 63mg...</div>
+          <div class="context-token ctx-user">用户</div>
+          <div class="context-token ctx-content">双份浓缩呢？</div>
+          <div class="context-token ctx-cursor blink">▌</div>
+        </div>
+        <div class="context-note">以上所有内容对模型可见。一旦窗口填满，旧的上下文就会从边缘滑落并消失。</div>
+      </div>
+      <div class="insight-box" style="margin-top:16px">
+        <strong>过时知识提醒</strong>
+        对于咖啡因含量这类永恒不变的事实，模型的权重是可靠的。但对于上个月的新闻——则不然。在信任答案之前，请了解两者的区别。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ MODELS & TIERS ━━━━━━━━ -->
+<section id="s-models" class="section" aria-label="模型与层级">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:8px">
+      <div class="chapter-badge">第 2 章 · 生态</div>
+      <h2 class="section-title">模型与<br><span>层级</span></h2>
+      <p class="body-text" style="max-width:640px">ChatGPT 是"元老级选手"——功能最多、最受欢迎、最完善。但自 2022 年以来，生态系统已经爆发式增长。根据任务选择合适的工具。</p>
+    </div>
+    <div class="app-grid fade-up" style="animation-delay:.1s" id="app-grid" aria-label="LLM 应用对比">
+      <div class="app-card app-featured">
+        <div class="ac-name">ChatGPT</div>
+        <div class="ac-by">OpenAI</div>
+        <div class="ac-desc">元老级。功能最全：网络搜索、深度研究、代码执行、高级语音、图像生成、记忆。Karpathy 全程的主要演示工具。</div>
+        <div class="ac-tags"><span class="tag tag-c">首选</span><span class="tag tag-g">功能最多</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Claude</div>
+        <div class="ac-by">Anthropic</div>
+        <div class="ac-desc">在编程和文档分析方面表现卓越。为 Cursor（3.7 Sonnet）提供底层支持。在细致推理任务上经常超越对手。</div>
+        <div class="ac-tags"><span class="tag tag-g">编程</span><span class="tag tag-c">文档</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Gemini</div>
+        <div class="ac-by">Google</div>
+        <div class="ac-desc">Google 的参赛选手。Gemini 2.0 Pro 实验版可用。与 Google Workspace 深度集成。强大的多模态能力。</div>
+        <div class="ac-tags"><span class="tag tag-p">多模态</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Perplexity</div>
+        <div class="ac-by">Perplexity AI</div>
+        <div class="ac-desc">搜索优先的 LLM。始终检索并引用来源。Karpathy 演示了其深度研究功能用于雷帕霉素研究示例。</div>
+        <div class="ac-tags"><span class="tag tag-c">搜索优先</span><span class="tag tag-a">引用</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">Le Chat</div>
+        <div class="ac-by">Mistral</div>
+        <div class="ac-desc">法国初创公司的替代方案。Mistral 的消费者聊天界面。擅长欧洲语言和编程。</div>
+        <div class="ac-tags"><span class="tag tag-a">替代方案</span></div>
+      </div>
+      <div class="app-card">
+        <div class="ac-name">DeepSeek</div>
+        <div class="ac-by">DeepSeek</div>
+        <div class="ac-desc">中国 AI 实验室。在编程和推理方面出人意料地强大。与美国实验室不同的训练方法——值得对标测试。</div>
+        <div class="ac-tags"><span class="tag tag-a">替代方案</span><span class="tag tag-g">编程</span></div>
+      </div>
+    </div>
+
+    <div class="fade-up" style="animation-delay:.2s;margin-top:36px">
+      <div class="chapter-badge" style="margin-bottom:14px">模型家族</div>
+      <div class="model-families-grid">
+        <div class="model-family-card">
+          <div class="mf-provider">OpenAI</div>
+          <div class="mf-models">
+            <div class="model-chip chip-default">GPT-4o <span>快速 · 智能 · 默认</span></div>
+            <div class="model-chip chip-thinking">o1 / o3 / o3-mini <span>思维模型</span></div>
+            <div class="model-chip chip-premium">o1 Pro <span>$200/月 · 深度推理</span></div>
+          </div>
+        </div>
+        <div class="model-family-card">
+          <div class="mf-provider">Anthropic</div>
+          <div class="mf-models">
+            <div class="model-chip chip-thinking">Claude 3.7 Sonnet <span>编程 + 推理</span></div>
+            <div class="model-chip chip-default">Claude 3.5 Sonnet <span>快速 + 能力强</span></div>
+            <div class="model-chip chip-default">Claude Haiku <span>轻量级</span></div>
+          </div>
+        </div>
+        <div class="model-family-card">
+          <div class="mf-provider">Google</div>
+          <div class="mf-models">
+            <div class="model-chip chip-default">Gemini 2.0 Pro <span>多模态</span></div>
+            <div class="model-chip chip-default">Gemini Flash <span>快速 · 通常免费</span></div>
+          </div>
+        </div>
+        <div class="model-family-card">
+          <div class="mf-provider">其他</div>
+          <div class="mf-models">
+            <div class="model-chip chip-alt">DeepSeek <span>中国 · 擅长编程</span></div>
+            <div class="model-chip chip-alt">Mistral <span>法国 · Le Chat</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="insight-box fade-up" style="animation-delay:.3s;margin-top:20px">
+      <strong>去哪里对比</strong>
+      <a href="https://lmarena.ai" target="_blank" rel="noopener" style="color:var(--accent)">LM Arena (lmarena.ai)</a>——前身为 Chatbot Arena——维护着一个按人类偏好投票排名的实时排行榜。这是"哪个模型现在实际上更好"最可靠的信号。
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ THINKING MODELS ━━━━━━━━ -->
+<section id="s-thinking" class="section" aria-label="思维模型">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 3 章 · 推理</div>
+      <h2 class="section-title">思维<br><span>模型</span></h2>
+      <p class="body-text">OpenAI 的 <span class="highlight">o1、o1 Pro、o3 和 o3-mini</span> 是不同的品种——所有以"o"开头的模型名称都是思维模型。在返回答案之前，它们会运行一个扩展的内心独白：探索方法、回溯、尝试替代方案。</p>
+      <p class="body-text">这源于强化学习：模型发现审慎策略能在困难问题上带来更好的结果。它尝试不同的想法、回溯、检查自己的推理——就像你在解决问题时的内心独白一样。</p>
+      <p class="body-text">Karpathy 指出，Claude 3.7 Sonnet（非思维模型）解决了一个 o1 Pro 无法解决的编程难题。模型选择并不总是显而易见的——正确的工具取决于具体任务。</p>
+      <div class="insight-box">
+        <strong>何时使用思维模型</strong>
+        困难的数学题、复杂的多步骤编程、形式推理、逻辑谜题。简单任务请跳过它们——它们更慢、更贵，当没有困难的问题需要推理时，审慎帮助不大。
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="thinking-demo" id="thinking-demo">
+        <div class="thinking-header">
+          <span class="thinking-badge">o1 Pro · 扩展思维</span>
+          <span class="thinking-time" id="thinking-time">就绪</span>
+        </div>
+        <div style="font-family:var(--dm);font-size:12px;color:var(--amber);margin-bottom:12px;padding:8px 10px;background:rgba(148,104,0,0.05);border-radius:var(--radius-sm);border:1px solid rgba(148,104,0,0.15)">"证明两个奇数之和总是偶数。"</div>
+        <div class="thinking-steps" id="thinking-steps">
+          <div style="font-family:var(--ds);font-size:11px;color:var(--txt2);text-align:center;padding:20px 0">点击运行查看扩展思维展开过程</div>
+        </div>
+        <div class="thinking-answer" id="thinking-answer" style="display:none">
+          <div class="ta-label">答案</div>
+          <div class="ta-content" id="ta-content"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="thinking-run-btn" style="margin-top:14px;width:100%">▶ 运行演示</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ WEB SEARCH ━━━━━━━━ -->
+<section id="s-search" class="section" aria-label="何时使用网络搜索">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 4 章 · 信息</div>
+      <h2 class="section-title">何时<br><span>搜索</span></h2>
+      <p class="body-text">默认情况下，模型仅基于其权重运行——没有互联网，没有实时数据。启用网络搜索意味着它先检索页面，然后综合答案。这会增加延迟，但解锁了实时信息。</p>
+      <p class="body-text">关键问题：<em>模型的过时回忆够用吗？</em>对于有充分文档记录的、永恒不变的知识——够用。对于任何时间敏感的、最近的或小众的内容——启用搜索或使用 Perplexity。</p>
+      <ul class="use-case-list">
+        <li class="ucl-no-search"><span class="ucl-icon">✕</span><div><strong>跳过搜索：</strong>"一杯美式咖啡含多少咖啡因？"——有充分文档记录、永恒不变、模型知道</div></li>
+        <li class="ucl-no-search"><span class="ucl-icon">✕</span><div><strong>跳过搜索：</strong>"解释瑞利散射"——教科书级物理，无需搜索</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>使用搜索：</strong>"白莲花度假村第三季什么时候播出？"——时间敏感，上映日期可能变化</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>使用搜索：</strong>"现在去越南旅行安全吗？"——当前情况可能与训练数据不同</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>使用搜索：</strong>"最近 USAID 削减是怎么回事？"——近期新闻，不在训练数据中</div></li>
+        <li class="ucl-search"><span class="ucl-icon">✓</span><div><strong>使用搜索：</strong>"[某人]用什么牙膏？"——小众、可能是最近的、冷门知识</div></li>
+      </ul>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="decision-tree">
+        <div class="dt-title">是否应该启用网络搜索？</div>
+        <div class="dt-node">
+          <div class="dt-question">这条信息是否时间敏感或可能已过时？</div>
+          <div class="dt-branches">
+            <div class="dt-branch dt-no">
+              <div class="dt-label">否 — 永恒不变</div>
+              <div class="dt-node" style="margin-top:8px">
+                <div class="dt-question" style="font-size:12px">是否小众或在网络上文档不充分？</div>
+                <div class="dt-branches" style="margin-top:8px">
+                  <div class="dt-branch dt-no">
+                    <div class="dt-label">否</div>
+                    <div class="dt-result dt-result-no" style="margin-top:6px">跳过搜索 — 权重足够</div>
+                  </div>
+                  <div class="dt-branch dt-yes">
+                    <div class="dt-label">是</div>
+                    <div class="dt-result dt-result-yes" style="margin-top:6px">启用搜索</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dt-branch dt-yes">
+              <div class="dt-label">是 — 近期 / 变化中</div>
+              <div class="dt-result dt-result-yes" style="margin-top:8px">启用搜索</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="insight-box" style="margin-top:16px">
+        <strong>Perplexity 对比 ChatGPT 搜索</strong>
+        Perplexity 始终搜索——它天生就是搜索优先的设计。ChatGPT 的搜索是按消息选择启用的。对于研究密集型工作流，Perplexity 的默认开启方式通常省去了决策开销。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ DEEP RESEARCH ━━━━━━━━ -->
+<section id="s-research" class="section" aria-label="深度研究">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 5 章 · 综合</div>
+      <h2 class="section-title">深度<br><span>研究</span></h2>
+      <p class="body-text"><span class="highlight">深度研究</span> = 扩展思维 + 网络搜索，运行 5-15 分钟。模型并行搜索数十个来源，跨来源推理，并生成结构化报告——人类研究员需要数小时才能完成的工作。</p>
+      <p class="body-text">Karpathy 的演示：研究雷帕霉素与长寿。模型查看了 27+ 个来源，思考了 5 分钟，生成了一份涵盖作用机制（mTOR 抑制）、线虫/小鼠/人体试验数据、安全性问题和正在进行的研究的报告。</p>
+      <p class="body-text"><strong>ChatGPT 深度研究</strong>（需 $200/月 Pro）和 <strong>Perplexity</strong> 的研究模式都提供此功能。对于文献综述、竞争分析和尽职调查——它显著降低了研究门槛。</p>
+      <div class="insight-box">
+        <strong>最佳用途</strong>
+        科学文献调研、竞争格局分析、决策尽职调查、医疗/法律研究（需验证）。对于简单的事实性问题不值得使用。
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="research-pipeline">
+        <div class="rp-header">
+          <span>深度研究流程</span>
+          <button class="btn btn-ghost btn-sm" id="rp-run-btn">▶ 模拟</button>
+        </div>
+        <div class="rp-steps">
+          <div class="rp-step" id="rp-s0">
+            <div class="rp-step-icon">1</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">查询规划</div>
+              <div class="rp-step-desc">将问题分解为子主题和并行搜索查询</div>
+            </div>
+          </div>
+          <div class="rp-connector"></div>
+          <div class="rp-step" id="rp-s1">
+            <div class="rp-step-icon">2</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">并行网络搜索</div>
+              <div class="rp-step-desc">同时跨子主题获取 20-30 个来源</div>
+            </div>
+          </div>
+          <div class="rp-connector"></div>
+          <div class="rp-step" id="rp-s2">
+            <div class="rp-step-icon">3</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">扩展思维</div>
+              <div class="rp-step-desc">跨来源推理，解决冲突，识别空白</div>
+            </div>
+          </div>
+          <div class="rp-connector"></div>
+          <div class="rp-step" id="rp-s3">
+            <div class="rp-step-icon">4</div>
+            <div class="rp-step-body">
+              <div class="rp-step-title">报告生成</div>
+              <div class="rp-step-desc">带引用、机制、注意事项的结构化报告</div>
+            </div>
+          </div>
+        </div>
+        <div class="rp-result" id="rp-result" style="display:none">
+          <div class="rp-result-label">示例 — 雷帕霉素与长寿研究</div>
+          <div class="rp-result-content">27 个来源 · 5 分 12 秒 · 涵盖：mTOR 抑制机制、线虫/小鼠/人体试验数据、安全性概况、剂量考量、正在进行临床试验、研究者共识...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ DOCS & BOOKS ━━━━━━━━ -->
+<section id="s-docs" class="section" aria-label="文档与书籍">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 6 章 · 阅读</div>
+      <h2 class="section-title">文档与<br><span>书籍</span></h2>
+      <p class="body-text">附加文档可以将模型变成阅读助手。上传 PDF、粘贴章节、分享电子表格——然后提问、请求摘要，或从内容中生成概念图。</p>
+      <p class="body-text">Karpathy 的示例：用 Claude 阅读《国富论》。"我附上了第 1 卷第 3 章——请创建这一章的概念图。"Claude 用 <span class="highlight">Mermaid 代码</span>响应，这是一种图表标记语言，可以渲染为连接关键概念的图形。</p>
+      <p class="body-text">对于数据，模型可以编写并运行 Python 来生成图表。但要把它当作一个<em>非常初级的数据分析师</em>——编写代码方面非常出色，但它在 Karpathy 发现的一个图表中幻觉出了一个"1.7 万亿"的数字。始终审查数字，而不仅仅是图表的形状。</p>
+      <div class="insight-box">
+        <strong>关键工作流</strong>
+        附加文档 → 请求摘要 → 通过问答深入各章节 → 请求概念图（Mermaid）→ 对照来源验证任何具体数字。
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="doc-demo">
+        <div class="doc-demo-header">
+          <span class="doc-chip">国富论 · 第 I 卷，第 3 章</span>
+          <span class="doc-chip doc-chip-model">Claude 3.7 Sonnet</span>
+        </div>
+        <div class="doc-chat">
+          <div class="doc-msg doc-msg-user">请创建这一章的概念图</div>
+          <div class="doc-msg doc-msg-ai">
+            <div class="doc-code-block">
+              <div class="dcb-label">mermaid</div>
+              <pre>graph TD
+  A[劳动分工] -->|受限于| B[市场范围]
+  B --> C[本地市场]
+  B --> D[贸易网络]
+  D --> E[水路运输]
+  D --> F[陆路运输]
+  E -->|成本更低| G[沿海城市]
+  G -->|率先发展| H[专业化]</pre>
+            </div>
+            渲染后的图表展示了斯密如何论证市场规模制约专业化——更大的市场使更深入的劳动分工成为可能。
+          </div>
+          <div class="doc-msg doc-msg-user">节点 D 中有什么隐含假设？</div>
+          <div class="doc-msg doc-msg-ai">节点 D 假设贸易网络在法律和政治上是可及的——斯密的隐含前提是功能性的交换基础设施已经存在。他指出了这个前提条件但没有为之论证。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ CODE EXECUTION ━━━━━━━━ -->
+<section id="s-code" class="section" aria-label="代码执行">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 7 章 · 数据分析</div>
+      <h2 class="section-title">代码<br><span>执行</span></h2>
+      <p class="body-text">ChatGPT 的<span class="highlight">高级数据分析</span>将模型连接到实时 Python 运行时。你用自然语言描述任务——它编写代码、运行并展示结果。无需复制粘贴，无需本地配置。</p>
+      <p class="body-text">这是语言与计算的集成。算术、统计、数据清洗、图表生成——Python 能做的都可以。上传一个 CSV 请求趋势分析；几秒钟内得到 matplotlib 图表。</p>
+      <p class="body-text">Karpathy 的警告：他发现模型生成的图表中出现了幻觉的"1.7 万亿"而不是正确的值。代码运行正常；数字是错的。把它当作一个能力很强但不可靠的初级员工——验证数字，而不仅仅是输出的形状。</p>
+      <div class="insight-box">
+        <strong>原则</strong>
+        当你需要计算、转换或可视化时使用代码执行。始终检查：生成的代码是否匹配你的要求？输出对照你的源数据看起来是否合理？
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="code-demo">
+        <div class="cd-header">
+          <span class="cd-badge">高级数据分析 · Python 运行时</span>
+          <button class="btn btn-ghost btn-sm" id="code-run-btn">▶ 运行</button>
+        </div>
+        <div class="cd-prompt">"绘制 1990-2023 年 G7 国家 GDP 增长"</div>
+        <div class="cd-steps">
+          <div class="cd-step" id="cd-step-0" style="display:none">
+            <div class="cd-step-label">正在编写代码...</div>
+            <div class="cd-code"><span class="cd-kw">import</span> pandas <span class="cd-kw">as</span> pd
+<span class="cd-kw">import</span> matplotlib.pyplot <span class="cd-kw">as</span> plt
+
+df = pd.read_csv(<span class="cd-str">'g7_gdp.csv'</span>)
+fig, ax = plt.subplots(figsize=(<span class="cd-num">10</span>, <span class="cd-num">5</span>))
+<span class="cd-kw">for</span> country <span class="cd-kw">in</span> df.columns[<span class="cd-num">1</span>:]:
+    ax.plot(df[<span class="cd-str">'year'</span>], df[country], label=country)
+ax.legend()
+plt.show()</div>
+          </div>
+          <div class="cd-step" id="cd-step-1" style="display:none">
+            <div class="cd-step-label">正在执行 Python...</div>
+            <div class="cd-spinner"></div>
+          </div>
+          <div class="cd-step" id="cd-step-2" style="display:none">
+            <div class="cd-step-label">输出</div>
+            <canvas id="chart-canvas" width="340" height="160" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border)"></canvas>
+            <div class="cd-caution">⚠ 务必验证：在分享前检查数字是否与实际源数据匹配</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ AGENTIC CODING ━━━━━━━━ -->
+<section id="s-agentic" class="section" aria-label="智能体编程">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 8 章 · 开发</div>
+      <h2 class="section-title">智能体<br><span>编程</span></h2>
+      <p class="body-text">超越聊天，一类新工具将 LLM 直接集成到你的代码编辑器中。<span class="highlight">Cursor</span> 和 <span class="highlight">Windsurf</span> 在底层运行 Claude 或 GPT，在你的整个代码库中自主操作——读取文件、编写代码、运行命令和迭代。</p>
+      <p class="body-text">Cursor 的 <em>Composer</em>（⌘I）是一个自主智能体循环：描述一个任务，它会规划、编写文件、运行 Shell 命令、读取错误并循环——在任何破坏性操作前请求你的确认。Karpathy 在几分钟内从零构建了一个 React 应用。</p>
+      <p class="body-text">Karpathy 设置中底层使用的模型：Claude 3.7 Sonnet。关键洞察是，当你足够了解模型以引导和纠正它，而不仅仅是提示和期望时，这些工具才最强大。</p>
+      <div class="insight-box">
+        <strong>Cursor 键盘快捷键</strong>
+        <code style="font-family:var(--dm);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘K</code> 行内编辑 &nbsp;·&nbsp;
+        <code style="font-family:var(--dm);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘L</code> 聊天侧栏 &nbsp;·&nbsp;
+        <code style="font-family:var(--dm);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">⌘I</code> Composer（智能体模式）
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="agent-loop">
+        <div class="al-header">Composer 智能体循环</div>
+        <div class="al-steps" id="al-steps">
+          <div class="al-step" id="al-s0">
+            <div class="al-icon">1</div>
+            <div class="al-body">
+              <div class="al-title">规划</div>
+              <div class="al-desc">将任务分解为文件变更和 Shell 命令</div>
+            </div>
+          </div>
+          <div class="al-arrow">↓</div>
+          <div class="al-step" id="al-s1">
+            <div class="al-icon">2</div>
+            <div class="al-body">
+              <div class="al-title">生成</div>
+              <div class="al-desc">在代码库中编写或编辑源文件</div>
+            </div>
+          </div>
+          <div class="al-arrow">↓</div>
+          <div class="al-step" id="al-s2">
+            <div class="al-icon">3</div>
+            <div class="al-body">
+              <div class="al-title">执行</div>
+              <div class="al-desc">运行 Shell 命令——先征求你的批准</div>
+            </div>
+          </div>
+          <div class="al-arrow">↓</div>
+          <div class="al-step" id="al-s3">
+            <div class="al-icon">4</div>
+            <div class="al-body">
+              <div class="al-title">观察</div>
+              <div class="al-desc">读取输出，捕获错误，更新计划</div>
+            </div>
+          </div>
+          <div class="al-arrow al-loop-arrow">↺ 循环直到完成或卡住</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="al-run-btn" style="margin-top:14px;width:100%">▶ 动画演示</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ VOICE & AUDIO ━━━━━━━━ -->
+<section id="s-voice" class="section" aria-label="语音与音频">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 9 章 · 多模态</div>
+      <h2 class="section-title">语音与<br><span>音频</span></h2>
+      <p class="body-text">Karpathy 大约<span class="highlight">一半的查询通过语音</span>完成，使用 Super Whisper——他在 Super Whisper、WhisperFlow 和 MacWhisper 中的首选。按下热键，说话，再按一次——查询被转录并发送。无需打字，零摩擦。</p>
+      <p class="body-text">ChatGPT 的<span class="highlight">高级语音模式</span>更进一步：音频 Token 直接流入和流出模型，没有文本转录层。结果感觉真正像对话，而不是文本转语音的包装。</p>
+      <p class="body-text"><span class="highlight">NotebookLM</span>（Google）可以从你的文档生成音频播客。上传论文、书籍或笔记——它生成一个双主持人的讨论。Karpathy 在散步和长途驾驶时用它被动学习自己专业之外的主题。</p>
+      <div class="insight-box">
+        <strong>Karpathy 的语音提示</strong>
+        对于包含产品名称、库名称或技术术语的查询——切换到打字。Whisper 经常误转录小众技术词汇。语音最适合自然语言问题。
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="voice-tools">
+        <div class="voice-pipeline">
+          <div class="vp-step">
+            <div class="vp-icon">🎙</div>
+            <div class="vp-label">说话</div>
+          </div>
+          <div class="vp-arrow">→</div>
+          <div class="vp-step">
+            <div class="vp-icon">⚡</div>
+            <div class="vp-label">Whisper<br>转录</div>
+          </div>
+          <div class="vp-arrow">→</div>
+          <div class="vp-step">
+            <div class="vp-icon">🧠</div>
+            <div class="vp-label">LLM<br>响应</div>
+          </div>
+          <div class="vp-arrow">→</div>
+          <div class="vp-step">
+            <div class="vp-icon">📝</div>
+            <div class="vp-label">文本<br>回复</div>
+          </div>
+        </div>
+        <div class="voice-apps">
+          <div class="va-card">
+            <div class="va-name">Super Whisper</div>
+            <div class="va-tag">Karpathy 首选 · Mac</div>
+            <div class="va-desc">全局热键录音 → 自动转录 → 粘贴到任何地方。系统级可用。</div>
+          </div>
+          <div class="va-card">
+            <div class="va-name">NotebookLM</div>
+            <div class="va-tag">Google · 免费</div>
+            <div class="va-desc">上传文档 → 生成双主持人播客讨论。适合被动学习。</div>
+          </div>
+          <div class="va-card">
+            <div class="va-name">高级语音</div>
+            <div class="va-tag">ChatGPT</div>
+            <div class="va-desc">原生音频 Token——低延迟，无转录层，真正对话式体验。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ VISION ━━━━━━━━ -->
+<section id="s-vision" class="section" aria-label="视觉与相机输入">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 10 章 · 视觉输入</div>
+      <h2 class="section-title">视觉与<br><span>相机</span></h2>
+      <p class="body-text">现代 LLM 接受图像输入——照片、截图、扫描件、图表。模型对视觉内容的推理能力与对文本一样流畅，这得益于包含数十亿图文对的训练数据。</p>
+      <p class="body-text">Karpathy 的示例：上传<span class="highlight">血液检测扫描件</span>请求解读，将摄像头对准<span class="highlight">Aeronet 4 CO2 监测仪</span>识别设备并解读 713 PPM 的读数，以及展示一张<span class="highlight">指环王地图</span>，模型正确识别为中土世界。</p>
+      <p class="body-text">视觉在有充分文档记录的主题上最可靠——血液检测参考范围、常见消费设备、著名地图——训练数据充分覆盖了这些领域。对于专有或罕见物品，预期会有更多幻觉。</p>
+      <div class="insight-box">
+        <strong>强视觉用例</strong>
+        识别未知物品、解读标准实验室结果、解释图表和图形、印刷文本 OCR、阅读手写、分析截图。
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="vision-examples">
+        <div class="ve-card">
+          <div class="ve-icon">🩸</div>
+          <div class="ve-content">
+            <div class="ve-title">血液检测面板</div>
+            <div class="ve-prompt">"这是我的化验结果——请解释异常值"</div>
+            <div class="ve-note ve-note-ok">效果好——参考范围在训练数据中有大量文档。Karpathy 验证了成分列表与实际包装盒一致。医疗决策请务必咨询医生。</div>
+          </div>
+        </div>
+        <div class="ve-card">
+          <div class="ve-icon">📊</div>
+          <div class="ve-content">
+            <div class="ve-title">CO2 监测仪（Aeronet 4）</div>
+            <div class="ve-prompt">"这是什么设备，713 PPM 是好的读数吗？"</div>
+            <div class="ve-note ve-note-ok">正确识别了设备，解释了 713 PPM 在室内是可接受的（目标：低于 800 PPM，超过 1000 PPM 需通风）。</div>
+          </div>
+        </div>
+        <div class="ve-card">
+          <div class="ve-icon">🗺</div>
+          <div class="ve-content">
+            <div class="ve-title">奇幻地图识别</div>
+            <div class="ve-prompt">"你知道这是什么地图吗？"</div>
+            <div class="ve-note ve-note-ok">立即识别为《指环王》中的中土世界地图——训练数据中著名的、广泛流传的图像。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ MEMORY & PERSONALIZATION ━━━━━━━━ -->
+<section id="s-memory" class="section" aria-label="记忆与个性化">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge">第 11 章 · 个性化</div>
+      <h2 class="section-title">记忆与<br><span>个性化</span></h2>
+      <p class="body-text">默认情况下，每次对话都是无状态的——标签页关闭时模型忘记一切。两个功能改变了这一点：<span class="highlight">记忆</span>（ChatGPT 跨会话自动保存关于你的事实）和<span class="highlight">自定义指令</span>（一个塑造每次响应的持久系统提示词）。</p>
+      <p class="body-text">Karpathy 的自定义指令：请求教育性框架（"尽可能采用教育性方式"），为语言学习设置韩语敬语级别，以及分享关于他工作和兴趣的背景信息。</p>
+      <p class="body-text">把自定义指令想象成你的个人系统提示词——它在每次对话前加载。好的指令压缩了你否则会在每次查询中重复的偏好，让每次会话感觉已经了解你。</p>
+      <div class="insight-box">
+        <strong>入门自定义指令</strong>
+        "简洁回答。当代码和文字都可行时优先使用代码。当我给你一个文档时，先用一段话总结。明确标注你的假设。我在[你的领域]工作。"
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <div class="memory-panel">
+        <div class="mp-header">自定义指令 · ChatGPT</div>
+        <div class="mp-section">
+          <div class="mp-section-label">ChatGPT 应该了解你什么？</div>
+          <div class="mp-content">我是一名对 ML 感兴趣的软件工程师。我偏好简洁、技术性的回答。我在学韩语——提供韩语文本时，默认使用敬语体（합쇼체）。</div>
+        </div>
+        <div class="mp-section">
+          <div class="mp-section-label">ChatGPT 应该如何回应？</div>
+          <div class="mp-content">解释概念时采用教育性方式。先呈现最重要的信息。大量使用代码片段。明确标注你做出的任何假设。</div>
+        </div>
+        <div class="mp-memory-header">记忆 · 跨会话自动保存</div>
+        <div class="mp-memories">
+          <div class="mp-memory-item">用户偏好多步骤摘要使用项目符号列表</div>
+          <div class="mp-memory-item">用户在家监测室内 CO2 水平</div>
+          <div class="mp-memory-item">用户正在学韩语，希望使用 합쇼체 敬语体</div>
+          <div class="mp-memory-add">+ 保存的记忆会随时间累积</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ RESOURCES ━━━━━━━━ -->
+<section id="s-resources" class="section" aria-label="资源">
+  <div class="section-inner">
+    <div class="fade-up" style="text-align:center;margin-bottom:48px">
+      <div class="chapter-badge" style="display:inline-flex">第 12 章 · 参考</div>
+      <h2 class="section-title" style="margin-top:16px">工具与<br><span>资源</span></h2>
+      <p class="body-text" style="max-width:560px;margin:0 auto">Karpathy 讲座中提到的每一个工具、模型和资源——已链接并分类。</p>
+    </div>
+
+    <div class="resource-category fade-up">
+      <div class="rc-label">LLM 应用</div>
+      <div class="rc-grid">
+        <a href="https://chatgpt.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">ChatGPT</div>
+          <div class="rcard-by">OpenAI</div>
+          <div class="rcard-desc">元老级。功能最全：网络搜索、深度研究、代码执行、语音、视觉、记忆。Karpathy 全程的主要演示工具。</div>
+          <div class="rcard-tags"><span class="tag tag-c">首选</span><span class="tag tag-g">功能最多</span></div>
+        </a>
+        <a href="https://claude.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Claude</div>
+          <div class="rcard-by">Anthropic · claude.ai</div>
+          <div class="rcard-desc">在编程和文档分析方面表现卓越。为 Cursor（Claude 3.7 Sonnet）提供底层支持。细致推理能力强。</div>
+          <div class="rcard-tags"><span class="tag tag-g">编程</span><span class="tag tag-c">文档</span></div>
+        </a>
+        <a href="https://gemini.google.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Gemini</div>
+          <div class="rcard-by">Google · gemini.google.com</div>
+          <div class="rcard-desc">Google 的 LLM 应用。Gemini 2.0 Pro 实验版。深度 Google Workspace 集成和强大的多模态能力。</div>
+          <div class="rcard-tags"><span class="tag tag-p">多模态</span></div>
+        </a>
+        <a href="https://perplexity.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Perplexity</div>
+          <div class="rcard-by">Perplexity AI · perplexity.ai</div>
+          <div class="rcard-desc">搜索优先的 LLM——始终检索并引用来源。Karpathy 演示了其深度研究功能。研究的绝佳默认选择。</div>
+          <div class="rcard-tags"><span class="tag tag-c">搜索优先</span><span class="tag tag-a">引用</span></div>
+        </a>
+        <a href="https://chat.mistral.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Le Chat</div>
+          <div class="rcard-by">Mistral · chat.mistral.ai</div>
+          <div class="rcard-desc">法国初创公司的替代方案。Mistral 的消费者聊天界面。擅长欧洲语言和编程。</div>
+          <div class="rcard-tags"><span class="tag tag-a">替代方案</span></div>
+        </a>
+        <a href="https://chat.deepseek.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">DeepSeek</div>
+          <div class="rcard-by">DeepSeek</div>
+          <div class="rcard-desc">中国 AI 实验室，编程和推理出人意料地强大。不同的训练方法论——值得与美国实验室对标测试。</div>
+          <div class="rcard-tags"><span class="tag tag-a">替代方案</span><span class="tag tag-g">编程</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-category fade-up" style="animation-delay:.1s">
+      <div class="rc-label">开发者与高级用户工具</div>
+      <div class="rc-grid">
+        <a href="https://cursor.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Cursor</div>
+          <div class="rcard-by">Cursor · cursor.com</div>
+          <div class="rcard-desc">Karpathy 的编程 IDE 首选。智能体 Composer 模式（⌘I）使用 Claude 3.7 Sonnet 在整个代码库中自主运行。</div>
+          <div class="rcard-tags"><span class="tag tag-c">Karpathy 首选</span><span class="tag tag-g">智能体</span></div>
+        </a>
+        <a href="https://windsurf.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Windsurf</div>
+          <div class="rcard-by">Codeium · windsurf.com</div>
+          <div class="rcard-desc">基于 VS Code 的智能体编程 IDE。Cursor 的替代方案——与 Cursor 和 VS Code 一起被提及为主要选项。</div>
+          <div class="rcard-tags"><span class="tag tag-g">智能体</span></div>
+        </a>
+        <a href="https://superwhisper.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Super Whisper</div>
+          <div class="rcard-by">Super Whisper · Mac</div>
+          <div class="rcard-desc">Karpathy 的语音输入工具首选。全局热键 → 录音 → 自动转录 → 粘贴。处理约一半的查询。</div>
+          <div class="rcard-tags"><span class="tag tag-c">Karpathy 首选</span><span class="tag tag-a">语音</span></div>
+        </a>
+        <a href="https://notebooklm.google.com" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">NotebookLM</div>
+          <div class="rcard-by">Google · notebooklm.google.com</div>
+          <div class="rcard-desc">从任何文档生成双主持人音频播客讨论。Karpathy 在散步和驾驶时用于被动学习。</div>
+          <div class="rcard-tags"><span class="tag tag-p">音频</span></div>
+        </a>
+        <a href="https://ideogram.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Ideogram</div>
+          <div class="rcard-by">Ideogram · ideogram.ai</div>
+          <div class="rcard-desc">图像生成工具。在讲座中用作 DALL-E 的替代方案生成多张图片。</div>
+          <div class="rcard-tags"><span class="tag tag-a">图像生成</span></div>
+        </a>
+        <a href="https://mermaid.js.org" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Mermaid</div>
+          <div class="rcard-by">mermaid.js.org</div>
+          <div class="rcard-desc">代码生成图表库。当你向 Claude 请求"概念图"时，它通常生成可渲染为图形的 Mermaid 标记。</div>
+          <div class="rcard-tags"><span class="tag tag-g">图表</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-category fade-up" style="animation-delay:.2s">
+      <div class="rc-label">参考与延伸阅读</div>
+      <div class="rc-grid">
+        <a href="https://lmarena.ai" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">LM Arena</div>
+          <div class="rcard-by">LMSYS · lmarena.ai</div>
+          <div class="rcard-desc">按人类偏好投票排名的实时模型排行榜（Chatbot Arena）。"哪个模型现在实际上更好"的最佳信号。</div>
+          <div class="rcard-tags"><span class="tag tag-c">排行榜</span></div>
+        </a>
+        <a href="https://gutenberg.org" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">Project Gutenberg</div>
+          <div class="rcard-by">gutenberg.org</div>
+          <div class="rcard-desc">免费公共领域书籍纯文本。Karpathy 用它获取《国富论》用于 LLM 文档分析演示。</div>
+          <div class="rcard-tags"><span class="tag tag-a">书籍</span></div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">第一部分：LLM 如何工作</div>
+          <div class="rcard-by">Andrej Karpathy · YouTube</div>
+          <div class="rcard-desc">配套视频，涵盖 LLM 内部原理——训练、分词、Transformer 架构、后训练和 RLHF。</div>
+          <div class="rcard-tags"><span class="tag tag-p">前置知识</span></div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=EWvNQjAaOHw" target="_blank" rel="noopener" class="resource-card">
+          <div class="rcard-name">第二部分：我如何使用 LLM</div>
+          <div class="rcard-by">Andrej Karpathy · YouTube</div>
+          <div class="rcard-desc">本指南的来源视频。Karpathy 完整 LLM 工作流的实用演示，包含每个工具的现场演示。</div>
+          <div class="rcard-tags"><span class="tag tag-c">来源</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SUMMARY ━━━━━━━━ -->
+<section id="s-summary" class="section" aria-label="总结">
+  <div class="section-inner">
+    <div style="text-align:center;margin-bottom:48px" class="fade-up">
+      <div class="chapter-badge" style="display:inline-flex">第 13 章 · 总结</div>
+      <h2 class="section-title" style="margin-top:16px">关键<br><span>要点</span></h2>
+    </div>
+    <div class="takeaways-pipeline">
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">01</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">你在与一个 ZIP 文件对话</div>
+          <div class="ps-desc">模型将互联网压缩为权重。知识大约滞后 6-12 个月，输出是概率性的，在上下文窗口之外没有工作记忆。它无法验证自己的答案。</div>
+          <div class="ps-tags"><span class="tag tag-c">基础</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">02</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">了解你的层级和模型</div>
+          <div class="ps-desc">免费 → 功能有限。$20/月 → GPT-4o / Claude Sonnet。$200/月 → o1 Pro、深度研究。根据任务匹配模型——思维模型用于困难推理，快速模型用于简单查询。</div>
+          <div class="ps-tags"><span class="tag tag-p">模型</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">03</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">仅对时间敏感信息搜索</div>
+          <div class="ps-desc">对于永恒不变的、有充分文档记录的知识——权重足够，跳过搜索。对于近期事件、变化中的情况或小众主题——启用搜索或使用 Perplexity。</div>
+          <div class="ps-tags"><span class="tag tag-a">搜索</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">04</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">深度研究用于多来源综合</div>
+          <div class="ps-desc">5-15 分钟，20-30 个来源，结构化报告。对文献综述和尽职调查确实有用。目前在 ChatGPT 上需 $200/月付费墙；Perplexity 更便宜。</div>
+          <div class="ps-tags"><span class="tag tag-c">研究</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">05</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">验证代码和数据输出</div>
+          <div class="ps-desc">高级数据分析运行真实的 Python——但模型可能在编写的代码中幻觉数值。对照源数据检查数字，而不仅仅是图表的视觉形状。</div>
+          <div class="ps-tags"><span class="tag tag-g">代码</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">06</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">语音消除了一半的摩擦</div>
+          <div class="ps-desc">基于 Whisper 的听写工具消除了打字障碍。Karpathy 约 50% 的查询通过语音完成。对于 Whisper 误转录的技术产品名和库名请使用文本。</div>
+          <div class="ps-tags"><span class="tag tag-a">语音</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage animate-ready">
+        <div class="ps-num">07</div>
+        <div class="ps-content">
+          <div class="ps-title" style="color:var(--accent)">ChatGPT 是默认选择——目前而言</div>
+          <div class="ps-desc">功能最多、生态系统最大、体验最完善。Claude 适合编程。Perplexity 适合搜索优先。格局变化很快——在做出选择前查看 LM Arena 的当前排名。</div>
+          <div class="ps-tags"><span class="tag tag-p">生态</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-up" style="text-align:center;margin-top:64px">
+      <p class="body-text" style="max-width:560px;margin:0 auto;color:var(--txt2)">基于 Andrej Karpathy 的 <a href="https://www.youtube.com/watch?v=EWvNQjAaOHw" target="_blank" rel="noopener" style="color:var(--accent)">"我如何使用 LLM"</a> 讲座构建。所有内容、示例和框架均可直接追溯至该来源。交互式可视化在 AI 辅助下构建。</p>
+      <p style="margin-top:16px;font-family:var(--ds);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2)">
+        <a href="../part-1/index-zh.html" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">← 第一部分：LLM 如何工作</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="transcript.txt" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">完整转录</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="https://github.com/ynarwal/how-llms-work" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">GitHub</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="main-zh.js"></script>
+</body>
+</html>

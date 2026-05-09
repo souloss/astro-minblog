@@ -7,6 +7,7 @@ const navItems: NonNullable<SiteConfig["nav"]>["items"] = [
   { key: "categories", enabled: true },
   { key: "series", enabled: true },
   { key: "projects", enabled: true },
+  { key: "reposts", enabled: true },
   { key: "about", enabled: true },
   { key: "friends", enabled: true },
   { key: "archives", enabled: true },
@@ -26,6 +27,47 @@ const sponsorMethods: NonNullable<
 
 const sponsors: NonNullable<NonNullable<SiteConfig["sponsor"]>["sponsors"]> =
   [];
+
+const reposts: NonNullable<SiteConfig["reposts"]> = [
+  {
+    slug: "how-llms-work",
+    title: "How LLMs Actually Work",
+    titleZh: "LLM 是如何工作的",
+    description:
+      "A visual, interactive guide to how large language models are built — from raw internet text to a conversational assistant. Based on Andrej Karpathy's technical deep dive.",
+    author: "ynarwal",
+    sourceUrl: "https://ynarwal.github.io/how-llms-work/",
+    sourceRepo: "ynarwal/how-llms-work",
+    basedOn: "Andrej Karpathy's Intro to Large Language Models",
+    date: "2026-04",
+    tags: ["AI", "LLM", "Deep Learning"],
+    parts: [
+      {
+        slug: "part-1",
+        title: "How LLMs Actually Work",
+        titleZh: "LLM 是如何工作的",
+        description:
+          "A complete walkthrough from raw internet text to a conversational assistant — data collection, tokenization, training, inference, base model, post-training, psychology, RAG, and security.",
+      },
+      {
+        slug: "part-2",
+        title: "How to Use LLMs",
+        titleZh: "如何使用 LLM",
+        description:
+          "A practical guide to using large language models — models, thinking, search, deep research, docs, code, agents, voice, vision, and memory.",
+      },
+      {
+        slug: "part-3",
+        title: "Neural Networks from Scratch",
+        titleZh: "从零开始的神经网络",
+        description:
+          "The math, intuition, and code behind how neural networks actually learn — from a single neuron to a working training loop.",
+      },
+    ],
+    license: "All Rights Reserved",
+    licenseNote: "翻译转载，版权归原作者所有",
+  },
+];
 
 export const SITE: SiteConfig = {
   website: "https://demo-astro-minimax.souloss.cn/",
@@ -56,6 +98,7 @@ export const SITE: SiteConfig = {
     archives: true,
     friends: true,
     projects: true,
+    reposts: true,
     search: true,
   },
 
@@ -66,6 +109,8 @@ export const SITE: SiteConfig = {
   },
 
   projects,
+
+  reposts,
 
   umami: {
     enabled: true,

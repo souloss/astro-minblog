@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How LLMs Work — A Visual Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Repost Banner -->
+<div style="position:relative;z-index:250;background:linear-gradient(90deg,#635BFF08,#635BFF04);border-bottom:1px solid #635BFF20;padding:8px 24px;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;color:#3C4257;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#635BFF">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      Repost
+    </span>
+    <span style="color:#697386">Author: ynarwal · Based on Andrej Karpathy's lecture</span>
+    <a href="https://ynarwal.github.io/how-llms-work/" target="_blank" rel="noopener noreferrer" style="color:#635BFF;text-decoration:none;font-weight:500">View Original ↗</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <a href="/en/reposts" style="color:#635BFF;text-decoration:none;font-weight:500">← Back to Reposts</a>
+    <span style="font-size:11px;color:#697386">⚠️ Translated repost, all rights belong to the original author</span>
+  </div>
+</div>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progress-bar" role="progressbar" aria-label="Reading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- Top Nav -->
+<nav class="top-nav" id="top-nav" aria-label="Chapter navigation">
+  <div class="top-nav-inner">
+    <span class="top-nav-brand" aria-hidden="true">How LLMs Work</span>
+    <div class="top-nav-links" id="top-nav-links">
+      <a href="../part-2/index.html" style="font-family:var(--ds);font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:5px 11px;border-radius:6px;border:1px solid rgba(99,91,255,0.3);background:rgba(99,91,255,0.05);white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;transition:.15s;margin-right:4px" onmouseover="this.style.background='rgba(99,91,255,0.1)'" onmouseout="this.style.background='rgba(99,91,255,0.05)'">Part 2 →</a>
+      <a href="../part-3/index.html" style="font-family:var(--ds);font-size:12px;font-weight:600;color:var(--green);text-decoration:none;padding:5px 11px;border-radius:6px;border:1px solid rgba(0,135,90,0.3);background:rgba(0,135,90,0.05);white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;transition:.15s;margin-right:6px" onmouseover="this.style.background='rgba(0,135,90,0.1)'" onmouseout="this.style.background='rgba(0,135,90,0.05)'">Part 3 →</a>
+      <button class="tnav-btn active" data-section="s-intro" aria-current="true">Intro</button>
+      <button class="tnav-btn" data-section="s-data">Data</button>
+      <button class="tnav-btn" data-section="s-tokenizer">Tokens</button>
+      <button class="tnav-btn" data-section="s-training">Training</button>
+      <button class="tnav-btn" data-section="s-inference">Inference</button>
+      <button class="tnav-btn" data-section="s-basemodel">Base Model</button>
+      <button class="tnav-btn" data-section="s-posttraining">Post-Train</button>
+      <button class="tnav-btn" data-section="s-psychology">Psychology</button>
+      <button class="tnav-btn" data-section="s-rag">RAG</button>
+      <button class="tnav-btn" data-section="s-security">Security</button>
+      <button class="tnav-btn" data-section="s-summary">Pipeline</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ━━━━━━━━ SECTION 1: HERO ━━━━━━━━ -->
+<section id="s-intro" class="section" aria-label="Introduction">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-content" id="main-content">
+    <div class="chapter-badge" aria-hidden="true">A Visual Deep Dive</div>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <h1 class="hero-title">How LLMs<br><span>Actually</span> Work</h1>
+        <p class="hero-sub">A complete walkthrough of how large language models like ChatGPT are built — from raw internet text to a conversational assistant. Based on Andrej Karpathy's technical deep dive.</p>
+        <dl class="hero-stats">
+          <div class="stat-item"><dt class="stat-lbl">Training Tokens</dt><dd class="stat-val">15T</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">Parameters</dt><dd class="stat-val">405B</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">Text Data</dt><dd class="stat-val">44 TB</dd></div>
+          <div class="stat-item"><dt class="stat-lbl">Token Vocabulary</dt><dd class="stat-val">100K</dd></div>
+        </dl>
+        <p class="stats-caveat">Representative figures from frontier models circa 2024 — exact numbers shift with every release. The scale is the point, not the precision.</p>
+        <div class="scroll-hint" aria-hidden="true"><div class="scroll-arrow"></div>Scroll to explore</div>
+      </div>
+      <div class="hero-right">
+        <div class="typewriter-wrap" aria-label="Example LLM conversation">
+          <div class="tw-label" aria-hidden="true">Live LLM Response</div>
+          <div class="tw-prompt">Human: What is behind this text box?</div>
+          <div class="tw-response" id="tw-response" aria-live="polite" aria-atomic="true"><span class="tw-cursor" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 2: DATA COLLECTION ━━━━━━━━ -->
+<section id="s-data" class="section" aria-label="Data Collection">
+  <div class="section-inner two-col">
+    <div class="col-text fade-up">
+      <div class="chapter-badge" aria-hidden="true">Chapter 1 · Pre-Training · Stage 1</div>
+      <h2 class="section-title">Downloading<br>the Internet</h2>
+      <p class="body-text">The first step is collecting an enormous amount of text. Organizations like <span class="highlight">Common Crawl</span> have been crawling the web since 2007 — indexing 2.7 billion pages by 2024. This raw data is then filtered into a high-quality dataset like <span class="highlight">FineWeb</span>.</p>
+      <p class="body-text">The goal: <em>large quantity</em> of <em>high quality</em>, <em>diverse</em> documents. After aggressive filtering, you end up with about <span class="highlight-a">44 terabytes</span> — roughly 10 consumer hard drives worth of text — representing ~15 trillion tokens.</p>
+      <div class="insight-box">
+        <strong>Key Insight</strong>
+        The quality and diversity of this training data has more impact on the final model than almost anything else. Garbage in, garbage out — but at a trillion-token scale.
+      </div>
+    </div>
+    <div class="col-text fade-up" style="animation-delay:.15s">
+      <p class="pipeline-hint">Click any stage to read more detail</p>
+      <div class="data-flow" id="pipeline-flow" role="list" aria-label="Data processing pipeline stages">
+        <div class="pipeline-node active" data-stage="0" role="button" tabindex="0" aria-expanded="true" aria-label="Common Crawl — click to expand">
+          <div class="pn-title">🌐 Common Crawl</div>
+          <div class="pn-sub">2.7B web pages · Raw HTML · Since 2007</div>
+          <div class="pn-detail">A non-profit organization that crawls the web and freely provides its data. Their bots follow links from seed pages, recursively indexing the internet. The raw archive is petabytes of gzip'd WARC files containing raw HTML.</div>
+        </div>
+        <div class="pipeline-arrow" id="pa-0" aria-hidden="true">↓</div>
+        <div class="pipeline-node" data-stage="1" role="button" tabindex="0" aria-expanded="false" aria-label="URL Filtering — click to expand">
+          <div class="pn-title">🚫 URL Filtering</div>
+          <div class="pn-sub">Blocklists · Malware · Spam · Adult content</div>
+          <div class="pn-detail">Block-lists of known malware sites, spam networks, adult content, marketing pages, and low-quality domains are applied. Entire domains can be removed. This is the cheapest filter so it runs first.</div>
+        </div>
+        <div class="pipeline-arrow" id="pa-1" aria-hidden="true">↓</div>
+        <div class="pipeline-node" data-stage="2" role="button" tabindex="0" aria-expanded="false" aria-label="Text Extraction — click to expand">
+          <div class="pn-title">📄 Text Extraction</div>
+          <div class="pn-sub">HTML → clean text · Remove navigation &amp; CSS</div>
+          <div class="pn-detail">Raw HTML contains &lt;div&gt; tags, CSS, JavaScript, navigation menus, and ads. Parsers extract just the meaningful text content. This is harder than it sounds — heuristics decide what's "content" vs "chrome".</div>
+        </div>
+        <div class="pipeline-arrow" id="pa-2" aria-hidden="true">↓</div>
+        <div class="pipeline-node" data-stage="3" role="button" tabindex="0" aria-expanded="false" aria-label="Language Filtering — click to expand">
+          <div class="pn-title">🌍 Language Filtering</div>
+          <div class="pn-sub">Keep pages ≥65% English · Language classifier</div>
+          <div class="pn-detail">A language classifier estimates the language of each page. Pages with less than 65% target-language content are dropped. This is a design decision — filter aggressively for one language or train multilingual.</div>
+        </div>
+        <div class="pipeline-arrow" id="pa-3" aria-hidden="true">↓</div>
+        <div class="pipeline-node" data-stage="4" role="button" tabindex="0" aria-expanded="false" aria-label="Deduplication — click to expand">
+          <div class="pn-title">♻️ Deduplication</div>
+          <div class="pn-sub">Exact &amp; fuzzy matching · Reduce repetition</div>
+          <div class="pn-detail">Identical or near-identical pages appear millions of times on the internet (copied articles, boilerplate). Training on the same text repeatedly causes memorization. Dedup uses MinHash and exact-match techniques to remove duplicates.</div>
+        </div>
+        <div class="pipeline-arrow" id="pa-4" aria-hidden="true">↓</div>
+        <div class="pipeline-node" data-stage="5" role="button" tabindex="0" aria-expanded="false" aria-label="PII Removal — click to expand">
+          <div class="pn-title">🔒 PII Removal</div>
+          <div class="pn-sub">Names · Addresses · SSNs · Emails</div>
+          <div class="pn-detail">Personally Identifiable Information is detected and either redacted or the page is dropped. Regex patterns and ML classifiers find phone numbers, emails, Social Security numbers, physical addresses, and named individuals.</div>
+        </div>
+        <div class="pipeline-arrow" id="pa-5" aria-hidden="true">↓</div>
+        <div class="pipeline-node" style="border-color:rgba(0,214,143,0.3);background:rgba(0,214,143,0.04)" data-stage="6" role="button" tabindex="0" aria-expanded="false" aria-label="FineWeb Dataset result — click to expand">
+          <div class="pn-title" style="color:var(--green)">✅ FineWeb Dataset</div>
+          <div class="pn-sub">44 TB · 15 Trillion tokens · High quality</div>
+          <div class="pn-detail">The final filtered dataset. Articles about tornadoes in 2012, medical facts, history, code, recipes, science papers — the full breadth of human knowledge expressed in text. This becomes the training corpus.</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:14px" id="run-pipeline-btn">▶ Animate Pipeline</button>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 3: TOKENIZATION ━━━━━━━━ -->
+<section id="s-tokenizer" class="section" aria-label="Tokenization">
+  <div class="section-inner">
+    <div class="two-col" style="margin-bottom:48px">
+      <div class="fade-up">
+        <div class="chapter-badge">Chapter 1 · Pre-Training · Stage 2</div>
+        <h2 class="section-title">Tokenization</h2>
+        <p class="body-text">Neural networks can't process raw text — they need numbers. The solution is <span class="highlight">tokenization</span>: breaking text into "tokens" (sub-word chunks) and assigning each an ID.</p>
+        <p class="body-text">GPT-4 uses a vocabulary of <span class="highlight">100,277 tokens</span>, built via the <span class="highlight-a">Byte Pair Encoding (BPE)</span> algorithm. BPE starts with individual bytes (256 symbols), then iteratively merges the most frequent adjacent pairs — compressing the sequence length while expanding the vocabulary.</p>
+        <div class="insight-box">
+          <strong>Why not just use words?</strong>
+          Words have infinite variants. "run", "running", "runner" would be 3 separate entries. Subword tokens share roots: "run" + "ning", "run" + "ner". This also handles new words, typos, and multiple languages efficiently.
+        </div>
+      </div>
+      <div class="fade-up" style="animation-delay:.15s">
+        <h3 class="sub-title">BPE in Action</h3>
+        <svg id="bpe-svg" viewBox="0 0 380 280" width="100%" style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:block" role="img" aria-labelledby="bpe-title" aria-describedby="bpe-desc"><title id="bpe-title">BPE Tokenization Steps</title><desc id="bpe-desc">Interactive diagram showing how Byte Pair Encoding progressively merges characters into subword tokens</desc></svg>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
+          <button class="btn btn-ghost btn-sm" id="bpe-advance-btn" aria-label="Advance to next BPE step">Next Step →</button>
+          <span id="bpe-step-label" style="font-family:var(--dm);font-size:11px;color:var(--txt2)">Step 1 of 5</span>
+        </div>
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.2s">
+      <a href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener" class="tiktokenizer-link">Try the real tokenizer → tiktokenizer.vercel.app</a>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 4: NEURAL NETWORK TRAINING ━━━━━━━━ -->
+<section id="s-training" class="section" aria-label="Neural Network Training">
+  <div class="section-inner">
+    <div class="two-col" style="margin-bottom:48px">
+      <div class="fade-up">
+        <div class="chapter-badge">Chapter 1 · Pre-Training · Stage 3</div>
+        <h2 class="section-title">Training the<br>Neural Network</h2>
+        <p class="body-text">The Transformer neural network is initialized with random parameters — billions of <span class="highlight">"knobs"</span>. Training adjusts these knobs so the network gets better at predicting the next token in any sequence.</p>
+        <p class="body-text">Every training step: sample a window of tokens → feed to network → compare prediction to actual next token → nudge all parameters slightly in the right direction. Repeat <span class="highlight-a">billions of times</span>.</p>
+        <p class="body-text">The <span class="highlight">loss</span> — a single number measuring prediction error — falls steadily as the model learns the statistical patterns of human language.</p>
+        <div class="insight-box">
+          <strong>Scale</strong>
+          GPT-2 (2019): 1.6B params, 100B tokens, ~$40K to train. Today: same quality for ~$100. Llama 3: 405B params, 15T tokens. Modern frontier models: hundreds of billions of parameters, trillions of tokens.
+        </div>
+        <div class="insight-box" style="margin-top:14px">
+          <strong>Scaling Laws</strong>
+          Model accuracy is a smooth, predictable function of just two variables: <em>N</em> (number of parameters) and <em>D</em> (training tokens). These trends show no signs of plateauing — bigger model + more data = reliably better results. Algorithmic breakthroughs are a bonus, but simply scaling compute is a near-guaranteed path to improvement. This is why AI labs are in a GPU arms race.
+        </div>
+      </div>
+      <div class="fade-up" style="animation-delay:.15s">
+        <h3 class="sub-title">Transformer Architecture</h3>
+        <svg id="transformer-svg" viewBox="0 0 360 340" width="100%" style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:block;margin-bottom:16px" role="img" aria-label="Transformer architecture diagram showing data flow from input tokens through embedding, attention, and feed-forward layers to output logits"><title>Transformer Architecture</title></svg>
+        <div class="insight-box">
+          <strong>What is an Embedding?</strong>
+          Each token ID maps to a learned vector of ~1,000–4,000 numbers called its <em>embedding</em>. Think of it as a coordinate in meaning-space — initialized randomly, then shaped by training. The same token (e.g. "bank") always enters the network with the same embedding vector. <em>Attention layers</em> then mix in context from surrounding tokens, so by the time "bank" reaches deeper layers, "river bank" and "bank account" carry completely different representations. Polysemy is resolved by context, not by storing multiple meanings per token.
+        </div>
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.2s">
+      <div class="two-col" style="gap:32px">
+        <div>
+          <p style="font-family:var(--dm);font-size:11px;color:var(--txt2);margin-bottom:10px">Select a training stage to see model output quality</p>
+          <div class="training-stages" id="training-stages" role="group" aria-label="Training step selector">
+            <button class="stage-btn" data-step="1" aria-pressed="false">Step 1<br><span style="color:var(--red)">Loss: 11.2</span></button>
+            <button class="stage-btn active" data-step="500" aria-pressed="true">Step 500<br><span style="color:var(--amber)">Loss: 4.8</span></button>
+            <button class="stage-btn" data-step="5000" aria-pressed="false">Step 5K<br><span style="color:var(--purple)">Loss: 3.1</span></button>
+            <button class="stage-btn" data-step="32000" aria-pressed="false">Step 32K<br><span style="color:var(--green)">Loss: 2.4</span></button>
+          </div>
+          <div class="loss-canvas-wrap">
+            <div class="loss-label">Training Loss ↓</div>
+            <canvas id="loss-canvas"></canvas>
+          </div>
+          <div style="display:flex;gap:20px;margin-top:14px">
+            <div><div class="loss-val" id="current-loss">4.8</div><div class="loss-step">Cross-entropy loss</div></div>
+            <div><div class="loss-val" id="current-step" style="color:var(--amber)">500</div><div class="loss-step">Training step</div></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="sub-title" style="margin-bottom:12px">Model Output at This Stage</h3>
+          <div class="training-text" id="training-text-output" aria-live="polite" aria-label="Model text output at selected training step">
+            <span class="incoherent">the model has learn</span><span class="coherent">ing</span> <span class="incoherent">but confus</span><span class="coherent">tion</span> <span class="incoherent">still</span> <span class="coherent">the</span> <span class="incoherent">wqp mxr</span> <span class="coherent">model</span> <span class="incoherent">bns</span> <span class="coherent">to predict</span>...
+          </div>
+          <div class="insight-box" style="margin-top:14px">
+            <strong>What the model is learning</strong>
+            At step 1: pure noise. By step 500: local coherence appears. By step 32K: fluent English. The model is learning grammar, facts, reasoning patterns — all implicitly from token prediction.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 5: INFERENCE ━━━━━━━━ -->
+<section id="s-inference" class="section" aria-label="Inference and Token Sampling">
+  <div class="section-inner two-col">
+    <div class="fade-up">
+      <div class="chapter-badge">Chapter 1 · Pre-Training · Stage 4</div>
+      <h2 class="section-title">Inference &<br>Token Sampling</h2>
+      <p class="body-text">Once trained, the network generates text autoregressively: feed a sequence of tokens → get a <span class="highlight">probability distribution</span> over all 100K possible next tokens → sample one → append → repeat.</p>
+      <p class="body-text">This process is <span class="highlight-a">stochastic</span> — the same prompt generates different outputs every time because we're flipping a biased coin. Higher-probability tokens are more likely but not guaranteed to be chosen.</p>
+      <p class="body-text"><span class="highlight">Temperature</span> controls randomness. Low temperature (0.1) → model always picks the top token. High temperature (2.0) → uniform chaos. 0.7–1.0 is the sweet spot for coherent-but-creative text.</p>
+      <div class="insight-box">
+        <strong>Key Mental Model</strong>
+        The model doesn't "think" about what to say. It computes a probability distribution over all possible next tokens and samples from it. Every word is a coin flip — just a very informed one.
+      </div>
+    </div>
+    <div class="fade-up" style="animation-delay:.15s">
+      <h3 class="sub-title" style="margin-bottom:14px" id="sampling-heading">Token Sampling Demo</h3>
+      <div class="inference-demo" aria-labelledby="sampling-heading">
+        <p style="font-family:var(--dm);font-size:11px;color:var(--txt2);margin-bottom:12px">Watch the model choose the next word. Each bar shows the probability of a candidate token.</p>
+        <div class="generated-seq" id="gen-seq" aria-live="polite" aria-label="Generated token sequence">The sky appears blue</div>
+        <label class="temp-label" for="temp-slider">
+          <span>Temperature <span style="color:var(--txt2);font-size:10px">(randomness)</span></span>
+          <input type="range" class="temp-slider" id="temp-slider" min="0.1" max="2.0" step="0.1" value="0.8" aria-label="Temperature: controls randomness. Low=predictable, High=random">
+          <span class="temp-val" id="temp-val" aria-live="polite">0.8</span>
+        </label>
+        <div class="prob-section-label" id="prob-label">Next token candidates</div>
+        <div class="prob-bars" id="prob-bars" role="list" aria-labelledby="prob-label"></div>
+        <div class="inference-controls">
+          <button class="btn btn-primary btn-sm" id="sample-btn" aria-describedby="sample-info">Sample Next Token</button>
+          <button class="btn btn-ghost btn-sm" id="reset-gen-btn" aria-label="Reset generated sequence to start">Reset</button>
+          <span style="font-family:var(--dm);font-size:11px;color:var(--txt2)" id="sample-info" aria-live="polite" role="status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 6: BASE MODEL ━━━━━━━━ -->
+<section id="s-basemodel" class="section" aria-label="Base Model Behavior">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="fade-up">
+        <div class="chapter-badge">Chapter 2 · The Base Model</div>
+        <h2 class="section-title">The Internet<br>Simulator</h2>
+        <p class="body-text">After pre-training, you have a <span class="highlight">base model</span> — a sophisticated autocomplete engine. It's not an assistant. It doesn't answer questions. It <em>continues token sequences</em> based on what it saw on the internet.</p>
+        <p class="body-text">Give it a Wikipedia sentence and it'll complete it from memory. Ask it "What is 2+2?" and it might give you a math textbook page, a quiz answer key, or go off on a tangent — whatever was statistically common in its training data.</p>
+        <p class="body-text">The base model's knowledge lives in its <span class="highlight-a">405 billion parameters</span> — a lossy compression of the internet, like a zip file that approximates rather than perfectly stores information.</p>
+      </div>
+      <div class="fade-up" style="animation-delay:.15s">
+        <h3 class="sub-title" style="margin-bottom:14px">Base Model Behavior</h3>
+        <div class="example-card">
+          <div class="example-label"><span class="tag tag-a">Few-Shot Prompting</span></div>
+          <div class="example-content">
+            <div class="example-prompt">Hello: Bonjour | Cat: Chat | Dog: Chien | Teacher:</div>
+            <div class="example-completion">→ Professeur &nbsp;<span style="color:var(--green);font-size:11px">✓ correct</span></div>
+          </div>
+        </div>
+        <div class="example-card">
+          <div class="example-label"><span class="tag tag-p">Memorization</span></div>
+          <div class="example-content">
+            <div class="example-prompt">Zebras (/ˈzɛbrə, ˈziːbrə/) are African equines with distinctive...</div>
+            <div class="example-completion">...black-and-white striped coats. There are three living species: the Grévy's zebra, plains zebra, and mountain zebra...</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--txt2)">↑ Verbatim Wikipedia recall from weights</div>
+          </div>
+        </div>
+        <div class="example-card">
+          <div class="example-label"><span class="tag tag-g">Hallucination</span></div>
+          <div class="example-content">
+            <div class="example-prompt">The Republican Party nominated Trump and [running mate] in the 2024 election against...</div>
+            <div class="example-hallucinated">→ ...Mike Pence, facing Hillary Clinton and Tim Kaine...</div>
+            <div style="margin-top:4px" class="example-hallucinated">→ ...Ron DeSantis, against Joe Biden and Kamala Harris...</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--txt2)">↑ Knowledge cutoff → plausible confabulation</div>
+          </div>
+        </div>
+        <div class="insight-box">
+          <strong>In-Context Learning</strong>
+          Base models can perform translation, classification, and Q&amp;A via few-shot prompts — no fine-tuning needed. The model infers the task from the pattern of examples in its context window.
+        </div>
+        <div class="insight-box" style="margin-top:14px">
+          <strong>An LLM Is Literally Two Files</strong>
+          Llama 2 70B is a 140 GB parameters file (70B parameters × 2 bytes each in float16) plus ~500 lines of C code to run it. No internet required — you can run it fully offline on a laptop. The architecture is well-understood and open; the magic is entirely in what those 140 GB of numbers have encoded from the training data.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 7: POST-TRAINING ━━━━━━━━ -->
+<section id="s-posttraining" class="section" aria-label="Post-Training: SFT and RLHF">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:40px">
+      <div class="chapter-badge">Chapter 3 · Post-Training</div>
+      <h2 class="section-title">Building the Assistant</h2>
+      <p class="body-text" style="max-width:680px">The base model is a token simulator. To turn it into a <em>helpful assistant</em>, we need post-training — a much cheaper but equally critical stage. This is where the model learns <span class="highlight">conversations</span>.</p>
+    </div>
+    <div class="two-col">
+      <div class="fade-up">
+        <h3 class="sub-title">Supervised Fine-Tuning (SFT)</h3>
+        <p class="body-text">Human labelers create a dataset of ideal conversations, following detailed labeling instructions: be <span class="highlight">helpful</span>, be <span class="highlight-a">truthful</span>, be <span class="highlight-g">harmless</span>. The model is then trained on these conversations — not from scratch, but by continuing to adjust the pre-trained weights on this new data.</p>
+        <p class="body-text">Modern SFT datasets (like UltraChat) have millions of conversations — mostly synthetic (LLM-generated), with human review. The model learns by imitation: it adopts the persona of the ideal assistant reflected in the data.</p>
+        <div class="convo-visual fade-in">
+          <div class="convo-header">Training Conversation Example</div>
+          <div class="convo-messages">
+            <div class="msg msg-user"><div class="msg-label">Human</div>What is 2 + 2?</div>
+            <div class="msg msg-assistant"><div class="msg-label">Assistant</div>2 + 2 = 4. Is there anything else you'd like help with?</div>
+            <div class="msg msg-user"><div class="msg-label">Human</div>What if it was multiplication instead?</div>
+            <div class="msg msg-assistant"><div class="msg-label">Assistant</div>2 × 2 = 4 as well — the same result! For multiplication, 2 × 2 means adding 2 to itself once, giving you 4.</div>
+          </div>
+        </div>
+        <div class="insight-box" style="margin-top:16px">
+          <strong>What you're really talking to</strong>
+          ChatGPT is a statistical simulation of the human labelers OpenAI hired — experts following labeling instructions. When it answers a coding question, it's imitating what a skilled developer-labeler would write.
+        </div>
+      </div>
+      <div class="fade-up" style="animation-delay:.15s">
+        <h3 class="sub-title" style="margin-bottom:14px">Conversation Token Format</h3>
+        <p class="body-text">Every conversation must be encoded as a <em>flat token sequence</em>. Special tokens mark the structure:</p>
+        <div class="token-format">
+<span class="tok-special">&lt;|im_start|&gt;</span><span class="tok-role">user</span><span class="tok-special">&lt;|im_sep|&gt;</span>
+<span class="tok-text">What is 2 + 2?</span>
+<span class="tok-special">&lt;|im_end|&gt;</span>
+<span class="tok-special">&lt;|im_start|&gt;</span><span class="tok-role">assistant</span><span class="tok-special">&lt;|im_sep|&gt;</span>
+<span class="tok-text">2 + 2 = 4.</span>
+<span class="tok-special">&lt;|im_end|&gt;</span>
+        </div>
+        <p class="body-text" style="margin-top:16px">Then RLHF refines the assistant's behavior further:</p>
+        <h3 class="sub-title">RLHF — Reinforcement Learning<br>from Human Feedback</h3>
+        <p class="body-text">Human raters rank multiple model responses. A <span class="highlight">reward model</span> learns to predict human preferences. The language model is then trained via reinforcement learning to generate responses the reward model scores highly.</p>
+        <div class="rlhf-row">
+          <div class="rlhf-resp preferred">
+            <div class="rlhf-badge" style="color:var(--green)">✓ Preferred</div>
+            <div class="rlhf-text">Here are the top 5 landmarks in Paris: 1) Eiffel Tower — iconic iron lattice structure... 2) The Louvre — world's largest art museum...</div>
+          </div>
+          <div class="rlhf-resp rejected">
+            <div class="rlhf-badge" style="color:var(--red)">✗ Rejected</div>
+            <div class="rlhf-text">Paris has many landmarks. You should visit the Eiffel Tower. There is also a museum called the Louvre. Also Notre-Dame Cathedral is there...</div>
+          </div>
+        </div>
+        <div class="insight-box">
+          <strong>Why RLHF matters</strong>
+          SFT teaches the model what to say. RLHF teaches it <em>how to say it well</em> — making responses more helpful, better structured, more honest, and less likely to hallucinate.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 8: LLM PSYCHOLOGY ━━━━━━━━ -->
+<section id="s-psychology" class="section" aria-label="LLM Psychology">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:40px">
+      <div class="chapter-badge">Chapter 4 · LLM Psychology</div>
+      <h2 class="section-title">Cognitive Quirks<br>of Language Models</h2>
+      <p class="body-text" style="max-width:680px">Understanding <em>why</em> LLMs behave the way they do requires thinking about their psychology — the emergent properties of being trained to statistically imitate human text.</p>
+    </div>
+    <div class="psych-grid fade-up">
+      <div class="psych-card">
+        <div class="psych-icon">🌀</div>
+        <div class="psych-title">Hallucination</div>
+        <div class="psych-text">Models confabulate confidently because training data always has confident answers. "Who is Orson Kovats?" gets a made-up biography because the training distribution of "who is X?" questions is always followed by confident replies — even for fictional names. Fix: add "I don't know" examples for questions the model gets wrong consistently.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">🧠</div>
+        <div class="psych-title">Two Types of Memory</div>
+        <div class="psych-text"><strong style="color:var(--cyan)">Parameters = long-term memory.</strong> Everything the model learned during training — vast but vague, like something you read months ago. <strong style="color:var(--amber)">Context window = working memory.</strong> Text in the current conversation — precise, directly accessible. Always paste important info into context rather than relying on the model to "remember."</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">🔧</div>
+        <div class="psych-title">Tool Use</div>
+        <div class="psych-text">Models can emit special tokens that trigger external tools: <span style="color:var(--purple);font-family:var(--dm);font-size:12px">&lt;search&gt;query&lt;/search&gt;</span>. The program pauses generation, executes the search, stuffs the results into the context window, then resumes. The model "looks things up" the same way you do — by refreshing working memory.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">🪞</div>
+        <div class="psych-title">No Persistent Self</div>
+        <div class="psych-text">Each conversation starts fresh — no memory of prior chats. The model "boots up," processes tokens, then shuts off. It has no stable identity. When it says "I'm ChatGPT by OpenAI," that's just the most statistically likely answer from training data — not genuine self-knowledge.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">📊</div>
+        <div class="psych-title">Stochastic Token Tumbler</div>
+        <div class="psych-text">The model doesn't "decide" what to say. It computes probability distributions and samples. Run the same prompt 10 times and get 10 different outputs — all plausible, all drawn from the same learned distribution. Temperature controls how broadly it samples from this distribution.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">📚</div>
+        <div class="psych-title">Knowledge Cutoff</div>
+        <div class="psych-text">Training data has a date. The model genuinely doesn't know what happened after that. Ask about recent events and it will hallucinate — not from malice but from the same mechanism that answers every question: predict the most likely continuation of the token sequence.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">↔️</div>
+        <div class="psych-title">The Reversal Curse</div>
+        <div class="psych-text">Ask GPT-4 "Who is Tom Cruise's mother?" → correct: Mary Lee Pfeiffer. Ask "Who is Mary Lee Pfeiffer's son?" → it claims not to know. Knowledge is stored directionally — in the form it was encountered in training data. It's not a queryable database; you have to approach it from the angle it was learned.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">⚡</div>
+        <div class="psych-title">System 1 Only — No Deep Thinking</div>
+        <div class="psych-text">Every token takes roughly the same compute — there's no mechanism to "think harder" on a difficult question. Unlike humans who can engage slow, deliberate System 2 reasoning (working through a chess position step-by-step), LLMs generate each token at the same speed regardless of difficulty. Converting time into accuracy is an active research frontier.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION RAG: RETRIEVAL-AUGMENTED GENERATION ━━━━━━━━ -->
+<section id="s-rag" class="section" aria-label="Retrieval-Augmented Generation">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:44px">
+      <div class="chapter-badge" style="color:var(--amber)">Applied LLMs · RAG</div>
+      <h2 class="section-title">Retrieval-Augmented<br>Generation</h2>
+      <p class="body-text" style="max-width:680px">LLMs have a knowledge cutoff and a finite context window. RAG solves this by <em>embedding</em> your documents into a vector store, retrieving the most semantically relevant chunks at query time, and injecting them into the context — shifting the model's prediction distribution toward grounded, up-to-date facts rather than memorized training data.</p>
+    </div>
+
+    <div class="rag-two-col fade-up">
+      <!-- Left: explanation + scatter canvas -->
+      <div>
+        <div class="rag-step-group">
+          <div class="rag-step-num">Step 01 — Embed everything</div>
+          <p class="body-text" style="margin-bottom:0">Every document is converted to a dense vector (~1,536 numbers) by an embedding model. Semantically similar texts land near each other in this high-dimensional space — no keyword matching needed.</p>
+        </div>
+        <canvas id="rag-canvas" width="500" height="200" aria-label="2D projection of document embedding space" role="img" style="width:100%;height:200px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin:10px 0 24px;display:block"></canvas>
+        <div class="rag-step-group">
+          <div class="rag-step-num">Step 02 — Embed the query &amp; search</div>
+          <p class="body-text" style="margin-bottom:0">The user's question is embedded the same way. Cosine similarity finds the nearest document vectors — the chunks most semantically related to the query — typically the top 2–5.</p>
+        </div>
+        <div class="rag-step-group" style="margin-top:20px">
+          <div class="rag-step-num">Step 03 — Inject &amp; generate</div>
+          <p class="body-text" style="margin-bottom:0">Retrieved chunks are prepended to the prompt before the LLM sees the question. The model generates from injected facts rather than relying on memorized training data — dramatically reducing hallucination on knowledge-intensive tasks.</p>
+        </div>
+      </div>
+
+      <!-- Right: pipeline flow -->
+      <div class="rag-flow" id="rag-flow" role="list" aria-label="RAG pipeline steps">
+        <div class="rag-flow-step" id="rag-s1" role="listitem">
+          <div class="rag-flow-label">1 · User Query</div>
+          <div class="rag-flow-content" style="color:var(--cyan);font-family:var(--dm);font-size:12px">"What is the capital of Ares Base?"</div>
+        </div>
+        <div class="rag-flow-connector"></div>
+        <div class="rag-flow-step" id="rag-s2" role="listitem">
+          <div class="rag-flow-label">2 · Embedding Model</div>
+          <div class="rag-flow-content">Text → <span style="color:var(--amber);font-family:var(--dm);font-size:11px">[0.23, −0.87, 0.41, ...]</span> <span style="color:var(--txt2);font-size:12px">~1,536 floats</span></div>
+        </div>
+        <div class="rag-flow-connector"></div>
+        <div class="rag-flow-step" id="rag-s3" role="listitem">
+          <div class="rag-flow-label">3 · Vector DB — Cosine Search</div>
+          <div class="rag-flow-content">Find top-k nearest neighbors in embedding space</div>
+        </div>
+        <div class="rag-flow-connector"></div>
+        <div class="rag-flow-step" id="rag-s4" role="listitem">
+          <div class="rag-flow-label">4 · Retrieved Chunks (top 2)</div>
+          <div class="rag-flow-content" style="color:var(--txt2);font-size:12px;font-family:var(--dm)">Doc 1: "Ares Base established 2031..."<br>Doc 2: "Capital is New Houston, 312 colonists..."</div>
+        </div>
+        <div class="rag-flow-connector"></div>
+        <div class="rag-flow-step" id="rag-s5" role="listitem">
+          <div class="rag-flow-label">5 · Context Window (assembled)</div>
+          <div class="rag-flow-content" style="font-family:var(--dm);font-size:11px;line-height:1.7">
+            <span style="color:var(--amber)">[Retrieved] Ares Base est. 2031...</span><br>
+            <span style="color:var(--amber)">[Retrieved] Capital: New Houston...</span><br>
+            <span style="color:var(--cyan)">[Query] What is the capital...?</span>
+          </div>
+        </div>
+        <div class="rag-flow-connector"></div>
+        <div class="rag-flow-step" id="rag-s6" role="listitem" style="background:linear-gradient(135deg,rgba(0,229,255,0.05),transparent)">
+          <div class="rag-flow-label">6 · LLM → Grounded Answer</div>
+          <div class="rag-flow-content" style="color:var(--green)">"The capital of Ares Base is New Houston."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive demo -->
+    <div class="fade-up" style="margin-top:8px">
+      <h3 class="sub-title" style="color:var(--amber);margin-bottom:16px">Effect on Predictions</h3>
+      <div style="margin-bottom:20px">
+        <div class="insight-box" style="margin-top:0;margin-bottom:14px">
+          <strong style="color:var(--amber)">Query</strong>
+          "What is the administrative capital of the Ares Base colony?"
+        </div>
+        <div style="display:flex;gap:12px">
+          <button class="btn btn-primary" id="rag-run-btn" style="background:var(--amber);color:#000" aria-label="Run RAG pipeline animation">▶ Run RAG Query</button>
+          <button class="btn btn-ghost" id="rag-reset-btn" style="border-color:rgba(148,104,0,0.3);color:var(--amber)" aria-label="Reset RAG demo">Reset</button>
+        </div>
+      </div>
+
+      <div class="rag-step-num" style="margin-bottom:10px">Knowledge Base — 4 documents</div>
+      <div class="rag-docs">
+        <div class="rag-doc-card" id="rdoc-0"><div class="rag-doc-num">DOC 1</div>The Mars colony Ares Base was established in 2031 near Hellas Planitia.</div>
+        <div class="rag-doc-card" id="rdoc-1"><div class="rag-doc-num">DOC 2</div>The administrative capital of Ares Base is New Houston, housing 312 colonists.</div>
+        <div class="rag-doc-card" id="rdoc-2"><div class="rag-doc-num">DOC 3</div>Mars surface temperature averages −63°C with seasonal variation near the poles.</div>
+        <div class="rag-doc-card" id="rdoc-3"><div class="rag-doc-num">DOC 4</div>The first crewed Mars mission launched from Kennedy Space Center in 2029.</div>
+      </div>
+
+      <div class="rag-ctx-box" id="rag-ctx-box">
+        <div class="rag-ctx-title">Context Window — sent to LLM</div>
+        <div class="rag-ctx-line ctx-injected">📄 [Retrieved] The Mars colony Ares Base was established in 2031 near Hellas Planitia.</div>
+        <div class="rag-ctx-line ctx-injected">📄 [Retrieved] The administrative capital of Ares Base is New Houston, housing 312 colonists.</div>
+        <div class="rag-ctx-line ctx-query">❓ [Query] What is the administrative capital of the Ares Base colony?</div>
+      </div>
+
+      <div class="rag-compare">
+        <div class="rag-answer-box no-rag">
+          <div class="rag-answer-lbl">✕ Without RAG</div>
+          <div class="rag-answer-text">"I don't have reliable information about a colony called Ares Base. As of my training cutoff, no such Mars colony has been established..."</div>
+          <span class="rag-answer-badge" style="color:var(--red);background:var(--red-d)">Hallucination / Refusal</span>
+        </div>
+        <div class="rag-answer-box with-rag">
+          <div class="rag-answer-lbl">✓ With RAG</div>
+          <div class="rag-answer-text" id="rag-ans-good" style="opacity:0.3">"The administrative capital of Ares Base is <strong style="color:var(--green)">New Houston</strong>, which houses 312 colonists. The colony was established in 2031 near Hellas Planitia."</div>
+          <span class="rag-answer-badge" id="rag-good-badge" style="color:var(--green);background:var(--green-d);opacity:0.3">Grounded in retrieved context</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION: LLM SECURITY ━━━━━━━━ -->
+<section id="s-security" class="section" aria-label="LLM Security Challenges">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:40px">
+      <div class="chapter-badge" style="color:var(--red)">Chapter 5 · Security</div>
+      <h2 class="section-title">Security Challenges<br>in LLM Systems</h2>
+      <p class="body-text" style="max-width:680px">The same properties that make LLMs powerful — following instructions, completing patterns, acting on context — also create new attack surfaces. A cat-and-mouse game between attacks and defenses is now playing out in this new computing paradigm.</p>
+    </div>
+    <div class="psych-grid fade-up">
+      <div class="psych-card">
+        <div class="psych-icon">🔓</div>
+        <div class="psych-title">Jailbreak Attacks</div>
+        <div class="psych-text">Safety training can be bypassed via roleplay ("act as my deceased grandmother who was a Napalm chemist"), alternative encodings (base64 of a harmful query — models learned these from training data), or adversarial suffixes: optimized gibberish strings that, when appended to any prompt, reliably disable refusals. The model is trying to help; these tricks convince it the harmful request is benign.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">💉</div>
+        <div class="psych-title">Prompt Injection</div>
+        <div class="psych-text">Malicious instructions hidden in external content — faint white text in an image, invisible text on a webpage — hijack the model when it reads that content. Bing was demonstrated serving a fraudulent link after browsing a compromised page. Google's Bard was shown exfiltrating user data via a poisoned Google Doc. The model can't reliably distinguish user instructions from injected ones.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">☠️</div>
+        <div class="psych-title">Data Poisoning &amp; Backdoors</div>
+        <div class="psych-text">Attackers who control web content can embed trigger words into training data. In one paper, the trigger "James Bond" in a prompt caused a fine-tuned model to produce nonsensical outputs and misclassify threats — while behaving normally otherwise. The model is "brainwashed": clean until the trigger fires. Because LLMs train on vast amounts of unvetted internet text, this attack surface is hard to close.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">🐼</div>
+        <div class="psych-title">Adversarial Inputs</div>
+        <div class="psych-text">Carefully optimized noise patterns, invisible to humans, can jailbreak multimodal LLMs. A panda photo with an imperceptible noise overlay caused a vision model to comply with otherwise-refused requests. Every new modality (images, audio, video) is also a new attack surface. Rerunning the optimization generates a fresh bypass, so patching specific examples doesn't fully solve it.</div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-icon">🐱</div>
+        <div class="psych-title">Cat-and-Mouse Dynamics</div>
+        <div class="psych-text">Each attack has defenses — multilingual refusal data reduces base64 jailbreaks, content security policies limit exfiltration, known adversarial suffixes can be blocked. But many attacks are re-generatable: patch one and the optimization produces a new one for free. This mirrors the security dynamic of traditional software, now playing out in the LLM space.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━━━━━━ SECTION 9: FULL PIPELINE ━━━━━━━━ -->
+<section id="s-summary" class="section" aria-label="Full Pipeline Summary">
+  <div class="section-inner">
+    <div class="fade-up" style="margin-bottom:48px;text-align:center">
+      <div class="chapter-badge" style="justify-content:center">Full Pipeline</div>
+      <h2 class="section-title" style="text-align:center">From Text to<br>Assistant</h2>
+      <p class="body-text" style="max-width:560px;margin:0 auto">The complete journey from raw web crawl to the ChatGPT you interact with — across two major stages, months of compute, and billions of parameters.</p>
+    </div>
+    <div class="pipeline-full" id="pipeline-full">
+      <div class="pipeline-stage" style="transition-delay:.0s">
+        <div class="ps-num">01</div>
+        <div class="ps-content" style="border-left:3px solid var(--cyan)">
+          <div class="ps-title" style="color:var(--cyan)">Data Collection</div>
+          <div class="ps-desc">Common Crawl + other sources → URL filtering → text extraction → language filtering → deduplication → PII removal → 44 TB of curated text (FineWeb, etc.)</div>
+          <div class="ps-tags"><span class="tag tag-c">Common Crawl</span><span class="tag tag-c">FineWeb</span><span class="tag tag-c">44 TB</span><span class="tag tag-c">15T tokens</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage" style="transition-delay:.1s">
+        <div class="ps-num">02</div>
+        <div class="ps-content" style="border-left:3px solid var(--amber)">
+          <div class="ps-title" style="color:var(--amber)">Tokenization</div>
+          <div class="ps-desc">Text → UTF-8 bytes → Byte Pair Encoding → 15 trillion token sequence. Each token is a sub-word chunk with an integer ID. GPT-4 vocabulary: 100,277 tokens.</div>
+          <div class="ps-tags"><span class="tag tag-a">BPE</span><span class="tag tag-a">100K vocab</span><span class="tag tag-a">Sub-word units</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage" style="transition-delay:.2s">
+        <div class="ps-num">03</div>
+        <div class="ps-content" style="border-left:3px solid var(--purple)">
+          <div class="ps-title" style="color:var(--purple)">Pre-Training</div>
+          <div class="ps-desc">Transformer neural network trained to predict the next token. Billions of parameters tuned via gradient descent. Months of compute on thousands of GPUs. Loss decreases from ~11 to ~2.4.</div>
+          <div class="ps-tags"><span class="tag tag-p">Transformer</span><span class="tag tag-p">405B params</span><span class="tag tag-p">$millions compute</span><span class="tag tag-p">3 months</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage" style="transition-delay:.3s">
+        <div class="ps-num">04</div>
+        <div class="ps-content" style="border-left:3px solid #5A7090">
+          <div class="ps-title" style="color:var(--txt2)">Base Model</div>
+          <div class="ps-desc">An internet document simulator. Can autocomplete, few-shot prompt, and regurgitate memorized facts. NOT an assistant — just a very sophisticated token predictor.</div>
+          <div class="ps-tags"><span class="tag" style="color:var(--txt2);border-color:var(--border)">GPT-2</span><span class="tag" style="color:var(--txt2);border-color:var(--border)">Llama 3 base</span><span class="tag" style="color:var(--txt2);border-color:var(--border)">Token autocomplete</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage" style="transition-delay:.4s">
+        <div class="ps-num">05</div>
+        <div class="ps-content" style="border-left:3px solid var(--green)">
+          <div class="ps-title" style="color:var(--green)">Supervised Fine-Tuning (SFT)</div>
+          <div class="ps-desc">Base model retrained on human-labeled conversations. Labelers write ideal responses following company guidelines: helpful, truthful, harmless. Modern datasets: millions of synthetic + human-curated conversations. Duration: hours (not months).</div>
+          <div class="ps-tags"><span class="tag tag-g">Human labelers</span><span class="tag tag-g">InstructGPT</span><span class="tag tag-g">UltraChat</span><span class="tag tag-g">~3 hours</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage" style="transition-delay:.5s">
+        <div class="ps-num">06</div>
+        <div class="ps-content" style="border-left:3px solid var(--red)">
+          <div class="ps-title" style="color:var(--red)">RLHF</div>
+          <div class="ps-desc">Human raters rank model outputs. A reward model learns these preferences. The language model is optimized via reinforcement learning to score higher — producing responses that are more helpful, better structured, and more honest.</div>
+          <div class="ps-tags"><span class="tag tag-g" style="color:var(--red);border-color:rgba(255,82,82,.25);background:var(--red-d)">Reward Model</span><span class="tag tag-g" style="color:var(--red);border-color:rgba(255,82,82,.25);background:var(--red-d)">PPO</span><span class="tag tag-g" style="color:var(--red);border-color:rgba(255,82,82,.25);background:var(--red-d)">Human preferences</span></div>
+        </div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <div class="pipeline-stage" style="transition-delay:.6s">
+        <div class="ps-num">07</div>
+        <div class="ps-content" style="border-left:3px solid var(--cyan);background:linear-gradient(135deg,rgba(0,229,255,0.06),transparent)">
+          <div class="ps-title" style="color:var(--cyan)">🤖 ChatGPT / Claude / Gemini</div>
+          <div class="ps-desc">The final assistant. A statistical simulation of expert human labelers, backed by a vast compressed representation of the internet. Not magic — but remarkable engineering at enormous scale.</div>
+          <div class="ps-tags"><span class="tag tag-c">Conversational</span><span class="tag tag-c">Helpful · Truthful · Harmless</span><span class="tag tag-c">Tool use</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-up" style="margin-top:60px">
+      <div class="chapter-badge" style="color:var(--purple)">Mental Model</div>
+      <h3 class="sub-title" style="margin-top:12px;margin-bottom:20px">Think of an LLM as an Operating System</h3>
+      <p class="body-text" style="max-width:680px;margin-bottom:24px">An LLM isn't just a chatbot — it's the kernel process of an emerging OS. It coordinates memory, compute, and tools via natural language.</p>
+      <div class="two-col" style="gap:32px">
+        <div class="insight-box" style="margin:0">
+          <strong>Memory Hierarchy</strong>
+          <ul style="margin:10px 0 0;padding-left:18px;line-height:2">
+            <li><strong style="color:var(--cyan)">Disk = Internet / Files</strong> — browsed on demand or retrieved via RAG</li>
+            <li><strong style="color:var(--amber)">RAM = Context Window</strong> — finite working memory; the model pages info in and out</li>
+            <li><strong style="color:var(--purple)">CPU = GPU Inference</strong> — the forward pass generating each token</li>
+          </ul>
+        </div>
+        <div class="insight-box" style="margin:0">
+          <strong>Where the Field Is Headed</strong>
+          <ul style="margin:10px 0 0;padding-left:18px;line-height:2">
+            <li><strong style="color:var(--cyan)">System 2 Thinking</strong> — converting time into accuracy; "take 30 minutes, don't rush"</li>
+            <li><strong style="color:var(--amber)">Self-Improvement</strong> — the AlphaGo question: can LLMs surpass human-level answers once a reward signal exists?</li>
+            <li><strong style="color:var(--green)">Customization</strong> — an app store of specialized LLM experts for narrow tasks</li>
+            <li><strong style="color:var(--red)">Multimodality</strong> — text, images, audio, and video unified in one model</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-up" style="text-align:center;margin-top:60px">
+      <p class="body-text" style="max-width:560px;margin:0 auto;color:var(--txt2)">Built from Andrej Karpathy's <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank" rel="noopener" style="color:var(--accent)">"Intro to Large Language Models"</a> lecture — all facts, figures, and framings traced back to that source. Interactive visualizations built with AI assistance. The most important takeaway: every word generated is a probabilistic sample — a biased coin flip, at 100K-way scale, billions of times.</p>
+      <p class="body-text" style="max-width:560px;margin:12px auto 0;font-size:13.5px;color:var(--txt2)">This was <a href="https://news.ycombinator.com/item?id=47886517" target="_blank" rel="noopener" style="color:var(--accent)">posted to Hacker News</a> and drew heated debate about it being LLM-generated. That's a fair observation — the implementation was AI-assisted. But the content isn't the AI's: every claim, figure, and framing in this guide comes directly from Karpathy's lecture, not from a model hallucinating about LLMs.</p>
+      <p style="margin-top:16px;font-family:var(--ds);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2)">
+        <a href="https://news.ycombinator.com/item?id=47886517" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">HN discussion</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="https://github.com/ynarwal/how-llms-work" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">GitHub</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="transcript.txt" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">Full lecture transcript</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="hn-update-comment.txt" target="_blank" rel="noopener" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">HN update note</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="report.html" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">LLM council report</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="v1.html" style="color:var(--txt2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:.2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--txt2)';this.style.borderColor='var(--border)'">v1 (original)</a>
+        <span style="margin:0 12px;opacity:.4">·</span>
+        <a href="../part-2/index.html" style="color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(99,91,255,0.4);padding-bottom:1px;transition:.2s;font-weight:600" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(99,91,255,0.4)'">Part 2: How to Use LLMs →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="main.js"></script>
+</body>
+</html>
