@@ -324,6 +324,17 @@ export default function minimax(
             entrypoint: "@astro-minimax/core/pages/[lang]/projects.astro",
           });
         }
+        if (features.reposts !== false) {
+          injectRoute({
+            pattern: "/[lang]/reposts",
+            entrypoint: "@astro-minimax/core/pages/[lang]/reposts/index.astro",
+          });
+          injectRoute({
+            pattern: "/[lang]/reposts/[...slug]",
+            entrypoint:
+              "@astro-minimax/core/pages/[lang]/reposts/[...slug].astro",
+          });
+        }
 
         injectRoute({
           pattern: "/[lang]/views/immersive",

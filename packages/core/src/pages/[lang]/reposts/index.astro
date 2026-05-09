@@ -1,0 +1,159 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/nav/Header.astro";
+import Footer from "../../../components/nav/Footer.astro";
+import Main from "../../../layouts/Main.astro";
+import { SITE } from "virtual:astro-minimax/config";
+import { t } from "../../../utils/i18n";
+
+export const getStaticPaths = (async () => {
+  return [{ params: { lang: "zh" } }, { params: { lang: "en" } }];
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+const reposts = SITE.reposts ?? [];
+---
+
+<Layout lang={lang} title={`${t("reposts.title", lang)} | ${SITE.title}`}>
+  <Header lang={lang} />
+  <Main
+    pageTitle={t("reposts.title", lang)}
+    pageDesc={t("reposts.desc", lang)}
+    data-lang={lang}
+  >
+    <!-- Stats Overview -->
+    <div class="mb-8 flex items-center gap-6 text-sm text-muted">
+      <div class="flex items-center gap-2">
+        <svg class="size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+        </svg>
+        <span class="font-medium text-foreground">{reposts.length}</span>
+        <span>{t("reposts.count", lang)}</span>
+      </div>
+    </div>
+
+    <!-- Reposts Grid -->
+    <div class="grid gap-6 lg:grid-cols-2">
+      {
+        reposts.map((repost, index) => {
+          const delay = Math.min(index * 60, 400);
+          return (
+            <article
+              class="card-animate group flex flex-col rounded-2xl border border-border/50 bg-card/60 p-5 backdrop-blur-md transition-all duration-300 ease-out hover:border-accent/25 hover:bg-card-hover hover:shadow-xl hover:-translate-y-1"
+              style={`animation-delay: ${delay}ms`}
+            >
+              {/* Source Badge */}
+              <div class="mb-3 flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+                  <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c-1.7-1.7-1.7-4 0-5.7" />
+                    <path d="M9 22V4" />
+                    <path d="M9 8a4 4 0 0 1 0-4" />
+                  </svg>
+                  {t("reposts.source", lang)}: {repost.sourceRepo}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h3 class="mb-1 text-lg font-bold text-foreground transition-colors group-hover:text-accent">
+                {lang === "zh" ? repost.titleZh : repost.title}
+              </h3>
+              {lang === "zh" && repost.title !== repost.titleZh && (
+                <p class="mb-2 text-sm text-foreground-soft">{repost.title}</p>
+              )}
+
+              {/* Description */}
+              <p class="mb-4 line-clamp-3 text-sm leading-relaxed text-foreground-soft">
+                {repost.description}
+              </p>
+
+              {/* Parts Navigation */}
+              <div class="mb-4 flex flex-wrap gap-2">
+                {repost.parts.map((part) => {
+                  const partHref = `/reposts/${repost.slug}/${part.slug}/${lang === "zh" ? "index-zh.html" : "index.html"}`;
+                  return (
+                    <a
+                      href={partHref}
+                      class="inline-flex items-center gap-1 rounded-lg border border-border/60 bg-surface px-3 py-1.5 text-xs font-medium text-foreground-soft transition-all hover:border-accent/40 hover:bg-accent/10 hover:text-accent"
+                    >
+                      <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                      </svg>
+                      {lang === "zh" ? part.titleZh : part.title}
+                    </a>
+                  );
+                })}
+              </div>
+
+              {/* Meta Info */}
+              <div class="mb-3 flex flex-wrap items-center gap-3 text-xs text-muted">
+                <span class="flex items-center gap-1">
+                  <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                  </svg>
+                  {repost.author}
+                </span>
+                <a
+                  href={repost.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-1 text-accent hover:underline"
+                >
+                  <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                  {t("reposts.originalLink", lang)}
+                </a>
+                <span class="flex items-center gap-1">
+                  <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  {repost.date}
+                </span>
+              </div>
+
+              {/* Tags */}
+              <div class="mb-3 flex flex-wrap gap-1.5">
+                {repost.tags.map((tag) => (
+                  <span class="inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* License Note */}
+              <p class="mt-auto border-t border-border/40 pt-3 text-[11px] text-muted">
+                ⚠️ {repost.licenseNote}
+              </p>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    {/* Empty State */}
+    {
+      reposts.length === 0 && (
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+          <div class="flex size-16 items-center justify-center rounded-2xl bg-muted/30">
+            <svg class="size-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            </svg>
+          </div>
+          <p class="mt-4 text-muted">
+            {t("reposts.noReposts", lang)}
+          </p>
+        </div>
+      )
+    }
+  </Main>
+  <Footer lang={lang} />
+</Layout>

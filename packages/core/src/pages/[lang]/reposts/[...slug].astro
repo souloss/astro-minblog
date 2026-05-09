@@ -1,0 +1,38 @@
+---
+import type { GetStaticPaths } from "astro";
+import type { RepostConfig } from "@astro-minimax/core/types";
+import { SITE } from "virtual:astro-minimax/config";
+
+export const getStaticPaths = (async () => {
+  const paths = [];
+  for (const lang of ["zh", "en"] as const) {
+    const reposts = SITE.reposts ?? [];
+    for (const repost of reposts) {
+      for (let i = 0; i < repost.parts.length; i++) {
+        paths.push({
+          params: { lang, slug: `${repost.slug}/${repost.parts[i].slug}` },
+          props: { repost, partIndex: i },
+        });
+      }
+    }
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params as { lang: "zh" | "en" };
+const { repost, partIndex } = Astro.props as { repost: RepostConfig; partIndex: number };
+const part = repost.parts[partIndex];
+const htmlFile = lang === "zh" ? "index-zh.html" : "index.html";
+const targetUrl = `/reposts/${repost.slug}/${part.slug}/${htmlFile}`;
+---
+
+<!-- Redirect to the standalone repost HTML page for 1:1 browsing experience -->
+<html>
+  <head>
+    <meta http-equiv="refresh" content={`0;url=${targetUrl}`} />
+    <title>{lang === "zh" ? part.titleZh : part.title}</title>
+  </head>
+  <body>
+    <p>Redirecting to <a href={targetUrl}>{lang === "zh" ? part.titleZh : part.title}</a>...</p>
+  </body>
+</html>
