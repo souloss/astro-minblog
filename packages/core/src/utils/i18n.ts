@@ -10,6 +10,7 @@ export type TranslationKey =
   | "nav.archives"
   | "nav.search"
   | "nav.projects"
+  | "nav.reposts"
   | "projects.title"
   | "projects.desc"
   | "post.featured"
@@ -180,7 +181,21 @@ export type TranslationKey =
   | "immersive.backToList"
   | "immersive.all"
   | "immersive.empty"
-  | "immersive.updated";
+  | "immersive.updated"
+  | "reposts.title"
+  | "reposts.desc"
+  | "reposts.count"
+  | "reposts.noReposts"
+  | "reposts.originalLink"
+  | "reposts.author"
+  | "reposts.source"
+  | "reposts.basedOn"
+  | "reposts.parts"
+  | "reposts.readTranslation"
+  | "reposts.viewOriginal"
+  | "reposts.licenseNote"
+  | "reposts.partPrefix"
+  | "unit.reposts";
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -365,6 +380,21 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "immersive.all": "All",
     "immersive.empty": "No content yet",
     "immersive.updated": "Updated",
+    "nav.reposts": "Reposts",
+    "reposts.title": "Reposts",
+    "reposts.desc": "Translated and republished content from external sources",
+    "reposts.count": "reposts",
+    "reposts.noReposts": "No reposts yet",
+    "reposts.originalLink": "Original",
+    "reposts.author": "Author",
+    "reposts.source": "Source",
+    "reposts.basedOn": "Based on",
+    "reposts.parts": "Parts",
+    "reposts.readTranslation": "Read Translation",
+    "reposts.viewOriginal": "View Original",
+    "reposts.licenseNote": "Translated and republished, all rights belong to the original author",
+    "reposts.partPrefix": "Part",
+    "unit.reposts": "reposts",
   },
   zh: {
     "nav.home": "首页",
@@ -548,6 +578,21 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "immersive.all": "全部",
     "immersive.empty": "暂无内容",
     "immersive.updated": "更新于",
+    "nav.reposts": "转载",
+    "reposts.title": "转载",
+    "reposts.desc": "翻译转载的外部优质内容",
+    "reposts.count": "篇转载",
+    "reposts.noReposts": "暂无转载内容",
+    "reposts.originalLink": "原文",
+    "reposts.author": "作者",
+    "reposts.source": "来源",
+    "reposts.basedOn": "基于",
+    "reposts.parts": "章节",
+    "reposts.readTranslation": "阅读译文",
+    "reposts.viewOriginal": "查看原文",
+    "reposts.licenseNote": "翻译转载，版权归原作者所有",
+    "reposts.partPrefix": "第",
+    "unit.reposts": "篇转载",
   },
 };
 
