@@ -232,7 +232,7 @@ export function InlineRichText({ text }: { text: string }) {
           return (
             <code
               key={i}
-              class="bg-muted/60 rounded px-1 py-0.5 font-mono text-[13px]"
+              class="bg-muted/60 text-foreground-soft rounded px-1 py-0.5 font-mono text-[13px]"
             >
               {p.text}
             </code>
@@ -420,7 +420,7 @@ export function RichText({
           case "list":
             if (block.ordered) {
               return (
-                <ol key={i} class="list-decimal space-y-0.5 pl-5">
+                <ol key={i} class="text-foreground-soft list-decimal space-y-0.5 pl-5">
                   {block.items?.map((item, j) => (
                     <li key={j}>
                       <InlineRichText text={item} />
@@ -430,7 +430,7 @@ export function RichText({
               );
             }
             return (
-              <ul key={i} class="list-disc space-y-0.5 pl-5">
+              <ul key={i} class="text-foreground-soft list-disc space-y-0.5 pl-5">
                 {block.items?.map((item, j) => (
                   <li key={j}>
                     <InlineRichText text={item} />

@@ -378,13 +378,14 @@ export function AssistantMessage({
       shouldSuppressFallbackText
     )
       return [];
-    return generateFollowUpSuggestions(effectiveText, articleContext);
+    return generateFollowUpSuggestions(effectiveText, articleContext, lang);
   }, [
     isStreaming,
     effectiveText,
     articleContext,
     onFollowUp,
     shouldSuppressFallbackText,
+    lang,
   ]);
 
   if (isWaitingForContent) {
@@ -440,8 +441,8 @@ export function AssistantMessage({
                     </div>
                     {terms.length > 0 && (
                       <div class="hidden shrink-0 flex-wrap gap-1 sm:flex">
-                        {terms.slice(0, 2).map(term => (
-                          <span class="bg-accent/10 text-accent rounded px-1.5 py-0.5 text-[10px]">
+                        {terms.slice(0, 2).map((term, ti) => (
+                          <span key={ti} class="bg-accent/10 text-accent rounded px-1.5 py-0.5 text-[10px]">
                             {term}
                           </span>
                         ))}

@@ -27,6 +27,25 @@ function useMermaid(code: string): MermaidResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
 
+  // Track theme changes to re-render mermaid diagrams
+  const [isDark, setIsDark] = useState(
+    typeof document !== "undefined"
+      ? document.documentElement.getAttribute("data-theme") === "dark"
+      : false
+  );
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -37,10 +56,6 @@ function useMermaid(code: string): MermaidResult {
         if (!mounted) return;
 
         try {
-          const isDark =
-            typeof document !== "undefined" &&
-            document.documentElement.getAttribute("data-theme") === "dark";
-
           // Get CSS variable value with fallback (matching core MermaidInit.astro)
           const getCSSVar = (name: string, fallback: string): string => {
             if (typeof document === "undefined") return fallback;

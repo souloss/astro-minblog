@@ -57,6 +57,25 @@ export function useShikiHighlighter(
   const [error, setError] = useState<string | undefined>();
   const normalizedLang = normalizeCodeBlockLang(lang);
 
+  // Track current theme so re-highlight when theme changes
+  const [isDark, setIsDark] = useState(
+    typeof document !== "undefined"
+      ? document.documentElement.getAttribute("data-theme") === "dark"
+      : false
+  );
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -73,9 +92,6 @@ export function useShikiHighlighter(
         }
 
         try {
-          const isDark =
-            typeof document !== "undefined" &&
-            document.documentElement.getAttribute("data-theme") === "dark";
           const theme = isDark ? "github-dark" : "github-light";
 
           const highlighted = await highlighter.codeToHtml(code, {
@@ -106,7 +122,7 @@ export function useShikiHighlighter(
     return () => {
       mounted = false;
     };
-  }, [code, normalizedLang]);
+  }, [code, normalizedLang, isDark]);
 
   return { html, loading, error };
 }
@@ -153,7 +169,7 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
           <code>{code}</code>
         </pre>
         {lang && (
-          <span class="text-foreground-soft/50 bg-muted/80 absolute top-1 right-2 rounded px-1.5 py-0.5 text-[10px] font-medium">
+          <span class="text-foreground-soft/50 bg-muted/80 absolute top-1 left-2 rounded px-1.5 py-0.5 text-[10px] font-medium">
             {lang}
           </span>
         )}
@@ -169,7 +185,7 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
           dangerouslySetInnerHTML={{ __html: html }}
         />
         {lang && (
-          <span class="text-foreground-soft/50 bg-muted/80 absolute top-1 right-2 rounded px-1.5 py-0.5 text-[10px] font-medium">
+          <span class="text-foreground-soft/50 bg-muted/80 absolute top-1 left-2 rounded px-1.5 py-0.5 text-[10px] font-medium">
             {lang}
           </span>
         )}
@@ -184,12 +200,12 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
         <code>{code}</code>
       </pre>
       {lang && (
-        <span class="text-foreground-soft/50 bg-muted/80 absolute top-1 right-2 rounded px-1.5 py-0.5 text-[10px] font-medium">
+        <span class="text-foreground-soft/50 bg-muted/80 absolute top-1 left-2 rounded px-1.5 py-0.5 text-[10px] font-medium">
           {lang}
         </span>
       )}
       {error && (
-        <span class="text-accent absolute right-2 bottom-1 text-[10px]">
+        <span class="text-warning absolute right-2 bottom-1 text-[10px]">
           {error}
         </span>
       )}
@@ -212,17 +228,19 @@ interface FollowUpSuggestionsProps {
 
 export function generateFollowUpSuggestions(
   responseText: string,
-  articleContext?: { title?: string; keyPoints?: string[] }
+  articleContext?: { title?: string; keyPoints?: string[] },
+  lang?: string
 ): FollowUpSuggestion[] {
   const suggestions: FollowUpSuggestion[] = [];
   const lowerText = responseText.toLowerCase();
+  const isEn = lang === "en";
 
   if (
     lowerText.includes("```") ||
     lowerText.includes("code") ||
     lowerText.includes("代码")
   ) {
-    suggestions.push({ text: "解释这段代码", icon: "code" });
+    suggestions.push({ text: isEn ? "Explain this code" : "解释这段代码", icon: "code" });
   }
 
   if (
@@ -230,7 +248,7 @@ export function generateFollowUpSuggestions(
     lowerText.includes("配置") ||
     lowerText.includes("设置")
   ) {
-    suggestions.push({ text: "详细配置步骤", icon: "config" });
+    suggestions.push({ text: isEn ? "Detailed config steps" : "详细配置步骤", icon: "config" });
   }
 
   if (
@@ -238,16 +256,18 @@ export function generateFollowUpSuggestions(
     lowerText.includes("article") ||
     lowerText.includes("post")
   ) {
-    suggestions.push({ text: "推荐相关文章", icon: "article" });
+    suggestions.push({ text: isEn ? "Related articles" : "推荐相关文章", icon: "article" });
   }
 
   if (lowerText.includes("如何") || lowerText.includes("how to")) {
-    suggestions.push({ text: "举个具体例子", icon: "example" });
+    suggestions.push({ text: isEn ? "Show a concrete example" : "举个具体例子", icon: "example" });
   }
 
   if (articleContext?.title) {
     suggestions.push({
-      text: `详解 "${articleContext.title.slice(0, 20)}..."`,
+      text: isEn
+        ? `Explain "${articleContext.title.slice(0, 20)}..."`
+        : `详解 "${articleContext.title.slice(0, 20)}..."`,
       icon: "detail",
     });
   }
