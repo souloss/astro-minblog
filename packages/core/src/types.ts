@@ -20,6 +20,7 @@ export interface FeaturesConfig {
   archives?: boolean;
   friends?: boolean;
   projects?: boolean;
+  reposts?: boolean;
   search?: boolean;
 }
 
@@ -141,6 +142,29 @@ export interface CopyrightConfig {
   url?: string;
 }
 
+export interface RepostPartConfig {
+  slug: string;
+  title: string;
+  titleZh: string;
+  description: string;
+}
+
+export interface RepostConfig {
+  slug: string;
+  title: string;
+  titleZh: string;
+  description: string;
+  author: string;
+  sourceUrl: string;
+  sourceRepo: string;
+  basedOn: string;
+  date: string;
+  tags: string[];
+  parts: RepostPartConfig[];
+  license: string;
+  licenseNote: string;
+}
+
 export interface ProjectConfig {
   repo: string;
   featured?: boolean;
@@ -181,6 +205,7 @@ export interface SiteConfig {
   darkMode?: boolean;
   nav?: { items: NavItem[] };
   projects?: ProjectConfig[];
+  reposts?: RepostConfig[];
   umami?: UmamiConfig;
   waline?: WalineConfig;
   ai?: AiConfig;
