@@ -372,7 +372,7 @@ export function AssistantMessage({
   );
   const effectiveText = shouldSuppressFallbackText
     ? actionConfirmations.join("\n")
-    : fullText || actionConfirmations.join("\n");
+    : (fullText.trim() ? fullText : actionConfirmations.join("\n"));
   const displayedText = useTypewriter(effectiveText, isStreaming ?? false);
 
   const reasoningParts = safeParts.filter(
@@ -385,7 +385,7 @@ export function AssistantMessage({
   );
   const hasReasoning = reasoningFullText.length > 0;
 
-  const isWaitingForContent = isStreaming && !fullText && !reasoningFullText;
+  const isWaitingForContent = isStreaming && !fullText.trim() && !reasoningFullText;
 
   const sources = safeParts.filter(
     p => p.type === "source-url" || p.type === "source-document"
@@ -433,7 +433,7 @@ export function AssistantMessage({
     );
   }
 
-  if (!effectiveText && !hasReasoning) return null;
+  if (!effectiveText.trim() && !hasReasoning) return null;
 
   return (
     <div class="space-y-1.5">

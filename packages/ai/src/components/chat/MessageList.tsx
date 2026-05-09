@@ -178,7 +178,10 @@ export function shouldSkipEmptyAssistant(
     .map(p => p.text)
     .join("");
 
-  if (textContent) return false;
+  // Use trimmed text to detect visible content — whitespace-only text
+  // (spaces, newlines) should not prevent skipping, as it renders as an
+  // empty div with a ghost BotAvatar.
+  if (textContent.trim()) return false;
 
   const hasReasoning = parts.some(
     (p: { type: string }) => p.type === "reasoning"
@@ -289,7 +292,7 @@ function LiveMessageList({
         // For assistant messages, check if AssistantMessage would produce
         // visible output. If not (e.g., streaming with no content yet),
         // the isWaitingForAssistant placeholder handles the loading state.
-        if (isAssistant && !text && !isWaitingForAssistant) {
+        if (isAssistant && !text.trim() && !isWaitingForAssistant) {
           const parts = msg.parts ?? [];
           const hasReasoning = parts.some(
             (p: { type: string }) => p.type === "reasoning"

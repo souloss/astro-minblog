@@ -84,6 +84,14 @@ describe("shouldSkipEmptyAssistant", () => {
     expect(shouldSkipEmptyAssistant(msg, true, true)).toBe(true);
   });
 
+  it("skips assistant message with whitespace-only text", () => {
+    const msg = makeMessage("a1", "assistant", [
+      { type: "text", text: "   \n  " },
+      { type: "tool-searchArticles", state: "call" },
+    ]);
+    expect(shouldSkipEmptyAssistant(msg, true, true)).toBe(true);
+  });
+
   it("does not skip assistant message with text content", () => {
     const msg = {
       id: "a1",
