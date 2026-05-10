@@ -1,172 +1,155 @@
-import { describe, expect, it } from "vitest";
+import { describe, it, expect } from "vitest";
+import type { UIMessage } from "ai";
 import { shouldAutoContinueAfterToolCalls } from "./tool-auto-continue.js";
 
+function makeMessage(
+  id: string,
+  role: "user" | "assistant",
+  parts?: UIMessage["parts"]
+): UIMessage {
+  return {
+    id,
+    role,
+    content: "",
+    parts: parts ?? [],
+  } as UIMessage;
+}
+
 describe("shouldAutoContinueAfterToolCalls", () => {
-  it("auto-continues for client-side tools after addToolOutput adds tool-result", () => {
-    // After a client-side tool (e.g. toggleTheme) executes via onToolCall,
-    // addToolOutput adds a `tool-result` part. The AI should continue generating
-    // text after the tool executes.
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "a1",
-            role: "assistant",
-            parts: [
-              {
-                type: "tool-toggleTheme",
-                toolCallId: "tc1",
-                state: "output-available",
-                output: { success: true },
-              },
-              {
-                type: "tool-result",
-                toolCallId: "tc1",
-                content: { success: true },
-              },
-            ],
-          },
-        ] as never,
-      })
-    ).toBe(true);
+  it("returns false when there are no messages", () => {
+    expect(shouldAutoContinueAfterToolCalls({ messages: [] })).toBe(false);
   });
 
-  it("does not continue for server-side tools with output-available (execute already handled by streamText)", () => {
-    // Server-side tools (e.g. searchArticles) have an `execute` function.
-    // AI SDK's streamText handles multi-step internally: call tool → get result →
-    // LLM continues generating — all in ONE stream.
-    // No `tool-result` part is added on the client side.
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "a1",
-            role: "assistant",
-            parts: [
-              {
-                type: "tool-searchArticles",
-                toolCallId: "tc1",
-                state: "output-available",
-                output: { articles: [] },
-              },
-            ],
-          },
-        ] as never,
-      })
-    ).toBe(false);
+  it("returns false when last message is from user", () => {
+    const messages = [makeMessage("u1", "user")];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 
-  it("does not continue when the latest assistant message has no completed tool output", () => {
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "a1",
-            role: "assistant",
-            parts: [
-              {
-                type: "tool-searchArticles",
-                toolCallId: "tc1",
-                state: "call",
-                input: { query: "AI" },
-              },
-            ],
-          },
-        ] as never,
-      })
-    ).toBe(false);
+  it("returns false when assistant message has no parts", () => {
+    const messages = [makeMessage("a1", "assistant")];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 
-  it("auto-continues when tool-result exists alongside server-side tool output-available", () => {
-    // If addToolOutput was called for a tool that also has output-available
-    // (e.g. a tool that can run both server-side and client-side), the
-    // tool-result part indicates the client has results to send back.
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "a1",
-            role: "assistant",
-            parts: [
-              {
-                type: "tool-searchArticles",
-                toolCallId: "tc1",
-                state: "output-available",
-                output: { articles: [] },
-              },
-              {
-                type: "tool-result",
-                toolCallId: "tc1",
-                content: { articles: [], projects: [] },
-              },
-            ],
-          },
-        ] as never,
-      })
-    ).toBe(true);
+  it("returns false when assistant message has only text parts", () => {
+    const messages = [
+      makeMessage("a1", "assistant", [{ type: "text", text: "Hello" }]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 
-  it("does not continue for plain text messages", () => {
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "a1",
-            role: "assistant",
-            parts: [{ type: "text", text: "Hello!" }],
-          },
-        ] as never,
-      })
-    ).toBe(false);
+  it("returns false when assistant message has server-side tool in input-streaming state", () => {
+    // Server-side tools (searchArticles) are handled internally by streamText.
+    // They should NOT trigger auto-continue.
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-searchArticles",
+          toolCallId: "tc1",
+          state: "input-streaming",
+        },
+      ] as unknown as UIMessage["parts"]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 
-  it("does not continue when the last message is from the user", () => {
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "u1",
-            role: "user",
-            parts: [{ type: "text", text: "Hello!" }],
-          },
-        ] as never,
-      })
-    ).toBe(false);
+  it("returns false when assistant message has server-side tool in output-available state", () => {
+    // Server-side tools with output-available are handled by streamText
+    // internally — no client-side auto-continue needed.
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-searchArticles",
+          toolCallId: "tc1",
+          state: "output-available",
+        },
+      ] as unknown as UIMessage["parts"]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 
-  it("does not continue when messages array is empty", () => {
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [],
-      })
-    ).toBe(false);
+  it("returns false when action tool is still in input-streaming state", () => {
+    // The tool hasn't been executed yet — no output to send back.
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-toggleTheme",
+          toolCallId: "tc1",
+          state: "input-streaming",
+        },
+      ] as unknown as UIMessage["parts"]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 
-  it("auto-continues for any client-side action tool with tool-result", () => {
-    // All client-side action tools (navigateToArticle, scrollToSection, etc.)
-    // should trigger auto-continue when their tool-result is present.
-    expect(
-      shouldAutoContinueAfterToolCalls({
-        messages: [
-          {
-            id: "a1",
-            role: "assistant",
-            parts: [
-              {
-                type: "tool-navigateToArticle",
-                toolCallId: "tc1",
-                state: "output-available",
-                output: { success: true },
-              },
-              {
-                type: "tool-result",
-                toolCallId: "tc1",
-                content: { success: true },
-              },
-            ],
-          },
-        ] as never,
-      })
-    ).toBe(true);
+  it("returns true when action tool has output-available state", () => {
+    // After onToolCall + addToolOutput, the tool part transitions to
+    // output-available. The client should auto-continue to send the
+    // result back to the server.
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-toggleTheme",
+          toolCallId: "tc1",
+          state: "output-available",
+          output: { success: true },
+        },
+      ] as unknown as UIMessage["parts"]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(true);
+  });
+
+  it("returns true when multiple action tools have output-available state", () => {
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-toggleTheme",
+          toolCallId: "tc1",
+          state: "output-available",
+          output: { success: true },
+        },
+        {
+          type: "tool-scrollToSection",
+          toolCallId: "tc2",
+          state: "output-available",
+          output: { success: true },
+        },
+      ] as unknown as UIMessage["parts"]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(true);
+  });
+
+  it("returns true when action tool output-available alongside server tool", () => {
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-searchArticles",
+          toolCallId: "tc1",
+          state: "output-available",
+        },
+        {
+          type: "tool-toggleTheme",
+          toolCallId: "tc2",
+          state: "output-available",
+          output: { success: true },
+        },
+      ] as unknown as UIMessage["parts"]),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(true);
+  });
+
+  it("returns false when last message is user but earlier assistant has action tool output", () => {
+    // Only the last message matters.
+    const messages = [
+      makeMessage("a1", "assistant", [
+        {
+          type: "tool-toggleTheme",
+          toolCallId: "tc1",
+          state: "output-available",
+          output: { success: true },
+        },
+      ] as unknown as UIMessage["parts"]),
+      makeMessage("u2", "user"),
+    ];
+    expect(shouldAutoContinueAfterToolCalls({ messages })).toBe(false);
   });
 });

@@ -1,32 +1,29 @@
 import type { UIMessage } from "ai";
 
-interface ToolResultPartLike {
-  type?: string;
-  toolCallId?: string;
-  content?: unknown;
-}
-
-function isToolResultPart(part: unknown): boolean {
-  if (typeof part !== "object" || part === null) {
-    return false;
-  }
-  const candidate = part as ToolResultPartLike;
-  return candidate.type === "tool-result";
-}
+const ACTION_TOOL_NAMES = new Set([
+  "toggleTheme",
+  "navigateToArticle",
+  "scrollToSection",
+  "toggleImmersiveMode",
+  "toggleReadingMode",
+  "highlightText",
+  "setPreference",
+]);
 
 /**
  * Determines whether `useChat` should automatically send a follow-up request
  * after client-side tool execution.
  *
- * In AI SDK v6, server-side tools with `execute` + `maxSteps` handle multi-step
- * internally — the LLM calls a tool, gets the result, and continues generating
- * all within one `streamText` call. No client-side auto-continue is needed.
+ * In AI SDK v6, server-side tools with `execute` handle multi-step internally
+ * — the LLM calls a tool, gets the result, and continues generating all within
+ * one `streamText` call. No client-side auto-continue is needed for those.
  *
  * Client-side tools (action tools) are different: the server streams a tool-call
  * part and stops. The client executes the tool via `onToolCall`, then calls
- * `addToolOutput` which adds a `tool-result` part. This function detects those
- * `tool-result` parts and triggers auto-continue so the client sends the result
- * back to the server, allowing the LLM to generate follow-up text.
+ * `addToolOutput` which updates the tool part to `state: "output-available"`.
+ * This function detects those completed action tool parts and triggers
+ * auto-continue so the client sends the result back to the server, allowing
+ * the LLM to generate follow-up text.
  */
 export function shouldAutoContinueAfterToolCalls({
   messages,
@@ -40,9 +37,16 @@ export function shouldAutoContinueAfterToolCalls({
 
   const parts = Array.isArray(lastMessage.parts) ? lastMessage.parts : [];
 
-  // Auto-continue when there are client-side tool results (`tool-result` parts)
-  // that need to be sent back to the server for the AI to generate follow-up text.
-  // Server-side tools with `execute` + `maxSteps` handle multi-step internally,
-  // so they never produce `tool-result` parts on the client.
-  return parts.some(part => isToolResultPart(part));
+  // Auto-continue when there are client-side action tool parts with
+  // output-available state. After onToolCall + addToolOutput, the tool part
+  // transitions from state "input-streaming" to "output-available".
+  // Server-side tools (e.g., searchArticles) handle execution internally
+  // and never produce output-available parts on the client.
+  return parts.some((part: { type?: string; state?: string }) => {
+    if (typeof part.type !== "string" || !part.type.startsWith("tool-")) {
+      return false;
+    }
+    const toolName = part.type.slice("tool-".length);
+    return ACTION_TOOL_NAMES.has(toolName) && part.state === "output-available";
+  });
 }

@@ -247,6 +247,7 @@ export function ChatPanel({
             mockMessages={mockChat.messages}
             liveMessages={liveMessages}
             isStreaming={isStreaming}
+            hasError={!!error}
             lang={lang}
             articleContext={articleContext}
             welcomeMessage={welcomeMessage}

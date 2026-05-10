@@ -15,6 +15,7 @@ interface MessageListProps {
   mockMessages: MockMessage[];
   liveMessages: UIMessage[];
   isStreaming: boolean;
+  hasError: boolean;
   lang: string;
   articleContext?: ArticleChatContext;
   welcomeMessage: UIMessage;
@@ -28,6 +29,7 @@ export function MessageList({
   mockMessages,
   liveMessages,
   isStreaming,
+  hasError,
   lang,
   articleContext,
   welcomeMessage,
@@ -49,6 +51,7 @@ export function MessageList({
     <LiveMessageList
       messages={liveMessages}
       isStreaming={isStreaming}
+      hasError={hasError}
       lang={lang}
       articleContext={articleContext}
       quickPrompts={quickPrompts}
@@ -141,11 +144,15 @@ function MockMessageList({
  */
 export function shouldShowWaitingPlaceholder(
   messages: UIMessage[],
-  isStreaming: boolean
+  isStreaming: boolean,
+  hasError?: boolean
 ): boolean {
   if (!isStreaming) return false;
+  // Don't show the waiting placeholder when there's an error —
+  // the error BotAvatar in ChatPanel already provides feedback.
+  if (hasError) return false;
   // Only hide the placeholder when there is an assistant message with
-  // actual visible content (text, non-empty reasoning, sources, or
+  // actual visible content (text, non-empty reasoning, or
   // completed action tool output). A bare assistant message with only
   // tool-call parts or step-start should NOT suppress the placeholder.
   // Exclude the welcome message — it is a static UI element, not an
@@ -226,6 +233,7 @@ export function hasVisibleAssistantContent(msg: UIMessage): boolean {
 function LiveMessageList({
   messages,
   isStreaming,
+  hasError,
   lang,
   articleContext,
   quickPrompts,
@@ -234,6 +242,7 @@ function LiveMessageList({
 }: {
   messages: UIMessage[];
   isStreaming: boolean;
+  hasError: boolean;
   lang: string;
   articleContext?: ArticleChatContext;
   quickPrompts: string[];
@@ -244,7 +253,7 @@ function LiveMessageList({
   const lastAssistantMsgId = [...messages]
     .reverse()
     .find(m => m.role === "assistant")?.id;
-  const isWaitingForAssistant = shouldShowWaitingPlaceholder(messages, isStreaming);
+  const isWaitingForAssistant = shouldShowWaitingPlaceholder(messages, isStreaming, hasError);
 
   return (
     <>

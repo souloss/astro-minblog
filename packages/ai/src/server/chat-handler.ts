@@ -127,16 +127,22 @@ function handleStreamError(
 ): void {
   log.error("Stream execution error:", err);
   try {
+    const errorMessage = t("ai.error.generic", lang);
     writer.write({
       type: "message-metadata",
       messageMetadata: createChatStatusData({
         stage: "complete",
-        message: t("ai.error.generic", lang),
+        message: errorMessage,
         progress: 1,
         done: true,
       }),
     });
-    writeFinish(writer);
+    // Write the error as text content so the assistant message has visible
+    // content. Without this, hasVisibleAssistantContent returns false and
+    // the message is completely skipped on the client, leaving only the
+    // disconnected error banner — a poor UX.
+    writeTextChunk(writer, errorMessage, "error");
+    writeFinish(writer, "error");
   } catch (e) {
     log.warn("Stream write failed (already closed):", e instanceof Error ? e.message : String(e));
   }

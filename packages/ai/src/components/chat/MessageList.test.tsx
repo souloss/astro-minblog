@@ -195,6 +195,13 @@ describe("shouldShowWaitingPlaceholder", () => {
     expect(shouldShowWaitingPlaceholder(messages, false)).toBe(false);
   });
 
+  it("returns false when hasError is true", () => {
+    const messages = [
+      { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
+    ];
+    expect(shouldShowWaitingPlaceholder(messages, true, true)).toBe(false);
+  });
+
   it("returns false when assistant message with visible content exists", () => {
     const messages = [
       { id: "u1", role: "user", content: "hi", parts: [] } as UIMessage,
