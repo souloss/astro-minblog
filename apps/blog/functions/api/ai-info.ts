@@ -6,7 +6,7 @@ import {
 } from "@astro-minimax/ai";
 import { getResponseCacheConfig } from "@astro-minimax/ai/cache";
 import { initializeMetadata } from "@astro-minimax/ai/server";
-import knowledgeBundle from "../../datas/knowledge/runtime/knowledge-bundle.json";
+import knowledgeBundle from "../../datas/rag-bundle.json";
 import {
   createAiFunctionEnv,
   type FunctionEnv,

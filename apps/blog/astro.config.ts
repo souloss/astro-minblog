@@ -1,5 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { execSync } from "node:child_process";
+import { readFileSync, writeFileSync } from "node:fs";
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -168,6 +170,21 @@ export default defineConfig({
         gzipSize: true,
         brotliSize: true,
       }),
+      {
+        name: "astro-minimax-sw-cache-version",
+        apply: "build",
+        closeBundle() {
+          const swPath = resolve(__dirname, "dist/sw.js");
+          try {
+            let sw = readFileSync(swPath, "utf-8");
+            const gitHash = execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).trim();
+            sw = sw.replace("__SW_CACHE_VERSION__", gitHash);
+            writeFileSync(swPath, sw);
+          } catch {
+            // sw.js may not exist if not using PWA template
+          }
+        },
+      },
       {
         name: "astro-minimax-media-resolver",
         enforce: "pre" as const,

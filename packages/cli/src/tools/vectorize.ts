@@ -10,9 +10,9 @@ import {
   type ContentChunk,
   type VectorIndex,
 } from "./lib/vectors.js";
-import { KNOWLEDGE_RUNTIME_DIR } from "./lib/knowledge.js";
+import { DATA_DIR } from "./lib/knowledge.js";
 
-const KNOWLEDGE_OUTPUT_FILE = join(KNOWLEDGE_RUNTIME_DIR, "vector-index.json");
+const VECTOR_OUTPUT_FILE = join(DATA_DIR, "vector-index.json");
 
 async function main() {
   const useOpenAI = process.argv.includes("--openai");
@@ -66,15 +66,15 @@ async function main() {
       chunks,
     };
 
-    await mkdir(KNOWLEDGE_RUNTIME_DIR, { recursive: true });
+    await mkdir(DATA_DIR, { recursive: true });
     await writeFile(
-      KNOWLEDGE_OUTPUT_FILE,
+      VECTOR_OUTPUT_FILE,
       JSON.stringify(index, null, 0),
       "utf-8"
     );
 
     const fileSize = (JSON.stringify(index).length / 1024).toFixed(1);
-    console.log(`\n✅ 索引已生成: ${KNOWLEDGE_OUTPUT_FILE}`);
+    console.log(`\n✅ 索引已生成: ${VECTOR_OUTPUT_FILE}`);
     console.log(`   文件大小: ${fileSize} KB`);
     console.log(`   内容块: ${chunks.length}`);
   } else {
@@ -92,15 +92,15 @@ async function main() {
       chunks,
     };
 
-    await mkdir(KNOWLEDGE_RUNTIME_DIR, { recursive: true });
+    await mkdir(DATA_DIR, { recursive: true });
     await writeFile(
-      KNOWLEDGE_OUTPUT_FILE,
+      VECTOR_OUTPUT_FILE,
       JSON.stringify(index, null, 0),
       "utf-8"
     );
 
     const fileSize = (JSON.stringify(index).length / 1024).toFixed(1);
-    console.log(`\n✅ 索引已生成: ${KNOWLEDGE_OUTPUT_FILE}`);
+    console.log(`\n✅ 索引已生成: ${VECTOR_OUTPUT_FILE}`);
     console.log(`   文件大小: ${fileSize} KB`);
     console.log(`   词汇量: ${vocabulary.length}`);
     console.log(`   内容块: ${chunks.length}`);

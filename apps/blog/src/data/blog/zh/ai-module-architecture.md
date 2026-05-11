@@ -172,7 +172,7 @@ flowchart TB
 
 把代码重新看一遍之后，我觉得当前版本最关键的几件事是：
 
-- **构建时与运行时分离**：运行时不直接扫 Markdown，而是依赖 `datas/knowledge/runtime/knowledge-bundle.json` 这类预先生成好的知识资产。
+- **构建时与运行时分离**：运行时不直接扫 Markdown，而是依赖 `datas/rag-bundle.json` 这类预先生成好的知识资产。
 - **请求解释先于检索**：系统不是拿到问题就盲搜，而是先做请求解释，再决定预算、是否复用上下文、回答模式和后续 prompt 约束。
 - **能降级就别硬失败**：关键词提取失败可以回到本地 query，证据分析超时可以跳过，provider 不可用时可以降到 Mock，缓存命中时可以直接回放。
 - **前端不是纯展示层**：`ChatPanel.tsx` 不只是显示流式文字，它还承担了 tool call 接收、动作映射和结果回传。只是实际执行浏览器动作的那只手，放在了 core 包的 `ActionExecutor` 里。
@@ -725,7 +725,7 @@ const BUDGET_PRESETS: Record<QueryComplexity, EvidenceBudget> = {
 
 **静态层**（几乎不变）：身份定义、回答格式、约束条件、来源分层（L1-L5）、回答模式指导、预输出检查。
 
-**半静态层**（构建时固定）：作者上下文（author-context.json）、博客概况（文章数、分类、最新文章列表）。
+**半静态层**（构建时固定）：作者上下文（rag-bundle.json 中的 authorContext）、博客概况（文章数、分类、最新文章列表）。
 
 **动态层**（每次请求生成）：相关文章、相关项目、证据分析结果、事实匹配结果、chunk 注入、扩展上下文、回答模式提示。
 
@@ -745,7 +745,7 @@ flowchart TB
     end
 
     subgraph SemiStatic["半静态层"]
-        SS1["author-context.json"]
+        SS1["rag-bundle.json"]
         SS2["文章总数"]
         SS3["主要分类"]
         SS4["最新文章"]

@@ -166,7 +166,7 @@ The server module provides reusable request handlers, decoupled from any specifi
 ```typescript
 // functions/api/chat.ts
 import { handleChatRequest, initializeMetadata } from '@astro-minimax/ai/server';
-import knowledgeBundle from '../../datas/knowledge/runtime/knowledge-bundle.json';
+import knowledgeBundle from '../../datas/rag-bundle.json';
 
 export const onRequest: PagesFunction = async (context) => {
   initializeMetadata({ knowledgeBundle }, context.env);

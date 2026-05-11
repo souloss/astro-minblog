@@ -96,7 +96,7 @@ If I had to summarize its current position from the code as it stands today, I w
 
 **Vendor agnosticism** remains the first principle. `ProviderManager` prevents upper-layer business logic from depending on one model vendor and coordinates Workers AI, OpenAI-compatible providers, and Mock fallback through provider configs, adapters, and health tracking.
 
-**Build-time and runtime separation** is also explicit. Runtime does not scan Markdown directly. It depends on `datas/knowledge/runtime/knowledge-bundle.json`. `initializeMetadata()` turns bundle documents into searchable article indexes and bundle passages into article chunk indexes.
+**Build-time and runtime separation** is also explicit. Runtime does not scan Markdown directly. It depends on `datas/rag-bundle.json`. `initializeMetadata()` turns bundle documents into searchable article indexes and bundle passages into article chunk indexes.
 
 **Request interpretation before blind retrieval** is the clearest architectural shift in the current version. `resolveSearchInterpretation()` derives conversation reuse, topic, answer contract, safety, and complexity first, then uses that result to shape retrieval, budget, and prompt constraints.
 
@@ -860,7 +860,7 @@ flowchart TB
     D --> F["Workers AI / OpenAI Compatible"]
 ```
 
-One deployment fact needs to be explicit in current documentation: runtime depends not only on environment variables, but also on `datas/knowledge/runtime/knowledge-bundle.json`. If the runtime bundle is missing, the system may still run, but retrieval quality drops sharply.
+One deployment fact needs to be explicit in current documentation: runtime depends not only on environment variables, but also on `datas/rag-bundle.json`. If the runtime bundle is missing, the system may still run, but retrieval quality drops sharply.
 
 ### 10.2 Performance Benchmarks
 

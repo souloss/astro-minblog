@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "lastUpdated": "2026-05-11T10:09:56.474Z",
+    "model": "rule-based-template",
+    "generatedBy": "rule-based"
+  },
+  "report": {
+    "hero": {
+      "title": "AI 视角下的 Souloss",
+      "summary": "一位专注于教程/博客、教程/配置、Tutorial/Configuration领域的博主，持续输出高质量内容。",
+      "intro": "博客已发布 47 篇文章，涵盖 15 个主题标签。"
+    },
+    "identities": [
+      {
+        "name": "技术博主",
+        "description": "持续分享技术经验与实践心得。",
+        "evidence": "已发布 47 篇文章。"
+      },
+      {
+        "name": "内容创作者",
+        "description": "注重内容质量与读者体验。",
+        "evidence": "近期文章《\"Markdown 内容指令示例\"》体现了专业的写作风格。"
+      }
+    ],
+    "strengths": [
+      {
+        "title": "内容深度",
+        "points": [
+          "文章结构清晰，逻辑性强",
+          "注重实践，配合代码示例",
+          "持续更新，覆盖多个技术领域"
+        ]
+      },
+      {
+        "title": "表达风格",
+        "points": [
+          "语言简洁明了",
+          "注重可读性",
+          "善于总结提炼"
+        ]
+      }
+    ],
+    "styles": [
+      {
+        "trait": "技术导向",
+        "description": "专注于技术内容的深度讲解与实践分享。"
+      },
+      {
+        "trait": "结构化表达",
+        "description": "文章结构清晰，便于读者理解和学习。"
+      }
+    ],
+    "proofs": {
+      "posts": [
+        {
+          "title": "\"Markdown 内容指令示例\"",
+          "url": "/zh/posts/markdown-directives-demo/",
+          "reason": "在普通  文章里直接使用  和  语法，无需 import，无需 MDX。下面每个指令都分成了演示效果与示例代码两个选项",
+          "date": "2026-05-06T00:00:00.000Z"
+        },
+        {
+          "title": "\"AI Tool Calling and Action System\"",
+          "url": "/en/posts/ai-tool-calling/",
+          "reason": "astro-minimax's AI chat is more than text conversation. When",
+          "date": "2026-03-30T00:00:00.000Z"
+        },
+        {
+          "title": "Search Configuration Guide",
+          "url": "/en/posts/search-guide/",
+          "reason": "astro-minimax ships with two search providers covering diffe",
+          "date": "2026-03-30T00:00:00.000Z"
+        },
+        {
+          "title": "Security Hardening Guide",
+          "url": "/en/posts/security-guide/",
+          "reason": "astro-minimax has been continuously hardening its security s",
+          "date": "2026-03-30T00:00:00.000Z"
+        },
+        {
+          "title": "\"AI Tool Calling 与 Action 系统\"",
+          "url": "/zh/posts/ai-tool-calling/",
+          "reason": "astro-minimax 的 AI 聊天不只是文字对话。当你说「切换到深色模式」或「打开架构那篇文章」，模型不会只给你",
+          "date": "2026-03-30T00:00:00.000Z"
+        }
+      ]
+    },
+    "disclaimer": "该页面由 AI 归纳与规则模板联合生成，旨在帮助访客快速建立认知，可能存在概括偏差，请以原始文章信息为准。"
+  }
+}

@@ -3,6 +3,7 @@ import lucide from '@iconify-json/lucide/icons.json' with { type: 'json' };
 import solar from '@iconify-json/solar/icons.json' with { type: 'json' };
 import crypto from 'node:crypto';
 import { visit } from 'unist-util-visit';
+import { raw as hastRaw } from 'hast-util-raw';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -104,6 +105,20 @@ function h(
     data: { hName: tagName, hProperties: properties || {} },
     children: children || [],
   };
+}
+
+/**
+ * Parse an HTML string into hast children for use with `data.hChildren`.
+ *
+ * When a containerDirective sets `node.data = { hName, hProperties }`,
+ * remark-rehype creates a hast element from that data but does NOT
+ * transform `type: 'html'` children — they are silently dropped.
+ *
+ * Using `data.hChildren` with pre-parsed hast nodes ensures the content
+ * is rendered correctly.
+ */
+function htmlToHastChildren(html: string): any[] {
+  return hastRaw({ type: 'raw', value: html }).children;
 }
 
 function escapeHtml(text: string): string {
@@ -569,8 +584,8 @@ export function remarkContentDirectives(
 
     // ── Container Directives ─────────────────────────────────────────────
 
-    visit(tree, 'containerDirective', (node: any) => {
-            const name = node.name;
+    function processContainerDirective(node: any): void {
+      const name = node.name;
       const attrs = node.attributes || {};
 
       if (name === 'callout') {
@@ -664,6 +679,11 @@ export function remarkContentDirectives(
           { type: 'html', value: '</div>' },
         ];
       } else if (name === 'folders') {
+        // Process nested containerDirectives first (same reason as tabs)
+        visit({ type: 'root', children: node.children }, 'containerDirective', (nested: any) => {
+          processContainerDirective(nested);
+        });
+
         const folders: Array<{ title: string; children: any[] }> = [];
         let currentFolder: string | null = null;
         let currentContent: any[] = [];
@@ -724,6 +744,13 @@ export function remarkContentDirectives(
         node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-timeline' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'tabs') {
+        // Process nested containerDirectives first so their node.data is set
+        // before we reorganize node.children. Without this, unist-util-visit
+        // may skip nested directives after the parent modifies its children.
+        visit({ type: 'root', children: node.children }, 'containerDirective', (nested: any) => {
+          processContainerDirective(nested);
+        });
+
         const align = attrs.align || '';
         const tabs: Array<{
           label: string;
@@ -846,6 +873,11 @@ export function remarkContentDirectives(
         node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-copy', 'data-md-copy': '1' } };
         node.children = [{ type: 'html', value: html }];
       } else if (name === 'grid') {
+        // Process nested containerDirectives first (same reason as tabs)
+        visit({ type: 'root', children: node.children }, 'containerDirective', (nested: any) => {
+          processContainerDirective(nested);
+        });
+
         const cols = attrs.cols || '';
         const gap = attrs.gap || '16';
         const minw = attrs.minw || '240px';
@@ -1297,24 +1329,14 @@ export function remarkContentDirectives(
           node.data = {
             hName: 'div',
             hProperties: { class: 'md-directive md-directive-sites' },
+            hChildren: htmlToHastChildren('<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 group 属性，如 :::sites{group="friends"}</p>'),
           };
-          node.children = [
-            {
-              type: 'html',
-              value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 group 属性，如 :::sites{group="friends"}</p>',
-            },
-          ];
         } else if (items.length === 0) {
           node.data = {
             hName: 'div',
             hProperties: { class: 'md-directive md-directive-sites' },
+            hChildren: htmlToHastChildren(`<p style="color:var(--text-secondary);font-size:0.875rem;">分组 "${group}" 暂无站点数据</p>`),
           };
-          node.children = [
-            {
-              type: 'html',
-              value: `<p style="color:var(--text-secondary);font-size:0.875rem;">分组 "${group}" 暂无站点数据</p>`,
-            },
-          ];
         } else {
           const cells = items
             .map((item) => {
@@ -1355,8 +1377,7 @@ export function remarkContentDirectives(
             .join('');
 
           const html = `<div class="md-sites-grid">${cells}</div>`;
-          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-sites' } };
-          node.children = [{ type: 'html', value: html }];
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-sites' }, hChildren: htmlToHastChildren(html) };
         }
       } else if (name === 'posters') {
         const group = attrs.group || '';
@@ -1368,24 +1389,14 @@ export function remarkContentDirectives(
           node.data = {
             hName: 'div',
             hProperties: { class: 'md-directive md-directive-posters' },
+            hChildren: htmlToHastChildren('<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 group 属性，如 :::posters{group="movies"}</p>'),
           };
-          node.children = [
-            {
-              type: 'html',
-              value: '<p style="color:var(--text-secondary);font-size:0.875rem;">请提供 group 属性，如 :::posters{group="movies"}</p>',
-            },
-          ];
         } else if (items.length === 0) {
           node.data = {
             hName: 'div',
             hProperties: { class: 'md-directive md-directive-posters' },
+            hChildren: htmlToHastChildren(`<p style="color:var(--text-secondary);font-size:0.875rem;">分组 "${group}" 暂无海报数据</p>`),
           };
-          node.children = [
-            {
-              type: 'html',
-              value: `<p style="color:var(--text-secondary);font-size:0.875rem;">分组 "${group}" 暂无海报数据</p>`,
-            },
-          ];
         } else {
           const cells = items
             .map((item) => {
@@ -1413,8 +1424,7 @@ export function remarkContentDirectives(
             .join('');
 
           const html = `<div class="md-posters-grid">${cells}</div>`;
-          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-posters', 'data-ratio': ratio, ...(cols ? { 'data-cols': cols } : {}) } };
-          node.children = [{ type: 'html', value: html }];
+          node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-posters', 'data-ratio': ratio, ...(cols ? { 'data-cols': cols } : {}) }, hChildren: htmlToHastChildren(html) };
         }
       } else if (name === 'panel') {
         const segments: Array<{
@@ -2002,6 +2012,8 @@ export function remarkContentDirectives(
         node.data = { hName: 'div', hProperties: { class: 'md-directive md-directive-colors' } };
         node.children = [{ type: 'html', value: html }];
       }
-    });
+    }
+
+    visit(tree, 'containerDirective', processContainerDirective);
   };
 }

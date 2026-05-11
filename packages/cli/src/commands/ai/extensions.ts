@@ -165,10 +165,9 @@ async function buildExtensions(
 
   // Transform all extensions (simple + legacy) into compiled bundle
   if (validFiles > 0) {
-    const runtimeDir = join(datasDir, "knowledge", "runtime");
-    await transformAllExtensions(extensionsDir, runtimeDir);
+    await transformAllExtensions(extensionsDir, datasDir);
     console.log("\n" + EMOJI.success + " Build completed successfully");
-    console.log("  📦 Extension bundle: " + join(runtimeDir, "extensions-bundle.json") + "\n");
+    console.log("  📦 Extension bundle: " + join(datasDir, "rag-extensions.json") + "\n");
   } else {
     console.log("\n" + EMOJI.warning + "  No valid extension files found\n");
   }

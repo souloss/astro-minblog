@@ -1,5 +1,5 @@
 // Service Worker — offline caching for astro-minimax blog
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "__SW_CACHE_VERSION__";
 const CACHE_NAME = `astro-blog-${CACHE_VERSION}`;
 const OFFLINE_URL = "/404";
 const PRECACHE_URLS = ["/", "/favicon.ico"];

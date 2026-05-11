@@ -186,7 +186,7 @@ export default function minimax(
                     const seoPath = resolve(
                       projectRoot,
                       "datas",
-                      "ai-seo.json"
+                      "seo-meta.json"
                     );
                     if (existsSync(seoPath)) {
                       try {

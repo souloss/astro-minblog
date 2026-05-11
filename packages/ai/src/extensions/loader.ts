@@ -108,7 +108,7 @@ export async function loadExtensions(
   const base = basePath ?? process.cwd();
 
   // Try compiled bundle first (production)
-  const bundlePath = join(base, "datas", "knowledge", "runtime", "extensions-bundle.json");
+  const bundlePath = join(base, "datas", "rag-extensions.json");
   try {
     if (existsSync(bundlePath)) {
       return await loadExtensionsFromBundle(bundlePath);

@@ -27,7 +27,8 @@ import { chatCompletion, hasAPIKey, getConfig } from "./lib/ai-provider.js";
 // ─── 常量 ─────────────────────────────────────────────────────
 
 const DATA_DIR = join(process.cwd(), "datas");
-const SKIP_LIST_FILE = join(DATA_DIR, "ai-skip-list.json");
+const CACHE_DIR = join(DATA_DIR, ".cache");
+const SKIP_LIST_FILE = join(CACHE_DIR, "ai-skip-list.json");
 
 // ─── CLI 参数解析 ───────────────────────────────────────────
 
@@ -318,7 +319,7 @@ interface Task {
 const TASKS: Record<string, Task> = {
   summary: {
     name: "summary",
-    cacheFile: "ai-summaries.json",
+    cacheFile: ".cache/ai-summaries.json",
 
     buildPrompt(article: Article) {
       const langHint =
@@ -419,7 +420,7 @@ ${article.fullContent.slice(0, 8000)}`,
 
   seo: {
     name: "seo",
-    cacheFile: "ai-seo.json",
+    cacheFile: "seo-meta.json",
 
     buildPrompt(article: Article) {
       const langHint =

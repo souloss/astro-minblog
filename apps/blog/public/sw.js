@@ -1,5 +1,5 @@
 // Service Worker
-const CACHE_VERSION = "v2"; // 部署时递增此版本号以强制刷新所有缓存
+const CACHE_VERSION = "__SW_CACHE_VERSION__";
 const CACHE_NAME = `astro-minblog-${CACHE_VERSION}`;
 const OFFLINE_URL = "/404";
 

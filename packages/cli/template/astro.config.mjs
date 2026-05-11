@@ -1,3 +1,7 @@
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { execSync } from "node:child_process";
+import { readFileSync, writeFileSync } from "node:fs";
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import minimax from "@astro-minimax/core";
@@ -21,6 +25,8 @@ import {
 import { SITE } from "./src/config";
 import { SOCIALS, SHARE_LINKS } from "./src/constants";
 import { FRIENDS } from "./src/data/friends";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const shikiTransformers = [
   transformerNotationHighlight(),
@@ -84,7 +90,24 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: "astro-minimax-sw-cache-version",
+        apply: "build",
+        closeBundle() {
+          const swPath = resolve(__dirname, "dist/sw.js");
+          try {
+            let sw = readFileSync(swPath, "utf-8");
+            const gitHash = execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).trim();
+            sw = sw.replace("__SW_CACHE_VERSION__", gitHash);
+            writeFileSync(swPath, sw);
+          } catch {
+            // sw.js may not exist if not using PWA template
+          }
+        },
+      },
+    ],
     server: {
       fs: {
         strict: true,

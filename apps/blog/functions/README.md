@@ -35,7 +35,7 @@ Configure in `.env` (local) or Cloudflare Dashboard (production):
 | `SITE_AUTHOR`     | Author name for AI prompts                     |
 | `SITE_URL`        | Site URL for article links                     |
 
-The AI endpoints initialize runtime data from `datas/knowledge/runtime/knowledge-bundle.json` and optionally use vector data embedded in that bundle.
+The AI endpoints initialize runtime data from `datas/rag-bundle.json` and optionally use vector data embedded in that bundle.
 
 ### Notification Configuration
 

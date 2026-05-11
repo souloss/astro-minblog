@@ -114,7 +114,7 @@ pnpm run data:status        # Show data files status
 pnpm run data:clear         # Clear generated data caches
 ```
 
-These scripts read from `src/data/blog/` and write generation-stage artifacts to `datas/`. Runtime AI consumers use `datas/knowledge/runtime/knowledge-bundle.json` as the canonical input, with optional runtime companions such as `vector-index.json` when present.
+These scripts read from `src/data/blog/` and write generation-stage artifacts to `datas/`. Runtime AI consumers use `datas/rag-bundle.json` as the canonical input, with optional runtime companions such as `vector-index.json` when present.
 
 **URL strategy**: Tool scripts generate relative paths (`/zh/my-post`). The server prepends `SITE_URL` at runtime, making the data deployment-agnostic.
 

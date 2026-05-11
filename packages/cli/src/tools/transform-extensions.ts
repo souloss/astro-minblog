@@ -307,7 +307,7 @@ export async function transformAllExtensions(
     },
   };
 
-  const combinedPath = join(outputDir, "extensions-bundle.json");
+  const combinedPath = join(outputDir, "rag-extensions.json");
   writeFileSync(combinedPath, JSON.stringify(combinedBundle, null, 2), "utf-8");
 
   // Print summary

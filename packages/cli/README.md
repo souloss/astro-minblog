@@ -208,7 +208,7 @@ import {
   handleChatRequest,
   initializeMetadata,
 } from '@astro-minimax/ai/server';
-import knowledgeBundle from '../../datas/knowledge/runtime/knowledge-bundle.json';
+import knowledgeBundle from '../../datas/rag-bundle.json';
 import { SITE } from '../../src/config';
 
 export const onRequest: PagesFunction = async (context) => {
@@ -220,7 +220,7 @@ export const onRequest: PagesFunction = async (context) => {
 };
 ```
 
-Generate `datas/knowledge/runtime/knowledge-bundle.json` before deploying or testing the endpoint so the runtime metadata matches the canonical bundle-based contract.
+Generate `datas/rag-bundle.json` before deploying or testing the endpoint so the runtime metadata matches the canonical bundle-based contract.
 
 ### Step 4: Configure Environment
 

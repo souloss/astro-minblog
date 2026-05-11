@@ -3,7 +3,7 @@ import {
   handleChatRequest,
   initializeMetadata,
 } from "@astro-minimax/ai/server";
-import knowledgeBundle from "../../datas/knowledge/runtime/knowledge-bundle.json";
+import knowledgeBundle from "../../datas/rag-bundle.json";
 import {
   createAiFunctionEnv,
   type FunctionEnv,

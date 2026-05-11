@@ -52,17 +52,18 @@ tests/__pycache__/
 tests/**/*.pyc
 
 # AI build intermediates
-apps/blog/datas/knowledge/
-apps/blog/datas/ai-seo.json
-apps/blog/datas/ai-skip-list.json
-apps/blog/datas/ai-summaries.json
-apps/blog/datas/author-context.json
-apps/blog/datas/author-profile-context.json
-apps/blog/datas/author-profile-report.json
-apps/blog/datas/voice-profile.json
-apps/blog/datas/user-questions-taxonomy.json
+apps/blog/datas/.cache/
+apps/blog/datas/rag-bundle.json
+apps/blog/datas/rag-extensions.json
+apps/blog/datas/rag-facts.json
+apps/blog/datas/rag-voice.json
+apps/blog/datas/seo-meta.json
+apps/blog/datas/content-manifest.json
+apps/blog/datas/build-meta.json
+apps/blog/datas/qa-taxonomy.json
+apps/blog/datas/vector-index.json
 apps/blog/datas/eval/
-apps/blog/datas/sources/
+apps/blog/datas/extensions/
 packages/*/*.tgz
 
 .wrangler

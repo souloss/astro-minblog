@@ -145,7 +145,7 @@ integration 会基于 app 的 `srcDir` 生成样式入口，组合：
 - `apps/blog/functions/api/shared-ai-env.ts`
 - `packages/ai/src/server/index.ts`
 - `packages/ai/src/server/chat-handler.ts`
-- `apps/blog/datas/knowledge/runtime/knowledge-bundle.json`
+- `apps/blog/datas/rag-bundle.json`
 
 ## 4.3 链路步骤
 

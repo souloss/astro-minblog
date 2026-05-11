@@ -72,9 +72,9 @@ pnpm ai:process --clear-skip
 
 **输出文件**:
 
-- `datas/ai-summaries.json` — 文章摘要数据
-- `datas/ai-seo.json` — SEO 元数据
-- `datas/ai-skip-list.json` — 失败文章跳过列表
+- `datas/.cache/ai-summaries.json` — 文章摘要数据（构建中间产物）
+- `datas/seo-meta.json` — SEO 元数据
+- `datas/.cache/ai-skip-list.json` — 失败文章跳过列表
 
 ### build-author-context.ts — 构建作者上下文
 
@@ -86,11 +86,13 @@ astro-minimax ai profile build
 
 **输出文件**:
 
-- `datas/knowledge/runtime/knowledge-bundle.json` — 统一运行时知识包
-- `datas/knowledge/runtime/article-passages.json` — 段落级知识索引
-- `datas/knowledge/sources/content-manifest.json` — 文档级语料清单
-- `datas/knowledge/derived/site-overview.json` — 站点概况衍生数据
-- `datas/knowledge/cache/build-metadata.json` — 构建元数据
+- `datas/rag-bundle.json` — 统一运行时知识包
+- `datas/rag-voice.json` — 表达风格画像
+- `datas/rag-facts.json` — 事实注册表
+- `datas/rag-extensions.json` — 扩展知识包
+- `datas/seo-meta.json` — SEO 元数据
+- `datas/content-manifest.json` — 文档级语料清单
+- `datas/build-meta.json` — 构建元数据
 
 ### build-voice-profile.ts — 构建表达风格画像
 
@@ -102,7 +104,7 @@ astro-minimax ai profile build
 
 **输出结果**:
 
-- 生成阶段会产出表达风格数据，并由 `build-author-context.ts` 汇总进 `datas/knowledge/runtime/knowledge-bundle.json`
+- 生成阶段会产出表达风格数据，并由 `build-author-context.ts` 汇总进 `datas/rag-bundle.json`
 - 运行时仍以知识包为准，不直接依赖单独的风格画像文件
 
 ### generate-author-profile.ts — 生成作者画像报告
@@ -123,18 +125,17 @@ astro-minimax ai profile build
 
 ```
 datas/
-├── (generation-stage files may appear here for SEO, profile, or analysis tasks)
-└── knowledge/
-    ├── runtime/
-    │   ├── knowledge-bundle.json
-    │   ├── article-passages.json
-    │   └── vector-index.json
-    ├── sources/
-    │   └── content-manifest.json
-    ├── derived/
-    │   └── site-overview.json
-    └── cache/
-        └── build-metadata.json
+├── rag-bundle.json        # 统一运行时知识包（核心）
+├── rag-extensions.json    # 扩展知识包
+├── rag-facts.json         # 事实注册表
+├── rag-voice.json         # 表达风格画像
+├── seo-meta.json          # SEO 元数据
+├── content-manifest.json  # 文档级语料清单
+├── build-meta.json        # 构建元数据
+├── vector-index.json      # 向量索引（可选）
+└── .cache/                # 构建中间产物（不入版本控制）
+    ├── ai-summaries.json
+    └── ai-skip-list.json
 ```
 
 ## 开发说明
@@ -169,8 +170,8 @@ if (hasAPIKey()) {
 
 ### 数据文件与 AI 对话的关系
 
-运行时对话链路应始终以 `datas/knowledge/runtime/knowledge-bundle.json` 作为统一输入。
-`ai-summaries.json`、`voice-profile.json`、`fact-registry.json` 等文件仍是生成阶段或派生阶段的中间/源数据，不应被新的运行时适配层直接读取。
+运行时对话链路应始终以 `datas/rag-bundle.json` 作为统一输入。
+`.cache/ai-summaries.json`、`rag-voice.json`、`rag-facts.json` 等文件仍是生成阶段或派生阶段的中间/源数据，不应被新的运行时适配层直接读取。
 
 如存在 `vector-index.json`，它仅作为可选向量检索补充数据。
 

@@ -65,7 +65,7 @@ async function buildFacts(cwd: string, datasDir: string): Promise<void> {
     const result = await buildFactRegistry({ cwd });
 
     console.log(`\n✅ 事实注册表构建完成`);
-    console.log(`📄 输出文件: ${join(datasDir, "fact-registry.json")}`);
+    console.log(`📄 输出文件: ${join(datasDir, "rag-facts.json")}`);
     console.log(`\n📊 统计:`);
     console.log(`   总事实数: ${result.output.stats.total}`);
     console.log(`   平均置信度: ${result.output.stats.avgConfidence}`);
@@ -83,12 +83,12 @@ async function buildFacts(cwd: string, datasDir: string): Promise<void> {
 }
 
 function showFactsStatus(datasDir: string): void {
-  const factsFile = join(datasDir, "fact-registry.json");
+  const factsFile = join(datasDir, "rag-facts.json");
 
   console.log("\n  Fact Registry Status:\n");
 
   if (!existsSync(factsFile)) {
-    console.log("  ⬜ fact-registry.json");
+    console.log("  ⬜ rag-facts.json");
     console.log("     Not generated yet");
     console.log("\n  Run 'astro-minimax ai facts build' to generate.\n");
     return;
@@ -98,7 +98,7 @@ function showFactsStatus(datasDir: string): void {
     const content = readFileSync(factsFile, "utf-8");
     const registry = JSON.parse(content) as FactRegistryFile;
 
-    console.log("  ✅ fact-registry.json");
+    console.log("  ✅ rag-facts.json");
     console.log(`     Version: ${registry.version}`);
     console.log(`     Generated: ${registry.generatedAt}`);
     console.log(`     Total facts: ${registry.stats.total}`);
@@ -111,7 +111,7 @@ function showFactsStatus(datasDir: string): void {
     }
     console.log();
   } catch (error) {
-    console.log("  ❌ fact-registry.json");
+    console.log("  ❌ rag-facts.json");
     console.log(
       `     Error reading file: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -120,13 +120,13 @@ function showFactsStatus(datasDir: string): void {
 }
 
 async function validateFacts(datasDir: string): Promise<void> {
-  const factsFile = join(datasDir, "fact-registry.json");
+  const factsFile = join(datasDir, "rag-facts.json");
 
   console.log("\n📋 Validating Fact Registry\n");
   console.log("━".repeat(50));
 
   if (!existsSync(factsFile)) {
-    console.log("\n❌ fact-registry.json not found");
+    console.log("\n❌ rag-facts.json not found");
     console.log("\n  Run 'astro-minimax ai facts build' to generate.\n");
     process.exit(1);
   }
@@ -136,7 +136,7 @@ async function validateFacts(datasDir: string): Promise<void> {
     const content = readFileSync(factsFile, "utf-8");
     registry = JSON.parse(content) as FactRegistryFile;
   } catch (error) {
-    console.log("\n❌ Failed to parse fact-registry.json");
+    console.log("\n❌ Failed to parse rag-facts.json");
     console.log(
       `   Error: ${error instanceof Error ? error.message : String(error)}`
     );

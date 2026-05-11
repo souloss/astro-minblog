@@ -16,8 +16,8 @@ import { chatCompletion, hasAPIKey, getConfig } from "./lib/ai-provider.js";
 
 // ─── 常量 ─────────────────────────────────────────────────────
 
-const OUTPUT_REPORT = join(DATA_DIR, "author-profile-report.json");
-const OUTPUT_CONTEXT = join(DATA_DIR, "author-profile-context.json");
+const OUTPUT_REPORT = join(DATA_DIR, "rag-author-profile.json");
+const OUTPUT_CONTEXT = join(DATA_DIR, ".cache", "author-profile-context.json");
 const DEFAULT_SITE_URL = "https://example.com";
 
 // ─── CLI 参数 ─────────────────────────────────────────────────
@@ -49,7 +49,7 @@ async function collectPosts(_siteUrl: string): Promise<Post[]> {
   const entries = await readdir(BLOG_DIR, { withFileTypes: true });
   const aiSummaries = await readJson<{
     articles?: Record<string, { data?: { summary?: string; keyPoints?: string[] } }>
-  }>(join(DATA_DIR, "ai-summaries.json"), {
+  }>(join(DATA_DIR, ".cache", "ai-summaries.json"), {
     articles: {},
   });
   const posts: Post[] = [];

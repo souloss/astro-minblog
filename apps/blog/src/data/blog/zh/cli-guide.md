@@ -151,7 +151,7 @@ pnpm run ai:facts:validate
 pnpm run ai:facts:status
 ```
 
-事实注册表位于 `datas/knowledge/runtime/`，供 AI 聊天运行时使用。
+事实注册表位于 `datas/rag-facts.json`，供 AI 聊天运行时使用。
 
 ## AI 扩展系统
 

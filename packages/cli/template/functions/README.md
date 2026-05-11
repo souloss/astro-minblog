@@ -35,7 +35,7 @@ Configure in `.env` (local) or Cloudflare Dashboard (production):
 | `SITE_AUTHOR`     | Author name for AI prompts                     |
 | `SITE_URL`        | Site URL for article links                     |
 
-Template runtime data should be generated before deployment. The AI adapters initialize metadata from `datas/knowledge/runtime/knowledge-bundle.json`, with `runtime.vectorIndex` treated as an optional companion for retrieval features.
+Template runtime data should be generated before deployment. The AI adapters initialize metadata from `datas/rag-bundle.json`, with `runtime.vectorIndex` treated as an optional companion for retrieval features.
 
 ### Notification Configuration
 

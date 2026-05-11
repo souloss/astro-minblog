@@ -11,7 +11,7 @@ import { extractFrontmatter } from "./lib/frontmatter.js";
 
 // ─── 常量 ─────────────────────────────────────────────────────
 
-const OUTPUT_FILE = join(DATA_DIR, "voice-profile.json");
+const OUTPUT_FILE = join(DATA_DIR, "rag-voice.json");
 
 // ─── 文章收集 ─────────────────────────────────────────────────
 

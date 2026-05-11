@@ -2,7 +2,7 @@
  * 构建事实注册表 (Fact Registry)
  *
  * 从博客内容、作者上下文、AI 摘要等数据中提取可验证的事实，
- * 生成 fact-registry.json 供 AI 对话时注入 Prompt，减少幻觉。
+ * 生成 rag-facts.json 供 AI 对话时注入 Prompt，减少幻觉。
  *
  * 用法:
  *   astro-minimax facts build           构建事实注册表
@@ -128,7 +128,7 @@ function buildAuthorFacts(
       id: "author-name",
       category: "author",
       statement: `博客作者名为 ${authorName}`,
-      evidence: "author-context.json → profile.name",
+      evidence: "rag-bundle.json → profile.name",
       source: "explicit",
       confidence: 1.0,
       tags: ["作者", "名字", "author", "name", authorName.toLowerCase()],
@@ -138,7 +138,7 @@ function buildAuthorFacts(
       id: "author-name-en",
       category: "author",
       statement: `The blog author is ${authorName}`,
-      evidence: "author-context.json → profile.name",
+      evidence: "rag-bundle.json → profile.name",
       source: "explicit",
       confidence: 1.0,
       tags: ["author", "name", authorName.toLowerCase()],
@@ -151,7 +151,7 @@ function buildAuthorFacts(
       id: "author-site",
       category: "author",
       statement: `博客网址为 ${siteUrl}`,
-      evidence: "author-context.json → profile.siteUrl",
+      evidence: "rag-bundle.json → profile.siteUrl",
       source: "explicit",
       confidence: 1.0,
       tags: ["网址", "URL", "site", "url", "博客"],
@@ -164,7 +164,7 @@ function buildAuthorFacts(
       id: "author-desc",
       category: "author",
       statement: `博客简介：${truncate(profile.description, 200)}`,
-      evidence: "author-context.json → profile.description",
+      evidence: "rag-bundle.json → profile.description",
       source: "explicit",
       confidence: 1.0,
       tags: ["简介", "description", "about", "关于"],
@@ -185,7 +185,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       id: "blog-total-posts",
       category: "blog",
       statement: `博客共有 ${footprint.posts} 篇文章（中文 ${footprint.zhPosts} 篇，英文 ${footprint.enPosts} 篇）`,
-      evidence: "author-context.json → stableFacts.contentFootprint",
+      evidence: "rag-bundle.json → stableFacts.contentFootprint",
       source: "derived",
       confidence: 1.0,
       tags: [
@@ -205,7 +205,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       id: "blog-total-posts-en",
       category: "blog",
       statement: `The blog has ${footprint.posts} posts (${footprint.zhPosts} in Chinese, ${footprint.enPosts} in English)`,
-      evidence: "author-context.json → stableFacts.contentFootprint",
+      evidence: "rag-bundle.json → stableFacts.contentFootprint",
       source: "derived",
       confidence: 1.0,
       tags: ["posts", "count", "total", "how many", "statistics"],
@@ -216,7 +216,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       id: "blog-total-posts",
       category: "blog",
       statement: `博客共有 ${posts.length} 篇文章`,
-      evidence: `author-context.json → posts.length (${posts.length})`,
+      evidence: `rag-bundle.json → posts.length (${posts.length})`,
       source: "derived",
       confidence: 1.0,
       tags: ["文章数", "总数", "统计", "多少", "数量", "posts", "count"],
@@ -231,7 +231,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       id: "blog-categories",
       category: "blog",
       statement: `博客的主要分类包括：${categories.join("、")}`,
-      evidence: "author-context.json → stableFacts.focusAreas",
+      evidence: "rag-bundle.json → stableFacts.focusAreas",
       source: "derived",
       confidence: 0.95,
       tags: [
@@ -255,7 +255,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       id: "blog-top-tags",
       category: "blog",
       statement: `博客最常用的标签有：${topTags.slice(0, 10).join("、")}`,
-      evidence: "author-context.json → stableFacts.topTags",
+      evidence: "rag-bundle.json → stableFacts.topTags",
       source: "derived",
       confidence: 0.9,
       tags: [
@@ -276,7 +276,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
       id: "blog-recurring-topics",
       category: "blog",
       statement: `博客反复讨论的技术话题包括：${topics.slice(0, 8).join("、")}`,
-      evidence: "author-context.json → stableFacts.recurringTopics",
+      evidence: "rag-bundle.json → stableFacts.recurringTopics",
       source: "aggregated",
       confidence: 0.85,
       tags: [
@@ -329,7 +329,7 @@ function buildBlogStatsFacts(ctx: AuthorContextData): Fact[] {
         id: "blog-lang-dist",
         category: "blog",
         statement: `博客文章的语言分布：${desc}`,
-        evidence: "author-context.json → posts[].lang aggregation",
+        evidence: "rag-bundle.json → posts[].lang aggregation",
         source: "derived",
         confidence: 1.0,
         tags: ["语言", "中文", "英文", "language", "chinese", "english"],
@@ -361,7 +361,7 @@ function buildContentFacts(ctx: AuthorContextData): Fact[] {
       id: "content-category-dist",
       category: "content",
       statement: `按分类统计：${desc}`,
-      evidence: "author-context.json → posts[].category aggregation",
+      evidence: "rag-bundle.json → posts[].category aggregation",
       source: "derived",
       confidence: 1.0,
       tags: ["分类", "统计", "category", "distribution"],
@@ -381,7 +381,7 @@ function buildContentFacts(ctx: AuthorContextData): Fact[] {
       id: "content-flagship",
       category: "content",
       statement: `最新的代表性文章：${desc}`,
-      evidence: "author-context.json → stableFacts.flagshipPosts",
+      evidence: "rag-bundle.json → stableFacts.flagshipPosts",
       source: "derived",
       confidence: 0.95,
       tags: ["最新", "代表", "推荐", "latest", "recent", "flagship"],
@@ -500,7 +500,7 @@ function buildSummaryDerivedFacts(summaries: AISummariesData): Fact[] {
       id: "content-ai-tags",
       category: "content",
       statement: `AI 分析得出的高频主题标签：${topAiTags.join("、")}`,
-      evidence: `ai-summaries.json → ${entries.length} articles aggregated tags`,
+      evidence: `.cache/ai-summaries.json → ${entries.length} articles aggregated tags`,
       source: "aggregated",
       confidence: 0.85,
       tags: [
@@ -540,7 +540,7 @@ function buildSummaryDerivedFacts(summaries: AISummariesData): Fact[] {
       id: "content-recurring-kp",
       category: "content",
       statement: `在多篇文章中反复出现的要点：${desc}`,
-      evidence: `ai-summaries.json → keyPoints cross-article aggregation`,
+      evidence: `.cache/ai-summaries.json → keyPoints cross-article aggregation`,
       source: "aggregated",
       confidence: 0.8,
       tags: ["要点", "核心", "反复", "key point", "recurring"],
@@ -661,11 +661,11 @@ export async function buildFactRegistry(
   await loadEnv();
 
   const authorContext = await readJson<AuthorContextData>(
-    join(dataDir, "author-context.json"),
+    join(dataDir, "rag-bundle.json"),
     {}
   );
   const aiSummaries = await readJson<AISummariesData>(
-    join(dataDir, "ai-summaries.json"),
+    join(dataDir, ".cache", "ai-summaries.json"),
     {}
   );
 
@@ -702,7 +702,7 @@ export async function buildFactRegistry(
     stats,
   };
 
-  await writeJson(join(dataDir, "fact-registry.json"), output);
+  await writeJson(join(dataDir, "rag-facts.json"), output);
 
   return {
     success: errors.length === 0,
@@ -723,15 +723,15 @@ async function main() {
   const dataDir = join(cwd, "datas");
 
   const authorContext = await readJson<AuthorContextData>(
-    join(dataDir, "author-context.json"),
+    join(dataDir, "rag-bundle.json"),
     {}
   );
   const aiSummaries = await readJson<AISummariesData>(
-    join(dataDir, "ai-summaries.json"),
+    join(dataDir, ".cache", "ai-summaries.json"),
     {}
   );
   const voiceProfile = await readJson<VoiceProfileData>(
-    join(dataDir, "voice-profile.json"),
+    join(dataDir, "rag-voice.json"),
     {}
   );
 
@@ -741,13 +741,13 @@ async function main() {
 
   console.log(`\n📂 数据源检测:`);
   console.log(
-    `   author-context.json: ${hasAuthorContext ? "✅" : "❌ (缺失)"}`
+    `   rag-bundle.json: ${hasAuthorContext ? "✅" : "❌ (缺失)"}`
   );
   console.log(
-    `   ai-summaries.json:   ${hasSummaries ? `✅ (${Object.keys(aiSummaries.articles ?? {}).length} 篇)` : "❌ (缺失)"}`
+    `   ai-summaries (cache): ${hasSummaries ? `✅ (${Object.keys(aiSummaries.articles ?? {}).length} 篇)` : "❌ (缺失)"}`
   );
   console.log(
-    `   voice-profile.json:  ${voiceProfile.tone ? "✅" : "⚠️ (部分)"}`
+    `   rag-voice.json:      ${voiceProfile.tone ? "✅" : "⚠️ (部分)"}`
   );
 
   console.log("\n🔍 提取事实...");
@@ -755,7 +755,7 @@ async function main() {
   const result = await buildFactRegistry({ cwd });
 
   console.log(`\n✅ 事实注册表构建完成`);
-  console.log(`📄 输出文件: ${join(dataDir, "fact-registry.json")}`);
+  console.log(`📄 输出文件: ${join(dataDir, "rag-facts.json")}`);
   console.log(`\n📊 统计:`);
   console.log(`   总事实数: ${result.output.stats.total}`);
   console.log(`   平均置信度: ${result.output.stats.avgConfidence}`);

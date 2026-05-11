@@ -13,10 +13,6 @@ import {
   BLOG_DIR,
 } from "./lib/utils.js";
 import {
-  KNOWLEDGE_CACHE_DIR,
-  KNOWLEDGE_DERIVED_DIR,
-  KNOWLEDGE_RUNTIME_DIR,
-  KNOWLEDGE_SOURCES_DIR,
   buildKnowledgeBundle,
 } from "./lib/knowledge.js";
 import { stripMarkdown } from "./lib/markdown.js";
@@ -29,8 +25,7 @@ import { hasAPIKey, getConfig } from "./lib/ai-provider.js";
 
 // ─── 常量 ─────────────────────────────────────────────────────
 
-const OUTPUT_FILE = join(DATA_DIR, "author-context.json");
-const SOURCES_DIR = join(DATA_DIR, "sources");
+const OUTPUT_FILE = join(DATA_DIR, "rag-bundle.json");
 const MAX_RECENT_POSTS = 200;
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -136,11 +131,13 @@ async function collectPosts(
 ): Promise<RawPost[]> {
   const files = await collectMarkdownFiles(BLOG_DIR, options);
   const aiSummaries = await readJson<{
+    meta?: { lastUpdated?: string; model?: string; totalProcessed?: number };
     articles?: Record<
       string,
       { data?: { summary?: string; keyPoints?: string[] } }
     >;
-  }>(join(DATA_DIR, "ai-summaries.json"), {
+  }>(join(DATA_DIR, ".cache", "ai-summaries.json"), {
+    meta: { lastUpdated: "", model: "unknown", totalProcessed: 0 },
     articles: {},
   });
   const posts: RawPost[] = [];
@@ -342,22 +339,6 @@ async function main() {
   console.log(`   - 中文: ${posts.filter(p => p.lang === "zh").length} 篇`);
   console.log(`   - 英文: ${posts.filter(p => p.lang === "en").length} 篇`);
 
-  // 保存文章摘要到 sources
-  await writeJson(join(SOURCES_DIR, "blog-digest.json"), {
-    generatedAt: new Date().toISOString(),
-    count: posts.length,
-    posts: posts.slice(0, MAX_RECENT_POSTS).map(p => ({
-      id: p.id,
-      title: p.title,
-      date: p.date,
-      lang: p.lang,
-      category: p.category,
-      tags: p.tags,
-      summary: p.summary,
-      url: p.url,
-    })),
-  });
-
   // 构建事实数据
   const stableFacts = buildStableFacts(posts);
   const timelineFacts = buildTimelineFacts(posts);
@@ -410,16 +391,16 @@ async function main() {
 
   await writeJson(OUTPUT_FILE, context);
   const generatedAt = context.generatedAt;
-  const summaries = await readJson(join(DATA_DIR, "ai-summaries.json"), {
+  const summaries = await readJson(join(DATA_DIR, ".cache", "ai-summaries.json"), {
     meta: { lastUpdated: generatedAt, model: "unknown", totalProcessed: 0 },
     articles: {},
   });
   const voiceProfile = await readJson(
-    join(DATA_DIR, "voice-profile.json"),
+    join(DATA_DIR, "rag-voice.json"),
     null
   );
   const factRegistry = await readJson(
-    join(DATA_DIR, "fact-registry.json"),
+    join(DATA_DIR, "rag-facts.json"),
     null
   );
   const bundle = buildKnowledgeBundle({
@@ -430,21 +411,9 @@ async function main() {
     factRegistry,
     vectorIndex: null,
   });
-  await writeJson(
-    join(KNOWLEDGE_SOURCES_DIR, "content-manifest.json"),
-    bundle.corpus
-  );
-  await writeJson(
-    join(KNOWLEDGE_RUNTIME_DIR, "article-passages.json"),
-    bundle.passages
-  );
-  await writeJson(join(KNOWLEDGE_RUNTIME_DIR, "knowledge-bundle.json"), bundle);
-  await writeJson(join(KNOWLEDGE_DERIVED_DIR, "site-overview.json"), {
-    generatedAt,
-    stableFacts,
-    timelineFacts,
-  });
-  await writeJson(join(KNOWLEDGE_CACHE_DIR, "build-metadata.json"), {
+  await writeJson(join(DATA_DIR, "content-manifest.json"), bundle.corpus);
+  await writeJson(OUTPUT_FILE, bundle);
+  await writeJson(join(DATA_DIR, "build-meta.json"), {
     generatedAt,
     contextHash: context.contextHash,
     postCount: posts.length,

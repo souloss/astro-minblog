@@ -140,13 +140,10 @@ function initDatasDirectory(datasDir: string): void {
     mkdirSync(datasDir, { recursive: true });
   }
 
-  const runtimeDir = resolve(datasDir, "knowledge", "runtime");
-  mkdirSync(runtimeDir, { recursive: true });
-
   const files = [
     {
-      name: resolve(runtimeDir, "knowledge-bundle.json"),
-      label: "knowledge/runtime/knowledge-bundle.json",
+      name: resolve(datasDir, "rag-bundle.json"),
+      label: "rag-bundle.json",
       content: DEFAULT_KNOWLEDGE_BUNDLE,
     },
   ];
@@ -196,18 +193,18 @@ async function setupHandler(datasDir: string, hasDatas: boolean) {
     );
   } else {
     const hasKnowledgeBundle = existsSync(
-      resolve(datasDir, "knowledge", "runtime", "knowledge-bundle.json")
+      resolve(datasDir, "rag-bundle.json")
     );
     if (!hasKnowledgeBundle) {
       console.log(
-        "\n   ⚠️  knowledge/runtime/knowledge-bundle.json is missing. AI chat may have limited context.\n"
+        "\n   ⚠️  rag-bundle.json is missing. AI chat may have limited context.\n"
       );
     }
   }
 
   const knowledgeBundle = loadJson(
     datasDir,
-    "knowledge/runtime/knowledge-bundle.json",
+    "rag-bundle.json",
     DEFAULT_KNOWLEDGE_BUNDLE
   ) as KnowledgeBundleFile;
   const env: ChatHandlerEnv = { ...process.env };

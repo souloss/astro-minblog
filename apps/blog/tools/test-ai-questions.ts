@@ -2,7 +2,7 @@
 /**
  * AI Questions Testing Tool
  * 
- * Tests the AI server with questions from user-questions-taxonomy.json
+ * Tests the AI server with questions from qa-taxonomy.json
  * and saves Q&A results for evaluation.
  * 
  * Usage:
@@ -70,7 +70,7 @@ const DELAY_MS = parseInt(getArg('delay', '1000'), 10);
 const OUTPUT_FILE = getArg('output', 'datas/qa-test-results.jsonl');
 const DRY_RUN = hasFlag('dry-run');
 
-const TAXONOMY_PATH = path.join(__dirname, '../datas/user-questions-taxonomy.json');
+const TAXONOMY_PATH = path.join(__dirname, '../datas/qa-taxonomy.json');
 const API_URL = 'http://localhost:8787/api/chat';
 
 function readTaxonomy(): TaxonomyData {

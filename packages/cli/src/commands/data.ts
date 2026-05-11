@@ -15,8 +15,8 @@ Subcommands:
 
 Description:
   View and manage generated data files in datas/.
-  Runtime consumers should rely on datas/knowledge/runtime/knowledge-bundle.json
-  plus the optional datas/knowledge/runtime/vector-index.json.
+  Runtime consumers should rely on datas/rag-bundle.json
+  plus the optional datas/rag-extensions.json.
 
 Examples:
   astro-minimax data status
@@ -52,28 +52,36 @@ function showStatus(datasDir: string): void {
 
   const files = [
     {
-      name: "knowledge/runtime/knowledge-bundle.json",
-      desc: "Canonical runtime bundle",
+      name: "rag-bundle.json",
+      desc: "Canonical RAG runtime bundle",
     },
     {
-      name: "knowledge/runtime/vector-index.json",
-      desc: "Optional runtime vector companion",
+      name: "rag-extensions.json",
+      desc: "Extension knowledge bundle",
     },
     {
-      name: "knowledge/runtime/article-passages.json",
-      desc: "Optional runtime passage companion",
+      name: "rag-facts.json",
+      desc: "Structured fact registry",
     },
     {
-      name: "knowledge/sources/content-manifest.json",
-      desc: "Canonical source manifest",
+      name: "rag-voice.json",
+      desc: "Author voice profile",
     },
     {
-      name: "knowledge/derived/site-overview.json",
-      desc: "Derived site overview",
+      name: "seo-meta.json",
+      desc: "SEO metadata for articles",
     },
     {
-      name: "knowledge/cache/build-metadata.json",
-      desc: "Knowledge pipeline build metadata",
+      name: "content-manifest.json",
+      desc: "Source content manifest",
+    },
+    {
+      name: "build-meta.json",
+      desc: "Build metadata and integrity hashes",
+    },
+    {
+      name: "qa-taxonomy.json",
+      desc: "QA evaluation test set",
     },
   ];
 
@@ -87,9 +95,11 @@ function showStatus(datasDir: string): void {
           : Array.isArray(stat.corpus?.documents)
             ? stat.corpus.documents.length
             : 0;
-        const passages = Array.isArray(stat.passages?.passages)
-          ? stat.passages.passages.length
-          : 0;
+        const passages = Array.isArray(stat.passages)
+          ? stat.passages.length
+          : Array.isArray(stat.passages?.passages)
+            ? stat.passages.passages.length
+            : 0;
         const updated = stat.meta?.lastUpdated || stat.generatedAt || "never";
 
         console.log(`  ✅ ${file.name}`);
@@ -108,12 +118,14 @@ function showStatus(datasDir: string): void {
 
 async function clearData(datasDir: string): Promise<void> {
   const clearableFiles = [
-    "knowledge/runtime/knowledge-bundle.json",
-    "knowledge/runtime/vector-index.json",
-    "knowledge/runtime/article-passages.json",
-    "knowledge/sources/content-manifest.json",
-    "knowledge/derived/site-overview.json",
-    "knowledge/cache/build-metadata.json",
+    "rag-bundle.json",
+    "rag-extensions.json",
+    "rag-facts.json",
+    "rag-voice.json",
+    "seo-meta.json",
+    "content-manifest.json",
+    "build-meta.json",
+    "qa-taxonomy.json",
   ];
 
   console.log("\n  Clearing generated data...\n");
@@ -126,13 +138,6 @@ async function clearData(datasDir: string): Promise<void> {
       console.log(`  ✓ Removed ${file}`);
       cleared++;
     }
-  }
-
-  const sourcesDir = join(datasDir, "sources", "blog-digest.json");
-  if (existsSync(sourcesDir)) {
-    unlinkSync(sourcesDir);
-    console.log(`  ✓ Removed sources/blog-digest.json`);
-    cleared++;
   }
 
   console.log(`\n  Cleared ${cleared} file(s).\n`);

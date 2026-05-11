@@ -17,11 +17,11 @@ interface AiSeoData {
   articles: Record<string, { data: AiSeoArticleData }>;
 }
 
-// Load ai-seo.json at build time
+// Load seo-meta.json at build time
 function loadAiSeoData(): AiSeoData | null {
   try {
     const projectRoot = resolve(process.cwd());
-    const seoPath = resolve(projectRoot, "datas", "ai-seo.json");
+    const seoPath = resolve(projectRoot, "datas", "seo-meta.json");
     if (existsSync(seoPath)) {
       return JSON.parse(readFileSync(seoPath, "utf-8"));
     }

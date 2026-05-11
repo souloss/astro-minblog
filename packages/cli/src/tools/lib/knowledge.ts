@@ -85,11 +85,8 @@ export type KnowledgeBundleFile = SharedKnowledgeBundleFile<
   VectorIndex
 >;
 
-export const KNOWLEDGE_DIR = join(process.cwd(), "datas", "knowledge");
-export const KNOWLEDGE_RUNTIME_DIR = join(KNOWLEDGE_DIR, "runtime");
-export const KNOWLEDGE_DERIVED_DIR = join(KNOWLEDGE_DIR, "derived");
-export const KNOWLEDGE_CACHE_DIR = join(KNOWLEDGE_DIR, "cache");
-export const KNOWLEDGE_SOURCES_DIR = join(KNOWLEDGE_DIR, "sources");
+export const DATA_DIR = join(process.cwd(), "datas");
+export const CACHE_DIR = join(DATA_DIR, ".cache");
 
 export interface BuildKnowledgeBundleInput {
   generatedAt: string;

@@ -6,7 +6,7 @@ import { cosineSimilarity, type VectorIndex } from "./lib/vectors.js";
 
 const VECTOR_INDEX = join(
   process.cwd(),
-  "datas/knowledge/runtime/vector-index.json"
+  "datas/vector-index.json"
 );
 
 function tagSimilarity(a: PostMeta, b: PostMeta): number {
@@ -89,7 +89,7 @@ async function main() {
     vectorIndex = await loadVectorIndex();
     if (!vectorIndex) {
     console.error(
-      "❌ 向量索引未找到。请先生成 datas/knowledge/runtime/vector-index.json。"
+      "❌ 向量索引未找到。请先生成 datas/vector-index.json。"
     );
       process.exit(1);
     }
