@@ -4,6 +4,7 @@ import {
   type ToolSet,
   streamText,
   convertToModelMessages,
+  stepCountIs,
 } from "ai";
 import { t } from "../utils/i18n.js";
 import { CHAT_HANDLER } from "../constants.js";
@@ -226,6 +227,7 @@ export async function streamLLMResponse(
       temperature,
       maxOutputTokens,
       tools,
+      stopWhen: stepCountIs(5),
       onError: ({ error }) => {
         log.error("streamText error:", error);
       },
