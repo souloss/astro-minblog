@@ -264,6 +264,8 @@ const layoutModes = [
   function applyColorScheme(schemeId) {
     const root = document.documentElement;
     root.setAttribute('data-color-scheme', schemeId);
+    // Remove inline --accent so CSS preset takes effect
+    root.style.removeProperty('--accent');
   }
 
   const SCHEME_HUE_MAP = {
@@ -280,13 +282,15 @@ const layoutModes = [
   function applyHue(hue) {
     const root = document.documentElement;
     root.style.setProperty('--hue', String(hue));
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    // Only set --accent; derived tokens (--accent-soft, --accent-gradient-*, --brand-secondary)
-    // auto-adapt via color-mix() in themes.css
-    if (isDark) {
-      root.style.setProperty('--accent', `oklch(0.75 0.14 ${hue})`);
+    // When hue matches the preset's default, remove inline --accent
+    // so the CSS preset value takes effect (exact color, not oklch approximation)
+    const currentScheme = root.getAttribute('data-color-scheme') || 'teal';
+    const presetHue = SCHEME_HUE_MAP[currentScheme] ?? 165;
+    if (hue === presetHue) {
+      root.style.removeProperty('--accent');
     } else {
-      root.style.setProperty('--accent', `oklch(0.55 0.14 ${hue})`);
+      // Use CSS --accent-oklch which auto-adapts to light/dark via themes.css
+      root.style.setProperty('--accent', 'var(--accent-oklch)');
     }
   }
 
@@ -496,6 +500,16 @@ const layoutModes = [
     if (valueEl) valueEl.textContent = `${Math.round(size * 100)}%`;
   }
 
+  function updateFontFamilyUI(fontFamily) {
+    document.querySelectorAll('.font-family-btn').forEach(btn => {
+      const isActive = btn.dataset.fontFamily === fontFamily;
+      btn.classList.toggle('border-accent', isActive);
+      btn.classList.toggle('bg-accent/10', isActive);
+      btn.classList.toggle('text-accent', isActive);
+      btn.classList.toggle('border-border/50', !isActive);
+    });
+  }
+
   function switchTab(tabName) {
     document.querySelectorAll('.settings-tab').forEach(tab => {
       const isActive = tab.dataset.tab === tabName;
@@ -666,6 +680,7 @@ const layoutModes = [
       updateRadiusUI(settings.theme.radius);
       updateFontSizeUI(settings.appearance.fontSize);
       updateHueUI(settings.theme.hue ?? 165);
+      updateFontFamilyUI(settings.reading.fontFamily);
       if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
       if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
       if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
@@ -723,11 +738,22 @@ const layoutModes = [
       const btn = e.target.closest('[data-radius]');
       if (!btn) return;
       const r = btn.dataset.radius;
-      
+
       settings.theme.radius = r;
       saveSettings(settings);
       applyRadius(radiusValues[r]);
       updateRadiusUI(r);
+    });
+
+    // Font family handlers
+    document.querySelectorAll('.font-family-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const fontFamily = btn.dataset.fontFamily;
+        settings.reading.fontFamily = fontFamily;
+        saveSettings(settings);
+        applyReadingSettings(settings.reading);
+        updateFontFamilyUI(fontFamily);
+      });
     });
 
     // Reading theme handlers (removed — now in immersive view settings)
@@ -817,6 +843,7 @@ const layoutModes = [
       updateRadiusUI(settings.theme.radius);
       updateFontSizeUI(settings.appearance.fontSize);
       updateHueUI(settings.theme.hue ?? 165);
+      updateFontFamilyUI(settings.reading.fontFamily);
       if (animationToggle) updateSwitch(animationToggle, settings.animations.enabled);
       if (cardHoverToggle) updateSwitch(cardHoverToggle, settings.animations.cardHover);
       if (smoothScrollToggle) updateSwitch(smoothScrollToggle, settings.animations.smoothScroll);
