@@ -8,7 +8,7 @@ tags:
   - 图表
   - 教程
 category: 博客/教程
-featured: true
+featured: false
 draft: false
 ---
 

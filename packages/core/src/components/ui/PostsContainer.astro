@@ -60,6 +60,8 @@ function getPostItemData(post: CollectionEntry<"blog">): PostItemData & { href: 
     category, tags: tags || [], readingMinutes, coverSrc,
     langLabel: id.startsWith("en/") ? "English" : "中文",
     viewTransitionName: slugifyStr(title.replaceAll(".", "-")),
+    pin: data.pin ?? false,
+    featured: data.featured ?? false,
   };
 }
 
@@ -87,9 +89,21 @@ const authorName = SITE.author;
 
           <!-- 标题区域 -->
           <div class="p-5 pb-0">
-            <h3 class="title-with-underline relative z-0 inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
-              {p.title}
-            </h3>
+            <div class="flex items-center gap-2">
+              {p.pin && (
+                <span class="inline-flex items-center rounded-md bg-accent/15 px-1.5 py-0.5 text-xs font-semibold text-accent ring-1 ring-accent/20">
+                  {lang === 'zh' ? '置顶' : 'Pinned'}
+                </span>
+              )}
+              {p.featured && !p.pin && (
+                <span class="inline-flex items-center rounded-md bg-accent/10 px-1.5 py-0.5 text-xs font-medium text-accent/80 ring-1 ring-accent/15">
+                  {lang === 'zh' ? '精选' : 'Featured'}
+                </span>
+              )}
+              <h3 class="title-with-underline relative z-0 inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
+                {p.title}
+              </h3>
+            </div>
           </div>
 
           <!-- 封面图片 -->
@@ -166,6 +180,8 @@ const author = authorName;
 const i18n = {
   minutes: isZh ? '分钟' : 'min',
   updatedTooltip: isZh ? '更新于 {date}' : 'Updated: {date}',
+  pinned: isZh ? '置顶' : 'Pinned',
+  featured: isZh ? '精选' : 'Featured',
 };
 
 // 辅助函数
@@ -259,9 +275,13 @@ function render(mode) {
 
             <!-- 标题区域 -->
             <div class="p-5 pb-0">
-              <h3 class="title-with-underline relative z-0 inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
-                ${esc(p.title)}
-              </h3>
+              <div class="flex items-center gap-2">
+                ${p.pin ? `<span class="inline-flex items-center rounded-md bg-accent/15 px-1.5 py-0.5 text-xs font-semibold text-accent ring-1 ring-accent/20">${i18n.pinned}</span>` : ''}
+                ${p.featured && !p.pin ? `<span class="inline-flex items-center rounded-md bg-accent/10 px-1.5 py-0.5 text-xs font-medium text-accent/80 ring-1 ring-accent/15">${i18n.featured}</span>` : ''}
+                <h3 class="title-with-underline relative z-0 inline text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-accent">
+                  ${esc(p.title)}
+                </h3>
+              </div>
             </div>
 
             <!-- 封面图片 -->
@@ -320,9 +340,13 @@ function render(mode) {
             <!-- 内容区域 -->
             <div class="flex flex-col flex-1 p-4 min-h-0">
               <!-- 标题 -->
-              <h3 class="title-with-underline relative z-0 inline text-base font-bold text-foreground line-clamp-2 leading-snug transition-colors duration-200 group-hover:text-accent">
-                ${esc(p.title)}
-              </h3>
+              <div class="flex items-center gap-2">
+                ${p.pin ? `<span class="inline-flex items-center rounded-md bg-accent/15 px-1.5 py-0.5 text-xs font-semibold text-accent ring-1 ring-accent/20">${i18n.pinned}</span>` : ''}
+                ${p.featured && !p.pin ? `<span class="inline-flex items-center rounded-md bg-accent/10 px-1.5 py-0.5 text-xs font-medium text-accent/80 ring-1 ring-accent/15">${i18n.featured}</span>` : ''}
+                <h3 class="title-with-underline relative z-0 inline text-base font-bold text-foreground line-clamp-2 leading-snug transition-colors duration-200 group-hover:text-accent">
+                  ${esc(p.title)}
+                </h3>
+              </div>
               
               <!-- 摘要 -->
               <p class="mt-2 text-sm text-foreground-soft/80 line-clamp-2 leading-relaxed flex-1">${esc(p.description)}</p>
@@ -366,9 +390,13 @@ function render(mode) {
             <!-- 主内容 -->
             <div class="flex-1 min-w-0">
               <!-- 标题 -->
-              <h3 class="title-with-underline relative z-0 inline text-sm font-bold text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-accent">
-                ${esc(p.title)}
-              </h3>
+              <div class="flex items-center gap-2">
+                ${p.pin ? `<span class="inline-flex items-center rounded-md bg-accent/15 px-1.5 py-0.5 text-xs font-semibold text-accent ring-1 ring-accent/20">${i18n.pinned}</span>` : ''}
+                ${p.featured && !p.pin ? `<span class="inline-flex items-center rounded-md bg-accent/10 px-1.5 py-0.5 text-xs font-medium text-accent/80 ring-1 ring-accent/15">${i18n.featured}</span>` : ''}
+                <h3 class="title-with-underline relative z-0 inline text-sm font-bold text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-accent">
+                  ${esc(p.title)}
+                </h3>
+              </div>
               
               <!-- 摘要 -->
               <p class="mt-1 text-xs text-foreground-soft/80 line-clamp-1">${esc(p.description)}</p>

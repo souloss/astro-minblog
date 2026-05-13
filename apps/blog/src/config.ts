@@ -76,7 +76,7 @@ export const SITE: SiteConfig = {
   desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
   title: "Souloss",
   ogImage: "astro-minimax-og.jpg",
-  postPerIndex: 4,
+  postPerIndex: 6,
   postPerPage: 4,
   scheduledPostMargin: 15 * 60 * 1000,
   showBackButton: true,

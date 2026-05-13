@@ -8,7 +8,7 @@ tags:
   - diagram
   - tutorial
 category: Blog/Tutorial
-featured: true
+featured: false
 draft: false
 ---
 

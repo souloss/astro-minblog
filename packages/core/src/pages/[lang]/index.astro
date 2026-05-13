@@ -24,8 +24,10 @@ const { lang } = Astro.params as { lang: "zh" | "en" };
 const posts = await getCollection("blog");
 const langPosts = getPostsByLang(posts, lang);
 const sortedPosts = getSortedPosts(langPosts);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+// Featured: up to 3 posts with featured: true
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured).slice(0, 3);
+// Recent: all posts (including featured), limited by postPerIndex
+const recentPosts = sortedPosts.slice(0, SITE.postPerIndex ?? 6);
 ---
 
 <Layout lang={lang}>
@@ -36,20 +38,20 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     class="app-layout"
     data-lang={lang}
   >
-    <section 
-      id="hero" 
-      class="relative overflow-hidden border-b border-border/50 py-12 sm:py-16"
+    <section
+      id="hero"
+      class="relative overflow-hidden border-b border-border/50 py-8 sm:py-10"
     >
       <div class="relative z-10">
-        <h1 class="animate-fade-in-up mb-4 text-4xl font-bold leading-tight sm:mb-6 sm:text-5xl lg:text-6xl">
+        <h1 class="animate-fade-in-up mb-3 text-4xl font-bold leading-tight sm:mb-4 sm:text-5xl">
           <span class="text-gradient">{t("hero.greeting", lang)}</span>
         </h1>
-        
+
         <div class="animate-fade-in-up delay-100 flex items-center gap-4 immersive-mode-hide">
           <a
             target="_blank"
             href="/rss.xml"
-            class="inline-flex items-center gap-2 rounded-xl border border-accent/20 
+            class="inline-flex items-center gap-2 rounded-xl border border-accent/20
                    bg-accent/10 px-3 py-1.5 text-sm font-medium text-accent
                    transition-all duration-200 hover:bg-accent/20 hover:shadow-md hover:shadow-accent/10"
             aria-label="rss feed"
@@ -58,27 +60,20 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
             <IconRss class="size-4" />
             RSS
           </a>
-        </div>
 
-        <p class="animate-fade-in-up delay-200 mt-6 max-w-2xl text-lg leading-relaxed text-foreground-soft">
-          {t("hero.desc", lang)}
-        </p>
-        
-        <p class="animate-fade-in-up delay-300 mt-3 text-foreground-soft immersive-mode-hide">
-          {t("hero.readMore", lang)}
           <LinkButton
-            class="ml-1 font-medium text-accent underline decoration-accent/30 
-                   decoration-dashed underline-offset-4 
+            class="font-medium text-accent underline decoration-accent/30
+                   decoration-dashed underline-offset-4
                    transition-all duration-200 hover:text-accent/80 hover:decoration-accent"
             href="https://github.com/souloss/astro-minimax#readme"
           >
             README
           </LinkButton>
-        </p>
-        
+        </div>
+
         {
           SOCIALS.length > 0 && (
-            <div class="animate-fade-in-up delay-400 mt-6 flex max-sm:flex-col sm:items-center immersive-mode-hide">
+            <div class="animate-fade-in-up delay-200 mt-4 flex max-sm:flex-col sm:items-center immersive-mode-hide">
               <div class="me-3 mb-1 whitespace-nowrap text-sm font-medium text-foreground-soft sm:mb-0">
                 {t("hero.socialLinks", lang)}
               </div>
@@ -94,7 +89,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         <section
           id="featured"
           class:list={[
-            "pt-12 pb-6",
+            "pt-10 pb-6",
             { "border-b border-border/50": recentPosts.length > 0 },
           ]}
         >
@@ -104,31 +99,31 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
             </h2>
             <div class="h-px flex-1 bg-gradient-to-r from-border/50 to-transparent"></div>
           </div>
-          <PostsContainer posts={featuredPosts} lang={lang} layout="card" />
+          <PostsContainer posts={featuredPosts} lang={lang} layout="grid" />
         </section>
       )
     }
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="py-12">
+        <section id="recent-posts" class="py-10">
           <div class="mb-6 flex items-center gap-3">
             <h2 class="text-2xl font-bold tracking-tight text-foreground">
               {t("post.recentPosts", lang)}
             </h2>
             <div class="h-px flex-1 bg-gradient-to-r from-border/50 to-transparent"></div>
           </div>
-          <PostsContainer 
-            posts={recentPosts.filter((_, i) => i < (SITE.postPerIndex ?? 5))} 
-            lang={lang} 
-            layout="card" 
+          <PostsContainer
+            posts={recentPosts}
+            lang={lang}
+            layout="card"
           />
         </section>
       )
     }
 
     <div class="my-10 text-center">
-      <LinkButton 
+      <LinkButton
         href={`/${lang}/posts/`}
         class="btn-brand"
       >
@@ -155,12 +150,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     opacity: 0;
     animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  
+
   .delay-100 { animation-delay: 100ms; }
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
   .delay-400 { animation-delay: 400ms; }
-  
+
   @keyframes fade-in-up {
     0% {
       opacity: 0;

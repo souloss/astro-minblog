@@ -20,6 +20,8 @@ export interface PostItemData {
   coverSrc: string | undefined;
   langLabel: string;
   viewTransitionName: string;
+  pin?: boolean;
+  featured?: boolean;
 }
 
 export function getAnimationDelay(index: number): string {

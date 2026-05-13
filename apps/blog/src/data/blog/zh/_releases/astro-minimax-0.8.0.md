@@ -2,7 +2,7 @@
 author: Souloss
 pubDatetime: 2026-03-20T00:00:00.000Z
 title: astro-minimax 0.8.0
-featured: true
+featured: false
 category: 发布说明
 tags:
   - release

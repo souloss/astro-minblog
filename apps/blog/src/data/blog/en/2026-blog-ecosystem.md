@@ -9,7 +9,7 @@ tags:
   - ecosystem
   - "2026"
 category: Tutorial/Blog
-featured: true
+featured: false
 draft: false
 ---
 

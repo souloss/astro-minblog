@@ -9,6 +9,7 @@ tags:
   - design
 category: Tutorial/Blog
 featured: true
+pin: true
 draft: false
 ---
 

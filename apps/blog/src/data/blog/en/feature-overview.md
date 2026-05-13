@@ -8,7 +8,7 @@ tags:
   - docs
   - features
 category: Blog/Tutorial
-featured: true
+featured: false
 draft: false
 ---
 

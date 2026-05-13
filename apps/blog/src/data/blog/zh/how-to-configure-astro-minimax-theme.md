@@ -3,7 +3,7 @@ author: Souloss
 pubDatetime: 2022-09-23T04:58:53Z
 modDatetime: 2026-03-30T00:00:00.000Z
 title: 如何配置 astro-minimax 主题
-featured: true
+featured: false
 draft: false
 category: 教程/配置
 tags:

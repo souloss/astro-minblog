@@ -186,6 +186,12 @@ const noResultsLabel = lang === "zh" ? "没有找到结果" : "No results found"
           },
         });
 
+        // Remove Pagefind's own search input — we have our own
+        const pagefindSearch = pagefindContainer.querySelector(".pagefind-ui__search");
+        if (pagefindSearch) {
+          pagefindSearch.remove();
+        }
+
         loadingEl.style.display = "none";
         isInitialized = true;
       } catch {

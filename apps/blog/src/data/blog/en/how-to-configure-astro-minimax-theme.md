@@ -4,7 +4,7 @@ pubDatetime: 2022-09-23T04:58:53Z
 modDatetime: 2026-03-30T00:00:00.000Z
 title: How to configure astro-minimax theme
 slug: how-to-configure-astro-minimax-theme
-featured: true
+featured: false
 draft: false
 category: Blog/Configuration
 tags:

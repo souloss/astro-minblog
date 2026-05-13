@@ -14,6 +14,8 @@ export type TranslationKey =
   | "projects.title"
   | "projects.desc"
   | "post.featured"
+  | "post.featuredBadge"
+  | "post.pinned"
   | "post.recentPosts"
   | "post.allPosts"
   | "post.prev"
@@ -211,6 +213,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "projects.title": "Projects",
     "projects.desc": "Open source projects and tools.",
     "post.featured": "Featured",
+    "post.featuredBadge": "Featured",
+    "post.pinned": "Pinned",
     "post.recentPosts": "Recent Posts",
     "post.allPosts": "All Posts",
     "post.prev": "Previous Post",
@@ -409,6 +413,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "projects.title": "项目",
     "projects.desc": "开源项目与工具展示。",
     "post.featured": "精选文章",
+    "post.featuredBadge": "精选",
+    "post.pinned": "置顶",
     "post.recentPosts": "最近文章",
     "post.allPosts": "全部文章",
     "post.prev": "上一篇",

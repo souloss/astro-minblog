@@ -3,7 +3,7 @@ author: Souloss
 pubDatetime: 2022-09-23T15:22:00Z
 modDatetime: 2026-03-30T00:00:00.000Z
 title: 在 astro-minimax 主题中添加新文章
-featured: true
+featured: false
 draft: false
 category: 教程/博客
 tags:
@@ -108,7 +108,7 @@ title: The title of the post
 author: your name
 pubDatetime: 2022-09-21T05:17:19Z
 slug: the-title-of-the-post
-featured: true
+featured: false
 draft: false
 category: 教程/博客
 tags:

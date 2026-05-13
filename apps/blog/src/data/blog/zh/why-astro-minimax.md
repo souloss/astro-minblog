@@ -9,6 +9,7 @@ tags:
   - design
 category: 教程/博客
 featured: true
+pin: true
 draft: false
 ---
 
