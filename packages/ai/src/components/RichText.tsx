@@ -12,6 +12,7 @@ function sanitizeUrl(url: string): string {
 type InlinePart =
   | { type: "text"; text: string }
   | { type: "link"; label: string; url: string }
+  | { type: "autolink"; url: string }
   | { type: "bold"; text: string }
   | { type: "code"; text: string }
   | { type: "citation"; label: string; title?: string; url?: string };
@@ -76,6 +77,38 @@ export function parseInlineMarkdownRobust(text: string): InlinePart[] {
       }
     }
 
+    // 检测裸 URL 自动链接 (https?://...)
+    // Only match URLs that are NOT inside a Markdown link label/URL
+    // to avoid double-rendering.
+    if (text.slice(i, i + 7) === "http://" || text.slice(i, i + 8) === "https://") {
+      // Find end of URL: stops at whitespace, punctuation that's not part of URL, or end of text
+      let urlEnd = i;
+      while (urlEnd < text.length) {
+        const ch = text[urlEnd];
+        // URL can contain: letters, digits, ., -, _, /, :, ?, =, &, %, +, #, ~, @, $
+        // Stop at: whitespace, ), ], comma, semicolon, colon (after scheme), quotes
+        if (/\s/.test(ch) || ch === ")" || ch === "]" || ch === "," || ch === ";" || ch === "'" || ch === '"' || ch === "`") {
+          break;
+        }
+        // Trim trailing punctuation that's likely not part of URL: ., !, ?
+        // but allow these inside URL paths
+        if ((ch === "." || ch === "!" || ch === "?") && urlEnd + 1 < text.length && /\s|[)\],;'"`]/.test(text[urlEnd + 1])) {
+          break;
+        }
+        urlEnd++;
+      }
+      // Trim trailing dots, commas, etc. that are likely sentence punctuation
+      while (urlEnd > i && /[.,!?]$/.test(text[urlEnd - 1])) {
+        urlEnd--;
+      }
+      if (urlEnd > i) {
+        const url = text.slice(i, urlEnd);
+        parts.push({ type: "autolink", url });
+        i = urlEnd;
+        continue;
+      }
+    }
+
     // 收集纯文本直到下一个特殊字符
     let textEnd = i + 1;
     while (
@@ -83,7 +116,9 @@ export function parseInlineMarkdownRobust(text: string): InlinePart[] {
       text[textEnd] !== "[" &&
       text[textEnd] !== "【" &&
       text[textEnd] !== "*" &&
-      text[textEnd] !== "`"
+      text[textEnd] !== "`" &&
+      text.slice(textEnd, textEnd + 7) !== "http://" &&
+      text.slice(textEnd, textEnd + 8) !== "https://"
     ) {
       textEnd++;
     }
@@ -219,6 +254,21 @@ export function InlineRichText({ text }: { text: string }) {
             >
               {p.label}
               {isExternal && <ExternalLinkIcon />}
+            </a>
+          );
+        }
+        if (p.type === "autolink") {
+          const safeUrl = sanitizeUrl(p.url);
+          return (
+            <a
+              key={i}
+              href={safeUrl}
+              class="text-accent decoration-accent/30 hover:decoration-accent inline-flex items-center gap-0.5 font-medium underline underline-offset-2 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {p.url}
+              <ExternalLinkIcon />
             </a>
           );
         }

@@ -249,26 +249,42 @@ export function useTypewriter(fullText: string, isStreaming: boolean): string {
   }
 
   // Avoid cutting inside a markdown link [label](url).
-  // If the displayed text ends inside an unclosed link, truncate before it
-  // so the raw syntax isn't shown as plain text.
-  const candidate = fullText.slice(0, end);
-  const lastOpenBracket = candidate.lastIndexOf("[");
-  if (lastOpenBracket !== -1) {
-    // Check if there's a matching ]( after it
-    const closeBracket = fullText.indexOf("]", lastOpenBracket);
-    if (closeBracket === -1 || closeBracket >= end) {
-      // The ] hasn't been fully displayed yet — cut before the [
-      end = lastOpenBracket;
-    } else {
-      // We have ], check for ( after it
-      const parenOpen = fullText.indexOf("(", closeBracket);
-      if (parenOpen === closeBracket + 1) {
-        const parenClose = fullText.indexOf(")", parenOpen);
-        if (parenClose === -1 || parenClose >= end) {
-          // The URL part hasn't been fully displayed — cut before the [
-          end = lastOpenBracket;
+  // Walk backwards through the displayed text to find any unclosed link
+  // syntax. If the displayed text ends inside an incomplete link, truncate
+  // before the opening [ so the raw syntax isn't shown as plain text.
+  // This handles multiple links in the same line correctly.
+  {
+    const candidate = fullText.slice(0, end);
+    let searchFrom = 0;
+    // Scan all [ positions in the displayed portion
+    while (searchFrom < end) {
+      const openBracket = candidate.indexOf("[", searchFrom);
+      if (openBracket === -1) break;
+
+      // Check if this [ starts a complete Markdown link [label](url)
+      // that is fully contained within the displayed portion.
+      const closeBracket = fullText.indexOf("]", openBracket);
+      if (closeBracket !== -1 && closeBracket < end) {
+        // We have a ] within displayed range — check for ( after it
+        const parenOpen = fullText.indexOf("(", closeBracket);
+        if (parenOpen === closeBracket + 1) {
+          const parenClose = fullText.indexOf(")", parenOpen);
+          if (parenClose !== -1 && parenClose < end) {
+            // This link is fully contained — skip past it
+            searchFrom = parenClose + 1;
+            continue;
+          }
+          // The ) is beyond the displayed range — incomplete link
+          end = openBracket;
+          break;
         }
+        // No ( after ] — this [ is not a Markdown link, skip past ]
+        searchFrom = closeBracket + 1;
+        continue;
       }
+      // The ] is beyond the displayed range — incomplete link
+      end = openBracket;
+      break;
     }
   }
 

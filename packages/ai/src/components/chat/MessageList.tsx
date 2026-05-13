@@ -249,7 +249,7 @@ function LiveMessageList({
   showSourceSnippets?: boolean;
   onQuickPrompt: (text: string) => void;
 }) {
-  const showQuickPrompts = messages.length <= 1;
+  const hasUserMessages = messages.some(m => m.role === "user");
   const lastAssistantMsgId = [...messages]
     .reverse()
     .find(m => m.role === "assistant")?.id;
@@ -264,7 +264,8 @@ function LiveMessageList({
         // normal assistant rendering path, which would create a duplicate
         // BotAvatar alongside the actual assistant response.
         if (msg.id === "welcome") {
-          if (!showQuickPrompts) return null;
+          // Always show the welcome message greeting text.
+          // Only show quick prompts before the user has sent any message.
           return (
             <div key={msg.id} class="space-y-3">
               <div class="flex items-start gap-2.5">
@@ -273,18 +274,20 @@ function LiveMessageList({
                   {getTextFromMessage(msg)}
                 </p>
               </div>
-              <div class="flex flex-wrap gap-1.5 pl-8">
-                {quickPrompts.map(q => (
-                  <button
-                    key={q}
-                    type="button"
-                    onClick={() => onQuickPrompt(q)}
-                    class="border-border bg-muted/30 text-foreground-soft hover:border-accent/40 hover:bg-accent/10 hover:text-foreground rounded-full border px-3 py-1.5 text-[12px] transition-colors"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
+              {!hasUserMessages && (
+                <div class="flex flex-wrap gap-1.5 pl-8">
+                  {quickPrompts.map(q => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => onQuickPrompt(q)}
+                      class="border-border bg-muted/30 text-foreground-soft hover:border-accent/40 hover:bg-accent/10 hover:text-foreground rounded-full border px-3 py-1.5 text-[12px] transition-colors"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           );
         }
