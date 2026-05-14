@@ -141,11 +141,21 @@ function escapeHtml(text: string): string {
 export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
   const normalizedLang = normalizeCodeBlockLang(lang);
 
+  // Detect markmap content even when lang is "mermaid" or missing.
+  // AI models sometimes output ```mermaid for markmap content, or omit the lang.
+  // Markmap content is Markdown (headings, lists) — not Mermaid DSL.
+  const isMarkmapContent =
+    normalizedLang === "markmap" ||
+    normalizedLang === "mindmap" ||
+    (/^#{1,3}\s/m.test(code) && !/^(graph|flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie|gitgraph|journey)\b/m.test(code));
+
+  const effectiveLang = isMarkmapContent ? "markmap" : normalizedLang;
+
   // For mermaid/markmap, pass empty code to avoid loading shiki, but still call hook at top level
   const shikiCode =
-    normalizedLang === "mermaid" ||
-    normalizedLang === "markmap" ||
-    normalizedLang === "mindmap"
+    effectiveLang === "mermaid" ||
+    effectiveLang === "markmap" ||
+    effectiveLang === "mindmap"
       ? ""
       : code;
 
@@ -153,12 +163,12 @@ export function CodeBlock({ code, lang, isStreaming }: CodeBlockProps): VNode {
   const { html, loading, error } = useShikiHighlighter(shikiCode, lang);
 
   // Handle special languages with early returns AFTER hook calls
-  if (normalizedLang === "mermaid") {
-    return <MermaidBlock code={code} isStreaming={isStreaming} />;
+  if (effectiveLang === "markmap" || effectiveLang === "mindmap") {
+    return <MarkmapBlock code={code} isStreaming={isStreaming} />;
   }
 
-  if (normalizedLang === "markmap" || normalizedLang === "mindmap") {
-    return <MarkmapBlock code={code} isStreaming={isStreaming} />;
+  if (effectiveLang === "mermaid") {
+    return <MermaidBlock code={code} isStreaming={isStreaming} />;
   }
 
   // Regular code block rendering using hook results

@@ -152,8 +152,16 @@ export const searchArticlesTool = tool({
     const articles = searchArticles(query);
     const projects = includeProjects ? searchProjects(query) : [];
 
+    // Deduplicate by URL to avoid recommending the same article twice
+    const seenUrls = new Set<string>();
+    const dedupedArticles = articles.filter(a => {
+      if (seenUrls.has(a.url)) return false;
+      seenUrls.add(a.url);
+      return true;
+    });
+
     return {
-      articles: articles.slice(0, limit ?? 5).map(a => ({
+      articles: dedupedArticles.slice(0, limit ?? 5).map(a => ({
         title: a.title,
         url: a.url,
         excerpt: a.summary?.slice(0, 200) ?? "",

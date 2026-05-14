@@ -133,12 +133,16 @@ export function writeSourceArticles(
   articles: Array<SourceArticle | SourceSelection>,
   max = 3
 ): void {
+  const seenUrls = new Set<string>();
   for (const article of articles.slice(0, max)) {
+    const url = article.url ?? "#";
+    if (seenUrls.has(url)) continue;
+    seenUrls.add(url);
     try {
       writer.write({
         type: "source-url",
         sourceId: `source-${article.title}`,
-        url: article.url ?? "#",
+        url,
         title: article.title,
       });
     } catch (e) {

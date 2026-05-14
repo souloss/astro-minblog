@@ -403,8 +403,30 @@ export function AssistantMessage({
 
   const isWaitingForContent = isStreaming && !fullText.trim() && !reasoningFullText;
 
-  const sources = safeParts.filter(
+  const allSources = safeParts.filter(
     p => p.type === "source-url" || p.type === "source-document"
+  );
+
+  // Deduplicate source-url parts: if the AI already links to the same URL
+  // in its response text, don't show a redundant source card below.
+  const urlsInText = useMemo(() => {
+    const urls = new Set<string>();
+    const linkRe = /\]\((https?:\/\/[^\s)]+)\)/g;
+    let m: RegExpExecArray | null;
+    while ((m = linkRe.exec(effectiveText)) !== null) {
+      urls.add(m[1]);
+    }
+    return urls;
+  }, [effectiveText]);
+
+  const sources = useMemo(
+    () =>
+      allSources.filter(s => {
+        const url = (s as { url?: string }).url;
+        if (!url) return true;
+        return !urlsInText.has(url);
+      }),
+    [allSources, urlsInText]
   );
   const sourceSnippets = safeParts.filter(
     (
@@ -420,7 +442,9 @@ export function AssistantMessage({
       };
     } =>
       p.type === "data-source-snippet" &&
-      isRecord((p as { data?: unknown }).data)
+      isRecord((p as { data?: unknown }).data) &&
+      // Also deduplicate snippets against inline links in text
+      !urlsInText.has((p as { data?: { url?: string } }).data?.url ?? "")
   );
 
   const followUpSuggestions = useMemo(() => {
