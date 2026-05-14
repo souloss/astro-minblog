@@ -238,7 +238,9 @@
             lang: "mermaid",
             theme,
           });
-          codeView.innerHTML = html;
+          // Strip Shiki's inline style attributes from <pre> to prevent background/shadow overlay
+          const cleaned = html.replace(/(<pre\s[^>]*?)style="[^"]*"/g, '$1');
+          codeView.innerHTML = cleaned;
           highlighted = true;
         } catch {
           // Shiki highlighting failed — keep the plain code view
@@ -257,7 +259,9 @@
           lang: "mermaid",
           theme,
         });
-        codeView.innerHTML = html;
+        // Strip Shiki's inline style attributes from <pre> to prevent background/shadow overlay
+        const cleaned = html.replace(/(<pre\s[^>]*?)style="[^"]*"/g, '$1');
+        codeView.innerHTML = cleaned;
       } catch {
         // Re-highlight failed — keep existing content
       }

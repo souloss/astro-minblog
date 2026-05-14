@@ -99,8 +99,14 @@ export function useShikiHighlighter(
             theme,
           });
 
+          // Strip Shiki's inline style attributes from <pre> to prevent background/shadow overlay
+          const cleaned = highlighted.replace(
+            /(<pre\s[^>]*?)style="[^"]*"/g,
+            '$1'
+          );
+
           if (mounted) {
-            setHtml(highlighted);
+            setHtml(cleaned);
             setLoading(false);
           }
         } catch (err) {

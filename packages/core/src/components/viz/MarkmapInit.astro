@@ -12,190 +12,7 @@
  */
 ---
 
-<script>
-  import { initVizContainers } from "../../scripts/viz-controls";
-
-  let shikiModule: typeof import("shiki") | null = null;
-  let shikiHighlighter: import("shiki").Highlighter | null = null;
-
-  document.addEventListener("astro:page-load", initVizContainers);
-  window.addEventListener("viz:init", initVizContainers);
-
-  function getIsDark(): boolean {
-    return document.documentElement.getAttribute("data-theme") === "dark";
-  }
-
-  async function loadShikiHighlighter() {
-    if (shikiHighlighter) return shikiHighlighter;
-    const shiki = await import("shiki");
-    shikiModule = shiki;
-    // Load both themes so we can switch without re-creating the highlighter
-    shikiHighlighter = await shiki.createHighlighter({
-      themes: ["night-owl", "github-light"],
-      langs: ["markdown"],
-    });
-    return shikiHighlighter;
-  }
-
-  /**
-   * Create toolbar buttons HTML (matching MermaidInit pattern)
-   */
-  function createToolbarHTML(): string {
-    return `
-      <div class="viz-controls absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
-        <button
-          class="viz-btn viz-zoom-in flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
-          aria-label="Zoom in"
-          title="Zoom in"
-        >
-          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
-        <button
-          class="viz-btn viz-zoom-out flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
-          aria-label="Zoom out"
-          title="Zoom out"
-        >
-          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
-        <button
-          class="viz-btn viz-reset flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
-          aria-label="Reset view"
-          title="Reset view"
-        >
-          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
-          </svg>
-        </button>
-        <div class="mx-0.5 h-4 w-px bg-[var(--viz-border)]"></div>
-        <button
-          class="viz-btn viz-fullscreen flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
-          aria-label="Toggle fullscreen"
-          title="Toggle fullscreen"
-        >
-          <svg class="viz-fs-enter size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-            <path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-          </svg>
-          <svg class="viz-fs-exit hidden size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" />
-            <path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" />
-          </svg>
-        </button>
-        <button
-          class="viz-btn viz-toggle-code flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent"
-          aria-label="Toggle code view"
-          title="View code"
-        >
-          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-          </svg>
-        </button>
-      </div>
-    `;
-  }
-
-  /**
-   * Escape HTML for code display
-   */
-  function escapeHtml(text: string): string {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  /**
-   * Setup code/preview toggle functionality
-   */
-  function setupCodeToggle(
-    container: HTMLElement,
-    svgOutput: HTMLElement,
-    codeView: HTMLElement,
-    code: string
-  ) {
-    const toggleBtn = container.querySelector(".viz-toggle-code");
-    let showingCode = false;
-    let highlighted = false;
-
-    function updateLayout() {
-      const isFs = document.fullscreenElement === container;
-      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
-      if (showingCode) {
-        svgOutput.classList.add("hidden");
-        codeView.classList.remove("hidden");
-        // Hide viewport when code view is active
-        if (viewport) viewport.style.display = "none";
-        // In fullscreen, code view fills the entire area
-        if (isFs) {
-          codeView.style.maxHeight = "none";
-          codeView.style.flex = "1";
-          codeView.style.minHeight = "0";
-        }
-      } else {
-        svgOutput.classList.remove("hidden");
-        codeView.classList.add("hidden");
-        // Restore viewport
-        if (viewport) viewport.style.display = "";
-        // Reset code view constraints
-        codeView.style.maxHeight = "";
-        codeView.style.flex = "";
-        codeView.style.minHeight = "";
-      }
-    }
-
-    toggleBtn?.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      showingCode = !showingCode;
-      (toggleBtn as HTMLElement).title = showingCode ? "View diagram" : "View code";
-
-      updateLayout();
-
-      // Apply Shiki highlighting on first view (lazy, non-blocking)
-      if (showingCode && !highlighted) {
-        try {
-          const highlighter = await loadShikiHighlighter();
-          const isDark = getIsDark();
-          const theme = isDark ? "night-owl" : "github-light";
-          const html = highlighter.codeToHtml(code, {
-            lang: "markdown",
-            theme,
-          });
-          codeView.innerHTML = html;
-          highlighted = true;
-        } catch {
-          // Shiki highlighting failed — keep the plain code view
-        }
-      }
-    });
-
-    // Re-highlight on theme change if code view is visible
-    window.addEventListener("themechange", async () => {
-      if (!showingCode || !highlighted) return;
-      try {
-        const highlighter = await loadShikiHighlighter();
-        const isDark = getIsDark();
-        const theme = isDark ? "night-owl" : "github-light";
-        const html = highlighter.codeToHtml(code, {
-          lang: "markdown",
-          theme,
-        });
-        codeView.innerHTML = html;
-      } catch {
-        // Re-highlight failed — keep existing content
-      }
-    });
-
-    // Update layout when fullscreen changes
-    document.addEventListener("fullscreenchange", () => {
-      if (showingCode) updateLayout();
-    });
-  }
-
+<script is:inline>
   // CDN scripts (loaded in dependency order)
   // NOTE: We do NOT load markmap-toolbar — it adds its own theme toggle
   // which conflicts with the blog's theme system. We provide our own toolbar.
@@ -207,7 +24,7 @@
   let loading = false;
   let loaded = false;
 
-  function loadScript(src: string): Promise<void> {
+  function loadScript(src) {
     return new Promise((resolve, reject) => {
       if (document.querySelector(`script[src="${src}"]`)) {
         resolve();
@@ -221,10 +38,10 @@
     });
   }
 
-  async function loadAssets(): Promise<boolean> {
+  async function loadAssets() {
     if (loaded) return true;
     if (loading) {
-      await new Promise<void>(resolve => {
+      await new Promise(resolve => {
         const check = () => loaded ? resolve() : setTimeout(check, 50);
         check();
       });
@@ -245,30 +62,59 @@
     }
   }
 
-  /**
-   * Render a single markmap container with full viz-controls
-   */
-  async function render(wrapEl: HTMLElement) {
+  function getIsDark() {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function createToolbarHTML() {
+    return `
+      <div class="viz-controls absolute right-2 bottom-2 z-10 flex items-center gap-1 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
+        <button class="viz-btn viz-zoom-in flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent" aria-label="Zoom in" title="Zoom in">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+        </button>
+        <button class="viz-btn viz-zoom-out flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent" aria-label="Zoom out" title="Zoom out">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /></svg>
+        </button>
+        <button class="viz-btn viz-reset flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent" aria-label="Reset view" title="Reset view">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
+        </button>
+        <div class="mx-0.5 h-4 w-px bg-[var(--viz-border)]"></div>
+        <button class="viz-btn viz-fullscreen flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+          <svg class="viz-fs-enter size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></svg>
+          <svg class="viz-fs-exit hidden size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
+        </button>
+        <button class="viz-btn viz-toggle-code flex size-7 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-[var(--viz-btn-hover)] hover:text-accent" aria-label="Toggle code view" title="View code">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+        </button>
+      </div>
+    `;
+  }
+
+  async function render(wrapEl) {
     if (wrapEl.dataset.rendered) return;
 
     const jsonScripts = wrapEl.querySelectorAll('script[type="application/json"]');
     if (!jsonScripts.length) return;
 
     const success = await loadAssets();
-    if (!success || !(window as any).markmap) {
+    if (!success || !window.markmap) {
       wrapEl.innerHTML = '<p class="markmap-error">Failed to load markmap</p>';
       return;
     }
 
     try {
-      const { Markmap, deriveOptions } = (window as any).markmap;
+      const { Markmap, deriveOptions } = window.markmap;
       const root = JSON.parse(jsonScripts[0]?.textContent || '{}');
       const options = jsonScripts[1] ? JSON.parse(jsonScripts[1].textContent || '{}') : {};
 
-      // Store the original markdown source for code view
       const sourceCode = wrapEl.dataset.source || '';
 
-      // Transform the .markmap-wrap into a viz-container structure
       const container = document.createElement("div");
       container.className = "viz-container group relative my-6 overflow-hidden rounded-lg border";
       container.style.minHeight = "300px";
@@ -276,54 +122,41 @@
       container.setAttribute("data-viz-fullscreen", "true");
       container.setAttribute("data-viz-type", "markmap");
 
-      // Create viewport for zoom/pan
       const viewport = document.createElement("div");
       viewport.className = "viz-viewport w-full origin-center";
       viewport.style.transform = "scale(1) translate(0px, 0px)";
 
-      // Create SVG output wrapper
       const svgOutput = document.createElement("div");
       svgOutput.className = "markmap-svg-output";
 
-      // Create SVG element
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.style.width = '100%';
       svg.style.height = '400px';
       svgOutput.appendChild(svg);
 
-      // Create code view panel (hidden by default)
       const codeView = document.createElement("div");
       codeView.className = "markmap-code-view hidden";
       codeView.innerHTML = `<pre class="text-sm"><code class="language-markdown">${escapeHtml(sourceCode)}</code></pre>`;
 
-      // Assemble the structure
       viewport.appendChild(svgOutput);
       container.appendChild(viewport);
       container.appendChild(codeView);
 
-      // Add toolbar
       const toolbarContainer = document.createElement("div");
       toolbarContainer.innerHTML = createToolbarHTML();
-      container.appendChild(toolbarContainer.firstElementChild!);
+      container.appendChild(toolbarContainer.firstElementChild);
 
-      // Replace the original wrap element
       wrapEl.parentNode?.replaceChild(container, wrapEl);
 
-      // Create markmap instance — force theme to match blog
-      const isDark = getIsDark();
-      const markmapOptions = deriveOptions(options);
-      // Override color scheme to follow blog theme, not markmap's built-in toggle
-      markmapOptions.color = isDark
-        ? (markmapOptions.color || ((node: any) => {
-            const colors = ['#4fd1c5', '#38b2ac', '#319795', '#2c7a7b'];
-            return colors[node.state?.depth % colors.length || 0];
-          }))
-        : markmapOptions.color;
+      const mm = Markmap.create(svg, deriveOptions(options), root);
 
-      const mm = Markmap.create(svg, markmapOptions, root);
-
-      // Setup code toggle
-      setupCodeToggle(container, svgOutput, codeView, sourceCode);
+      // Setup code toggle (Shiki loaded lazily via module script)
+      container.querySelector(".viz-toggle-code")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Dispatch custom event for the module script to handle
+        container.dispatchEvent(new CustomEvent("viz-toggle-code", { bubbles: true }));
+      });
 
       // Adjust height
       const resize = () => {
@@ -336,7 +169,7 @@
 
       container.dataset.rendered = 'true';
 
-      // Initialize viz controls
+      // Initialize viz controls via event
       requestAnimationFrame(() => {
         window.dispatchEvent(new CustomEvent("viz:init"));
       });
@@ -346,17 +179,14 @@
     }
   }
 
-  /**
-   * Render all markmap containers
-   */
   function renderAll() {
-    document.querySelectorAll<HTMLElement>('.markmap-wrap').forEach(el => {
+    document.querySelectorAll('.markmap-wrap').forEach(el => {
       if (el.dataset.rendered) return;
       const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             obs.unobserve(entry.target);
-            render(entry.target as HTMLElement);
+            render(entry.target);
           }
         });
       }, { rootMargin: '200px' });
@@ -364,43 +194,34 @@
     });
   }
 
-  /**
-   * Update markmap theme colors — re-render SVGs to match blog theme
-   */
-  function updateTheme(isDark: boolean) {
+  function updateTheme(isDark) {
     document.documentElement.classList.toggle('markmap-dark', isDark);
 
-    // Update SVG text colors for all rendered markmap containers
-    document.querySelectorAll<HTMLElement>('.viz-container[data-viz-type="markmap"]').forEach(container => {
-      const svg = container.querySelector<SVGElement>('svg');
+    document.querySelectorAll('.viz-container[data-viz-type="markmap"]').forEach(container => {
+      const svg = container.querySelector('svg');
       if (!svg) return;
 
-      // Update text color in SVG to match the current theme
       const textElements = svg.querySelectorAll('text');
-      const textColor = isDark ? 'var(--foreground)' : 'var(--foreground)';
       textElements.forEach(el => {
-        el.style.fill = textColor;
+        el.style.fill = 'var(--foreground)';
       });
 
-      // Update foreignObject backgrounds
       const foreignObjects = svg.querySelectorAll('foreignObject');
       foreignObjects.forEach(fo => {
         const body = fo.querySelector('.markmap-foreign');
         if (body) {
-          body.style.color = textColor;
+          body.style.color = 'var(--foreground)';
         }
       });
     });
   }
 
-  // Theme change handler
-  window.addEventListener('themechange', (e: Event) => {
-    const detail = (e as CustomEvent).detail;
+  window.addEventListener('themechange', (e) => {
+    const detail = e?.detail;
     const isDark = detail?.isDark ?? getIsDark();
     updateTheme(isDark);
   });
 
-  // Initialize
   function init() {
     updateTheme(getIsDark());
     renderAll();
@@ -414,8 +235,139 @@
   document.addEventListener('astro:page-load', init);
 </script>
 
+<!-- Module script for Shiki highlighting and code toggle logic -->
+<script>
+  import { initVizContainers } from "../../scripts/viz-controls";
+
+  let shikiHighlighter: import("shiki").Highlighter | null = null;
+
+  document.addEventListener("astro:page-load", initVizContainers);
+  window.addEventListener("viz:init", initVizContainers);
+
+  function getIsDark(): boolean {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+  }
+
+  async function loadShikiHighlighter() {
+    if (shikiHighlighter) return shikiHighlighter;
+    const shiki = await import("shiki");
+    shikiHighlighter = await shiki.createHighlighter({
+      themes: ["night-owl", "github-light"],
+      langs: ["markdown"],
+    });
+    return shikiHighlighter;
+  }
+
+  // Listen for code toggle events dispatched by the inline script
+  document.addEventListener("viz-toggle-code", async (e: Event) => {
+    const container = (e.target as HTMLElement).closest(".viz-container[data-viz-type='markmap']");
+    if (!container) return;
+
+    const svgOutput = container.querySelector<HTMLElement>(".markmap-svg-output");
+    const codeView = container.querySelector<HTMLElement>(".markmap-code-view");
+    const toggleBtn = container.querySelector<HTMLElement>(".viz-toggle-code");
+    if (!svgOutput || !codeView) return;
+
+    const isShowingCode = !codeView.classList.contains("hidden");
+
+    if (isShowingCode) {
+      // Switch back to diagram
+      svgOutput.classList.remove("hidden");
+      codeView.classList.add("hidden");
+      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
+      if (viewport) viewport.style.display = "";
+      codeView.style.maxHeight = "";
+      codeView.style.flex = "";
+      codeView.style.minHeight = "";
+      if (toggleBtn) toggleBtn.title = "View code";
+    } else {
+      // Switch to code view
+      svgOutput.classList.add("hidden");
+      codeView.classList.remove("hidden");
+      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
+      if (viewport) viewport.style.display = "none";
+      if (toggleBtn) toggleBtn.title = "View diagram";
+
+      // Check if in fullscreen
+      const isFs = document.fullscreenElement === container;
+      if (isFs) {
+        codeView.style.maxHeight = "none";
+        codeView.style.flex = "1";
+        codeView.style.minHeight = "0";
+      }
+
+      // Apply Shiki highlighting if not already done
+      const sourceCode = (container.closest("[data-source]") as HTMLElement)?.dataset.source
+        || codeView.querySelector("code")?.textContent || "";
+
+      try {
+        const highlighter = await loadShikiHighlighter();
+        const isDark = getIsDark();
+        const theme = isDark ? "night-owl" : "github-light";
+        const html = highlighter.codeToHtml(sourceCode, {
+          lang: "markdown",
+          theme,
+        });
+        // Strip Shiki's inline style attributes from <pre> to prevent background/shadow overlay
+        const cleaned = html.replace(/(<pre\s[^>]*?)style="[^"]*"/g, '$1');
+        codeView.innerHTML = cleaned;
+      } catch {
+        // Shiki highlighting failed — keep the plain code view
+      }
+    }
+  });
+
+  // Re-highlight on theme change
+  window.addEventListener("themechange", async () => {
+    document.querySelectorAll<HTMLElement>(".viz-container[data-viz-type='markmap']").forEach(async (container) => {
+      const codeView = container.querySelector<HTMLElement>(".markmap-code-view");
+      if (!codeView || codeView.classList.contains("hidden")) return;
+
+      const sourceCode = codeView.querySelector("code")?.textContent || "";
+      if (!sourceCode) return;
+
+      try {
+        const highlighter = await loadShikiHighlighter();
+        const isDark = getIsDark();
+        const theme = isDark ? "night-owl" : "github-light";
+        const html = highlighter.codeToHtml(sourceCode, {
+          lang: "markdown",
+          theme,
+        });
+        // Strip Shiki's inline style attributes from <pre> to prevent background/shadow overlay
+        const cleaned = html.replace(/(<pre\s[^>]*?)style="[^"]*"/g, '$1');
+        codeView.innerHTML = cleaned;
+      } catch {
+        // Re-highlight failed — keep existing content
+      }
+    });
+  });
+
+  // Update code view layout when fullscreen changes
+  document.addEventListener("fullscreenchange", () => {
+    document.querySelectorAll<HTMLElement>(".viz-container[data-viz-type='markmap']").forEach(container => {
+      const codeView = container.querySelector<HTMLElement>(".markmap-code-view");
+      if (!codeView || codeView.classList.contains("hidden")) return;
+
+      const isFs = document.fullscreenElement === container;
+      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
+      if (isFs) {
+        codeView.style.maxHeight = "none";
+        codeView.style.flex = "1";
+        codeView.style.minHeight = "0";
+        if (viewport) viewport.style.display = "none";
+      } else {
+        codeView.style.maxHeight = "";
+        codeView.style.flex = "";
+        codeView.style.minHeight = "";
+        if (viewport) viewport.style.display = "";
+      }
+    });
+  });
+</script>
+
 <style is:global>
-  /* Markmap container styles (matching MermaidInit pattern) */
+  /* Markmap container styles */
   .viz-container[data-viz-type="markmap"] {
     background: var(--viz-bg);
     border-color: var(--viz-border);
@@ -500,7 +452,7 @@
     overflow-x: auto;
   }
 
-  /* Override Shiki's built-in background/shadow — we provide our own */
+  /* Override Shiki's built-in background/shadow */
   .markmap-code-view .shiki {
     background: none !important;
     box-shadow: none !important;
@@ -524,7 +476,7 @@
     tab-size: 2;
   }
 
-  /* Shiki light/dark token colors for highlighted code view */
+  /* Shiki light/dark token colors */
   .markmap-code-view {
     color: var(--shiki-light, var(--foreground));
   }
@@ -547,7 +499,7 @@
     display: none !important;
   }
 
-  /* When code view is visible, hide the viewport and let code fill the container */
+  /* When code view is visible, hide viewport */
   .viz-container[data-viz-type="markmap"]:has(.markmap-code-view:not(.hidden)) .viz-viewport {
     display: none !important;
   }
@@ -572,13 +524,12 @@
     fill: var(--foreground) !important;
   }
 
-  /* Hide the built-in mm-toolbar from markmap-toolbar CDN (we don't load it,
-     but this guards against any future inclusion) */
+  /* Hide the built-in mm-toolbar */
   .mm-toolbar {
     display: none !important;
   }
 
-  /* Legacy .markmap-wrap styles for unprocessed elements */
+  /* Legacy .markmap-wrap styles */
   .markmap-wrap {
     position: relative;
     width: 100%;
