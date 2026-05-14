@@ -44,6 +44,16 @@ export function initVizContainers() {
       viewport!.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
     }
 
+    /**
+     * Check if the container is currently showing code view
+     * (has a visible code-view element and hidden viewport content)
+     */
+    function isCodeViewActive(): boolean {
+      const codeView = container.querySelector(".mermaid-code-view, .markmap-code-view");
+      if (!codeView) return false;
+      return !codeView.classList.contains("hidden");
+    }
+
     const zoomInBtn = container.querySelector(".viz-zoom-in");
     if (zoomInBtn) {
       addTrackedListener(zoomInBtn, "click", (e: Event) => {
@@ -78,6 +88,9 @@ export function initVizContainers() {
 
     if (container.dataset.vizZoom === "true") {
       addTrackedListener(container, "wheel", (e: Event) => {
+        // Don't intercept wheel events when code view is active — let normal scrolling work
+        if (isCodeViewActive()) return;
+
         const wheelEvent = e as WheelEvent;
         const isZoomIntent = wheelEvent.ctrlKey || wheelEvent.metaKey || wheelEvent.deltaMode === 0;
         if (!isZoomIntent) return;
@@ -93,6 +106,9 @@ export function initVizContainers() {
       let startY = 0;
 
       addTrackedListener(container, "mousedown", (e: Event) => {
+        // Don't start panning when code view is active
+        if (isCodeViewActive()) return;
+
         const mouseEvent = e as MouseEvent;
         if (!mouseEvent.shiftKey && mouseEvent.button !== 1) return;
         e.preventDefault();
@@ -141,11 +157,32 @@ export function initVizContainers() {
           exitIcon?.classList.remove("hidden");
           container.style.background = "var(--background)";
           container.classList.add("p-4");
+
+          // When in fullscreen with code view active, hide the viewport
+          // and let the code view fill the entire fullscreen area
+          if (isCodeViewActive()) {
+            viewport.style.display = "none";
+            const codeView = container.querySelector<HTMLElement>(".mermaid-code-view, .markmap-code-view");
+            if (codeView) {
+              codeView.style.maxHeight = "none";
+              codeView.style.flex = "1";
+              codeView.style.minHeight = "0";
+            }
+          }
         } else {
           enterIcon?.classList.remove("hidden");
           exitIcon?.classList.add("hidden");
           container.style.background = "";
           container.classList.remove("p-4");
+
+          // Restore viewport visibility and code view constraints
+          viewport.style.display = "";
+          const codeView = container.querySelector<HTMLElement>(".mermaid-code-view, .markmap-code-view");
+          if (codeView) {
+            codeView.style.maxHeight = "";
+            codeView.style.flex = "";
+            codeView.style.minHeight = "";
+          }
         }
       };
 

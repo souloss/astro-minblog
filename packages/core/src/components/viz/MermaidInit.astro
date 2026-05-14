@@ -193,37 +193,56 @@
     let showingCode = false;
     let highlighted = false;
 
+    function updateLayout() {
+      const isFs = document.fullscreenElement === container;
+      const viewport = container.querySelector<HTMLElement>(".viz-viewport");
+      if (showingCode) {
+        svgOutput.classList.add("hidden");
+        codeView.classList.remove("hidden");
+        // Hide viewport when code view is active
+        if (viewport) viewport.style.display = "none";
+        // In fullscreen, code view fills the entire area
+        if (isFs) {
+          codeView.style.maxHeight = "none";
+          codeView.style.flex = "1";
+          codeView.style.minHeight = "0";
+        }
+      } else {
+        svgOutput.classList.remove("hidden");
+        codeView.classList.add("hidden");
+        // Restore viewport
+        if (viewport) viewport.style.display = "";
+        // Reset code view constraints
+        codeView.style.maxHeight = "";
+        codeView.style.flex = "";
+        codeView.style.minHeight = "";
+      }
+    }
+
     toggleBtn?.addEventListener("click", async (e) => {
       e.preventDefault();
       e.stopPropagation();
 
       showingCode = !showingCode;
+      (toggleBtn as HTMLElement).title = showingCode ? "View diagram" : "View code";
 
-      if (showingCode) {
-        svgOutput.classList.add("hidden");
-        codeView.classList.remove("hidden");
-        (toggleBtn as HTMLElement).title = "View diagram";
+      updateLayout();
 
-        // Apply Shiki highlighting on first view (lazy, non-blocking)
-        if (!highlighted) {
-          try {
-            const highlighter = await loadShikiHighlighter();
-            const isDark = getIsDark();
-            const theme = isDark ? "night-owl" : "github-light";
-            const html = highlighter.codeToHtml(code, {
-              lang: "mermaid",
-              theme,
-            });
-            codeView.innerHTML = html;
-            highlighted = true;
-          } catch {
-            // Shiki highlighting failed — keep the plain code view
-          }
+      // Apply Shiki highlighting on first view (lazy, non-blocking)
+      if (showingCode && !highlighted) {
+        try {
+          const highlighter = await loadShikiHighlighter();
+          const isDark = getIsDark();
+          const theme = isDark ? "night-owl" : "github-light";
+          const html = highlighter.codeToHtml(code, {
+            lang: "mermaid",
+            theme,
+          });
+          codeView.innerHTML = html;
+          highlighted = true;
+        } catch {
+          // Shiki highlighting failed — keep the plain code view
         }
-      } else {
-        svgOutput.classList.remove("hidden");
-        codeView.classList.add("hidden");
-        (toggleBtn as HTMLElement).title = "View code";
       }
     });
 
@@ -242,6 +261,11 @@
       } catch {
         // Re-highlight failed — keep existing content
       }
+    });
+
+    // Update layout when fullscreen changes
+    document.addEventListener("fullscreenchange", () => {
+      if (showingCode) updateLayout();
     });
   }
 
@@ -443,12 +467,13 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    background: var(--background);
   }
 
   .viz-container[data-mermaid-id]:fullscreen .viz-viewport {
     position: absolute;
     inset: 0;
-    overflow: hidden;
+    overflow: auto;
     display: flex;
     flex-direction: column;
   }
@@ -516,29 +541,37 @@
     padding: 1rem;
   }
 
-  /* Code view styles — matches .astro-code pattern for visual consistency */
+  /* Code view styles — clean, no shadow, scrollable */
   .mermaid-code-view {
     background: var(--surface);
     border-radius: var(--radius-lg);
     padding: 1rem;
-    max-height: 60vh;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  /* Override Shiki's built-in background/shadow — we provide our own */
+  .mermaid-code-view .shiki {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .mermaid-code-view pre {
     margin: 0;
     white-space: pre;
-    overflow-x: auto;
+    overflow: visible;
     line-height: 1.6;
     background: none !important;
+    box-shadow: none !important;
   }
 
   .mermaid-code-view code {
     font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
     font-size: 0.875rem;
     tab-size: 2;
-    counter-reset: step;
-    counter-increment: step 0;
   }
 
   /* Shiki light/dark token colors for highlighted code view */
@@ -564,8 +597,21 @@
     display: none !important;
   }
 
-  /* When code view is visible, allow container to scroll vertically */
-  .viz-container[data-mermaid-id]:has(.mermaid-code-view:not(.hidden)) {
-    overflow: auto;
+  /* When code view is visible, hide the viewport and let code fill the container */
+  .viz-container[data-mermaid-id]:has(.mermaid-code-view:not(.hidden)) .viz-viewport {
+    display: none !important;
+  }
+
+  /* Fullscreen code view: fill entire screen */
+  .viz-container[data-mermaid-id]:fullscreen:has(.mermaid-code-view:not(.hidden)) .mermaid-code-view {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  /* Fullscreen: when code view is active, hide viewport */
+  .viz-container[data-mermaid-id]:fullscreen:has(.mermaid-code-view:not(.hidden)) .viz-viewport {
+    display: none !important;
   }
 </style>
