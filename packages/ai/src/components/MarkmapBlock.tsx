@@ -8,6 +8,7 @@ import {
   useVizScaleControls,
   VizToolbar,
 } from "./VizShared.tsx";
+import { useShikiHighlighter } from "./CodeBlock.tsx";
 
 interface MarkmapResult {
   loading: boolean;
@@ -127,6 +128,7 @@ export function MarkmapBlock({
     isVisible
   );
   const showSkeleton = isStreaming || (loading && !error);
+  const { html: highlightedCode } = useShikiHighlighter(code, "markdown");
 
   const handleShowSource = useCallback(() => setShowSource(v => !v), []);
 
@@ -251,13 +253,22 @@ export function MarkmapBlock({
       {!error && (
         <>
           {showSource ? (
-            <pre
-              class={`text-foreground-soft overflow-auto font-mono text-[11px] leading-relaxed ${
-                isFullscreen ? "min-h-0 flex-1 pt-10" : ""
-              }`}
-            >
-              <code>{code}</code>
-            </pre>
+            highlightedCode ? (
+              <div
+                class={`overflow-auto rounded-md bg-[var(--surface)] p-3 text-[11px] leading-relaxed [&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:m-0 ${
+                  isFullscreen ? "min-h-0 flex-1 pt-10" : ""
+                }`}
+                dangerouslySetInnerHTML={{ __html: highlightedCode }}
+              />
+            ) : (
+              <pre
+                class={`text-foreground-soft overflow-auto rounded-md bg-[var(--surface)] p-3 font-mono text-[11px] leading-relaxed ${
+                  isFullscreen ? "min-h-0 flex-1 pt-10" : ""
+                }`}
+              >
+                <code>{code}</code>
+              </pre>
+            )
           ) : (
             <div
               ref={viewportRef}
@@ -297,6 +308,7 @@ export function MarkmapBlock({
             onFullscreen={handleFullscreen}
             onShowSource={handleShowSource}
             showSourceActive={showSource}
+            isFullscreen={isFullscreen}
           />
         </>
       )}

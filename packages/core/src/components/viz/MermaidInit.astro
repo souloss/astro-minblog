@@ -1,15 +1,13 @@
 ---
 /**
- * Script-only component that ensures the Mermaid rendering script is loaded.
- * Include in PostDetails when the post body contains ```mermaid code blocks.
- * The script handles pre.mermaid elements created by remark-mermaid-codeblock.
- * 
- * Features:
+ * Mermaid initialization script.
+ * Renders mermaid diagrams from ```mermaid code blocks with:
  * - Zoom in/out/reset controls
  * - Pan (Shift+drag or middle mouse button)
  * - Fullscreen mode
  * - Hover-to-show toolbar
- * - Code/preview toggle (optional)
+ * - Code/preview toggle with Shiki highlighting (dual-theme)
+ * - Theme-aware colors (dark/light mode)
  */
 ---
 
@@ -32,8 +30,9 @@
     if (shikiHighlighter) return shikiHighlighter;
     const shiki = await import("shiki");
     shikiModule = shiki;
+    // Load both themes so we can switch without re-creating the highlighter
     shikiHighlighter = await shiki.createHighlighter({
-      themes: [getIsDark() ? "night-owl" : "github-light"],
+      themes: ["night-owl", "github-light"],
       langs: ["mermaid"],
     });
     return shikiHighlighter;
@@ -111,30 +110,6 @@
     });
   }
 
-  async function renderDiagram(wrapper: HTMLElement, isDark: boolean) {
-    const mermaid = await loadMermaid();
-    const id = wrapper.getAttribute("data-mermaid-id");
-    const codeScript = wrapper.querySelector("script.mermaid-code");
-    const output = wrapper.querySelector<HTMLElement>(`.mermaid-output`);
-
-    if (!output || !codeScript) return;
-
-    const code = JSON.parse(codeScript.textContent || '""');
-    if (!code) return;
-
-    try {
-      renderCounter++;
-      const svgId = `${id}-svg-${renderCounter}`;
-      const { svg } = await mermaid.render(svgId, code);
-      output.innerHTML = svg;
-      
-      // Trigger viz:init to bind controls for dynamically created containers
-      window.dispatchEvent(new CustomEvent("viz:init"));
-    } catch (error) {
-      output.innerHTML = `<p class="mermaid-error">Render error: ${error instanceof Error ? error.message : "unknown"}</p>`;
-    }
-  }
-
   /**
    * Create toolbar buttons HTML
    */
@@ -196,6 +171,80 @@
     `;
   }
 
+  /**
+   * Escape HTML for code display
+   */
+  function escapeHtml(text: string): string {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
+   * Setup code/preview toggle functionality
+   */
+  function setupCodeToggle(
+    container: HTMLElement,
+    svgOutput: HTMLElement,
+    codeView: HTMLElement,
+    code: string
+  ) {
+    const toggleBtn = container.querySelector(".viz-toggle-code");
+    let showingCode = false;
+    let highlighted = false;
+
+    toggleBtn?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      showingCode = !showingCode;
+
+      if (showingCode) {
+        svgOutput.classList.add("hidden");
+        codeView.classList.remove("hidden");
+        (toggleBtn as HTMLElement).title = "View diagram";
+
+        // Apply Shiki highlighting on first view (lazy, non-blocking)
+        if (!highlighted) {
+          try {
+            const highlighter = await loadShikiHighlighter();
+            const isDark = getIsDark();
+            const theme = isDark ? "night-owl" : "github-light";
+            const html = highlighter.codeToHtml(code, {
+              lang: "mermaid",
+              theme,
+            });
+            codeView.innerHTML = html;
+            highlighted = true;
+          } catch {
+            // Shiki highlighting failed — keep the plain code view
+          }
+        }
+      } else {
+        svgOutput.classList.remove("hidden");
+        codeView.classList.add("hidden");
+        (toggleBtn as HTMLElement).title = "View code";
+      }
+    });
+
+    // Re-highlight on theme change if code view is visible
+    window.addEventListener("themechange", async () => {
+      if (!showingCode || !highlighted) return;
+      try {
+        const highlighter = await loadShikiHighlighter();
+        const isDark = getIsDark();
+        const theme = isDark ? "night-owl" : "github-light";
+        const html = highlighter.codeToHtml(code, {
+          lang: "mermaid",
+          theme,
+        });
+        codeView.innerHTML = html;
+      } catch {
+        // Re-highlight failed — keep existing content
+      }
+    });
+  }
+
   async function renderPreBlock(pre: HTMLElement, isDark: boolean) {
     const mermaid = await loadMermaid();
     const code = pre.textContent || "";
@@ -253,13 +302,13 @@
     container.appendChild(viewport);
     container.appendChild(codeScript);
     container.appendChild(codeView);
-    
-    // Add toolbar using innerHTML for cleaner code - CRITICAL: Add to container BEFORE replacing in DOM
+
+    // Add toolbar using innerHTML for cleaner code
     const toolbarContainer = document.createElement("div");
     toolbarContainer.innerHTML = createToolbarHTML();
     container.appendChild(toolbarContainer.firstElementChild!);
 
-    // Replace pre with container - This adds to DOM
+    // Replace pre with container
     pre.parentNode?.replaceChild(container, pre);
 
     // Use requestAnimationFrame to ensure DOM is ready before initializing controls
@@ -269,12 +318,11 @@
         const svgId = `${uniqueId}-svg-${renderCounter}`;
         mermaid.render(svgId, code).then(({ svg }) => {
           output.innerHTML = svg;
-          
-          // Setup code toggle button first
+
+          // Setup code toggle button
           setupCodeToggle(container, output, codeView, code);
-          
-          // Initialize viz controls for the new container with a small delay
-          // to ensure DOM mutation is complete
+
+          // Initialize viz controls
           Promise.resolve().then(() => {
             window.dispatchEvent(new CustomEvent("viz:init"));
           });
@@ -287,61 +335,28 @@
     });
   }
 
-  /**
-   * Setup code/preview toggle functionality
-   */
-  function setupCodeToggle(
-    container: HTMLElement,
-    output: HTMLElement,
-    codeView: HTMLElement,
-    code: string
-  ) {
-    const toggleBtn = container.querySelector(".viz-toggle-code");
-    let showingCode = false;
-    let highlighted = false;
+  async function renderDiagram(wrapper: HTMLElement, isDark: boolean) {
+    const mermaid = await loadMermaid();
+    const id = wrapper.getAttribute("data-mermaid-id");
+    const codeScript = wrapper.querySelector("script.mermaid-code");
+    const output = wrapper.querySelector<HTMLElement>(`.mermaid-output`);
 
-    toggleBtn?.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      showingCode = !showingCode;
-      
-      if (showingCode) {
-        output.classList.add("hidden");
-        codeView.classList.remove("hidden");
-        (toggleBtn as HTMLElement).title = "View diagram";
+    if (!output || !codeScript) return;
 
-        // Apply Shiki highlighting on first view (lazy, non-blocking)
-        if (!highlighted) {
-          try {
-            const highlighter = await loadShikiHighlighter();
-            const isDark = getIsDark();
-            const theme = isDark ? "night-owl" : "github-light";
-            const html = highlighter.codeToHtml(code, {
-              lang: "mermaid",
-              theme,
-            });
-            codeView.innerHTML = html;
-            highlighted = true;
-          } catch {
-            // Shiki highlighting failed — keep the plain code view
-          }
-        }
-      } else {
-        output.classList.remove("hidden");
-        codeView.classList.add("hidden");
-        (toggleBtn as HTMLElement).title = "View code";
-      }
-    });
-  }
+    const code = JSON.parse(codeScript.textContent || '""');
+    if (!code) return;
 
-  /**
-   * Escape HTML for code display
-   */
-  function escapeHtml(text: string): string {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
+    try {
+      renderCounter++;
+      const svgId = `${id}-svg-${renderCounter}`;
+      const { svg } = await mermaid.render(svgId, code);
+      output.innerHTML = svg;
+
+      // Trigger viz:init to bind controls for dynamically created containers
+      window.dispatchEvent(new CustomEvent("viz:init"));
+    } catch (error) {
+      output.innerHTML = `<p class="mermaid-error">Render error: ${error instanceof Error ? error.message : "unknown"}</p>`;
+    }
   }
 
   async function renderAllVisible() {
@@ -449,7 +464,7 @@
     pointer-events: auto;
   }
 
-  /* Hover behavior for controls - using pure CSS for reliability */
+  /* Hover behavior for controls */
   .viz-container[data-mermaid-id] .viz-controls {
     opacity: 0;
     transition: opacity var(--transition-base) var(--ease-out-expo);

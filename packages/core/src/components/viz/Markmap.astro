@@ -1,15 +1,16 @@
 ---
 /**
  * Markmap component for direct use in Astro templates.
- * 
+ *
  * IMPORTANT: For markdown code blocks, use ```markmap syntax directly.
  * The remark-markmap plugin will automatically transform it.
- * 
+ *
  * This component is for programmatic use in .astro files.
  */
 
 import { randomUUID } from "node:crypto";
 import { Transformer } from "markmap-lib";
+import VizContainer from "./VizContainer.astro";
 
 interface Props {
   /** Markdown content for the mindmap */
@@ -28,10 +29,12 @@ const transformer = new Transformer();
 const { root } = transformer.transform(content);
 ---
 
-<div class="markmap-wrap" id={uniqueId}>
-  <script is:inline type="application/json" set:html={JSON.stringify(root)} />
-  <script is:inline type="application/json" set:html={JSON.stringify(options)} />
-</div>
+<VizContainer minHeight="300px">
+  <div class="markmap-wrap" id={uniqueId} data-viz-type="markmap" data-source={content}>
+    <script is:inline type="application/json" set:html={JSON.stringify(root)} />
+    <script is:inline type="application/json" set:html={JSON.stringify(options)} />
+  </div>
+</VizContainer>
 
 <style is:global>
   .markmap-wrap {
@@ -39,16 +42,6 @@ const { root } = transformer.transform(content);
     height: max-content;
     width: 100%;
     min-height: 300px;
-    margin: 1.5rem 0;
-  }
-
-  .markmap-wrap.fullscreen {
-    background: #ffffff;
-  }
-
-  :global(html[data-theme="dark"]) .markmap-wrap.fullscreen,
-  :global(html.markmap-dark) .markmap-wrap.fullscreen {
-    background: #1a1a1a;
   }
 
   .markmap-wrap > svg {
@@ -58,13 +51,15 @@ const { root } = transformer.transform(content);
     padding: 0;
   }
 
-  .markmap-wrap.fullscreen > svg {
-    height: 100% !important;
-  }
-
   .mm-toolbar {
     position: absolute;
     right: 0.5em;
     bottom: 0.5em;
+  }
+
+  :global(html.markmap-dark) .markmap {
+    --markmap-text-color: var(--foreground);
+    --markmap-code-bg: var(--muted);
+    --markmap-circle-open-bg: var(--card);
   }
 </style>

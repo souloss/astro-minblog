@@ -128,7 +128,7 @@ function useMermaid(code: string): MermaidResult {
     return () => {
       mounted = false;
     };
-  }, [code]);
+  }, [code, isDark]);
 
   return { svg, loading, error };
 }
@@ -318,14 +318,14 @@ export function MermaidBlock({
       {showSource ? (
         highlightedCode ? (
           <div
-            class={`overflow-auto text-[11px] leading-relaxed [&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:m-0 ${
+            class={`overflow-auto rounded-md bg-[var(--surface)] p-3 text-[11px] leading-relaxed [&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:m-0 ${
               isFullscreen ? "min-h-0 flex-1 pt-10" : ""
             }`}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           />
         ) : (
           <pre
-            class={`text-foreground-soft overflow-auto font-mono text-[11px] leading-relaxed ${
+            class={`text-foreground-soft overflow-auto rounded-md bg-[var(--surface)] p-3 font-mono text-[11px] leading-relaxed ${
               isFullscreen ? "min-h-0 flex-1 pt-10" : ""
             }`}
           >
@@ -357,6 +357,7 @@ export function MermaidBlock({
         onFullscreen={handleFullscreen}
         onShowSource={handleShowSource}
         showSourceActive={showSource}
+        isFullscreen={isFullscreen}
       />
     </div>
   );

@@ -224,6 +224,7 @@ interface VizToolbarProps {
   onFullscreen: () => void;
   onShowSource: () => void;
   showSourceActive?: boolean;
+  isFullscreen?: boolean;
 }
 
 export function VizToolbar({
@@ -233,9 +234,10 @@ export function VizToolbar({
   onFullscreen,
   onShowSource,
   showSourceActive,
+  isFullscreen,
 }: VizToolbarProps) {
   return (
-    <div class="viz-toolbar absolute top-2 right-2 z-10 flex items-center gap-0.5 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
+    <div class="viz-toolbar absolute top-2 right-2 z-10 flex items-center gap-0.5 rounded-lg border border-[var(--viz-border)] bg-[var(--viz-btn-bg)] p-1 shadow-sm backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
       <button
         type="button"
         onClick={onZoomIn}
@@ -300,23 +302,40 @@ export function VizToolbar({
         type="button"
         onClick={onFullscreen}
         class="text-foreground-soft hover:text-accent flex size-6 items-center justify-center rounded-md transition-colors hover:bg-[var(--viz-btn-hover)]"
-        aria-label="Toggle fullscreen"
-        title="Toggle fullscreen"
+        aria-label={isFullscreen ? "Exit fullscreen" : "Toggle fullscreen"}
+        title={isFullscreen ? "Exit fullscreen" : "Toggle fullscreen"}
       >
-        <svg
-          class="size-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-          <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-          <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-          <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-        </svg>
+        {isFullscreen ? (
+          <svg
+            class="size-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+            <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+            <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+            <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+          </svg>
+        ) : (
+          <svg
+            class="size-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+            <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+            <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+            <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+          </svg>
+        )}
       </button>
       <button
         type="button"
