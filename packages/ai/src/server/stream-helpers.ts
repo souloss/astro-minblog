@@ -32,15 +32,6 @@ const log = createLogger("stream-helpers");
 
 export type MessageStreamWriter = UIMessageStreamWriter<UIMessage>;
 
-interface SourceArticle {
-  title: string;
-  url?: string;
-  heading?: string;
-  snippet?: string;
-  score?: number;
-  matchTerms?: string[];
-}
-
 interface StreamLLMParams {
   writer: MessageStreamWriter;
   adapter: ProviderAdapter;
@@ -130,7 +121,7 @@ export function writeDoneStatus(
 
 export function writeSourceArticles(
   writer: MessageStreamWriter,
-  articles: Array<SourceArticle | SourceSelection>,
+  articles: SourceSelection[],
   max = 3
 ): void {
   const seenUrls = new Set<string>();
@@ -156,11 +147,15 @@ export function writeSourceArticles(
 
 export function writeSourceSnippets(
   writer: MessageStreamWriter,
-  articles: Array<SourceArticle | SourceSelection>,
+  articles: SourceSelection[],
   max = 3
 ): void {
+  const seenUrls = new Set<string>();
   for (const article of articles.slice(0, max)) {
     if (!article.snippet) continue;
+    const url = article.url ?? "#";
+    if (seenUrls.has(url)) continue;
+    seenUrls.add(url);
     try {
       writer.write({
         type: "data-source-snippet",

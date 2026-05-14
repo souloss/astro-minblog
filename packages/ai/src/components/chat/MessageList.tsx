@@ -9,6 +9,9 @@ import {
   TypingDots,
   getTextFromMessage,
 } from "../MessageBubble.js";
+import { BUILTIN_CLIENT_TOOLS } from "../../tools/action-tools.js";
+
+const ACTION_TOOL_NAMES = new Set(BUILTIN_CLIENT_TOOLS);
 
 interface MessageListProps {
   isMockMode: boolean;
@@ -207,14 +210,6 @@ export function hasVisibleAssistantContent(msg: UIMessage): boolean {
   )) return true;
 
   // Completed action tool output → visible
-  const ACTION_TOOL_NAMES = new Set([
-    "toggleTheme",
-    "navigateToArticle",
-    "scrollToSection",
-    "toggleImmersiveMode",
-    "highlightText",
-    "setPreference",
-  ]);
   if (parts.some((p: { type: string }) => {
     if (!p.type.startsWith("tool-")) return false;
     const toolName = p.type.slice("tool-".length);

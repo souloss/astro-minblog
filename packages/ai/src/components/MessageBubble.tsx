@@ -8,6 +8,8 @@ import {
   FollowUpSuggestions,
 } from "./CodeBlock.tsx";
 
+import { BUILTIN_CLIENT_TOOLS } from "../tools/action-tools.js";
+
 type ToolPartLike = {
   type: string;
   state?: string;
@@ -48,14 +50,7 @@ function getToolOutput(
   };
 }
 
-const ACTION_TOOL_NAMES = new Set([
-  "toggleTheme",
-  "navigateToArticle",
-  "scrollToSection",
-  "toggleImmersiveMode",
-  "highlightText",
-  "setPreference",
-]);
+const ACTION_TOOL_NAMES = new Set(BUILTIN_CLIENT_TOOLS);
 
 function isToolPart(part: unknown): part is ToolPartLike {
   return (
@@ -288,6 +283,19 @@ export function useTypewriter(fullText: string, isStreaming: boolean): string {
     }
   }
 
+  // Avoid cutting inside a citation syntax 【label|title|url】.
+  // If the displayed text ends between 【 and 】, truncate before
+  // the opening 【 so the raw syntax isn't shown as plain text.
+  {
+    const lastOpen = fullText.lastIndexOf("【", end);
+    if (lastOpen !== -1 && lastOpen < end) {
+      const closeMarker = fullText.indexOf("】", lastOpen);
+      if (closeMarker === -1 || closeMarker >= end) {
+        end = lastOpen;
+      }
+    }
+  }
+
   return fullText.slice(0, end);
 }
 
@@ -408,12 +416,19 @@ export function AssistantMessage({
   );
 
   // Deduplicate source-url parts: if the AI already links to the same URL
-  // in its response text, don't show a redundant source card below.
+  // in its response text (Markdown links or citation syntax), don't show a
+  // redundant source card below.
   const urlsInText = useMemo(() => {
     const urls = new Set<string>();
+    // Match Markdown links: [label](url)
     const linkRe = /\]\((https?:\/\/[^\s)]+)\)/g;
     let m: RegExpExecArray | null;
     while ((m = linkRe.exec(effectiveText)) !== null) {
+      urls.add(m[1]);
+    }
+    // Match citation syntax: 【label|title|url】
+    const citationRe = /【[^】]*\|[^】]*\|(https?:\/\/[^】]+)】/g;
+    while ((m = citationRe.exec(effectiveText)) !== null) {
       urls.add(m[1]);
     }
     return urls;

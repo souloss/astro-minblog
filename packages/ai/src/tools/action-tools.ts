@@ -208,7 +208,7 @@ export function getAllTools(): Record<string, AnyTool> {
 
 export const allTools: Record<string, AnyTool> = builtinTools;
 
-const BUILTIN_CLIENT_TOOLS = [
+export const BUILTIN_CLIENT_TOOLS = [
   "toggleTheme",
   "navigateToArticle",
   "scrollToSection",

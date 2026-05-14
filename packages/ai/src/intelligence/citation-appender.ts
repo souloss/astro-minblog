@@ -36,7 +36,17 @@ export function selectCitations(
       .map(p => ({ title: p.name, url: p.url, score: p.score ?? 0 })),
   ];
 
-  return candidates.sort((a, b) => b.score - a.score).slice(0, maxCitations);
+  // Deduplicate by URL to avoid recommending the same resource twice
+  const seen = new Set<string>();
+  const deduped: CitationCandidate[] = [];
+  for (const c of candidates.sort((a, b) => b.score - a.score)) {
+    if (seen.has(c.url)) continue;
+    seen.add(c.url);
+    deduped.push(c);
+    if (deduped.length >= maxCitations) break;
+  }
+
+  return deduped;
 }
 
 export function formatCitationBlock(

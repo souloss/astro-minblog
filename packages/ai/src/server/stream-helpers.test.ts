@@ -3,11 +3,13 @@ import { describe, expect, it, beforeEach, vi } from "vitest";
 const aiMocks = vi.hoisted(() => ({
   streamTextMock: vi.fn(),
   convertToModelMessagesMock: vi.fn(async messages => messages),
+  stepCountIsMock: vi.fn((n: number) => ({ type: "stop", stepCount: n })),
 }));
 
 vi.mock("ai", () => ({
   streamText: aiMocks.streamTextMock,
   convertToModelMessages: aiMocks.convertToModelMessagesMock,
+  stepCountIs: aiMocks.stepCountIsMock,
 }));
 
 import {
@@ -455,6 +457,7 @@ describe("writeSourceSnippets", () => {
         heading: "Chat Hooks",
         snippet: "useChat 的配置中还包含 onToolCall。",
         matchTerms: ["useChat", "onToolCall"],
+        reason: "chunk",
       },
     ]);
 

@@ -94,6 +94,19 @@ describe("selectCitations", () => {
     expect(result).toHaveLength(2);
     expect(result[0].title).toBe("Project"); // Higher score first
   });
+
+  it("should deduplicate by URL when article and project share the same URL", () => {
+    const articles = [
+      makeArticle({ title: "Article A", url: "/shared/", score: 10 }),
+    ];
+    const projects = [
+      makeProject({ name: "Project P", url: "/shared/", score: 12 }),
+    ];
+    const result = selectCitations(articles, projects, 5, 0);
+    // Higher-score project wins; article with same URL is skipped
+    expect(result).toHaveLength(1);
+    expect(result[0].title).toBe("Project P");
+  });
 });
 
 // ── formatCitationBlock ────────────────────────────────────────
