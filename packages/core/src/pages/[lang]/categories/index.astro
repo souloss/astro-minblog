@@ -9,6 +9,8 @@ import { getCategoryTree } from "../../../utils/getUniqueCategories";
 import type { CategoryTreeNode } from "../../../utils/getUniqueCategories";
 import { getPostsByLang } from "../../../utils/getPostsByLang";
 import { getCategoryUrl } from "../../../utils/getCategoryPath";
+import IconArchive from "../../../assets/icons/IconArchive.svg";
+import IconArrowRight from "../../../assets/icons/IconArrowRight.svg";
 import { SITE } from "virtual:astro-minimax/config";
 import { t } from "../../../utils/i18n";
 
@@ -36,14 +38,13 @@ const totalPosts = tree.reduce((sum, node) => sum + countAll(node), 0);
   <Main
     pageTitle={t("nav.categories", lang)}
     pageDesc={t("main.allArticles", lang)}
+    wide={true}
     data-lang={lang}
   >
     <!-- Stats Overview -->
     <div class="mb-8 flex items-center gap-6 text-sm text-muted">
       <div class="flex items-center gap-2">
-        <svg class="size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-        </svg>
+        <IconArchive class="size-4 text-accent" />
         <span>{totalCategories} {t("unit.categories", lang)}</span>
       </div>
       <div class="flex items-center gap-2">
@@ -56,84 +57,56 @@ const totalPosts = tree.reduce((sum, node) => sum + countAll(node), 0);
     </div>
 
     <!-- Category Grid -->
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {
         tree.map((node, index) => {
           const postCount = countAll(node);
           const childCount = node.children.length;
           const delay = Math.min(index * 80, 400);
-          
+
           return (
             <article
-              class="group card-animate cursor-pointer overflow-hidden rounded-2xl border border-border/50 bg-card/60 backdrop-blur-md transition-all duration-300 ease-out hover:border-accent/25 hover:bg-card-hover hover:shadow-xl hover:shadow-shadow-elevated/10 hover:-translate-y-1"
+              class="group card-animate overflow-hidden rounded-2xl border border-border/50 bg-card/60 backdrop-blur-md transition-all duration-300 ease-out hover:border-accent/25 hover:bg-card-hover hover:shadow-xl hover:shadow-shadow-elevated/10 hover:-translate-y-1"
               style={`animation-delay: ${delay}ms`}
             >
+              <!-- Main card link (header only, not wrapping subcategory tags) -->
               <a
                 href={getCategoryUrl(lang, node.fullPath)}
-                class="block p-5 sm:p-6"
+                class="flex items-start justify-between gap-4 p-5 sm:p-6"
               >
-                <!-- Header -->
-                <div class="flex items-start justify-between gap-4">
-                  <div class="flex items-center gap-3">
-                    <div class="flex size-10 items-center justify-center rounded-xl bg-accent/10 text-accent transition-colors group-hover:bg-accent/15">
-                      <svg
-                        class="size-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h2 class="text-lg font-semibold text-foreground transition-colors group-hover:text-accent">
-                        {node.name}
-                      </h2>
-                      <p class="mt-0.5 text-sm text-muted">
-                        {postCount} {t("unit.posts", lang)}
-                        {childCount > 0 && <span class="opacity-60"> · {childCount} {t("unit.subcategories", lang)}</span>}
-                      </p>
-                    </div>
+                <div class="flex items-center gap-3">
+                  <div class="flex size-10 items-center justify-center rounded-xl bg-accent/10 text-accent transition-colors group-hover:bg-accent/15">
+                    <IconArchive class="size-5" />
                   </div>
-                  
-                  <!-- Count Badge -->
-                  <span class="flex size-8 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent transition-all group-hover:bg-accent group-hover:text-white">
-                    {postCount}
-                  </span>
+                  <div>
+                    <h2 class="text-lg font-semibold text-foreground transition-colors group-hover:text-accent">
+                      {node.name}
+                    </h2>
+                    <p class="mt-0.5 text-sm text-muted">
+                      {postCount} {t("unit.posts", lang)}
+                      {childCount > 0 && <span class="opacity-60"> · {childCount} {t("unit.subcategories", lang)}</span>}
+                    </p>
+                  </div>
                 </div>
-
-                <!-- Children Tags -->
-                {node.children.length > 0 && (
-                  <div class="mt-4 flex flex-wrap gap-2 border-t border-border/50 pt-4">
-                    {node.children.slice(0, 4).map(child => (
-                      <span
-                        class="inline-flex items-center gap-1.5 rounded-lg bg-muted/40 px-2.5 py-1 text-xs font-medium text-foreground-soft transition-colors hover:bg-accent/10 hover:text-accent"
-                      >
-                        <svg class="size-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                        </svg>
-                        {child.name}
-                        <span class="opacity-50">({countAll(child)})</span>
-                      </span>
-                    ))}
-                    {node.children.length > 4 && (
-                      <span class="inline-flex items-center rounded-lg bg-muted/40 px-2.5 py-1 text-xs text-muted">
-                        +{node.children.length - 4} {t("unit.more", lang)}…
-                      </span>
-                    )}
-                  </div>
-                )}
 
                 <!-- Arrow Indicator -->
-                <div class="mt-4 flex items-center justify-end">
-                  <svg class="size-5 text-muted opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </div>
+                <IconArrowRight class="size-5 shrink-0 text-muted/50 transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent group-hover:opacity-100" />
               </a>
+
+              <!-- Children Tags (separate links, NOT nested inside the card link) -->
+              {node.children.length > 0 && (
+                <div class="flex flex-wrap gap-2 border-t border-border/50 px-5 py-4 sm:px-6" data-subcategories>
+                  {node.children.map(child => (
+                    <a
+                      href={getCategoryUrl(lang, child.fullPath)}
+                      class="inline-flex items-center gap-1 rounded-lg bg-muted/40 px-2 py-0.5 text-xs font-medium text-foreground-soft transition-colors hover:bg-accent/10 hover:text-accent"
+                    >
+                      {child.name}
+                      <span class="opacity-40">{countAll(child)}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
             </article>
           );
         })
@@ -144,16 +117,46 @@ const totalPosts = tree.reduce((sum, node) => sum + countAll(node), 0);
       tree.length === 0 && (
         <div class="flex flex-col items-center justify-center py-16 text-center">
           <div class="flex size-16 items-center justify-center rounded-2xl bg-muted/30">
-            <svg class="size-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-            </svg>
+            <IconArchive class="size-8 text-muted" />
           </div>
           <p class="mt-4 text-muted">
             {t("main.noCategories", lang)}
           </p>
+          <a
+            href={`/${lang}/posts/`}
+            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20"
+          >
+            {t("categories.viewAll", lang)}
+            <IconArrowRight class="size-4" />
+          </a>
         </div>
       )
     }
   </Main>
   <Footer lang={lang} />
 </Layout>
+
+<style>
+  .card-animate {
+    opacity: 0;
+    animation: card-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes card-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-animate {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

@@ -126,6 +126,9 @@ export type TranslationKey =
   | "categories.posts"
   | "categories.subcategories"
   | "categories.more"
+  | "categories.viewAll"
+  | "categories.subcategoriesList"
+  | "categories.parentCategory"
   | "series.count"
   | "series.totalPosts"
   | "series.articlesShort"
@@ -197,7 +200,9 @@ export type TranslationKey =
   | "reposts.viewOriginal"
   | "reposts.licenseNote"
   | "reposts.partPrefix"
-  | "unit.reposts";
+  | "unit.reposts"
+  | "toc.title"
+  | "toc.sections";
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -326,6 +331,9 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "categories.posts": "posts",
     "categories.subcategories": "subcategories",
     "categories.more": "more",
+    "categories.viewAll": "View all categories",
+    "categories.subcategoriesList": "Subcategories",
+    "categories.parentCategory": "Parent category",
     "series.count": "series",
     "series.totalPosts": "posts",
     "series.articlesShort": "articles",
@@ -399,6 +407,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "reposts.licenseNote": "Translated and republished, all rights belong to the original author",
     "reposts.partPrefix": "Part",
     "unit.reposts": "reposts",
+    "toc.title": "Table of Contents",
+    "toc.sections": "sections",
   },
   zh: {
     "nav.home": "首页",
@@ -526,6 +536,9 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "categories.posts": "篇文章",
     "categories.subcategories": "个子分类",
     "categories.more": "更多",
+    "categories.viewAll": "查看所有分类",
+    "categories.subcategoriesList": "子分类",
+    "categories.parentCategory": "上级分类",
     "series.count": "个系列",
     "series.totalPosts": "篇文章",
     "series.articlesShort": "篇文章",
@@ -599,6 +612,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     "reposts.licenseNote": "翻译转载，版权归原作者所有",
     "reposts.partPrefix": "第",
     "unit.reposts": "篇转载",
+    "toc.title": "目录",
+    "toc.sections": "章节",
   },
 };
 

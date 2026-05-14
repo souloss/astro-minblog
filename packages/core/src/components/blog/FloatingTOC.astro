@@ -21,7 +21,8 @@ const nestedHeadings = buildNestedHeadings(headings);
 ---
 
 <aside
-  class="floating-toc-container group/container fixed top-32 left-[calc(50%+28rem)] z-20 hidden flex-col items-start gap-2 xl:flex"
+  class="floating-toc-container group/container fixed top-32 z-20 hidden flex-col items-start gap-2 xl:flex"
+  style="left: min(calc(50% + 28rem), calc(100vw - 14rem));"
   aria-label="文章目录"
   data-floating-toc
 >

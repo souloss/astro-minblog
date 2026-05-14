@@ -148,8 +148,16 @@
   @apply max-w-3xl;
 }
 
+@utility max-w-app-wide {
+  @apply max-w-5xl;
+}
+
 @utility app-layout {
-  @apply mx-auto w-full max-w-app px-4;
+  @apply mx-auto w-full max-w-app px-4 overflow-x-hidden;
+}
+
+@utility app-layout-wide {
+  @apply mx-auto w-full max-w-app-wide px-4 overflow-x-hidden;
 }
 
 /* === Glass Card Utility === */

@@ -20,6 +20,7 @@ const reposts = SITE.reposts ?? [];
   <Main
     pageTitle={t("reposts.title", lang)}
     pageDesc={t("reposts.desc", lang)}
+    wide={true}
     data-lang={lang}
   >
     <!-- Stats Overview -->
@@ -34,7 +35,7 @@ const reposts = SITE.reposts ?? [];
     </div>
 
     <!-- Reposts Grid -->
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="grid gap-6 sm:grid-cols-2">
       {
         reposts.map((repost, index) => {
           const delay = Math.min(index * 60, 400);
@@ -45,7 +46,7 @@ const reposts = SITE.reposts ?? [];
             >
               {/* Source Badge */}
               <div class="mb-3 flex items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+                <span class="inline-flex items-center gap-1.5 rounded-lg bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
                   <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c-1.7-1.7-1.7-4 0-5.7" />
                     <path d="M9 22V4" />
@@ -123,7 +124,7 @@ const reposts = SITE.reposts ?? [];
               {/* Tags */}
               <div class="mb-3 flex flex-wrap gap-1.5">
                 {repost.tags.map((tag) => (
-                  <span class="inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
+                  <span class="inline-flex items-center rounded-lg bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
                     {tag}
                   </span>
                 ))}

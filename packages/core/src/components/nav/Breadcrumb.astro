@@ -1,4 +1,6 @@
 ---
+import { t } from "../../utils/i18n";
+
 // Remove current url path and remove trailing slash if exists
 const currentUrlPath = Astro.url.pathname.replace(/\/+$/, "");
 
@@ -40,7 +42,7 @@ const buildBreadcrumbPath = (index: number) => {
     class="font-light [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100"
   >
     <li>
-      <a href={`/${lang}/`} class="opacity-80">Home</a>
+      <a href={`/${lang}/`} class="opacity-80">{t("nav.home", lang)}</a>
       <span aria-hidden="true" class="opacity-80">&raquo;</span>
     </li>
     {
@@ -51,14 +53,13 @@ const buildBreadcrumbPath = (index: number) => {
               class:list={["capitalize opacity-75", { lowercase: index > 0 }]}
               aria-current="page"
             >
-              {/* make the last part lowercase in Home > Tags > some-tag */}
               {decodeURIComponent(breadcrumb)}
             </span>
           </li>
         ) : (
           <li>
             <a href={buildBreadcrumbPath(index)} class="capitalize opacity-70">
-              {breadcrumb}
+              {decodeURIComponent(breadcrumb)}
             </a>
             <span aria-hidden="true">&raquo;</span>
           </li>

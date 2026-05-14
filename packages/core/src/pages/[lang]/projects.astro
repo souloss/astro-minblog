@@ -20,6 +20,7 @@ const { lang } = Astro.params as { lang: "zh" | "en" };
   <Main
     pageTitle={t("projects.title", lang)}
     pageDesc={t("projects.desc", lang)}
+    wide={true}
     data-lang={lang}
   >
     <div class="grid gap-6 sm:grid-cols-2">
