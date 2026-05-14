@@ -9,6 +9,8 @@ import { getLocalizedPostPath } from "../../../utils/getPath";
 import { getReadingTime } from "../../../utils/getReadingTime";
 import getPostsByGroupCondition from "../../../utils/getPostsByGroupCondition";
 import getPostsByLang from "../../../utils/getPostsByLang";
+import IconArchive from "../../../assets/icons/IconArchive.svg";
+import IconCalendar from "../../../assets/icons/IconCalendar.svg";
 import { SITE } from "virtual:astro-minimax/config";
 import { t } from "../../../utils/i18n";
 import dayjs from "dayjs";
@@ -89,22 +91,12 @@ function getPostData(post: typeof langPosts[0]) {
     <!-- Stats Overview -->
     <div class="mb-8 flex items-center gap-6 text-sm text-muted">
       <div class="flex items-center gap-2">
-        <svg class="size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-          <polyline points="14 2 14 8 20 8" />
-        </svg>
-        <span class="font-medium text-foreground">{totalPosts}</span>
-        <span>{t("archives.posts", lang)}</span>
+        <IconArchive class="size-4 text-accent" />
+        <span>{totalPosts} {t("archives.posts", lang)}</span>
       </div>
       <div class="flex items-center gap-2">
-        <svg class="size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-          <line x1="16" y1="2" x2="16" y2="6" />
-          <line x1="8" y1="2" x2="8" y2="6" />
-          <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-        <span class="font-medium text-foreground">{yearCount}</span>
-        <span>{t("archives.years", lang)}</span>
+        <IconCalendar class="size-4 text-accent" />
+        <span>{yearCount} {t("archives.years", lang)}</span>
       </div>
     </div>
 
@@ -125,14 +117,9 @@ function getPostData(post: typeof langPosts[0]) {
               {/* Year Badge */}
               <div class="mb-8 flex items-center md:justify-center">
                 <div class="relative z-10 ml-10 flex items-center gap-3 rounded-2xl border border-accent/20 bg-accent/10 px-5 py-2.5 backdrop-blur-sm md:ml-0">
-                  <svg class="size-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
+                  <IconCalendar class="size-5 text-accent" />
                   <span class="text-lg font-bold text-accent">{year}</span>
-                  <span class="rounded-full bg-accent/20 px-2.5 py-0.5 text-sm font-medium text-accent">
+                  <span class="rounded-lg bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
                     {yearGroup.length}
                   </span>
                 </div>

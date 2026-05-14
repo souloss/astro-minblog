@@ -78,4 +78,19 @@ export function getAllCategoryPaths(tree: CategoryTreeNode[]): string[] {
   return paths;
 }
 
+/**
+ * Find a specific node in the category tree by its fullPath.
+ */
+export function findCategoryNode(
+  tree: CategoryTreeNode[],
+  fullPath: string
+): CategoryTreeNode | undefined {
+  for (const node of tree) {
+    if (node.fullPath === fullPath) return node;
+    const found = findCategoryNode(node.children, fullPath);
+    if (found) return found;
+  }
+  return undefined;
+}
+
 export default getUniqueCategories;

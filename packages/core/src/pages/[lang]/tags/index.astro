@@ -7,6 +7,8 @@ import Header from "../../../components/nav/Header.astro";
 import Footer from "../../../components/nav/Footer.astro";
 import getTagsWithCount from "../../../utils/getTagsWithCount";
 import getPostsByLang from "../../../utils/getPostsByLang";
+import IconTag from "../../../assets/icons/IconTag.svg";
+import IconArchive from "../../../assets/icons/IconArchive.svg";
 import { SITE } from "virtual:astro-minimax/config";
 import { t } from "../../../utils/i18n";
 
@@ -37,20 +39,12 @@ const totalPosts = tags.reduce((acc, tag) => acc + tag.count, 0);
     <!-- Stats Overview -->
     <div class="mb-8 flex items-center gap-6 text-sm text-muted">
       <div class="flex items-center gap-2">
-        <svg class="size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-          <line x1="7" y1="7" x2="7.01" y2="7" />
-        </svg>
-        <span class="font-medium text-foreground">{tags.length}</span>
-        <span>{t("tags.tags", lang)}</span>
+        <IconTag class="size-4 text-accent" />
+        <span>{tags.length} {t("tags.tags", lang)}</span>
       </div>
       <div class="flex items-center gap-2">
-        <svg class="size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-          <polyline points="14 2 14 8 20 8" />
-        </svg>
-        <span class="font-medium text-foreground">{totalPosts}</span>
-        <span>{t("tags.taggedPosts", lang)}</span>
+        <IconArchive class="size-4 text-accent" />
+        <span>{totalPosts} {t("tags.taggedPosts", lang)}</span>
       </div>
     </div>
 

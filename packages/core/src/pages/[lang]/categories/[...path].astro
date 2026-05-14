@@ -11,13 +11,17 @@ import Pagination from "../../../components/nav/Pagination.astro";
 import {
   getCategoryTree,
   getAllCategoryPaths,
+  findCategoryNode,
 } from "../../../utils/getUniqueCategories";
+import type { CategoryTreeNode } from "../../../utils/getUniqueCategories";
 import getPostsByCategory from "../../../utils/getPostsByCategory";
 import { getPostsByLang } from "../../../utils/getPostsByLang";
 import {
   getCategoryPathSegments,
   getCategoryUrl,
 } from "../../../utils/getCategoryPath";
+import IconArchive from "../../../assets/icons/IconArchive.svg";
+import IconChevronRight from "../../../assets/icons/IconChevronRight.svg";
 import { SITE } from "virtual:astro-minimax/config";
 import { t } from "../../../utils/i18n";
 
@@ -73,6 +77,20 @@ export const getStaticPaths = (async () => {
 type Props = { category: string; page: Page<CollectionEntry<"blog">> };
 const { category, page } = Astro.props as Props;
 const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
+
+// Parse category path segments for breadcrumb
+const categoryParts = category.split("/");
+
+// Get the category tree to find children and parent info
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+const langPosts = getPostsByLang(allPosts, lang);
+const tree = getCategoryTree(langPosts);
+const currentNode = findCategoryNode(tree, category);
+const children = currentNode?.children ?? [];
+
+function countAll(node: CategoryTreeNode): number {
+  return node.count + node.children.reduce((s, c) => s + countAll(c), 0);
+}
 ---
 
 <Layout
@@ -85,15 +103,41 @@ const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
     titleTransition={category}
     pageDesc={t("main.categoryDesc", lang).replace("{category}", category)}
   >
+    <!-- Category Breadcrumb (for nested categories) -->
+    {categoryParts.length > 1 && (
+      <nav class="mb-4 flex items-center gap-1.5 text-sm text-muted" aria-label="category breadcrumb">
+        <a
+          href={`/${lang}/categories/`}
+          class="transition-colors hover:text-accent"
+        >
+          {t("nav.categories", lang)}
+        </a>
+        {categoryParts.slice(0, -1).map((part, i) => {
+          const parentPath = categoryParts.slice(0, i + 1).join("/");
+          return (
+            <>
+              <IconChevronRight class="size-3 opacity-40" />
+              <a
+                href={getCategoryUrl(lang, parentPath)}
+                class="transition-colors hover:text-accent"
+              >
+                {part}
+              </a>
+            </>
+          );
+        })}
+        <IconChevronRight class="size-3 opacity-40" />
+        <span class="font-medium text-foreground">{categoryParts[categoryParts.length - 1]}</span>
+      </nav>
+    )}
+
     <!-- Category Badge -->
     <div class="mb-6 flex items-center gap-3">
       <div class="flex size-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
-        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-        </svg>
+        <IconArchive class="size-5" />
       </div>
       <div class="flex items-center gap-2 text-sm text-muted">
-        <span class="rounded-lg bg-accent/10 px-2.5 py-1 font-medium text-accent">
+        <span class="rounded-lg bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
           {page.data.length} {t("unit.posts", lang)}
         </span>
         {page.lastPage > 1 && (
@@ -103,7 +147,24 @@ const lang = (Astro.params.lang ?? "zh") as "zh" | "en";
         )}
       </div>
     </div>
-    
+
+    <!-- Subcategory Links -->
+    {children.length > 0 && (
+      <div class="mb-6 flex flex-wrap gap-2">
+        <span class="text-sm font-medium text-muted">{t("categories.subcategoriesList", lang)}:</span>
+        {children.map(child => (
+          <a
+            href={getCategoryUrl(lang, child.fullPath)}
+            class="inline-flex items-center gap-1.5 rounded-lg bg-muted/40 px-2.5 py-1 text-xs font-medium text-foreground-soft transition-colors hover:bg-accent/10 hover:text-accent"
+          >
+            <IconChevronRight class="size-3 opacity-60" />
+            {child.name}
+            <span class="opacity-50">({countAll(child)})</span>
+          </a>
+        ))}
+      </div>
+    )}
+
     <PostsContainer posts={page.data} lang={lang} />
   </Main>
 
